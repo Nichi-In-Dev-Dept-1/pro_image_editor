@@ -517,7 +517,7 @@ class _WhatsAppExampleState extends State<WhatsAppExample>
                         12 +
                             (editor.isSubEditorOpen
                                 ? 0
-                                : MediaQuery.of(context).viewInsets.bottom)),
+                                : MediaQuery.viewInsetsOf(context).bottom)),
                     color: Colors.black38,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

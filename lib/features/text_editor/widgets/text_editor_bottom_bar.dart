@@ -46,7 +46,7 @@ class _TextEditorBottomBarState extends State<TextEditorBottomBar> {
         scrollDirection: Axis.horizontal,
         child: ConstrainedBox(
           constraints:
-              BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+              BoxConstraints(minWidth: MediaQuery.sizeOf(context).width),
           child: Row(
             mainAxisAlignment:
                 widget.configs.textEditor.style.bottomBarMainAxisAlignment,

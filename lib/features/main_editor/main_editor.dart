@@ -1480,8 +1480,7 @@ class ProImageEditorState extends State<ProImageEditor>
             return ConstrainedBox(
               constraints: effectiveBoxConstraints ??
                   BoxConstraints(
-                      maxHeight:
-                          300 + MediaQuery.of(context).viewInsets.bottom),
+                      maxHeight: 300 + MediaQuery.viewInsetsOf(context).bottom),
               child: EmojiEditor(configs: configs),
             );
           }

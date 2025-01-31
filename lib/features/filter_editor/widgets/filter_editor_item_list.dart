@@ -133,7 +133,7 @@ class _FilterEditorItemListState extends State<FilterEditorItemList> {
           scrollDirection: Axis.horizontal,
           child: ConstrainedBox(
             constraints:
-                BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                BoxConstraints(minWidth: MediaQuery.sizeOf(context).width),
             child: Padding(
               padding: widget.configs.filterEditor.style.filterListMargin,
               child: Wrap(

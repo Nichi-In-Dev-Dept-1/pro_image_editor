@@ -469,7 +469,7 @@ class _RoundedBackgroundTextFieldState
             cupertinoTheme.primaryColor.withValues(alpha: 0.40);
         cursorRadius ??= const Radius.circular(2.0);
         cursorOffset = Offset(
-            iOSHorizontalOffset / MediaQuery.of(context).devicePixelRatio, 0);
+            iOSHorizontalOffset / MediaQuery.devicePixelRatioOf(context), 0);
         autocorrectionTextRectColor = selectionColor;
         break;
 
@@ -484,7 +484,7 @@ class _RoundedBackgroundTextFieldState
             cupertinoTheme.primaryColor.withValues(alpha: 0.40);
         cursorRadius ??= const Radius.circular(2.0);
         cursorOffset = Offset(
-            iOSHorizontalOffset / MediaQuery.of(context).devicePixelRatio, 0);
+            iOSHorizontalOffset / MediaQuery.devicePixelRatioOf(context), 0);
         break;
 
       case TargetPlatform.android:

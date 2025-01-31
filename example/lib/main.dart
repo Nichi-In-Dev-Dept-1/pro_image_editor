@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: ExtendedPopScope(
         child: Scaffold(
           body: Builder(builder: (_) {
-            if (MediaQuery.of(context).size.width >=
+            if (MediaQuery.sizeOf(context).width >=
                 kImageEditorExampleIsDesktopBreakPoint) {
               /// Build navigation-rail on large screens
               return _buildTabletExamples();

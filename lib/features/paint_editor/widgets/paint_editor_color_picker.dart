@@ -57,11 +57,11 @@ class PaintEditorColorPicker extends StatelessWidget {
             configs: configs,
             length: min(
               350,
-              MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).viewInsets.bottom -
+              MediaQuery.sizeOf(context).height -
+                  MediaQuery.viewInsetsOf(context).bottom -
                   kToolbarHeight -
                   kBottomNavigationBarHeight -
-                  MediaQuery.of(context).padding.top -
+                  MediaQuery.paddingOf(context).top -
                   30,
             ),
             horizontal: false,

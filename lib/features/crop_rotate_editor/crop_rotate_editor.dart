@@ -1405,7 +1405,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
         double outsideHitPosY = details.focalPoint.dy -
             _editorScreenOffsetHelper.dy -
             (_hasToolbar ? kToolbarHeight : 0) -
-            MediaQuery.of(context).padding.top;
+            MediaQuery.paddingOf(context).top;
 
         bool outsideLeft =
             details.focalPoint.dx - _editorScreenOffsetHelper.dx <

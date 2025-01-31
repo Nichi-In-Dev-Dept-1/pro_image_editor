@@ -33,7 +33,7 @@ mixin ExampleHelperState<T extends StatefulWidget> on State<T> {
   /// Returns `true` if the screen width is greater than or equal to
   /// [kImageEditorExampleIsDesktopBreakPoint], otherwise `false`.
   bool isDesktopMode(BuildContext context) =>
-      MediaQuery.of(context).size.width >=
+      MediaQuery.sizeOf(context).width >=
       kImageEditorExampleIsDesktopBreakPoint;
 
   /// Called when the image editing process starts.

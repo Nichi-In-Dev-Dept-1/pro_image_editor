@@ -80,12 +80,12 @@ class TextEditorColorPicker extends StatelessWidget {
           configs: configs,
           length: min(
             350,
-            MediaQuery.of(context).size.height -
-                MediaQuery.of(context).viewInsets.bottom -
+            MediaQuery.sizeOf(context).height -
+                MediaQuery.viewInsetsOf(context).bottom -
                 kToolbarHeight -
                 kBottomNavigationBarHeight -
                 10 * 2 -
-                MediaQuery.of(context).padding.top,
+                MediaQuery.paddingOf(context).top,
           ),
           onPositionChange: onPositionChange,
           initPosition: colorPosition,

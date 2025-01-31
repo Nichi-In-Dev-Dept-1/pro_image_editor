@@ -74,7 +74,7 @@ class CropEditorBottombar extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minWidth: min(MediaQuery.of(context).size.width, 500),
+                  minWidth: min(MediaQuery.sizeOf(context).width, 500),
                   maxWidth: 500,
                 ),
                 child: Builder(builder: (context) {

@@ -169,7 +169,7 @@ class EditorImage {
     await precacheImage(
       MemoryImage(bytes),
       context,
-      size: MediaQuery.of(context).size,
+      size: MediaQuery.sizeOf(context),
     );
 
     byteArray = bytes;

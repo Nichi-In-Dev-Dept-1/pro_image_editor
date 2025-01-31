@@ -43,11 +43,11 @@ class GroundedTextSizeSlider extends StatelessWidget {
           width: 16,
           height: min(
               280,
-              MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).viewInsets.bottom -
+              MediaQuery.sizeOf(context).height -
+                  MediaQuery.viewInsetsOf(context).bottom -
                   kToolbarHeight -
                   kBottomNavigationBarHeight -
-                  MediaQuery.of(context).padding.top),
+                  MediaQuery.paddingOf(context).top),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

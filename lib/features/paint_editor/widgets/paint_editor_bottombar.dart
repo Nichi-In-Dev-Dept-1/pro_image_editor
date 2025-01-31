@@ -60,7 +60,7 @@ class PaintEditorBottombar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double minWidth = min(MediaQuery.of(context).size.width, 600);
+    double minWidth = min(MediaQuery.sizeOf(context).width, 600);
     double maxWidth =
         max((paintModes.length + (enableZoom ? 1 : 0)) * 80, minWidth);
 
@@ -81,7 +81,7 @@ class PaintEditorBottombar extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minWidth: minWidth,
-                  maxWidth: MediaQuery.of(context).size.width > 660
+                  maxWidth: MediaQuery.sizeOf(context).width > 660
                       ? maxWidth
                       : double.infinity,
                 ),

@@ -83,7 +83,7 @@ class _WhatsAppTextBottomBarState extends State<WhatsAppTextBottomBar> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: _space + MediaQuery.of(context).viewPadding.bottom,
+      bottom: _space + MediaQuery.viewPaddingOf(context).bottom,
       left: _space,
       right: 0,
       height: 40,

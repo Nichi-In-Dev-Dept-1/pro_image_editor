@@ -32,7 +32,7 @@ class SizesManager {
   double get allToolbarHeight => appBarHeight + bottomBarHeight;
 
   /// Getter for the screen size of the device.
-  Size get screen => MediaQuery.of(context).size;
+  Size get screen => MediaQuery.sizeOf(context);
 
   /// Size of the decoded image.
   Size decodedImageSize = const Size(0, 0);
@@ -52,7 +52,7 @@ class SizesManager {
       allToolbarHeight;
 
   /// Getter for the screen padding, accounting for safe area insets.
-  EdgeInsets get screenPadding => MediaQuery.of(context).padding;
+  EdgeInsets get screenPadding => MediaQuery.paddingOf(context);
 
   /// Get the screen padding values.
   EdgeInsets get imageMargin => EdgeInsets.only(

@@ -56,12 +56,12 @@ class WhatsappTextColorpicker extends StatelessWidget {
               textEditor.configs.designMode == ImageEditorDesignMode.material,
           length: min(
             200,
-            MediaQuery.of(context).size.height -
-                MediaQuery.of(context).viewInsets.bottom -
+            MediaQuery.sizeOf(context).height -
+                MediaQuery.viewInsetsOf(context).bottom -
                 kToolbarHeight -
                 20 -
                 barPickerPadding -
-                MediaQuery.of(context).padding.top,
+                MediaQuery.paddingOf(context).top,
           ),
           onPositionChange: (value) {
             textEditor.colorPosition = value;

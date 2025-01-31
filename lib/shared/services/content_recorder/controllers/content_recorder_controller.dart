@@ -344,7 +344,7 @@ class ContentRecorderController {
         context != null &&
         context.mounted) {
       outputRatio =
-          max(imageInfos.pixelRatio, MediaQuery.of(context).devicePixelRatio);
+          max(imageInfos.pixelRatio, MediaQuery.devicePixelRatioOf(context));
     }
     bool isOutputSizeTooLarge = _imageRenderService.checkOutputSizeIsTooLarge(
       imageInfos.renderedSize,

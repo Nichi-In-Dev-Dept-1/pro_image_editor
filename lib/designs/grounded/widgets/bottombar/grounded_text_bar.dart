@@ -64,8 +64,7 @@ class _GroundedTextBarState extends State<GroundedTextBar>
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: GroundedBottomWrapper(
         theme: configs.theme,
         children: (constraints) => [
