@@ -25,8 +25,8 @@ class _FirebaseSupabaseExampleState extends State<FirebaseSupabaseExample>
 
   @override
   void initState() {
-    preCacheImage(assetPath: kImageEditorExampleAssetPath);
     super.initState();
+    preCacheImage(assetPath: kImageEditorExampleAssetPath);
   }
 
   Future<void> _uploadFirebase(Uint8List bytes) async {

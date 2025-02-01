@@ -44,8 +44,8 @@ class ColorFilterGeneratorState extends State<ColorFilterGenerator> {
 
   @override
   void initState() {
-    _generateFilteredWidget();
     super.initState();
+    _generateFilteredWidget();
   }
 
   /// Generates a filtered widget by applying a series of color filters and

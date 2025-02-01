@@ -94,11 +94,11 @@ class _CustomWidgetsExampleState extends State<CustomWidgetsExample>
 
   @override
   void initState() {
+    super.initState();
     preCacheImage(networkUrl: _url);
     _bottomBarScrollCtrl = ScrollController();
     _paintBottomBarScrollCtrl = ScrollController();
     _cropBottomBarScrollCtrl = ScrollController();
-    super.initState();
   }
 
   @override

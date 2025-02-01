@@ -57,12 +57,12 @@ class _FrostedGlassStickerPageState extends State<FrostedGlassStickerPage> {
 
   @override
   void initState() {
+    super.initState();
     _searchCtrl = TextEditingController();
     _searchFocus = FocusNode();
     if (!widget.configs.emojiEditor.enabled) {
       temporaryStickerMode = FrostedGlassStickerMode.sticker;
     }
-    super.initState();
   }
 
   @override

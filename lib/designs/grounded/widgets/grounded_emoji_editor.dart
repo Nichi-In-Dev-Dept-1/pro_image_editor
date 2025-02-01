@@ -49,10 +49,9 @@ class _GroundedEmojiEditorState extends State<GroundedEmojiEditor> {
 
   @override
   void initState() {
+    super.initState();
     _searchCtrl = TextEditingController();
     _searchFocus = FocusNode();
-
-    super.initState();
   }
 
   @override

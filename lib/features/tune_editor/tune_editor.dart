@@ -205,6 +205,7 @@ class TuneEditorState extends State<TuneEditor>
 
   @override
   void initState() {
+    super.initState();
     uiStream = StreamController.broadcast();
     uiStream.stream.listen((_) => rebuildController.add(null));
 
@@ -236,7 +237,6 @@ class TuneEditorState extends State<TuneEditor>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       tuneEditorCallbacks?.onAfterViewInit?.call();
     });
-    super.initState();
   }
 
   @override

@@ -62,11 +62,11 @@ class ExtendedCustomPaintState extends State<ExtendedCustomPaint> {
 
   @override
   void initState() {
+    super.initState();
     isComplex = widget.initIsComplex;
     willChange = widget.initWillChange;
     foregroundPainter = widget.initForegroundPainter;
     painter = widget.initPainter;
-    super.initState();
   }
 
   @override

@@ -83,6 +83,7 @@ class _DefaultEmojiPickerViewState extends State<ProEmojiPickerView>
 
   @override
   void initState() {
+    super.initState();
     _scrollController = widget.scrollController ?? ScrollController();
     var initCategory = _categories.indexWhere((element) =>
         element.category == widget.config.categoryViewConfig.initCategory);
@@ -103,8 +104,6 @@ class _DefaultEmojiPickerViewState extends State<ProEmojiPickerView>
     for (int i = 0; i < _categories.length; i++) {
       _itemKeys[i] = GlobalKey();
     }
-
-    super.initState();
   }
 
   void _setActiveCategory(Category category) {

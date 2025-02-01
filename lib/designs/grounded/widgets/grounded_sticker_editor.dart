@@ -48,10 +48,9 @@ class _GroundedStickerEditorState extends State<GroundedStickerEditor> {
 
   @override
   void initState() {
+    super.initState();
     _searchCtrl = TextEditingController();
     _searchFocus = FocusNode();
-
-    super.initState();
   }
 
   @override

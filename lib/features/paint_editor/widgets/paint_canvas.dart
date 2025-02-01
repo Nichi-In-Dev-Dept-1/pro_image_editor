@@ -63,8 +63,8 @@ class PaintCanvasState extends State<PaintCanvas> {
 
   @override
   void initState() {
-    _activePaintStreamCtrl = StreamController.broadcast();
     super.initState();
+    _activePaintStreamCtrl = StreamController.broadcast();
   }
 
   @override

@@ -36,8 +36,8 @@ class _StickersExampleState extends State<StickersExample>
 
   @override
   void initState() {
-    preCacheImage(networkUrl: _url);
     super.initState();
+    preCacheImage(networkUrl: _url);
   }
 
   @override

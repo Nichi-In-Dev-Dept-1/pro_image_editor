@@ -39,8 +39,8 @@ class _ReorderLayerExampleState extends State<ReorderLayerExample>
     with ExampleHelperState<ReorderLayerExample> {
   @override
   void initState() {
-    preCacheImage(assetPath: kImageEditorExampleAssetPath);
     super.initState();
+    preCacheImage(assetPath: kImageEditorExampleAssetPath);
   }
 
   @override

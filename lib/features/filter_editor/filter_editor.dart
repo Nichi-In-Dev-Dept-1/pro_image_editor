@@ -168,6 +168,7 @@ class FilterEditorState extends State<FilterEditor>
 
   @override
   void initState() {
+    super.initState();
     _uiFilterStream = StreamController.broadcast();
     _uiFilterStream.stream.listen((_) => rebuildController.add(null));
 
@@ -175,7 +176,6 @@ class FilterEditorState extends State<FilterEditor>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       filterEditorCallbacks?.onAfterViewInit?.call();
     });
-    super.initState();
   }
 
   @override

@@ -23,9 +23,8 @@ class _RoundCropperExampleState extends State<RoundCropperExample>
 
   @override
   void initState() {
-    preCacheImage(assetPath: kImageEditorExampleAssetPath);
-
     super.initState();
+    preCacheImage(assetPath: kImageEditorExampleAssetPath);
   }
 
   @override

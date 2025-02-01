@@ -35,8 +35,8 @@ class _ZoomExampleState extends State<ZoomExample>
     with ExampleHelperState<ZoomExample> {
   @override
   void initState() {
-    preCacheImage(assetPath: kImageEditorExampleAssetPath);
     super.initState();
+    preCacheImage(assetPath: kImageEditorExampleAssetPath);
   }
 
   @override

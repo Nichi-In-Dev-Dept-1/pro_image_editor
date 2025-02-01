@@ -133,10 +133,10 @@ class _PreviewImgPageState extends State<PreviewImgPage> {
 
   @override
   void initState() {
+    super.initState();
     _generationTime = widget.generationTime;
     _imageBytes = widget.imgBytes;
     _setContentType();
-    super.initState();
   }
 
   void _setContentType() {

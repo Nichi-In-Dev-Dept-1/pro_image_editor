@@ -45,12 +45,12 @@ class _WhatsAppStickerPageState extends State<WhatsAppStickerPage> {
 
   @override
   void initState() {
+    super.initState();
     _searchCtrl = TextEditingController();
     _searchFocus = FocusNode();
     if (!widget.configs.stickerEditor.enabled) {
       whatsAppTemporaryStickerMode = WhatsAppStickerMode.emoji;
     }
-    super.initState();
   }
 
   @override

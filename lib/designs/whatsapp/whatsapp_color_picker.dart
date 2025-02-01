@@ -73,8 +73,8 @@ class _WhatsAppColorPickerState extends State<WhatsAppColorPicker> {
 
   @override
   void initState() {
-    _selectedColor = widget.initColor;
     super.initState();
+    _selectedColor = widget.initColor;
   }
 
   @override

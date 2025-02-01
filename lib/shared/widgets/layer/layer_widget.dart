@@ -138,6 +138,7 @@ class _LayerWidgetState extends State<LayerWidget>
 
   @override
   void initState() {
+    super.initState();
     switch (widget.layerData.runtimeType) {
       case const (TextLayer):
         _layerType = _LayerType.text;
@@ -155,8 +156,6 @@ class _LayerWidgetState extends State<LayerWidget>
         _layerType = _LayerType.unknown;
         break;
     }
-
-    super.initState();
   }
 
   /// Handles a secondary tap up event, typically for showing a context menu.

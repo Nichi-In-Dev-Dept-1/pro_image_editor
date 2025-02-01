@@ -45,10 +45,10 @@ class _MovableBackgroundImageExampleState
 
   @override
   void initState() {
+    super.initState();
     preCacheImage(networkUrl: _imageUrl);
     _createTransparentImage(_imgRatio);
     _bottomBarScrollCtrl = ScrollController();
-    super.initState();
   }
 
   @override

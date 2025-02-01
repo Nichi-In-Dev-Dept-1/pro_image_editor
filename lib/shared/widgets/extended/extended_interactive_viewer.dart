@@ -146,9 +146,9 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer> {
 
   @override
   void initState() {
+    super.initState();
     _transformCtrl = TransformationController();
     _enableInteraction = widget.enableInteraction;
-    super.initState();
   }
 
   /// Sets the interaction state to the given value and updates the UI

@@ -40,11 +40,10 @@ class _FrameExampleState extends State<FrameExample>
 
   @override
   void initState() {
+    super.initState();
     _bottomBarScrollCtrl = ScrollController();
     preCacheImage(assetPath: _frameUrl);
     _createTransparentBackgroundImage();
-
-    super.initState();
   }
 
   @override

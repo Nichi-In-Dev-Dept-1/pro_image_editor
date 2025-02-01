@@ -41,11 +41,11 @@ class StickerEditorState extends State<StickerEditor>
 
   @override
   void initState() {
+    super.initState();
     callbacks.stickerEditorCallbacks?.onInit?.call();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       callbacks.stickerEditorCallbacks?.onAfterViewInit?.call();
     });
-    super.initState();
   }
 
   @override

@@ -50,6 +50,7 @@ class _CropToMainEditorExampleState extends State<CropToMainEditorExample>
 
   @override
   void initState() {
+    super.initState();
     preCacheImage(
       assetPath: kImageEditorExampleAssetPath,
       onDone: () {
@@ -60,7 +61,6 @@ class _CropToMainEditorExampleState extends State<CropToMainEditorExample>
         });
       },
     );
-    super.initState();
   }
 
   void _openMainEditor(

@@ -227,12 +227,12 @@ mixin StandaloneEditorState<T extends StatefulWidget,
   @override
   @mustCallSuper
   void initState() {
+    super.initState();
     screenshotCtrl = ContentRecorderController(
       configs: configs.imageGeneration,
       ignoreGeneration: !initConfigs.convertToUint8List,
     );
     rebuildController = StreamController.broadcast();
-    super.initState();
   }
 
   @override

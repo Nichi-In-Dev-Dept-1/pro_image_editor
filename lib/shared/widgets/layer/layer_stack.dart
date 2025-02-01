@@ -95,11 +95,11 @@ class _LayerStackState extends State<LayerStack> {
 
   @override
   void initState() {
+    super.initState();
     // Determine whether to cut content outside the image area based on widget
     // settings.
     _cutOutsideImageArea = widget.cutOutsideImageArea ??
         widget.configs.imageGeneration.captureOnlyBackgroundImageArea;
-    super.initState();
   }
 
   @override

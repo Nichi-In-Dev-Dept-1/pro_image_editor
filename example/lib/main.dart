@@ -80,8 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    _scrollCtrl = ScrollController();
     super.initState();
+    _scrollCtrl = ScrollController();
   }
 
   @override

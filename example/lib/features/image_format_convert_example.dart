@@ -52,8 +52,8 @@ class _ImageFormatConvertExampleState extends State<ImageFormatConvertExample>
 
   @override
   void initState() {
-    preCacheImage(assetPath: kImageEditorExampleAssetPath);
     super.initState();
+    preCacheImage(assetPath: kImageEditorExampleAssetPath);
   }
 
   @override

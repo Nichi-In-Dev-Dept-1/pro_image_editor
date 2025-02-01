@@ -104,8 +104,8 @@ class _FilterEditorItemListState extends State<FilterEditorItemList> {
 
   @override
   void initState() {
-    _scrollCtrl = ScrollController();
     super.initState();
+    _scrollCtrl = ScrollController();
   }
 
   @override

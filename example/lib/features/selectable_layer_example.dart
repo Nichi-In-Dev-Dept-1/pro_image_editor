@@ -38,8 +38,8 @@ class _SelectableLayerExampleState extends State<SelectableLayerExample>
     with ExampleHelperState<SelectableLayerExample> {
   @override
   void initState() {
-    preCacheImage(assetPath: kImageEditorExampleAssetPath);
     super.initState();
+    preCacheImage(assetPath: kImageEditorExampleAssetPath);
   }
 
   @override

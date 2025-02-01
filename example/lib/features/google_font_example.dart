@@ -28,8 +28,8 @@ class _GoogleFontExampleState extends State<GoogleFontExample>
 
   @override
   void initState() {
-    preCacheImage(assetPath: kImageEditorExampleAssetPath);
     super.initState();
+    preCacheImage(assetPath: kImageEditorExampleAssetPath);
   }
 
   @override

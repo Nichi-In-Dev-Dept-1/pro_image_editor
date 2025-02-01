@@ -58,6 +58,7 @@ class EmojiEditorState extends State<EmojiEditor>
 
   @override
   void initState() {
+    super.initState();
     _textStyle = emojiEditorConfigs.style.textStyle;
 
     _controller = EmojiTextEditingController(emojiTextStyle: _textStyle);
@@ -66,7 +67,6 @@ class EmojiEditorState extends State<EmojiEditor>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       callbacks.emojiEditorCallbacks?.onAfterViewInit?.call();
     });
-    super.initState();
   }
 
   @override

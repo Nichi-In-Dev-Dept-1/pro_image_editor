@@ -20,8 +20,8 @@ class _ImportExportExampleState extends State<ImportExportExample>
     with ExampleHelperState<ImportExportExample> {
   @override
   void initState() {
-    preCacheImage(assetPath: kImageEditorExampleAssetPath);
     super.initState();
+    preCacheImage(assetPath: kImageEditorExampleAssetPath);
   }
 
   final _history = ImportStateHistory.fromMap(

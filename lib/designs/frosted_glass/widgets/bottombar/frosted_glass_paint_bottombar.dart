@@ -46,6 +46,7 @@ class _FrostedGlassPaintBottomBarState
 
   @override
   void initState() {
+    super.initState();
     _buttonStyle = IconButton.styleFrom(
       backgroundColor: Colors.black38,
       foregroundColor: widget
@@ -54,7 +55,6 @@ class _FrostedGlassPaintBottomBarState
       iconSize: 22,
       minimumSize: const Size.fromRadius(10),
     );
-    super.initState();
   }
 
   @override

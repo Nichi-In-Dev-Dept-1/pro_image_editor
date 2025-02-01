@@ -45,8 +45,8 @@ class _CropAspectRatioOptionsState extends State<CropAspectRatioOptions> {
 
   @override
   void initState() {
-    _scrollCtrl = ScrollController();
     super.initState();
+    _scrollCtrl = ScrollController();
   }
 
   @override
