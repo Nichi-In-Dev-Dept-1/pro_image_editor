@@ -4,6 +4,7 @@
 - **FIX**(paint-editor): Ensure bottombar selection updates in UI when changed.
 - **FIX**(paint-editor): Correct appBar canRedo to use the proper function instead of canUndo.
 - **FIX**(layer): Resolve issue where selecting layers that overlap did not function as expected. Resolves issue [#282](https://github.com/hm21/pro_image_editor/issues/282)
+- **FIX**(import): Resolve issue where transformations exported from the crop-rotate editor were not properly imported.
 
 # 8.1.1
 - **FIX**(crop_rotate_editor): Fixed an issue where the crop-rotate editor would throw multiple errors when reopened. Resolves issue [#236](https://github.com/hm21/pro_image_editor/issues/236) and [#237](https://github.com/hm21/pro_image_editor/issues/237).

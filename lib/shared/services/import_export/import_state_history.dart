@@ -149,7 +149,9 @@ class ImportStateHistory {
       final transformConfigs = historyItem[transformKey] != null &&
               Map.from(historyItem[transformKey]).isNotEmpty
           ? TransformConfigs.fromMap(historyItem[transformKey])
-          : TransformConfigs.empty();
+          : stateHistory.isNotEmpty
+              ? stateHistory.last.transformConfigs
+              : TransformConfigs.empty();
 
       stateHistory.add(EditorStateHistory(
         blur: blur,
