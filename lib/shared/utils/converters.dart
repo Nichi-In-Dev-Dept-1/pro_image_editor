@@ -1,11 +1,10 @@
-// Dart imports:
-import 'dart:io';
-
 // Flutter imports:
 import 'package:flutter/services.dart';
 
 // Package imports:
 import 'package:http/http.dart' as http;
+
+import '/core/platform/io/io_helper.dart';
 
 /// Loads an image asset as a Uint8List.
 ///

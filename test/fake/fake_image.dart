@@ -1,6 +1,7 @@
 // Dart imports:
-import 'dart:io';
 import 'dart:typed_data';
+
+import 'package:pro_image_editor/core/platform/io/io_helper.dart';
 
 Uint8List get fakeMemoryImage => Uint8List.fromList([
       0x89,

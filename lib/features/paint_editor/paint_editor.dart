@@ -1,6 +1,5 @@
 // Dart imports:
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 // Flutter imports:
@@ -13,6 +12,7 @@ import '/core/mixins/converted_callbacks.dart';
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/standalone_editor.dart';
 import '/core/models/transform_helper.dart';
+import '/core/platform/io/io_helper.dart';
 import '/features/paint_editor/widgets/paint_editor_appbar.dart';
 import '/features/paint_editor/widgets/paint_editor_bottombar.dart';
 import '/features/paint_editor/widgets/paint_editor_color_picker.dart';

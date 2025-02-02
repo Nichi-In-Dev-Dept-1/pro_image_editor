@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui show Image;
 
@@ -13,6 +12,7 @@ import '/core/mixins/editor_callbacks_mixin.dart';
 import '/core/mixins/editor_configs_mixin.dart';
 import '/core/models/history/last_layer_interaction_position.dart';
 import '/core/models/styles/draggable_sheet_style.dart';
+import '/core/platform/io/io_helper.dart';
 import '/features/main_editor/widgets/main_editor_appbar.dart';
 import '/features/main_editor/widgets/main_editor_background_image.dart';
 import '/features/main_editor/widgets/main_editor_bottombar.dart';

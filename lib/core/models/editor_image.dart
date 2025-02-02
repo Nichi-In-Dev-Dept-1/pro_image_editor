@@ -1,11 +1,11 @@
 // Dart imports:
-import 'dart:io';
 import 'dart:typed_data';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
 
 // Project imports:
+import '/core/platform/io/io_helper.dart';
 import '/shared/utils/converters.dart';
 
 /// Flutter EditorImage Class Documentation

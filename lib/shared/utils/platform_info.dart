@@ -1,9 +1,7 @@
-// Dart imports:
-import 'dart:io';
-
 // Flutter imports:
 import 'package:flutter/foundation.dart';
 import '/core/enums/design_mode.dart';
+import '/core/platform/io/io_helper.dart';
 
 /// Checks if the app is running on a desktop platform.
 final isDesktop = !isWebMobile &&
