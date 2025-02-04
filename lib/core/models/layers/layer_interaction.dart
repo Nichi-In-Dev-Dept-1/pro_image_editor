@@ -36,11 +36,11 @@ class LayerInteraction {
     keyConverter ??= (String key) => key;
 
     return LayerInteraction(
-      enableMove: map[keyConverter('enableMove')] ?? false,
-      enableScale: map[keyConverter('enableScale')] ?? false,
-      enableRotate: map[keyConverter('enableRotate')] ?? false,
-      enableSelection: map[keyConverter('enableSelection')] ?? false,
-      enableEdit: map[keyConverter('enableEdit')] ?? false,
+      enableMove: map[keyConverter('enableMove')] ?? true,
+      enableScale: map[keyConverter('enableScale')] ?? true,
+      enableRotate: map[keyConverter('enableRotate')] ?? true,
+      enableSelection: map[keyConverter('enableSelection')] ?? true,
+      enableEdit: map[keyConverter('enableEdit')] ?? true,
     );
   }
 

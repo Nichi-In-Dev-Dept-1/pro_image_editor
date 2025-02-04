@@ -170,7 +170,7 @@ class _TuneEditorBottombarState extends State<TuneEditorBottombar> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
               children:
-                  List.generate(widget.tuneAdjustmentMatrix.length, (index) {
+                  List.generate(widget.tuneAdjustmentList.length, (index) {
                 var item = widget.tuneAdjustmentList[index];
                 var color = widget.selectedIndex == index
                     ? widget.tuneEditorConfigs.style.bottomBarActiveItemColor

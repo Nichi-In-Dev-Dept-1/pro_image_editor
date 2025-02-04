@@ -1,5 +1,8 @@
 # Changelog
 
+# 8.1.5
+- **FEAT**(export): Optimize the export process by including only parameters that were modified in tune adjustments. This reduces the exported file size.  
+
 # 8.1.4
 - **FIX**(generation): Use `captureOnlyBackgroundImageArea` instead of `captureOnlyDrawingBounds` for background cropping.
 

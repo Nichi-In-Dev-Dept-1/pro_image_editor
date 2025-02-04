@@ -209,8 +209,6 @@ class TuneEditorState extends State<TuneEditor>
     uiStream = StreamController.broadcast();
     uiStream.stream.listen((_) => rebuildController.add(null));
 
-    tuneAdjustmentMatrix = appliedTuneAdjustments;
-
     var items = tuneEditorConfigs.tuneAdjustmentOptions ??
         tunePresets(
           icons: tuneEditorConfigs.icons,
@@ -229,8 +227,11 @@ class TuneEditorState extends State<TuneEditor>
       );
     }).toList();
 
-    if (tuneAdjustmentMatrix.isEmpty) {
-      _setMatrixList();
+    for (final item in items) {
+      int i = appliedTuneAdjustments.indexWhere((el) => el.id == item.id);
+      tuneAdjustmentMatrix.add(
+        i >= 0 ? appliedTuneAdjustments[i] : item.toMatrixItem(),
+      );
     }
 
     tuneEditorCallbacks?.onInit?.call();

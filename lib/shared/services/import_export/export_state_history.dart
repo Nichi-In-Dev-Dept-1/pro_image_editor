@@ -185,8 +185,10 @@ class ExportStateHistory {
         if (enableFilterExport)
           minifier.convertHistoryKey('filters'): element.filters,
         if (enableTuneExport)
-          minifier.convertHistoryKey('tune'):
-              element.tuneAdjustments.map((item) => item.toMap()).toList(),
+          minifier.convertHistoryKey('tune'): element.tuneAdjustments
+              .where((item) => item.value != 0.0)
+              .map((item) => item.toMap())
+              .toList(),
         if (enableBlurExport) minifier.convertHistoryKey('blur'): element.blur,
         if (enableCropRotateExport)
           minifier.convertHistoryKey('transform'): transformConfigsMap,
