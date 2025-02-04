@@ -1,5 +1,8 @@
 # Changelog
 
+# 8.1.6
+- **FEAT**(layer): Add meta field to layermodels for custom metadata in export/import.
+
 # 8.1.5
 - **FEAT**(export): Optimize the export process by including only parameters that were modified in tune adjustments. This reduces the exported file size.  
 

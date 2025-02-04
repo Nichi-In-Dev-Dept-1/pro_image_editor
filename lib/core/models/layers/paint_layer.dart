@@ -38,6 +38,8 @@ class PaintLayer extends Layer {
     super.flipX,
     super.flipY,
     super.interaction,
+    super.isDeleted,
+    super.meta,
   });
 
   /// Factory constructor for creating a PaintLayer instance from a
@@ -59,6 +61,8 @@ class PaintLayer extends Layer {
       offset: layer.offset,
       rotation: layer.rotation,
       scale: layer.scale,
+      isDeleted: layer.isDeleted,
+      meta: layer.meta,
       opacity: safeParseDouble(map[keyConverter('opacity')], fallback: 1.0),
       rawSize: Size(
         safeParseDouble(map[keyConverter('rawSize')]?['w'], fallback: 0),

@@ -38,6 +38,8 @@ class WidgetLayer extends Layer {
     super.flipY,
     super.interaction,
     this.exportConfigs = const WidgetLayerExportConfigs(),
+    super.isDeleted,
+    super.meta,
   });
 
   /// Factory constructor for creating a WidgetLayer instance from a
@@ -116,6 +118,8 @@ class WidgetLayer extends Layer {
       offset: layer.offset,
       rotation: layer.rotation,
       scale: layer.scale,
+      isDeleted: layer.isDeleted,
+      meta: layer.meta,
       widget: widget,
       exportConfigs: exportConfigs,
     );

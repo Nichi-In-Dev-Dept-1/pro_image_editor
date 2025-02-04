@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '/shared/services/import_export/types/widget_loader.dart';
 import '/shared/services/import_export/utils/key_minifier.dart';
+import '/shared/utils/map_utils.dart';
 import '/shared/utils/parser/double_parser.dart';
 import '/shared/utils/unique_id_generator.dart';
 import '../editor_image.dart';
@@ -34,25 +35,16 @@ class Layer {
   /// the layer
   Layer({
     String? id,
-    Offset? offset,
-    double? rotation,
-    double? scale,
-    bool? flipX,
-    bool? flipY,
     LayerInteraction? interaction,
-    bool? isDeleted,
-  }) {
-    key = GlobalKey();
-    // Initialize properties with provided values or defaults.
-    this.id = id ?? generateUniqueId();
-    this.offset = offset ?? Offset.zero;
-    this.rotation = rotation ?? 0;
-    this.scale = scale ?? 1;
-    this.flipX = flipX ?? false;
-    this.flipY = flipY ?? false;
-    this.interaction = interaction ?? LayerInteraction();
-    this.isDeleted = isDeleted ?? false;
-  }
+    this.offset = Offset.zero,
+    this.rotation = 0,
+    this.scale = 1,
+    this.flipX = false,
+    this.flipY = false,
+    this.isDeleted = false,
+    this.meta,
+  })  : id = id ?? generateUniqueId(),
+        interaction = interaction ?? LayerInteraction();
 
   /// Factory constructor for creating a Layer instance from a map and a list
   /// of stickers.
@@ -77,6 +69,8 @@ class Layer {
         map[keyConverter('interaction')] ?? {},
         keyConverter: keyInteractionConverter,
       ),
+      isDeleted: map[keyConverter('isDeleted')] ?? false,
+      meta: map[keyConverter('meta')],
       offset: Offset(safeParseDouble(map['x']), safeParseDouble(map['y'])),
       rotation: safeParseDouble(map[keyConverter('rotation')]),
       scale: safeParseDouble(map[keyConverter('scale')], fallback: 1),
@@ -115,28 +109,34 @@ class Layer {
 
   /// Global key associated with the Layer instance, used for accessing the
   /// widget tree.
-  late GlobalKey key;
+  GlobalKey key = GlobalKey();
 
   /// The position offset of the widget.
-  late Offset offset;
+  Offset offset;
 
   /// The rotation and scale values of the widget.
-  late double rotation, scale;
+  double rotation, scale;
 
   /// Flags to control horizontal and vertical flipping.
-  late bool flipX, flipY;
+  bool flipX, flipY;
 
   /// The interaction settings for the layer.
   ///
   /// It holds the interaction properties, such as whether moving, scaling,
   /// rotating, or selecting the layer is enabled.
-  late LayerInteraction interaction;
+  LayerInteraction interaction;
 
   /// Flag which indicates to the history that the layer is removed.
-  late bool isDeleted;
+  bool isDeleted;
 
   /// A unique identifier for the layer.
-  late String id;
+  String id;
+
+  /// A map containing metadata associated with the layer.
+  ///
+  /// This can be used to store additional information about the layer
+  /// that may be needed for processing or rendering.
+  Map<String, dynamic>? meta;
 
   /// Converts this transform object to a Map.
   ///
@@ -153,6 +153,7 @@ class Layer {
       'flipY': flipY,
       if (isDeleted) 'isDeleted': isDeleted,
       'interaction': interaction.toMap(),
+      if (meta != null) 'meta': meta,
       'type': 'default',
     };
   }
@@ -171,7 +172,8 @@ class Layer {
       if (layer.scale != scale) 'scale': scale,
       if (layer.flipX != flipX) 'flipX': flipX,
       if (layer.flipY != flipY) 'flipY': flipY,
-      if (isDeleted) 'isDeleted': isDeleted,
+      if (layer.isDeleted != isDeleted) 'isDeleted': isDeleted,
+      if (!mapIsEqual(layer.meta, meta)) 'meta': meta,
       if (layer.interaction != interaction)
         'interaction': interaction.toMapFromReference(layer.interaction),
     };
@@ -189,6 +191,7 @@ class Layer {
         other.flipX == flipX &&
         other.flipY == flipY &&
         other.interaction == interaction &&
+        mapIsEqual(other.meta, meta) &&
         other.isDeleted == isDeleted;
   }
 
@@ -201,6 +204,7 @@ class Layer {
         flipX.hashCode ^
         flipY.hashCode ^
         interaction.hashCode ^
+        meta.hashCode ^
         isDeleted.hashCode;
   }
 }

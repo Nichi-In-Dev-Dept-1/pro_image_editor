@@ -57,6 +57,7 @@ const Map<String, String> kMinifiedLayerKeys = {
   'wordSpacing': 'ws',
   'decoration': 'd',
   'interaction': 'in',
+  'meta': 'm',
 
   /// Only in version < 8.0.0
   'enableInteraction': 'ei',

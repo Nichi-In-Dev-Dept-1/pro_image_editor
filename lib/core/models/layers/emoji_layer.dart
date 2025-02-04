@@ -28,6 +28,8 @@ class EmojiLayer extends Layer {
     super.flipX,
     super.flipY,
     super.interaction,
+    super.isDeleted,
+    super.meta,
   });
 
   /// Factory constructor for creating an EmojiLayer instance from a Layer
@@ -49,6 +51,8 @@ class EmojiLayer extends Layer {
       offset: layer.offset,
       rotation: layer.rotation,
       scale: layer.scale,
+      isDeleted: layer.isDeleted,
+      meta: layer.meta,
       emoji: map[keyConverter('emoji')],
     );
   }
