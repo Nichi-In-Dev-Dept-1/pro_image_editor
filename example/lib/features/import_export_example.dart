@@ -115,7 +115,7 @@ class _ImportExportExampleState extends State<ImportExportExample>
                                   var history = await editor.exportStateHistory(
                                     configs: const ExportEditorConfigs(
                                         historySpan:
-                                            ExportHistorySpan.currentAndBackward
+                                            ExportHistorySpan.currentAndForward
                                         // configs...
                                         ),
                                   );

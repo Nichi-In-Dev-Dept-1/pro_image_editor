@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.8
+- **FIX**(export): Ensure filters, tune adjustments, and blur configs are exported for `ExportHistorySpan.current` and `ExportHistorySpan.currentAndForward`.
+
 ## 8.1.7
 - **FEAT**(MainEditorConfigs): Add `enableEscapeButton` to enable or disable the escape button listener.
 
