@@ -85,7 +85,9 @@ class DesktopInteractionManager {
       if (event is KeyDownEvent) {
         switch (key) {
           case 'Escape':
-            onEscape();
+            if (configs.mainEditor.enableEscapeButton) {
+              onEscape();
+            }
             break;
 
           case 'Subtract':

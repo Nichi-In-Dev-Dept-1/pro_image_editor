@@ -1,31 +1,34 @@
 # Changelog
 
-# 8.1.6
+## 8.1.7
+- **FEAT**(MainEditorConfigs): Add `enableEscapeButton` to enable or disable the escape button listener.
+
+## 8.1.6
 - **FEAT**(layer): Add meta field to layermodels for custom metadata in export/import.
 
-# 8.1.5
+## 8.1.5
 - **FEAT**(export): Optimize the export process by including only parameters that were modified in tune adjustments. This reduces the exported file size.  
 
-# 8.1.4
+## 8.1.4
 - **FIX**(generation): Use `captureOnlyBackgroundImageArea` instead of `captureOnlyDrawingBounds` for background cropping.
 
-# 8.1.3
+## 8.1.3
 - **PERF**(capture-image): Improved image capture performance by minimizing its impact on the main thread.  
 
-# 8.1.2
+## 8.1.2
 - **FIX**(paint-editor): Ensure bottombar selection updates in UI when changed.
 - **FIX**(paint-editor): Correct appBar canRedo to use the proper function instead of canUndo.
 - **FIX**(layer): Resolve issue where selecting layers that overlap did not function as expected. Resolves issue [#282](https://github.com/hm21/pro_image_editor/issues/282)
 - **FIX**(import): Resolve issue where transformations exported from the crop-rotate editor were not properly imported.
 
-# 8.1.1
+## 8.1.1
 - **FIX**(crop_rotate_editor): Fixed an issue where the crop-rotate editor would throw multiple errors when reopened. Resolves issue [#236](https://github.com/hm21/pro_image_editor/issues/236) and [#237](https://github.com/hm21/pro_image_editor/issues/237).
 - **PERF**(mediaquery): Replaces MediaQuery.of(...) with MediaQuery.sizeOf(...) to optimize performance and minimize unnecessary widget rebuilds.  
 
-# 8.1.0
+## 8.1.0
 - **FEAT**(layer): Added new methods `lockAllLayers` and `unlockAllLayers` to the main editor, enabling direct locking or unlocking of all layers.
 
-# 8.0.4
+## 8.0.4
 - **FIX**(export/import): Resolve an issue where exported stickers within the JSON file could no longer be imported. Resolves issue [#334](https://github.com/hm21/pro_image_editor/issues/334)
 
 ## 8.0.3
