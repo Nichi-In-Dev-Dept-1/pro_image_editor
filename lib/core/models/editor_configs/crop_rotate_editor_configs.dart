@@ -48,6 +48,7 @@ class CropRotateEditorConfigs {
     this.reverseDragDirection = false,
     this.roundCropper = false,
     this.provideImageInfos = false,
+    this.showLayers = true,
     this.initAspectRatio,
     this.rotateAnimationCurve = Curves.decelerate,
     this.scaleAnimationCurve = Curves.decelerate,
@@ -100,6 +101,9 @@ class CropRotateEditorConfigs {
 
   /// Indicating whether the image can be flipped.
   final bool canFlip;
+
+  /// Show the layers from the main-editor.
+  final bool showLayers;
 
   /// Indicating whether the aspect ratio of the image can be changed.
   final bool canChangeAspectRatio;
@@ -234,6 +238,7 @@ class CropRotateEditorConfigs {
     bool? reverseDragDirection,
     bool? roundCropper,
     bool? provideImageInfos,
+    bool? showLayers,
     double? initAspectRatio,
     double? maxScale,
     double? mouseScaleFactor,
@@ -258,6 +263,7 @@ class CropRotateEditorConfigs {
     return CropRotateEditorConfigs(
       safeArea: safeArea ?? this.safeArea,
       provideImageInfos: provideImageInfos ?? this.provideImageInfos,
+      showLayers: showLayers ?? this.showLayers,
       enabled: enabled ?? this.enabled,
       canRotate: canRotate ?? this.canRotate,
       canFlip: canFlip ?? this.canFlip,

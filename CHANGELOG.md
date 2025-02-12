@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.12
+- **FEAT**(layers): Add missing `showLayers` config to enable/disable layers in paint and crop editor.
+
 ## 8.1.11
 - **FIX**(export): Resolve an issue where exporting the first state history did return all state histories. Resolves [#353](https://github.com/hm21/pro_image_editor/issues/353).
 

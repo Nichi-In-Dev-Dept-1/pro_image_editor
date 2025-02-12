@@ -769,7 +769,7 @@ class PaintEditorState extends State<PaintEditor>
                 ),
 
               /// Build layers
-              if (layers != null)
+              if (paintEditorConfigs.showLayers && layers != null)
                 LayerStack(
                   configs: configs,
                   layers: layers!,

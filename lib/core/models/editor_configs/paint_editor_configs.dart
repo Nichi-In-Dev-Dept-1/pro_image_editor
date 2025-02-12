@@ -57,6 +57,7 @@ class PaintEditorConfigs {
     this.canChangeLineWidth = true,
     this.canChangeOpacity = true,
     this.initialFill = false,
+    this.showLayers = true,
     this.boundaryMargin = EdgeInsets.zero,
     this.minScale = double.negativeInfinity,
     this.maxScale = double.infinity,
@@ -118,6 +119,9 @@ class PaintEditorConfigs {
 
   /// Indicates the initial fill state.
   final bool initialFill;
+
+  /// Show the layers from the main-editor.
+  final bool showLayers;
 
   /// Enables high-performance scaling for free-style drawing when set to
   /// `true`.
@@ -227,6 +231,7 @@ class PaintEditorConfigs {
     bool? freeStyleHighPerformanceScaling,
     bool? freeStyleHighPerformanceMoving,
     bool? freeStyleHighPerformanceHero,
+    bool? showLayers,
     PaintMode? initialPaintMode,
     double? editorMinScale,
     double? editorMaxScale,
@@ -251,6 +256,7 @@ class PaintEditorConfigs {
       hasOptionEraser: hasOptionEraser ?? this.hasOptionEraser,
       canToggleFill: canToggleFill ?? this.canToggleFill,
       canChangeLineWidth: canChangeLineWidth ?? this.canChangeLineWidth,
+      showLayers: showLayers ?? this.showLayers,
       canChangeOpacity: canChangeOpacity ?? this.canChangeOpacity,
       initialFill: initialFill ?? this.initialFill,
       freeStyleHighPerformanceScaling: freeStyleHighPerformanceScaling ??

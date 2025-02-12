@@ -2286,7 +2286,9 @@ class CropRotateEditorState extends State<CropRotateEditor>
                 height: _imgHeight,
                 image: editorImage,
               ),
-              if (cropRotateEditorConfigs.transformLayers && layers != null)
+              if (cropRotateEditorConfigs.showLayers &&
+                  cropRotateEditorConfigs.transformLayers &&
+                  layers != null)
                 ClipRRect(
                   clipBehavior: Clip.hardEdge,
                   child: LayerStack(
@@ -2335,7 +2337,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
                 ),
               ),
             ),
-            if (filterEditorConfigs.showLayers && layers != null)
+            if (cropRotateEditorConfigs.showLayers && layers != null)
               LayerStack(
                 transformHelper: TransformHelper(
                   mainBodySize: (mainBodySize ?? editorBodySize),
