@@ -33,6 +33,8 @@ class MainEditorConfigs {
   /// When set to `true`, the escape button will be enabled, allowing users
   /// to exit the editor or perform a specific action when the escape button
   /// is pressed. When set to `false`, the escape button will be disabled.
+  ///
+  /// This flag has no effect when the `onEscapeButton` callback is set.
   final bool enableEscapeButton;
 
   /// {@template enableZoom}

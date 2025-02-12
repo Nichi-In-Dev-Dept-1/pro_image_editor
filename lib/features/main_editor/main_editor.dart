@@ -385,6 +385,7 @@ class ProImageEditorState extends State<ProImageEditor>
     _controllers = MainEditorControllers(configs, callbacks);
     _desktopInteractionManager = DesktopInteractionManager(
       configs: configs,
+      callbacks: callbacks,
       context: context,
       onUpdateUI: mainEditorCallbacks?.handleUpdateUI,
       setState: setState,

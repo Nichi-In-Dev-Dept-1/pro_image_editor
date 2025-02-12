@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // Project imports:
+import '/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
 
@@ -31,6 +32,7 @@ class DesktopInteractionManager {
   ///   onUpdateUI: myUpdateUICallback,
   ///   setState: mySetStateFunction,
   ///   configs: myEditorConfigs,
+  ///   callbacks: myEditorCallbacks,
   /// )
   /// ```
   DesktopInteractionManager({
@@ -38,6 +40,7 @@ class DesktopInteractionManager {
     required this.onUpdateUI,
     required this.setState,
     required this.configs,
+    required this.callbacks,
   });
 
   /// The build context associated with the desktop interaction manager.
@@ -65,6 +68,9 @@ class DesktopInteractionManager {
   /// during desktop interactions.
   final ProImageEditorConfigs configs;
 
+  /// A class representing callbacks for the Image Editor.
+  final ProImageEditorCallbacks callbacks;
+
   bool _ctrlDown = false;
   bool _shiftDown = false;
 
@@ -85,7 +91,9 @@ class DesktopInteractionManager {
       if (event is KeyDownEvent) {
         switch (key) {
           case 'Escape':
-            if (configs.mainEditor.enableEscapeButton) {
+            if (callbacks.mainEditorCallbacks?.onEscapeButton != null) {
+              callbacks.mainEditorCallbacks!.onEscapeButton!();
+            } else if (configs.mainEditor.enableEscapeButton) {
               onEscape();
             }
             break;

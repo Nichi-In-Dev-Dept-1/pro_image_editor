@@ -26,6 +26,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
     this.onEditorZoomScaleStart,
     this.onEditorZoomScaleUpdate,
     this.onEditorZoomScaleEnd,
+    this.onEscapeButton,
     super.onInit,
     super.onAfterViewInit,
     super.onUpdateUI,
@@ -37,23 +38,23 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   /// A callback function that is triggered when a layer is added.
   ///
   /// The [Layer] parameter provides information about the added layer.
-  final ValueChanged<Layer>? onAddLayer;
+  final Function(Layer)? onAddLayer;
 
   /// A callback function that is triggered when a layer is updated.
   ///
   /// The [Layer] parameter provides information about the updated layer.
-  final ValueChanged<Layer>? onUpdateLayer;
+  final Function(Layer)? onUpdateLayer;
 
   /// A callback function that is triggered when a layer is removed.
   ///
   /// The [Layer] parameter provides information about the removed layer.
-  final ValueChanged<Layer>? onRemoveLayer;
+  final Function(Layer)? onRemoveLayer;
 
   /// A callback function that is triggered when a sub-editor is opened.
   ///
   /// The [SubEditor] parameter provides information about the opened
   /// sub-editor.
-  final ValueChanged<SubEditor>? onOpenSubEditor;
+  final Function(SubEditor)? onOpenSubEditor;
 
   /// A callback that is triggered when a sub-editor finishes closing.
   ///
@@ -63,7 +64,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   /// resources or updating the UI.
   ///
   /// This can be `null` if no action is required when the sub-editor closes.
-  final ValueChanged<SubEditor>? onEndCloseSubEditor;
+  final Function(SubEditor)? onEndCloseSubEditor;
 
   /// A callback that is triggered when a sub-editor starts to close.
   ///
@@ -74,7 +75,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   ///
   /// This can be `null` if no action is required at the start of the close
   /// process.
-  final ValueChanged<SubEditor>? onStartCloseSubEditor;
+  final Function(SubEditor)? onStartCloseSubEditor;
 
   /// A callback function that is triggered when the user `tap` on the body.
   final Function()? onTap;
@@ -87,23 +88,29 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   /// on the body.
   final Function()? onLongPress;
 
+  /// A function that handles pressing the ESC key.
+  ///
+  /// This function is called when the ESC key is pressed.
+  /// By default it is null, which runs the default "close" behavior.
+  final Function()? onEscapeButton;
+
   /// A callback function that is triggered when a scaling gesture starts.
   ///
   /// The [ScaleStartDetails] parameter provides information about the scaling
   /// gesture.
-  final ValueChanged<ScaleStartDetails>? onScaleStart;
+  final Function(ScaleStartDetails)? onScaleStart;
 
   /// A callback function that is triggered when a scaling gesture is updated.
   ///
   /// The [ScaleUpdateDetails] parameter provides information about the scaling
   /// gesture.
-  final ValueChanged<ScaleUpdateDetails>? onScaleUpdate;
+  final Function(ScaleUpdateDetails)? onScaleUpdate;
 
   /// A callback function that is triggered when a scaling gesture ends.
   ///
   /// The [ScaleEndDetails] parameter provides information about the scaling
   /// gesture.
-  final ValueChanged<ScaleEndDetails>? onScaleEnd;
+  final Function(ScaleEndDetails)? onScaleEnd;
 
   /// Called when the user ends a pan or scale gesture on the widget.
   ///

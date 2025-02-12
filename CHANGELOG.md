@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.10
+- **FEAT**(callback): Introduced `onEscapeButton` callback inside `MainEditorCallbacks` to allow external handling of the Escape key logic.
+
 ## 8.1.9
 - **FIX**(text-editor): Ensure text editor layer scales correctly when editing.  
 Added `enableMainEditorZoomFactor` to `textEditorConfigs` to apply the zoom factor in the text editor as well. Resolves [#349](https://github.com/hm21/pro_image_editor/issues/349).
