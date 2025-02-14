@@ -1,0 +1,2 @@
+C:/Users/AlexF/Desktop/WAIO/Projekte/Plugins/pro_image_editor/example/android/app/.cxx/RelWithDebInfo/2b4b4r5b/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/AlexF/Desktop/WAIO/Projekte/Plugins/pro_image_editor/example/android/app/.cxx/RelWithDebInfo/2b4b4r5b/x86_64/CMakeFiles/rebuild_cache.dir

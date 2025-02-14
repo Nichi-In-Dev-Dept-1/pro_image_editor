@@ -659,7 +659,6 @@ class _RoundedBackgroundTextFieldState
                 spellCheckConfiguration: widget.spellCheckConfiguration,
                 magnifierConfiguration: widget.magnifierConfiguration,
                 undoController: widget.undoController,
-                scribbleEnabled: widget.scribbleEnabled,
                 selectionHeightStyle: widget.selectionHeightStyle,
                 selectionWidthStyle: widget.selectionWidthStyle,
                 locale: widget.locale,
