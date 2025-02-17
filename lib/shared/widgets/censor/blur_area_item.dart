@@ -25,12 +25,16 @@ class BlurAreaItem extends CensorAreaItem {
   /// The blur intensity is controlled by [censorConfigs.blurSigmaX] and
   /// [censorConfigs.blurSigmaY].
   @override
-  Widget buildBackdropFilter({required Widget child}) {
+  Widget buildBackdropFilter({
+    required Widget child,
+    required BuildContext context,
+  }) {
     return BackdropFilter(
       filter: ImageFilter.blur(
         sigmaX: censorConfigs.blurSigmaX,
         sigmaY: censorConfigs.blurSigmaY,
       ),
+      blendMode: censorConfigs.blurBlendMode,
       child: child,
     );
   }

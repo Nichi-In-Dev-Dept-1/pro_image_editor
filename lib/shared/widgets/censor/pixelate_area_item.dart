@@ -1,8 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:pro_image_editor/shared/services/shader_manager.dart';
 
+import '/features/main_editor/providers/image_infos_provider.dart';
+import '/shared/services/shader_manager.dart';
 import 'abstract/censor_area_item.dart';
 
 /// A widget that applies a pixelate effect to a defined area.
@@ -20,11 +21,8 @@ class PixelateAreaItem extends CensorAreaItem {
 
   @override
   Widget build(BuildContext context) {
-    assert(
-      ShaderManager.instance.isShaderFilterSupported,
-      'Shader filters are not supported on the current backend.',
-    );
     if (!ShaderManager.instance.isShaderFilterSupported) {
+      assert(false, 'Shader filters are not supported on the current backend.');
       return const SizedBox();
     }
 
@@ -32,12 +30,16 @@ class PixelateAreaItem extends CensorAreaItem {
   }
 
   @override
-  Widget buildBackdropFilter({required Widget child}) {
+  Widget buildBackdropFilter({
+    required Widget child,
+    required BuildContext context,
+  }) {
     /// Return cached shader
     if (ShaderManager.instance.containsShader(ShaderMode.pixelate)) {
       return _buildFilter(
         shader: ShaderManager.instance.shaders[ShaderMode.pixelate]!,
         child: child,
+        context: context,
       );
     }
 
@@ -56,20 +58,32 @@ class PixelateAreaItem extends CensorAreaItem {
           }
 
           FragmentShader shader = snapshot.data!;
-          return _buildFilter(shader: shader, child: child);
+          return _buildFilter(shader: shader, child: child, context: context);
         });
   }
 
   Widget _buildFilter({
     required Widget child,
     required FragmentShader shader,
+    required BuildContext context,
   }) {
+    final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
+    final logicalSize = MediaQuery.sizeOf(context);
+    final physicalSize = logicalSize * devicePixelRatio;
+    final pixelBlockSize = censorConfigs.pixelBlockSize / devicePixelRatio;
+
+    bool fitToWidth =
+        ImageInfosProvider.maybeOf(context)?.imageFitToWidth ?? true;
+
     shader
-      ..setFloat(0, size?.width ?? 100)
-      ..setFloat(1, size?.height ?? 100)
-      ..setFloat(2, censorConfigs.pixelatePixelSize);
+      ..setFloat(2, pixelBlockSize)
+      ..setFloat(3, physicalSize.width)
+      ..setFloat(4, physicalSize.height)
+      ..setFloat(5, fitToWidth ? 1.0 : 0.0);
+
     return BackdropFilter(
       filter: ImageFilter.shader(shader),
+      blendMode: censorConfigs.pixelateBlendMode,
       child: child,
     );
   }

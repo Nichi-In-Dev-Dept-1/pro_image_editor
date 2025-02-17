@@ -36,6 +36,7 @@ abstract class CensorAreaItem extends StatelessWidget {
     return RepaintBoundary(
       child: _buildClipper(
         child: buildBackdropFilter(
+          context: context,
           child: _buildArea(),
         ),
       ),
@@ -45,7 +46,10 @@ abstract class CensorAreaItem extends StatelessWidget {
   /// Builds a [BackdropFilter] to apply the censoring effect.
   ///
   /// Subclasses must implement this method to define how the filter is applied.
-  Widget buildBackdropFilter({required Widget child});
+  Widget buildBackdropFilter({
+    required Widget child,
+    required BuildContext context,
+  });
 
   /// Clips the censoring area to either an oval or a rounded rectangle,
   /// depending on the configuration in [censorConfigs].

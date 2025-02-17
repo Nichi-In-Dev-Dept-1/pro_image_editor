@@ -61,7 +61,7 @@ class _DefaultExampleState extends State<DefaultExample>
                 theme: Theme.of(context),
               );
 
-              var url = 'https://picsum.photos/5000';
+              var url = 'https://picsum.photos/2000';
               var bytes = await fetchImageAsUint8List(url);
 
               if (!context.mounted) return;

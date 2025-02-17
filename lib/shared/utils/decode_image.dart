@@ -97,4 +97,25 @@ class ImageInfos {
       isRotated: isRotated ?? this.isRotated,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ImageInfos &&
+        other.rawSize == rawSize &&
+        other.renderedSize == renderedSize &&
+        other.cropRectSize == cropRectSize &&
+        other.pixelRatio == pixelRatio &&
+        other.isRotated == isRotated;
+  }
+
+  @override
+  int get hashCode {
+    return rawSize.hashCode ^
+        renderedSize.hashCode ^
+        cropRectSize.hashCode ^
+        pixelRatio.hashCode ^
+        isRotated.hashCode;
+  }
 }

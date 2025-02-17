@@ -33,6 +33,7 @@ import '../filter_editor/widgets/filter_generator.dart';
 import '../tune_editor/models/tune_adjustment_matrix.dart';
 import 'controllers/main_editor_controllers.dart';
 import 'mixins/main_editor_global_keys.dart';
+import 'providers/image_infos_provider.dart';
 import 'services/desktop_interaction_manager.dart';
 import 'services/layer_copy_manager.dart';
 import 'services/layer_interaction_manager.dart';
@@ -1937,43 +1938,50 @@ class ProImageEditorState extends State<ProImageEditor>
           }
           mainEditorCallbacks?.onPopInvoked?.call(didPop, result);
         },
-        child: ScreenResizeDetector(
-          ignoreSafeArea: false,
-          onResizeUpdate: (event) {
-            sizesManager
-              ..recalculateLayerPosition(
-                history: stateManager.stateHistory,
-                resizeEvent: ResizeEvent(
-                  oldContentSize: Size(
-                    event.oldContentSize.width,
-                    event.oldContentSize.height - sizesManager.allToolbarHeight,
+        child: ImageInfosProvider(
+          infos: _imageInfos,
+          imageFitToWidth:
+              _imageInfos?.renderedSize.width == sizesManager.bodySize.width,
+          child: ScreenResizeDetector(
+            ignoreSafeArea: false,
+            onResizeUpdate: (event) {
+              sizesManager
+                ..recalculateLayerPosition(
+                  history: stateManager.stateHistory,
+                  resizeEvent: ResizeEvent(
+                    oldContentSize: Size(
+                      event.oldContentSize.width,
+                      event.oldContentSize.height -
+                          sizesManager.allToolbarHeight,
+                    ),
+                    newContentSize: Size(
+                      event.newContentSize.width,
+                      event.newContentSize.height -
+                          sizesManager.allToolbarHeight,
+                    ),
                   ),
-                  newContentSize: Size(
-                    event.newContentSize.width,
-                    event.newContentSize.height - sizesManager.allToolbarHeight,
-                  ),
+                )
+                ..lastScreenSize = event.newContentSize;
+            },
+            onResizeEnd: (event) async {
+              await decodeImage();
+            },
+            child: AnnotatedRegion<SystemUiOverlayStyle>(
+              value: mainEditorConfigs.style.uiOverlayStyle,
+              child: Theme(
+                data: _theme,
+                child: SafeArea(
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    sizesManager.editorSize = constraints.biggest;
+                    return Scaffold(
+                      backgroundColor: mainEditorConfigs.style.background,
+                      resizeToAvoidBottomInset: false,
+                      appBar: _buildAppBar(),
+                      body: _buildBody(),
+                      bottomNavigationBar: _buildBottomNavBar(),
+                    );
+                  }),
                 ),
-              )
-              ..lastScreenSize = event.newContentSize;
-          },
-          onResizeEnd: (event) async {
-            await decodeImage();
-          },
-          child: AnnotatedRegion<SystemUiOverlayStyle>(
-            value: mainEditorConfigs.style.uiOverlayStyle,
-            child: Theme(
-              data: _theme,
-              child: SafeArea(
-                child: LayoutBuilder(builder: (context, constraints) {
-                  sizesManager.editorSize = constraints.biggest;
-                  return Scaffold(
-                    backgroundColor: mainEditorConfigs.style.background,
-                    resizeToAvoidBottomInset: false,
-                    appBar: _buildAppBar(),
-                    body: _buildBody(),
-                    bottomNavigationBar: _buildBottomNavBar(),
-                  );
-                }),
               ),
             ),
           ),
