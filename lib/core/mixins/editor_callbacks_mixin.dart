@@ -51,13 +51,13 @@ mixin SimpleCallbacksAccessState<T extends StatefulWidget> on State<T> {
   /// [onImageEditingComplete] function
   /// when the editing is completed.
   ///
-  /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_callbacks.jpeg?raw=true" alt="Schema" height="500px" />
+  /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_capture_image.jpeg?raw=true" alt="Schema" height="500px" />
   ImageEditingCompleteCallback? get onImageEditingComplete =>
       callbacks.onImageEditingComplete;
 
   /// A callback function that will be called before the image editor will
   /// close.
   ///
-  /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_callbacks.jpeg?raw=true" alt="Schema" height="500px" />
+  /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_capture_image.jpeg?raw=true" alt="Schema" height="500px" />
   ImageEditingEmptyCallback? get onCloseEditor => callbacks.onCloseEditor;
 }

@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated values
+
 // Flutter imports:
 import 'package:flutter/material.dart';
 
@@ -99,7 +102,8 @@ class _LayerStackState extends State<LayerStack> {
     // Determine whether to cut content outside the image area based on widget
     // settings.
     _cutOutsideImageArea = widget.cutOutsideImageArea ??
-        widget.configs.imageGeneration.captureOnlyBackgroundImageArea;
+        widget.configs.imageGeneration.captureOnlyBackgroundImageArea ??
+        widget.configs.imageGeneration.cropToImageBounds;
   }
 
   @override
@@ -133,7 +137,8 @@ class _LayerStackState extends State<LayerStack> {
                 }).toList()),
           ),
         ),
-        if (widget.configs.imageGeneration.captureOnlyBackgroundImageArea)
+        if (widget.configs.imageGeneration.captureOnlyBackgroundImageArea ??
+            widget.configs.imageGeneration.cropToImageBounds)
           RepaintBoundary(
             child: Hero(
               tag: 'crop_layer_painter_hero',
@@ -146,8 +151,9 @@ class _LayerStackState extends State<LayerStack> {
                             widget.configs.cropRotateEditor.style.background,
                         imgRatio: transformConfigs?.cropRect.size.aspectRatio ??
                             widget.transformHelper.mainImageSize.aspectRatio,
-                        isRoundCropper:
-                            widget.configs.cropRotateEditor.roundCropper,
+                        isRoundCropper: widget
+                                .configs.cropRotateEditor.roundCropper ??
+                            widget.configs.cropRotateEditor.enableRoundCropper,
                         is90DegRotated:
                             transformConfigs?.is90DegRotated ?? false,
                       )

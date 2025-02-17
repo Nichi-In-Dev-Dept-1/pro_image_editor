@@ -20,8 +20,8 @@ void main() {
       ),
     ),
     imageGeneration: ImageGenerationConfigs(
-      generateInsideSeparateThread: false,
-      generateImageInBackground: false,
+      enableIsolateGeneration: false,
+      enableBackgroundGeneration: false,
     ),
   );
 

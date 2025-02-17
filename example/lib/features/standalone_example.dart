@@ -141,7 +141,7 @@ class _StandaloneExampleState extends State<StandaloneExample>
 
               /// If your users paint a lot in a short time, you should disable
               /// this flag because it will overload the isolated thread which
-              /// delay the final result generateImageInBackground: true,
+              /// delay the final result enableBackgroundGeneration: true,
               ),
         ),
         onImageEditingStarted: onImageEditingStarted,
@@ -165,7 +165,7 @@ class _StandaloneExampleState extends State<StandaloneExample>
               /// If your users change a lot stuff in a short time, you should
               /// disable this flag because it will overload the isolated
               /// thread which delay the final result.
-              /// generateImageInBackground: true,
+              /// enableBackgroundGeneration: true,
               ),
         ),
         onImageEditingStarted: onImageEditingStarted,

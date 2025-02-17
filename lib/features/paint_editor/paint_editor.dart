@@ -316,7 +316,8 @@ class PaintEditorState extends State<PaintEditor>
   void initState() {
     super.initState();
     paintCtrl = PaintController(
-      fill: paintEditorConfigs.initialFill,
+      fill: paintEditorConfigs.initialFill ??
+          paintEditorConfigs.isInitiallyFilled,
       mode: paintEditorConfigs.initialPaintMode,
       strokeWidth: paintEditorConfigs.style.initialStrokeWidth,
       color: paintEditorConfigs.style.initialColor,
@@ -324,7 +325,8 @@ class PaintEditorState extends State<PaintEditor>
       strokeMultiplier: 1,
     );
 
-    _isFillMode = paintEditorConfigs.initialFill;
+    _isFillMode =
+        paintEditorConfigs.initialFill ?? paintEditorConfigs.isInitiallyFilled;
 
     initStreamControllers();
 
@@ -752,11 +754,13 @@ class PaintEditorState extends State<PaintEditor>
         maxScale: paintEditorConfigs.editorMaxScale,
         enableInteraction: paintMode == PaintMode.moveAndZoom,
         onInteractionStart: (details) {
-          _freeStyleHighPerformance =
-              (paintEditorConfigs.freeStyleHighPerformanceMoving ??
-                      !isDesktop) ||
-                  (paintEditorConfigs.freeStyleHighPerformanceScaling ??
-                      !isDesktop);
+          _freeStyleHighPerformance = (paintEditorConfigs
+                      .freeStyleHighPerformanceMoving ??
+                  paintEditorConfigs.enableFreeStyleHighPerformanceMoving ??
+                  !isDesktop) ||
+              (paintEditorConfigs.freeStyleHighPerformanceScaling ??
+                  paintEditorConfigs.enableFreeStyleHighPerformanceScaling ??
+                  !isDesktop);
 
           callbacks.paintEditorCallbacks?.onEditorZoomScaleStart?.call(details);
           setState(() {});

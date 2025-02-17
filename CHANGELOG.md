@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.3.1
+- **REFACTOR**(configs): Rename configuration properties for clarity.
+
 ## 8.3.0
 - **FEAT**(paint-editor): Add a new 'pixelate' paint mode to censor specific areas. This paint mode is only supported when using the Impeller rendering engine.
 - **FEAT**(CensorConfigs): Add a new configuration option, `enableRoundArea`, which allows the censored area to be rounded instead of rectangular.

@@ -69,9 +69,9 @@ class GenerationConfig extends StatefulWidget {
 class _GenerationConfigState extends State<GenerationConfig>
     with ExampleHelperState<GenerationConfig> {
   bool _generateThumbnail = false;
-  bool _generateOnlyDrawingBounds = true;
-  bool _generateImageInBackground = true;
-  bool _generateInsideSeparateThread = true;
+  bool _cropToDrawingBounds = true;
+  bool _enableBackgroundGeneration = true;
+  bool _enableIsolateGeneration = true;
   bool _singleFrame = true;
 
   int _customPixelRatio = 0;
@@ -211,18 +211,17 @@ class _GenerationConfigState extends State<GenerationConfig>
           ' layer. This significantly speeds up the editor because in most '
           'cases, the image is already created when the user presses "done".',
         ),
-        value: _generateImageInBackground,
+        value: _enableBackgroundGeneration,
         onChanged: (value) =>
-            setState(() => _generateImageInBackground = value),
+            setState(() => _enableBackgroundGeneration = value),
       ),
       SwitchListTile.adaptive(
         title: const Text('Generate in a separate thread'),
         subtitle: const Text(
             'Allows image generation to run in an separate thread, preventing '
             'any impact on the UI.'),
-        value: _generateInsideSeparateThread,
-        onChanged: (value) =>
-            setState(() => _generateInsideSeparateThread = value),
+        value: _enableIsolateGeneration,
+        onChanged: (value) => setState(() => _enableIsolateGeneration = value),
       ),
     ];
   }
@@ -453,9 +452,8 @@ class _GenerationConfigState extends State<GenerationConfig>
         subtitle: const Text(
             'Determines whether to capture only the content within the '
             'boundaries of the image when editing is complete.'),
-        value: _generateOnlyDrawingBounds,
-        onChanged: (value) =>
-            setState(() => _generateOnlyDrawingBounds = value),
+        value: _cropToDrawingBounds,
+        onChanged: (value) => setState(() => _cropToDrawingBounds = value),
       ),
       NumberPickerListTile(
         minValue: 0,
@@ -484,9 +482,9 @@ class _GenerationConfigState extends State<GenerationConfig>
     }
 
     var generationConfigs = ImageGenerationConfigs(
-      captureOnlyDrawingBounds: _generateOnlyDrawingBounds,
-      generateImageInBackground: _generateImageInBackground,
-      generateInsideSeparateThread: _generateInsideSeparateThread,
+      cropToDrawingBounds: _cropToDrawingBounds,
+      enableBackgroundGeneration: _enableBackgroundGeneration,
+      enableIsolateGeneration: _enableIsolateGeneration,
       singleFrame: _singleFrame,
       customPixelRatio:
           _customPixelRatio == 0 ? null : _customPixelRatio.toDouble(),

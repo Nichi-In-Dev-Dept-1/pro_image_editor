@@ -89,7 +89,7 @@ class _ImportExportExampleState extends State<ImportExportExample>
           ),
           configs: ProImageEditorConfigs(
             imageGeneration: const ImageGenerationConfigs(
-              generateImageInBackground: false,
+              enableBackgroundGeneration: false,
             ),
             designMode: platformDesignMode,
             mainEditor: MainEditorConfigs(

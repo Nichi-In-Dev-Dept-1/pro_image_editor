@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated values
+
 // Dart imports:
 import 'dart:math';
 import 'dart:ui';
@@ -358,7 +361,8 @@ class CropRotateEditorState extends State<CropRotateEditor>
             ),
             fadeInOpacity: _painterOpacity,
             style: cropRotateEditorConfigs.style,
-            drawCircle: cropRotateEditorConfigs.roundCropper,
+            drawCircle: cropRotateEditorConfigs.roundCropper ??
+                cropRotateEditorConfigs.enableRoundCropper,
           )
         : null;
   }
@@ -707,7 +711,9 @@ class CropRotateEditorState extends State<CropRotateEditor>
       _updateAllStates();
 
       /// Read the image information in the case the user require them
-      if (cropRotateEditorConfigs.provideImageInfos && imageInfos == null) {
+      if ((cropRotateEditorConfigs.provideImageInfos ??
+              cropRotateEditorConfigs.enableProvideImageInfos) &&
+          imageInfos == null) {
         await setImageInfos(activeHistory: activeHistory);
       }
 
@@ -818,8 +824,6 @@ class CropRotateEditorState extends State<CropRotateEditor>
 
   /// Flip the image horizontally
   void flip() {
-    if (!cropRotateEditorConfigs.canFlip) return;
-
     if (rotationCount % 2 != 0) {
       flipY = !flipY;
     } else {
@@ -832,8 +836,6 @@ class CropRotateEditorState extends State<CropRotateEditor>
 
   /// Rotates the image clockwise.
   void rotate() {
-    if (!cropRotateEditorConfigs.canRotate) return;
-
     _blockInteraction = true;
     var piHelper =
         cropRotateEditorConfigs.rotateDirection == RotateDirection.left
@@ -1077,7 +1079,8 @@ class CropRotateEditorState extends State<CropRotateEditor>
     double dx = offset.dx;
     double dy = offset.dy;
 
-    if (cropRotateEditorConfigs.roundCropper) {
+    if (cropRotateEditorConfigs.roundCropper ??
+        cropRotateEditorConfigs.enableRoundCropper) {
       double halfWidth = cropRect.width / 2;
       double halfHeight = cropRect.height / 2;
 
@@ -1326,7 +1329,8 @@ class CropRotateEditorState extends State<CropRotateEditor>
             ) +
             _startingTranslate * _startingPinchScale;
 
-        bool roundCropper = cropRotateEditorConfigs.roundCropper;
+        bool roundCropper = (cropRotateEditorConfigs.roundCropper ??
+            cropRotateEditorConfigs.enableRoundCropper);
 
         double imgW = _renderedImgConstraints.maxWidth;
         double imgH = _renderedImgConstraints.maxHeight;
@@ -1548,7 +1552,10 @@ class CropRotateEditorState extends State<CropRotateEditor>
         translate +=
             Offset(details.focalPointDelta.dx, details.focalPointDelta.dy) /
                 scaleFactor *
-                (cropRotateEditorConfigs.reverseDragDirection ? -1 : 1);
+                ((cropRotateEditorConfigs.reverseDragDirection ??
+                        cropRotateEditorConfigs.invertDragDirection)
+                    ? -1
+                    : 1);
         _setOffsetLimits();
         cropRotateEditorCallbacks?.handleMove();
 
@@ -1789,7 +1796,10 @@ class CropRotateEditorState extends State<CropRotateEditor>
           (event.scrollDelta.dy / 50).abs().clamp(0.5, 2);
 
       double deltaY = event.scrollDelta.dy *
-          (cropRotateEditorConfigs.reverseMouseScroll ? -1 : 1);
+          ((cropRotateEditorConfigs.reverseMouseScroll ??
+                  cropRotateEditorConfigs.invertMouseScroll)
+              ? -1
+              : 1);
 
       double startZoom = userScaleFactor;
       double newZoom = userScaleFactor;
@@ -2042,10 +2052,14 @@ class CropRotateEditorState extends State<CropRotateEditor>
           .call(this, rebuildController.stream);
     }
 
-    return cropRotateEditorConfigs.canRotate ||
-            cropRotateEditorConfigs.canFlip ||
-            cropRotateEditorConfigs.canChangeAspectRatio ||
-            cropRotateEditorConfigs.canReset
+    return (cropRotateEditorConfigs.canRotate ??
+                cropRotateEditorConfigs.showRotateButton) ||
+            (cropRotateEditorConfigs.canFlip ??
+                cropRotateEditorConfigs.showFlipButton) ||
+            (cropRotateEditorConfigs.canChangeAspectRatio ??
+                cropRotateEditorConfigs.showAspectRatioButton) ||
+            (cropRotateEditorConfigs.canReset ??
+                cropRotateEditorConfigs.showResetButton)
         ? CropEditorBottombar(
             bottomBarScrollCtrl: _bottomBarScrollCtrl,
             i18n: i18n.cropRotateEditor,
@@ -2287,7 +2301,8 @@ class CropRotateEditorState extends State<CropRotateEditor>
                 image: editorImage,
               ),
               if (cropRotateEditorConfigs.showLayers &&
-                  cropRotateEditorConfigs.transformLayers &&
+                  (cropRotateEditorConfigs.transformLayers ??
+                      cropRotateEditorConfigs.enableTransformLayers) &&
                   layers != null)
                 ClipRRect(
                   clipBehavior: Clip.hardEdge,

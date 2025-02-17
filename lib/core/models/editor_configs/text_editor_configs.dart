@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated values
+
 // Flutter imports:
 import 'package:flutter/widgets.dart';
 
@@ -33,13 +36,18 @@ class TextEditorConfigs {
   /// By default, the text editor is enabled, and most text formatting options
   /// are enabled. The initial font size is set to 24.0.
   const TextEditorConfigs({
-    this.autocorrect = true,
     this.enableSuggestions = true,
     this.enabled = true,
+    @Deprecated('Use enableAutocorrect instead') this.autocorrect,
+    this.enableAutocorrect = true,
     this.showSelectFontStyleBottomBar = false,
-    this.canToggleTextAlign = true,
-    this.canToggleBackgroundMode = true,
-    this.canChangeFontScale = true,
+    @Deprecated('Use showTextAlignButton instead') this.canToggleTextAlign,
+    @Deprecated('Use showFontScaleButton instead') this.canChangeFontScale,
+    @Deprecated('Use showBackgroundModeButton instead')
+    this.canToggleBackgroundMode,
+    this.showTextAlignButton = true,
+    this.showFontScaleButton = true,
+    this.showBackgroundModeButton = true,
     this.enableMainEditorZoomFactor = false,
     this.initFontSize = 24.0,
     this.initialTextAlign = TextAlign.center,
@@ -63,17 +71,29 @@ class TextEditorConfigs {
   final bool enabled;
 
   /// Determines if the text alignment options can be toggled.
-  final bool canToggleTextAlign;
+  @Deprecated('Use showTextAlignButton instead')
+  final bool? canToggleTextAlign;
 
   /// Determines if the font scale can be change.
-  final bool canChangeFontScale;
+  @Deprecated('Use showFontScaleButton instead')
+  final bool? canChangeFontScale;
+
+  /// Determines if the background mode can be toggled.
+  @Deprecated('Use showBackgroundModeButton instead')
+  final bool? canToggleBackgroundMode;
+
+  /// Whether to show the toggle button to change the text align.
+  final bool showTextAlignButton;
+
+  /// Whether to show the button to change the font scale.
+  final bool showFontScaleButton;
+
+  /// Whether to show the toggle button to change the background mode.
+  final bool showBackgroundModeButton;
 
   /// Determines if the editor show a bottom bar where the user can select
   /// different font styles.
   final bool showSelectFontStyleBottomBar;
-
-  /// Determines if the background mode can be toggled.
-  final bool canToggleBackgroundMode;
 
   /// A flag to enable or disable scaling of the text field in sync with the
   /// editor's zoom level.
@@ -114,16 +134,21 @@ class TextEditorConfigs {
   /// Whether to show input suggestions as the user types.
   ///
   /// This flag only affects Android. On iOS, suggestions are tied directly to
-  /// [autocorrect], so that suggestions are only shown when [autocorrect] is
-  /// true. On Android autocorrection and suggestion are controlled separately.
+  /// [enableAutocorrect], so that suggestions are only shown when
+  /// [enableAutocorrect] is `true`. On Android autocorrection and suggestion
+  /// are controlled separately.
   ///
   /// Defaults to true.
   final bool enableSuggestions;
 
   /// Whether to enable autocorrection.
+  @Deprecated('Use enableAutocorrect instead')
+  final bool? autocorrect;
+
+  /// Whether to enable autocorrection.
   ///
-  /// Defaults to true.
-  final bool autocorrect;
+  /// **Default** `true`.
+  final bool enableAutocorrect;
 
   /// Defines the safe area configuration for the editor.
   final EditorSafeArea safeArea;
@@ -162,6 +187,7 @@ class TextEditorConfigs {
     double? maxScale,
     bool? enableSuggestions,
     bool? autocorrect,
+    bool? enableAutocorrect,
     EditorSafeArea? safeArea,
     TextEditorStyle? style,
     TextEditorIcons? icons,
@@ -191,6 +217,7 @@ class TextEditorConfigs {
       maxScale: maxScale ?? this.maxScale,
       enableSuggestions: enableSuggestions ?? this.enableSuggestions,
       autocorrect: autocorrect ?? this.autocorrect,
+      enableAutocorrect: enableAutocorrect ?? this.enableAutocorrect,
       style: style ?? this.style,
       icons: icons ?? this.icons,
       widgets: widgets ?? this.widgets,

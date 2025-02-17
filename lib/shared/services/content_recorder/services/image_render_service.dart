@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated values
+
 import 'dart:math';
 import 'dart:ui' as ui;
 
@@ -68,7 +71,7 @@ class ImageRenderService {
 
       // Determine pixel ratio
       double outputRatio = imageInfos.pixelRatio;
-      if (!configs.captureOnlyDrawingBounds &&
+      if (!(configs.captureOnlyDrawingBounds ?? configs.cropToDrawingBounds) &&
           context != null &&
           context.mounted) {
         outputRatio =
@@ -153,7 +156,8 @@ class ImageRenderService {
     double pixelRatio,
   ) async {
     // If cropping is not required, return the image directly
-    if (!configs.captureOnlyBackgroundImageArea) {
+    if (!(configs.captureOnlyBackgroundImageArea ??
+        configs.cropToImageBounds)) {
       return boundary.toImage(pixelRatio: pixelRatio);
     }
 

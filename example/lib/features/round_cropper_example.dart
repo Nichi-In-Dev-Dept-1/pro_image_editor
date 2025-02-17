@@ -48,8 +48,8 @@ class _RoundCropperExampleState extends State<RoundCropperExample>
             pngFilter: PngFilter.average,
           ),
           cropRotateEditor: const CropRotateEditorConfigs(
-            roundCropper: true,
-            canChangeAspectRatio: false,
+            enableRoundCropper: true,
+            showAspectRatioButton: false,
             initAspectRatio: 1,
           ),
         ),

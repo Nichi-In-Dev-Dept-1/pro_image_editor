@@ -57,7 +57,7 @@ class _ReorderLayerExampleState extends State<ReorderLayerExample>
       ),
       configs: ProImageEditorConfigs(
         helperLines: const HelperLineConfigs(
-          hitVibration: false,
+          enableHitVibration: false,
         ),
         designMode: platformDesignMode,
         mainEditor: MainEditorConfigs(

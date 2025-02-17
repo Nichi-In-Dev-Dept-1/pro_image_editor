@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated values
+
 import 'package:flutter/material.dart';
 
 import '/core/models/editor_callbacks/text_editor_callbacks.dart';
@@ -139,7 +142,7 @@ class TextEditorInput extends StatelessWidget {
         onChanged: callbacks?.handleChanged,
         onEditingComplete: callbacks?.handleEditingComplete,
         onSubmitted: callbacks?.handleSubmitted,
-        autocorrect: configs.autocorrect,
+        autocorrect: configs.autocorrect ?? configs.enableAutocorrect,
         enableSuggestions: configs.enableSuggestions,
         keyboardType: TextInputType.multiline,
         textInputAction: TextInputAction.newline,

@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated values
+
 import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
@@ -160,7 +163,8 @@ class PaintEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
         designMode: designMode,
         title: i18n.smallScreenMoreTooltip,
         options: [
-          if (paintEditorConfigs.canChangeLineWidth)
+          if (paintEditorConfigs.canChangeLineWidth ??
+              paintEditorConfigs.showLineWidthAdjustmentButton)
             PopupMenuOption(
               label: i18n.lineWidth,
               icon: Icon(
@@ -168,7 +172,8 @@ class PaintEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
               onTap: onOpenLineWeightBottomSheet,
             ),
-          if (paintEditorConfigs.canToggleFill)
+          if (paintEditorConfigs.canToggleFill ??
+              paintEditorConfigs.showToggleFillButton)
             PopupMenuOption(
               label: i18n.toggleFill,
               icon: Icon(
@@ -178,7 +183,8 @@ class PaintEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
               onTap: onTapMenuFill,
             ),
-          if (paintEditorConfigs.canChangeOpacity)
+          if (paintEditorConfigs.canChangeOpacity ??
+              paintEditorConfigs.showOpacityAdjustmentButton)
             PopupMenuOption(
               label: i18n.changeOpacity,
               icon: Icon(
@@ -212,7 +218,8 @@ class PaintEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Builds and returns a list of IconButton to change the line width /
   /// toggle fill or un-fill / change the opacity.
   List<Widget> _getConfigButtons() => [
-        if (paintEditorConfigs.canChangeLineWidth)
+        if (paintEditorConfigs.canChangeLineWidth ??
+            paintEditorConfigs.showLineWidthAdjustmentButton)
           IconButton(
             tooltip: i18n.lineWidth,
             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -222,7 +229,8 @@ class PaintEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             onPressed: onOpenLineWeightBottomSheet,
           ),
-        if (paintEditorConfigs.canToggleFill)
+        if (paintEditorConfigs.canToggleFill ??
+            paintEditorConfigs.showToggleFillButton)
           IconButton(
             tooltip: i18n.toggleFill,
             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -234,7 +242,8 @@ class PaintEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             onPressed: onToggleFill,
           ),
-        if (paintEditorConfigs.canChangeOpacity)
+        if (paintEditorConfigs.canChangeOpacity ??
+            paintEditorConfigs.showOpacityAdjustmentButton)
           IconButton(
             tooltip: i18n.changeOpacity,
             padding: const EdgeInsets.symmetric(horizontal: 8),

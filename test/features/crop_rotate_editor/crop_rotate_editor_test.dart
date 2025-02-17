@@ -21,8 +21,8 @@ void main() {
         opacityOutsideCropAreaDuration: Duration.zero,
       ),
       imageGeneration: ImageGenerationConfigs(
-        generateImageInBackground: false,
-        generateInsideSeparateThread: false,
+        enableBackgroundGeneration: false,
+        enableIsolateGeneration: false,
       ),
     ),
   );

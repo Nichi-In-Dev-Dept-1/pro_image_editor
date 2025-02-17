@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated values
+
 // Flutter imports:
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +71,8 @@ class _FrostedGlassCropRotateToolbar
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (widget.configs.cropRotateEditor.canRotate)
+              if (widget.configs.cropRotateEditor.canRotate ??
+                  widget.configs.cropRotateEditor.showRotateButton)
                 IconButton(
                   onPressed: widget.onRotate,
                   tooltip: widget.configs.i18n.cropRotateEditor.rotate,
@@ -77,7 +81,8 @@ class _FrostedGlassCropRotateToolbar
                 )
               else
                 const SizedBox.shrink(),
-              if (widget.configs.cropRotateEditor.canReset)
+              if (widget.configs.cropRotateEditor.canReset ??
+                  widget.configs.cropRotateEditor.showResetButton)
                 CupertinoButton(
                   onPressed: widget.onReset,
                   padding: padding,
@@ -86,7 +91,8 @@ class _FrostedGlassCropRotateToolbar
                     style: style,
                   ),
                 ),
-              if (widget.configs.cropRotateEditor.canChangeAspectRatio)
+              if (widget.configs.cropRotateEditor.canChangeAspectRatio ??
+                  widget.configs.cropRotateEditor.showAspectRatioButton)
                 IconButton(
                   onPressed: widget.openAspectRatios,
                   tooltip: widget.configs.i18n.cropRotateEditor.ratio,

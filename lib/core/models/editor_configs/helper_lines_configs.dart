@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated values
+
 import '../styles/helper_line_style.dart';
 
 export '../styles/helper_line_style.dart';
@@ -45,7 +48,8 @@ class HelperLineConfigs {
     this.showVerticalLine = true,
     this.showHorizontalLine = true,
     this.showRotateLine = true,
-    this.hitVibration = true,
+    @Deprecated('Use enableHitVibration instead') this.hitVibration,
+    this.enableHitVibration = true,
     this.style = const HelperLineStyle(),
   });
 
@@ -60,6 +64,11 @@ class HelperLineConfigs {
 
   /// Controls whether haptic feedback is enabled when a layer intersects with a
   /// helper line.
+  @Deprecated('Use enableHitVibration instead')
+  final bool? hitVibration;
+
+  /// Controls whether haptic feedback is enabled when a layer intersects with a
+  /// helper line.
   ///
   /// When set to `true`, haptic feedback is triggered when a layer's position
   /// or boundary intersects with a helper line, providing tactile feedback to
@@ -70,7 +79,7 @@ class HelperLineConfigs {
   /// By default, this option is set to `true`, enabling haptic feedback for hit
   /// detection with helper lines. You can set it to `false` to disable haptic
   /// feedback.
-  final bool hitVibration;
+  final bool enableHitVibration;
 
   /// Style configuration for helper lines.
   final HelperLineStyle style;
@@ -86,6 +95,7 @@ class HelperLineConfigs {
     bool? showHorizontalLine,
     bool? showRotateLine,
     bool? hitVibration,
+    bool? enableHitVibration,
     HelperLineStyle? style,
   }) {
     return HelperLineConfigs(
@@ -93,6 +103,7 @@ class HelperLineConfigs {
       showHorizontalLine: showHorizontalLine ?? this.showHorizontalLine,
       showRotateLine: showRotateLine ?? this.showRotateLine,
       hitVibration: hitVibration ?? this.hitVibration,
+      enableHitVibration: enableHitVibration ?? this.enableHitVibration,
       style: style ?? this.style,
     );
   }

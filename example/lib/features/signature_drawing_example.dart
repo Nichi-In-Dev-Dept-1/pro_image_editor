@@ -63,16 +63,19 @@ class _SignatureDrawingExampleState extends State<SignatureDrawingExample>
                       configs: ProImageEditorConfigs(
                         designMode: platformDesignMode,
                         paintEditor: PaintEditorConfigs(
-                          hasOptionFreeStyle: false,
-                          hasOptionArrow: false,
-                          hasOptionLine: false,
-                          hasOptionRect: false,
-                          hasOptionCircle: false,
-                          hasOptionDashLine: false,
-                          canToggleFill: false,
+                          enableModeFreeStyle: false,
+                          enableModeArrow: false,
+                          enableModeLine: false,
+                          enableModeRect: false,
+                          enableModeCircle: false,
+                          enableModeDashLine: false,
+                          enableModeEraser: false,
+                          enableModeBlur: false,
+                          enableModePixelate: false,
+                          showToggleFillButton: false,
 
                           /// Optional true
-                          canChangeLineWidth: true,
+                          showLineWidthAdjustmentButton: true,
                           widgets: PaintEditorWidgets(
                             colorPicker: (paintEditor, rebuildStream,
                                     currentColor, setColor) =>

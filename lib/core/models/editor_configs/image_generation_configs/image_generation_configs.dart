@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated values
+
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -17,30 +20,28 @@ export 'processor_configs.dart';
 /// that affect how images are generated.
 class ImageGenerationConfigs {
   /// Creates a new instance of [ImageGenerationConfigs].
-  ///
-  /// - The [allowEmptyEditCompletion] parameter controls if empty edit
-  ///   completions are allowed.
-  /// - The [generateInsideSeparateThread] parameter controls if image
-  ///   generation occurs inside an isolate.
-  /// - The [generateImageInBackground] parameter controls if image generation
-  ///   runs in the background.
-  /// - The [captureOnlyDrawingBounds] parameter controls if only image
-  ///   bounds are generated.
-  /// - The [customPixelRatio] parameter set the pixel ratio of the image
-  ///   relative to the content.
-  /// - The [processorConfigs] parameter set the processor configs.
   const ImageGenerationConfigs({
-    this.captureOnlyBackgroundImageArea = true,
-    this.allowEmptyEditCompletion = true,
-    this.enableUseOriginalBytes = true,
-    this.generateInsideSeparateThread = true,
-    this.generateImageInBackground = !kIsWeb || !kDebugMode,
+    @Deprecated('Use cropToImageBounds instead')
+    this.captureOnlyBackgroundImageArea,
+    this.cropToImageBounds = true,
+    @Deprecated('Use cropToDrawingBounds instead')
     this.captureOnlyDrawingBounds = true,
+    this.cropToDrawingBounds = true,
+    @Deprecated('Use allowEmptyEditingCompletion instead')
+    this.allowEmptyEditCompletion,
+    this.allowEmptyEditingCompletion = true,
+    @Deprecated('Use enableIsolateGeneration instead')
+    this.generateInsideSeparateThread,
+    this.enableIsolateGeneration = true,
+    @Deprecated('Use enableBackgroundGeneration instead')
+    this.generateImageInBackground,
+    this.enableBackgroundGeneration = !kIsWeb || !kDebugMode,
+    this.enableUseOriginalBytes = true,
+    this.singleFrame = false,
     this.customPixelRatio,
+    this.jpegQuality = 100,
     this.pngLevel = 6,
     this.pngFilter = PngFilter.none,
-    this.singleFrame = false,
-    this.jpegQuality = 100,
     this.jpegChroma = JpegChroma.yuv444,
     this.outputFormat = OutputFormat.jpg,
     this.processorConfigs = const ProcessorConfigs(),
@@ -55,46 +56,69 @@ class ImageGenerationConfigs {
 
   /// Indicates if it should only capture the background image area and cut all
   /// stuff outside, such as when a layer overlaps the image.
+  @Deprecated('Use cropToImageBounds instead')
+  final bool? captureOnlyBackgroundImageArea;
+
+  /// Indicates if it should only capture the background image area and cut all
+  /// stuff outside, such as when a layer overlaps the image.
   ///
   /// When set to `true`, this flag ensures that the capture process focuses
-  /// solely on the background image area, ignoring any other elements that
-  /// might be present.
+  /// on the image area and crop everything outside.
   ///
-  /// If set to `false`, the capture will include all elements within the image
-  /// area, not just the background.
+  /// If set to `false`, the capture will include all elements even when they
+  /// are outside of the image.
   ///
   /// **Note:** If you disable this flag, it may require more performance to
   /// generate the image, especially on high resolution images in a large
   /// screen, cuz the editor need to find the bounding box by itself.
   ///
   /// By default, this property is set to `true`.
-  final bool captureOnlyBackgroundImageArea;
+  final bool cropToImageBounds;
 
   /// Determines whether to capture only the content within the boundaries of
   /// the drawings when editing is complete.
+  @Deprecated('Use cropToDrawingBounds instead')
+  final bool? captureOnlyDrawingBounds;
+
+  /// Determines whether to crop the final image to the bounds of the drawing
+  /// area.
   ///
-  /// If set to `true`, editing completion will result in cropping all content
-  /// outside the image boundaries.
+  /// - If `true`, the output image will be cropped to include only the drawn
+  ///   content, removing any empty or surrounding areas.
+  /// - If `false`, the full image, including any blank space around the
+  ///   drawings, will be retained.
   ///
-  /// Setting this property to `true` is useful when you want to focus on the
-  /// image content and exclude any surrounding elements.
-  /// Setting this property to `false` is useful when you want to capture the
-  /// full content.
+  /// Enabling this is useful when you want to focus solely on the drawn
+  /// content.
+  /// Disabling it ensures the entire canvas, including unused space, is
+  /// preserved.
   ///
-  /// By default, this property is set to `true`.
-  final bool captureOnlyDrawingBounds;
+  /// This option has only an effect when `cropToImageBounds` is `false`.
+  ///
+  /// **Default:** `true`
+  final bool cropToDrawingBounds;
 
   /// Captures the final image after each change, such as adding a layer.
   /// This significantly speeds up the editor because in most cases, the image
   /// is already created when the user presses "done".
+  @Deprecated('Use enableBackgroundGeneration instead')
+  final bool? generateImageInBackground;
+
+  /// Captures the image after each modification, such as adding a layer.
+  /// This improves editor performance by ensuring the image is pre-generated
+  /// in most cases before the user presses "Done."
   ///
-  /// On Dart native platforms (all platforms except web), this runs on an
-  /// isolate thread.
-  /// On Dart web, it runs on a web worker.
+  /// - On Dart native platforms (all except web), this runs in an isolate
+  /// thread.
+  /// - On Dart web, it runs in a web worker.
   ///
-  /// This option is enabled by default unless we are in debug mode or the
-  /// platform is web.
-  final bool generateImageInBackground;
+  /// **Default:** `!kIsWeb || !kDebugMode`
+  final bool enableBackgroundGeneration;
+
+  /// Allows image generation to run in an isolated thread, preventing any
+  /// impact on the UI.
+  @Deprecated('Use enableIsolateGeneration instead')
+  final bool? generateInsideSeparateThread;
 
   /// Allows image generation to run in an isolated thread, preventing any
   /// impact on the UI.
@@ -103,18 +127,22 @@ class ImageGenerationConfigs {
   /// Enabling this feature will significantly speed up the image creation
   /// process.
   ///
-  /// If this is disabled, `captureImagesInBackground` will also be disabled.
-  final bool generateInsideSeparateThread;
+  /// If this is disabled, `enableBackgroundGeneration` will also be disabled.
+  final bool enableIsolateGeneration;
+
+  /// Whether the callback `onImageEditingComplete` call with empty editing.
+  @Deprecated('Use allowEmptyEditingCompletion instead')
+  final bool? allowEmptyEditCompletion;
 
   /// Whether the callback `onImageEditingComplete` call with empty editing.
   ///
-  /// The default value is true.
+  /// The default value is `true`.
   ///
   /// This option only affects the main editor and does not work in standalone
   /// editors.
   ///
-  /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_callbacks.jpeg?raw=true" alt="Schema" height="500px" />
-  final bool allowEmptyEditCompletion;
+  /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_capture_image.jpeg?raw=true" alt="Schema" height="500px" />
+  final bool allowEmptyEditingCompletion;
 
   /// When disabled, this flag allows the editor to re-record the original
   /// image even if there are no changes made. This is useful when
@@ -190,11 +218,16 @@ class ImageGenerationConfigs {
   /// others unchanged.
   ImageGenerationConfigs copyWith({
     bool? captureOnlyBackgroundImageArea,
+    bool? cropToImageBounds,
     bool? allowEmptyEditCompletion,
+    bool? allowEmptyEditingCompletion,
     bool? enableUseOriginalBytes,
     bool? generateInsideSeparateThread,
+    bool? enableIsolateGeneration,
     bool? generateImageInBackground,
+    bool? enableBackgroundGeneration,
     bool? captureOnlyDrawingBounds,
+    bool? cropToDrawingBounds,
     bool? awaitLoadingDialogContext,
     double? customPixelRatio,
     ProcessorConfigs? processorConfigs,
@@ -210,16 +243,24 @@ class ImageGenerationConfigs {
     return ImageGenerationConfigs(
       captureOnlyBackgroundImageArea:
           captureOnlyBackgroundImageArea ?? this.captureOnlyBackgroundImageArea,
+      cropToImageBounds: cropToImageBounds ?? this.cropToImageBounds,
       allowEmptyEditCompletion:
           allowEmptyEditCompletion ?? this.allowEmptyEditCompletion,
+      allowEmptyEditingCompletion:
+          allowEmptyEditingCompletion ?? this.allowEmptyEditingCompletion,
       enableUseOriginalBytes:
           enableUseOriginalBytes ?? this.enableUseOriginalBytes,
       generateInsideSeparateThread:
           generateInsideSeparateThread ?? this.generateInsideSeparateThread,
+      enableIsolateGeneration:
+          enableIsolateGeneration ?? this.enableIsolateGeneration,
       generateImageInBackground:
           generateImageInBackground ?? this.generateImageInBackground,
+      enableBackgroundGeneration:
+          enableBackgroundGeneration ?? this.enableBackgroundGeneration,
       captureOnlyDrawingBounds:
           captureOnlyDrawingBounds ?? this.captureOnlyDrawingBounds,
+      cropToDrawingBounds: cropToDrawingBounds ?? this.cropToDrawingBounds,
       customPixelRatio: customPixelRatio ?? this.customPixelRatio,
       processorConfigs: processorConfigs ?? this.processorConfigs,
       outputFormat: outputFormat ?? this.outputFormat,

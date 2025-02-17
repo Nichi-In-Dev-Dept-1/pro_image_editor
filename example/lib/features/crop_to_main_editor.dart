@@ -41,8 +41,8 @@ class _CropToMainEditorExampleState extends State<CropToMainEditorExample>
     designMode: platformDesignMode,
     cropRotateEditor: const CropRotateEditorConfigs(
       initAspectRatio: 1,
-      provideImageInfos: true,
-      canChangeAspectRatio: false,
+      enableProvideImageInfos: true,
+      showAspectRatioButton: false,
     ),
   );
 
