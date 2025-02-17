@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/paint_editor/paint_editor_configs.dart';
 import '/shared/widgets/censor/blur_area_item.dart';
+import '/shared/widgets/censor/pixelate_area_item.dart';
 import '../controllers/paint_controller.dart';
 import '../enums/paint_editor_enum.dart';
 import '../models/painted_model.dart';
@@ -263,6 +264,8 @@ class PaintCanvasState extends State<PaintCanvas> {
     double left = width >= 0 ? topLeft.dx : topLeft.dx + width;
     double top = height >= 0 ? topLeft.dy : topLeft.dy + height;
 
+    var censorConfigs = widget.paintEditorConfigs.censorConfigs;
+
     return Positioned(
       left: left,
       top: top,
@@ -275,9 +278,9 @@ class PaintCanvasState extends State<PaintCanvas> {
         onExit: (event) {
           item.hit = false;
         },
-        child: BlurAreaItem(
-          censorConfigs: widget.paintEditorConfigs.censorConfigs,
-        ),
+        child: item.mode == PaintMode.pixelate
+            ? PixelateAreaItem(censorConfigs: censorConfigs)
+            : BlurAreaItem(censorConfigs: censorConfigs),
       ),
     );
   }

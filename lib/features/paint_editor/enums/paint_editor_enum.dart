@@ -25,12 +25,9 @@ enum PaintMode {
   /// Remove paint-items when hit.
   eraser,
 
-  /// Creates a rectangle which blurs the background.
+  /// Creates an area that blurs the background.
   blur,
 
-  // TODO: Write documentation after implementing pixelate mode.
-
-  /// This mode is currently **not available** and serves as a placeholder for
-  /// future implementations.
+  /// Creates an area that will pixelate the background.
   pixelate,
 }

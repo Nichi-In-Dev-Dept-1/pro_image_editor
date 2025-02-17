@@ -20,6 +20,7 @@ import '/features/paint_editor/widgets/paint_editor_bottombar.dart';
 import '/features/paint_editor/widgets/paint_editor_color_picker.dart';
 import '/pro_image_editor.dart';
 import '/shared/services/content_recorder/widgets/content_recorder.dart';
+import '/shared/services/shader_manager.dart';
 import '/shared/styles/platform_text_styles.dart';
 import '/shared/widgets/auto_image.dart';
 import '/shared/widgets/extended/extended_interactive_viewer.dart';
@@ -282,6 +283,13 @@ class PaintEditorState extends State<PaintEditor>
             icon: paintEditorConfigs.icons.dashLine,
             label: i18n.paintEditor.dashLine,
           ),
+        if (paintEditorConfigs.enableModePixelate &&
+            ShaderManager.instance.isShaderFilterSupported)
+          PaintModeBottomBarItem(
+            mode: PaintMode.pixelate,
+            icon: paintEditorConfigs.icons.pixelate,
+            label: i18n.paintEditor.pixelate,
+          ),
         if (paintEditorConfigs.enableModeBlur)
           PaintModeBottomBarItem(
             mode: PaintMode.blur,
@@ -332,6 +340,12 @@ class PaintEditorState extends State<PaintEditor>
       setState(() {});
       paintEditorCallbacks?.handleUpdateUI();
     });
+
+    /// Preload pixelate shader if enabled and supported
+    if (paintEditorConfigs.enableModePixelate &&
+        ShaderManager.instance.isShaderFilterSupported) {
+      ShaderManager.instance.loadShader(ShaderMode.pixelate);
+    }
   }
 
   @override

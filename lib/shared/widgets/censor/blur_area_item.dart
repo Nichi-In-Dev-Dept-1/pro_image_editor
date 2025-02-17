@@ -1,62 +1,37 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
-import '/core/models/editor_configs/paint_editor/censor_configs.dart';
 
-/// A widget that applies a blur effect to a specific area.
+import 'abstract/censor_area_item.dart';
+
+/// A widget that applies a blur effect to a defined area.
 ///
-/// This widget uses [BackdropFilter] to blur its child. It supports both
-/// rectangular and circular blur areas, depending on the `enableRoundArea`
-/// property of the provided [CensorConfigs].
-///
-/// The size of the blurred area can be specified using the `size` parameter.
-/// If `size` is `null`, it will expand to fill the available space.
-/// ```
-class BlurAreaItem extends StatelessWidget {
-  /// Creates a [BlurAreaItem].
-  ///
-  /// - [censorConfigs] defines the blur intensity and shape.
-  /// - [size] defines the width and height of the blurred area.
-  ///   If `null`, the widget will expand to fill the available space.
+/// This class extends [CensorAreaItem] and implements the blur effect
+/// using a [BackdropFilter] with a blur filter. The intensity of the blur
+/// is controlled by the [CensorConfigs] properties [blurSigmaX] and
+/// [blurSigmaY].
+class BlurAreaItem extends CensorAreaItem {
+  /// Creates a [BlurAreaItem] with the specified [censorConfigs] and
+  /// optional [size].
   const BlurAreaItem({
     super.key,
-    required this.censorConfigs,
-    this.size,
+    required super.censorConfigs,
+    super.size,
   });
 
-  /// The size of the blur area. If `null`, the widget expands to fit its
-  /// parent.
-  final Size? size;
-
-  /// Configuration for blur intensity and shape.
-  final CensorConfigs censorConfigs;
-
+  /// Builds a [BackdropFilter] that applies a blur effect based on the provided
+  /// [censorConfigs].
+  ///
+  /// The blur intensity is controlled by [censorConfigs.blurSigmaX] and
+  /// [censorConfigs.blurSigmaY].
   @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: _buildClipper(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: censorConfigs.blurSigmaX,
-            sigmaY: censorConfigs.blurSigmaY,
-          ),
-          child: _buildArea(),
-        ),
+  Widget buildBackdropFilter({required Widget child}) {
+    return BackdropFilter(
+      filter: ImageFilter.blur(
+        sigmaX: censorConfigs.blurSigmaX,
+        sigmaY: censorConfigs.blurSigmaY,
       ),
+      child: child,
     );
-  }
-
-  Widget _buildClipper({required Widget child}) {
-    if (censorConfigs.enableRoundArea) {
-      return ClipOval(child: child);
-    }
-    return ClipRRect(child: child);
-  }
-
-  Widget _buildArea() {
-    if (size != null) {
-      return SizedBox(width: size!.width, height: size!.height);
-    }
-    return const SizedBox.expand();
   }
 }

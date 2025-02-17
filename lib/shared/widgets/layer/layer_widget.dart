@@ -4,7 +4,6 @@ import 'dart:math';
 // Flutter imports:
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pro_image_editor/shared/widgets/censor/blur_area_item.dart';
 
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_configs_mixin.dart';
@@ -14,6 +13,8 @@ import '/core/models/layers/layer.dart';
 import '/features/paint_editor/enums/paint_editor_enum.dart';
 import '/features/paint_editor/widgets/draw_paint_item.dart';
 import '/plugins/rounded_background_text/src/rounded_background_text.dart';
+import '/shared/widgets/censor/blur_area_item.dart';
+import '/shared/widgets/censor/pixelate_area_item.dart';
 import '../../styles/platform_text_styles.dart';
 import 'interaction_helper/layer_interaction_helper_widget.dart';
 
@@ -465,10 +466,21 @@ class _LayerWidgetState extends State<LayerWidget>
 
   Widget _buildCensorLayer() {
     var layer = _layer as PaintLayer;
-    return BlurAreaItem(
-      censorConfigs: paintEditorConfigs.censorConfigs,
-      size: layer.size,
-    );
+
+    switch (layer.item.mode) {
+      case PaintMode.pixelate:
+        return PixelateAreaItem(
+          censorConfigs: paintEditorConfigs.censorConfigs,
+          size: layer.size,
+        );
+      case PaintMode.blur:
+        return BlurAreaItem(
+          censorConfigs: paintEditorConfigs.censorConfigs,
+          size: layer.size,
+        );
+      default:
+        throw UnimplementedError();
+    }
   }
 }
 

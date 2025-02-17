@@ -1,7 +1,11 @@
 # Changelog
 
+## 8.3.0
+- **FEAT**(paint-editor): Add a new 'pixelate' paint mode to censor specific areas. This paint mode is only supported when using the Impeller rendering engine.
+- **FEAT**(CensorConfigs): Add a new configuration option, `enableRoundArea`, which allows the censored area to be rounded instead of rectangular.
+
 ## 8.2.0
-- **FEAT**(paint-editor): Add a new 'blur' paint mode to censor specific areas in an image. 
+- **FEAT**(paint-editor): Add a new 'blur' paint mode to censor specific areas. 
 
 ## 8.1.12
 - **FEAT**(layers): Add missing `showLayers` config to enable/disable layers in paint and crop editor.

@@ -1,6 +1,6 @@
 name: pro_image_editor
 description: "A Flutter image editor: Seamlessly enhance your images with user-friendly editing features."
-version: 8.2.0
+version: 8.3.0
 homepage: https://github.com/hm21/pro_image_editor/
 repository: https://github.com/hm21/pro_image_editor/
 issue_tracker: https://github.com/hm21/pro_image_editor/issues/
@@ -60,6 +60,8 @@ flutter:
     - lib/web/web_worker.dart.js
     - lib/web/web_worker.dart.js.map
     - lib/web/web_worker.dart.wasm
+  shaders:
+    - lib/shared/shaders/pixelate.frag
   fonts:
    - family: ProImageEditorIcons
      fonts:
