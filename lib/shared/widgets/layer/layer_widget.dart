@@ -280,6 +280,7 @@ class _LayerWidgetState extends State<LayerWidget>
   /// Build the content with possible transformations
   Widget _buildPosition() {
     Matrix4 transformMatrix = _calcTransformMatrix();
+    var interaction = widget.layerData.interaction;
 
     return Hero(
       key: _layerKey,
@@ -324,7 +325,9 @@ class _LayerWidgetState extends State<LayerWidget>
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               onSecondaryTapUp: isDesktop ? _onSecondaryTapUp : null,
-              onTap: _onTap,
+              onTap: interaction.enableSelection || interaction.enableEdit
+                  ? _onTap
+                  : null,
               child: Listener(
                 behavior: HitTestBehavior.translucent,
                 onPointerDown: _onPointerDown,
