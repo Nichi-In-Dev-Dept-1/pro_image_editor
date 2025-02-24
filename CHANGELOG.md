@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.3.2
+- **FIX**(emoji-editor): Resolved an issue where categoryViewConfig caused an error. Resolves [#373](https://github.com/hm21/pro_image_editor/issues/373).
+
 ## 8.3.1
 - **REFACTOR**(configs): Rename configuration properties for clarity.
 
