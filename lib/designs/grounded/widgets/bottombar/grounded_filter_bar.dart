@@ -109,6 +109,7 @@ class _GroundedFilterBarState extends State<GroundedFilterBar>
           SingleChildScrollView(
             controller: _bottomBarScrollCtrl,
             scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: FilterEditorItemList(
               listHeight: kGroundedSubBarHeight,

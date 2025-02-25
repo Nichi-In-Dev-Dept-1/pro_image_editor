@@ -94,6 +94,7 @@ class _GroundedTextBarState extends State<GroundedTextBar>
         child: SingleChildScrollView(
           controller: _bottomBarScrollCtrl,
           scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: FadeInUp(
             duration: kGroundedFadeInDuration,

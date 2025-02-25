@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.3.4
+- **FIX**(grounded-design): Resolved an issue in the grounded design where switching between screens caused an error due to the ScrollController.
+
 ## 8.3.3
 - **FIX**(layer-interaction): Resolved an issue where layers with blocked interaction also prevented interaction with background layers. Resolves [#374](https://github.com/hm21/pro_image_editor/issues/374)
 

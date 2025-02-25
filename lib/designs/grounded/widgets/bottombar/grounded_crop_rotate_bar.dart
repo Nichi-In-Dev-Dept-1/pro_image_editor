@@ -101,6 +101,7 @@ class _GroundedCropRotateBarState extends State<GroundedCropRotateBar>
         alignment: Alignment.center,
         child: SingleChildScrollView(
           controller: _bottomBarScrollCtrl,
+          clipBehavior: Clip.none,
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: FadeInUp(
