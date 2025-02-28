@@ -10,19 +10,26 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - name: Clone repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          channel: master
+          channel: stable
           flutter-version: 3.29.0
+
       - name: Install Package Dependencies
         run: flutter pub get
+
       - name: Install Example Dependencies
         run: flutter pub get
         working-directory: ./example
+
       - name: Build Web
         run: flutter build web --release
         working-directory: ./example
+    
       - name: Deploy
         run: |
           cd example/build/web
