@@ -45,6 +45,8 @@ class GroundedMainBar extends StatefulWidget with SimpleConfigsAccess {
 /// It also manages transitions between different sub-editors.
 class GroundedMainBarState extends State<GroundedMainBar>
     with ImageEditorConvertedConfigs, SimpleConfigsAccessState {
+  final _contentKey = GlobalKey();
+
   late final ScrollController _bottomBarScrollCtrl;
 
   Color get _foreGroundColor => mainEditorConfigs.style.appBarColor;
@@ -55,11 +57,23 @@ class GroundedMainBarState extends State<GroundedMainBar>
     color: _foreGroundColorAccent,
   );
   final _bottomIconSize = 22.0;
+  double _contentWidth = 0;
 
   @override
   void initState() {
     super.initState();
     _bottomBarScrollCtrl = ScrollController();
+  }
+
+  void _setContentWidth() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final RenderBox? renderBox =
+          _contentKey.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null) {
+        _contentWidth = renderBox.size.width;
+      }
+    });
   }
 
   @override
@@ -112,6 +126,7 @@ class GroundedMainBarState extends State<GroundedMainBar>
   }
 
   Widget _buildFunctions(BoxConstraints constraints) {
+    _setContentWidth();
     return BottomAppBar(
       height: kGroundedSubBarHeight,
       color: mainEditorConfigs.style.bottomBarBackground,
@@ -149,8 +164,9 @@ class GroundedMainBarState extends State<GroundedMainBar>
             switchInCurve: Curves.ease,
             child: widget.editor.isSubEditorOpen &&
                     !widget.editor.isSubEditorClosing
-                ? const SizedBox.shrink()
+                ? SizedBox(width: _contentWidth)
                 : ConstrainedBox(
+                    key: _contentKey,
                     constraints: BoxConstraints(
                       minHeight: kGroundedSubBarHeight,
                       minWidth: min(constraints.maxWidth, 600),

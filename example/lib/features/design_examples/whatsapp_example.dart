@@ -229,10 +229,34 @@ class _WhatsAppExampleState extends State<WhatsAppExample>
                 ),
               ),
               filterEditor: FilterEditorConfigs(
+                fadeInUpDuration: Duration.zero,
                 filterList: [
                   const FilterModel(
                     name: 'None',
-                    filters: [],
+                    filters: [
+                      [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                      ]
+                    ],
                   ),
                   FilterModel(
                     name: 'Pop',

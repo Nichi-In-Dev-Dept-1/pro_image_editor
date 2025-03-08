@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.3.6
+- **FIX**(design-grounded): Fixed an issue where the scrollbar in the grounded bottombar did not restore correctly after opening a subeditor.
+- **FIX**(design-whatsapp): Fixed an issue where the filter in the WhatsApp design could not be deselected.
+
 ## 8.3.5
 - **FIX**(layer-stack): Resolved an issue where the outside overlay color on layers depended on the crop_rotate_editor instead of the active subeditor.
 
