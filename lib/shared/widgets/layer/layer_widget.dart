@@ -166,7 +166,7 @@ class _LayerWidgetState extends State<LayerWidget>
 
   /// Handles a secondary tap up event, typically for showing a context menu.
   void _onSecondaryTapUp(TapUpDetails details) {
-    if (_checkHitIsOutsideInCanvas()) return;
+    if (_isOutsideHitBox()) return;
     final Offset clickPosition = details.globalPosition;
     double spacing = 14.0;
 
@@ -223,13 +223,13 @@ class _LayerWidgetState extends State<LayerWidget>
 
   /// Handles a tap event on the layer.
   void _onTap() {
-    if (_checkHitIsOutsideInCanvas()) return;
+    if (_isOutsideHitBox()) return;
     widget.onTap?.call(_layer);
   }
 
   /// Handles a pointer down event on the layer.
   void _onPointerDown(PointerDownEvent event) {
-    if (_checkHitIsOutsideInCanvas()) return;
+    if (_isOutsideHitBox()) return;
     if (!isDesktop || event.buttons != kSecondaryMouseButton) {
       widget.onTapDown?.call();
     }
@@ -240,9 +240,18 @@ class _LayerWidgetState extends State<LayerWidget>
     widget.onTapUp?.call();
   }
 
+  bool _isOutsideHitBox() {
+    return _checkHitIsOutsideInCanvas() || _checkHitIsOutsideInText();
+  }
+
   /// Checks if the hit is outside the canvas for certain types of layers.
   bool _checkHitIsOutsideInCanvas() {
     return _layerType == _LayerType.canvas && !(_layer as PaintLayer).item.hit;
+  }
+
+  /// Checks if the hit is outside the canvas for certain types of layers.
+  bool _checkHitIsOutsideInText() {
+    return _layerType == _LayerType.text && !(_layer as TextLayer).hit;
   }
 
   /// Calculates the transformation matrix for the layer's position and
@@ -307,20 +316,26 @@ class _LayerWidgetState extends State<LayerWidget>
                 ? layerInteraction.style.hoverCursor
                 : MouseCursor.defer,
             onEnter: (event) {
-              if (_layerType != _LayerType.canvas) {
+              if (_layerType != _LayerType.canvas &&
+                  _layerType != _LayerType.text) {
                 setState(() {
                   _showMoveCursor = true;
                 });
               }
             },
             onExit: (event) {
-              if (_layerType == _LayerType.canvas) {
-                (widget.layerData as PaintLayer).item.hit = false;
-              } else {
-                setState(() {
-                  _showMoveCursor = false;
-                });
+              switch (_layerType) {
+                case _LayerType.canvas:
+                  (widget.layerData as PaintLayer).item.hit = false;
+                  break;
+                case _LayerType.text:
+                  (widget.layerData as TextLayer).hit = false;
+                  break;
+                default:
               }
+              setState(() {
+                _showMoveCursor = false;
+              });
             },
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
@@ -364,16 +379,6 @@ class _LayerWidgetState extends State<LayerWidget>
     }
   }
 
-  double getLineHeight(TextStyle style) {
-    final span = TextSpan(text: 'X', style: style);
-    final painter = TextPainter(
-      text: span,
-      textAlign: TextAlign.left,
-      textDirection: TextDirection.ltr,
-    )..layout();
-    return painter.preferredLineHeight;
-  }
-
   /// Build the text widget
   Widget _buildText() {
     var fontSize = textEditorConfigs.initFontSize * _layer.scale;
@@ -384,30 +389,26 @@ class _LayerWidgetState extends State<LayerWidget>
       overflow: TextOverflow.ellipsis,
     );
 
-    double height = getLineHeight(style);
-    const horizontalPaddingFactor = 0.3;
-
-    return Container(
-      // Fix Hit-Box
-      padding: EdgeInsets.only(
-        left: height * horizontalPaddingFactor,
-        right: height * horizontalPaddingFactor,
-        bottom: height * 0.175 / 2,
-      ),
-      child: HeroMode(
-        enabled: false,
-        child: RoundedBackgroundText(
-          layer.text.toString(),
-          backgroundColor: layer.background,
-          textAlign: layer.align,
-          style: layer.textStyle?.copyWith(
-                fontSize: style.fontSize,
-                fontWeight: style.fontWeight,
-                color: style.color,
-                fontFamily: style.fontFamily,
-              ) ??
-              style,
-        ),
+    return HeroMode(
+      enabled: false,
+      child: RoundedBackgroundText(
+        onHitTestResult: (hasHit) {
+          if (layer.hit != hasHit || _showMoveCursor != hasHit) {
+            _showMoveCursor = hasHit;
+            layer.hit = hasHit;
+            setState(() {});
+          }
+        },
+        layer.text.toString(),
+        backgroundColor: layer.background,
+        textAlign: layer.align,
+        style: layer.textStyle?.copyWith(
+              fontSize: style.fontSize,
+              fontWeight: style.fontWeight,
+              color: style.color,
+              fontFamily: style.fontFamily,
+            ) ??
+            style,
       ),
     );
   }
@@ -467,6 +468,7 @@ class _LayerWidgetState extends State<LayerWidget>
     );
   }
 
+  /// Build the censor widget
   Widget _buildCensorLayer() {
     var layer = _layer as PaintLayer;
 

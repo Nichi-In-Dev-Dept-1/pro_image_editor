@@ -557,6 +557,7 @@ class _RoundedBackgroundTextFieldState
                   textHeightBehavior: widget.textHeightBehavior,
                   textWidthBasis: widget.textWidthBasis,
                   strutStyle: widget.strutStyle,
+                  enableHorizontalHitBox: false,
                 ),
               ),
             ),

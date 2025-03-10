@@ -26,6 +26,7 @@ class TextLayer extends Layer {
   TextLayer({
     required this.text,
     this.customSecondaryColor = false,
+    this.hit = false,
     this.textStyle,
     this.colorMode,
     this.colorPickerPosition,
@@ -153,6 +154,9 @@ class TextLayer extends Layer {
       customSecondaryColor: map[keyConverter('customSecondaryColor')] ?? false,
     );
   }
+
+  /// Flag that indicates if the layers hit box is triggered.
+  bool hit;
 
   /// The text content of the layer.
   String text;

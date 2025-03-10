@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.4.0
+- **FEAT**(TextLayer): Improve the text layer hit box for better gesture recognition.
+
 ## 8.3.6
 - **FIX**(design-grounded): Fixed an issue where the scrollbar in the grounded bottombar did not restore correctly after opening a subeditor.
 - **FIX**(design-whatsapp): Fixed an issue where the filter in the WhatsApp design could not be deselected.
