@@ -5,11 +5,11 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mime/mime.dart';
 
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/multi_threading/thread_capture_model.dart';
 import '/core/models/multi_threading/thread_request_model.dart';
+import '/plugins/mime/mime.dart';
 import '/shared/utils/decode_image.dart';
 import '/shared/utils/unique_id_generator.dart';
 import '../services/image_converter_service.dart';

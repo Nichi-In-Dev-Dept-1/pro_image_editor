@@ -883,9 +883,9 @@ From these packages, only a small part of the code is used, with some code chang
 - [archive](https://pub.dev/packages/archive)
 - [defer_pointer](https://pub.dev/packages/defer_pointer)
 - [image](https://pub.dev/packages/image)
+- [mime](https://pub.dev/packages/mime)
 - [rounded_background_text](https://pub.dev/packages/rounded_background_text)
 
 Packages used by the editor, created by the Dart team:
 - [http](https://pub.dev/packages/http)
-- [mime](https://pub.dev/packages/mime)
 - [web](https://pub.dev/packages/web)
