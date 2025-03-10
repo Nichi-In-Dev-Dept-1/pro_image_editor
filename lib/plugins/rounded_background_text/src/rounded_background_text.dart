@@ -508,7 +508,12 @@ class RoundedBackgroundTextPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant RoundedBackgroundTextPainter oldDelegate) {
     return oldDelegate.backgroundColor != backgroundColor ||
-        oldDelegate.text != text ||
+        oldDelegate.text.width != text.width ||
+        oldDelegate.text.height != text.height ||
+        oldDelegate.text.ellipsis != text.ellipsis ||
+        oldDelegate.text.plainText != text.plainText ||
+        oldDelegate.text.textAlign != text.textAlign ||
+        oldDelegate.text.preferredLineHeight != text.preferredLineHeight ||
         oldDelegate.innerRadius != innerRadius ||
         oldDelegate.outerRadius != outerRadius;
   }
