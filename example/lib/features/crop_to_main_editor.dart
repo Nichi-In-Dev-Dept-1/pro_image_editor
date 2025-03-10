@@ -78,6 +78,9 @@ class _CropToMainEditorExampleState extends State<CropToMainEditorExample>
             onCloseEditor: () =>
                 onCloseEditor(enablePop: !isDesktopMode(context)),
             onImageEditingComplete: onImageEditingComplete,
+            mainEditorCallbacks: MainEditorCallbacks(
+              helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+            ),
           ),
           configs: _editorConfigs.copyWith(
             mainEditor: MainEditorConfigs(

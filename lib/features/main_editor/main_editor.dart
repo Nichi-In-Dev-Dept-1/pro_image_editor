@@ -8,7 +8,6 @@ import 'dart:ui' as ui show Image;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:vibration/vibration.dart';
 
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_callbacks_mixin.dart';
@@ -285,8 +284,10 @@ class ProImageEditorState extends State<ProImageEditor>
   final LayerCopyManager _layerCopyManager = LayerCopyManager();
 
   /// Helper class for managing interactions with layers in the editor.
-  final LayerInteractionManager layerInteractionManager =
-      LayerInteractionManager();
+  late final LayerInteractionManager layerInteractionManager =
+      LayerInteractionManager(
+    helperLinesCallbacks: mainEditorCallbacks?.helperLines,
+  );
 
   /// Manager class for managing the state of the editor.
   final StateManager stateManager = StateManager();
@@ -417,20 +418,6 @@ class ProImageEditorState extends State<ProImageEditor>
           tuneAdjustments: [],
         ),
       );
-    }
-
-    if (helperLines.hitVibration ?? helperLines.enableHitVibration) {
-      Vibration.hasVibrator().then((hasVibrator) {
-        layerInteractionManager.deviceCanVibrate = hasVibrator;
-
-        if (layerInteractionManager.deviceCanVibrate) {
-          Vibration.hasCustomVibrationsSupport()
-              .then((hasCustomVibrationsSupport) {
-            layerInteractionManager.deviceCanCustomVibrate =
-                hasCustomVibrationsSupport;
-          });
-        }
-      });
     }
 
     ServicesBinding.instance.keyboard.addHandler(_onKeyEvent);
@@ -925,8 +912,6 @@ class ProImageEditorState extends State<ProImageEditor>
         ..calculateInteractiveButtonScaleRotate(
           configs: configs,
           activeLayer: _activeLayer!,
-          configEnabledHitVibration:
-              helperLines.hitVibration ?? helperLines.enableHitVibration,
           details: details,
           editorSize: sizesManager.bodySize,
           layerTheme: layerInteraction.style,
@@ -956,8 +941,6 @@ class ProImageEditorState extends State<ProImageEditor>
           activeLayer: _activeLayer!,
           context: context,
           detail: details,
-          configEnabledHitVibration:
-              helperLines.hitVibration ?? helperLines.enableHitVibration,
           onHoveredRemoveChanged: _controllers.removeBtnCtrl.add,
         );
     } else if (details.pointerCount == 2) {
@@ -973,8 +956,6 @@ class ProImageEditorState extends State<ProImageEditor>
           detail: details,
           editorSize: sizesManager.bodySize,
           screenPaddingHelper: sizesManager.imageMargin,
-          configEnabledHitVibration:
-              helperLines.hitVibration ?? helperLines.enableHitVibration,
         );
     }
     mainEditorCallbacks?.handleUpdateLayer(_activeLayer!);

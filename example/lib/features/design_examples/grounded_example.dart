@@ -45,21 +45,23 @@ class _GroundedDesignExampleState extends State<GroundedDesignExample>
         widget.url,
         key: editorKey,
         callbacks: ProImageEditorCallbacks(
-            onImageEditingStarted: onImageEditingStarted,
-            onImageEditingComplete: onImageEditingComplete,
-            onCloseEditor: onCloseEditor,
-            mainEditorCallbacks: MainEditorCallbacks(
-              onStartCloseSubEditor: (value) {
-                /// Start the reversed animation for the bottombar
-                _mainEditorBarKey.currentState?.setState(() {});
-              },
-            ),
-            stickerEditorCallbacks: StickerEditorCallbacks(
-              onSearchChanged: (value) {
-                /// Filter your stickers
-                debugPrint(value);
-              },
-            )),
+          onImageEditingStarted: onImageEditingStarted,
+          onImageEditingComplete: onImageEditingComplete,
+          onCloseEditor: onCloseEditor,
+          mainEditorCallbacks: MainEditorCallbacks(
+            helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+            onStartCloseSubEditor: (value) {
+              /// Start the reversed animation for the bottombar
+              _mainEditorBarKey.currentState?.setState(() {});
+            },
+          ),
+          stickerEditorCallbacks: StickerEditorCallbacks(
+            onSearchChanged: (value) {
+              /// Filter your stickers
+              debugPrint(value);
+            },
+          ),
+        ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,
           theme: ThemeData(

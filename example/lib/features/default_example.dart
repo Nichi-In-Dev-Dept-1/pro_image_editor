@@ -34,6 +34,18 @@ class DefaultExample extends StatefulWidget {
 /// This class manages the behavior and state of the [DefaultExample] widget.
 class _DefaultExampleState extends State<DefaultExample>
     with ExampleHelperState<DefaultExample> {
+  late final _configs = ProImageEditorConfigs(
+    designMode: platformDesignMode,
+  );
+  late final _callbacks = ProImageEditorCallbacks(
+    onImageEditingStarted: onImageEditingStarted,
+    onImageEditingComplete: onImageEditingComplete,
+    onCloseEditor: onCloseEditor,
+    mainEditorCallbacks: MainEditorCallbacks(
+      helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,56 +158,32 @@ class _DefaultExampleState extends State<DefaultExample>
   Widget _buildAssetEditor() {
     return ProImageEditor.asset(
       kImageEditorExampleAssetPath,
-      callbacks: ProImageEditorCallbacks(
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
-      ),
-      configs: ProImageEditorConfigs(
-        designMode: platformDesignMode,
-      ),
+      callbacks: _callbacks,
+      configs: _configs,
     );
   }
 
   Widget _buildMemoryEditor(Uint8List bytes) {
     return ProImageEditor.memory(
       bytes,
-      callbacks: ProImageEditorCallbacks(
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
-      ),
-      configs: ProImageEditorConfigs(
-        designMode: platformDesignMode,
-      ),
+      callbacks: _callbacks,
+      configs: _configs,
     );
   }
 
   Widget _buildNetworkEditor() {
     return ProImageEditor.network(
       kImageEditorExampleNetworkUrl,
-      callbacks: ProImageEditorCallbacks(
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
-      ),
-      configs: ProImageEditorConfigs(
-        designMode: platformDesignMode,
-      ),
+      callbacks: _callbacks,
+      configs: _configs,
     );
   }
 
   Widget _buildFileEditor(File file) {
     return ProImageEditor.file(
       file,
-      callbacks: ProImageEditorCallbacks(
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
-      ),
-      configs: ProImageEditorConfigs(
-        designMode: platformDesignMode,
-      ),
+      callbacks: _callbacks,
+      configs: _configs,
     );
   }
 }

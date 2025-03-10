@@ -1,7 +1,13 @@
 # Changelog
 
-## 8.4.0
+## 9.0.0
+- **FEAT**(callbacks): Add new callbacks that are triggered when a layer intersects with a helper line.
 - **FEAT**(TextLayer): Improve the text layer hit box for better gesture recognition.
+
+- **FIX**(Layers): Fix incorrect layer selection when drawing lines overlay other layers
+
+#### Breaking Changes
+- Removed the vibration package dependency and the support for internal feedback vibration. You can read more about this change and see example code on how to implement feedback support [here](https://github.com/hm21/pro_image_editor/discussions/386).
 
 ## 8.3.6
 - **FIX**(design-grounded): Fixed an issue where the scrollbar in the grounded bottombar did not restore correctly after opening a subeditor.

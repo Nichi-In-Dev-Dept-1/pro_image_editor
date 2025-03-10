@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '/core/models/editor_callbacks/main_editor_callbacks.dart';
+import '/core/models/editor_callbacks/main_editor/main_editor_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/history/state_history.dart';
 import '/core/models/layers/layer.dart';

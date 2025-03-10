@@ -203,24 +203,6 @@ The ProImageEditor is a Flutter widget designed for image editing within your ap
 
 ## Getting started
 
-### Android
-
-To enable smooth hit vibrations from a helper line, you need to add the `VIBRATE` permission to your `AndroidManifest.xml` file.
-
-``` xml
-<uses-permission android:name="android.permission.VIBRATE"/>
-```
-
-### OpenHarmony 
-
-To enable smooth hit vibrations from a helper line, you need to add the `VIBRATE` permission to your project's module.json5 file.
-
-```json
-"requestPermissions": [
-    {"name" :  "ohos.permission.VIBRATE"},                
-]
-```
-
 
 ### Web
 
@@ -285,7 +267,7 @@ By making this change, you can enhance filter compatibility and ensure a smoothe
 You can view the full web example [here](https://github.com/hm21/pro_image_editor/tree/stable/example/web).
 
 
-### iOS, macOS, Linux, Windows
+### Android, iOS, macOS, Linux, Windows
 
 No further action is required.
 
@@ -318,6 +300,18 @@ void _openEditor() {
             */
             Navigator.pop(context);
           },
+          /* 
+          Optional: If you want a line hit to provide vibration feedback similar to WhatsApp, 
+          you can use the code below in combination with the vibration package.
+
+          mainEditorCallbacks: MainEditorCallbacks(
+            helperLines: HelperLinesCallbacks(
+              onLineHit: () {
+                Vibration.vibrate(duration: 3);
+              }
+            ),
+          ),
+          */
         ),
       ),
     ),
@@ -342,6 +336,18 @@ Widget build(BuildContext context) {
                 */
                Navigator.pop(context);
              },
+             /* 
+             Optional: If you want a line hit to provide vibration feedback similar to WhatsApp, 
+             you can use the code below in combination with the vibration package.
+
+             mainEditorCallbacks: MainEditorCallbacks(
+               helperLines: HelperLinesCallbacks(
+                 onLineHit: () {
+                   Vibration.vibrate(duration: 3);
+                 }
+               ),
+             ),
+             */
           ),
         ),
     );
@@ -412,7 +418,6 @@ return Scaffold(
         showVerticalLine: true,
         showHorizontalLine: true,
         showRotateLine: true,
-        hitVibration: true,
       ),
       mainEditor: const MainEditorConfigs(
         widgets: MainEditorWidgets(),
@@ -875,10 +880,9 @@ This package uses several Flutter packages to provide a seamless editing experie
 - [emoji_picker_flutter](https://pub.dev/packages/emoji_picker_flutter)
 - [http](https://pub.dev/packages/http)
 - [image](https://pub.dev/packages/image)
-- [rounded_background_text](https://pub.dev/packages/rounded_background_text)
-- [vibration](https://pub.dev/packages/vibration)
 
 From these packages, only a small part of the code is used, with some code changes that better fit to the image editor.
 - [colorfilter_generator](https://pub.dev/packages/colorfilter_generator)
 - [defer_pointer](https://pub.dev/packages/defer_pointer)
+- [rounded_background_text](https://pub.dev/packages/rounded_background_text)
 

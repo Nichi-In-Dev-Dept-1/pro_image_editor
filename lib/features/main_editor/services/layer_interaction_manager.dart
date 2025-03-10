@@ -2,16 +2,13 @@
 import 'dart:math';
 
 // Flutter imports:
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// Package imports:
-import 'package:vibration/vibration.dart';
 
 // Project imports:
+import '/core/models/editor_callbacks/main_editor/helper_lines/helper_lines_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/history/last_layer_interaction_position.dart';
 import '/core/models/layers/layer.dart';
-import '/core/platform/io/io_helper.dart';
 import '/shared/utils/debounce.dart';
 
 /// A helper class responsible for managing layer interactions in the editor.
@@ -22,6 +19,18 @@ import '/shared/utils/debounce.dart';
 /// helper lines and provides haptic feedback when interacting with these lines
 /// to enhance the user experience.
 class LayerInteractionManager {
+  /// Creates an instance of [LayerInteractionManager].
+  ///
+  /// - [helperLinesCallbacks]: An optional instance of [HelperLinesCallbacks]
+  ///   to handle helper line hit events.
+  LayerInteractionManager({
+    required this.helperLinesCallbacks,
+  });
+
+  /// An optional instance of [HelperLinesCallbacks] that defines callback
+  ///  functions for handling helper line interactions.
+  final HelperLinesCallbacks? helperLinesCallbacks;
+
   /// Debounce for scaling actions in the editor.
   late Debounce scaleDebounce;
 
@@ -60,12 +69,6 @@ class LayerInteractionManager {
 
   /// Flag indicating if rotation helper lines should be displayed.
   bool showRotationHelperLine = false;
-
-  /// Flag indicating if the device can vibrate.
-  bool deviceCanVibrate = false;
-
-  /// Flag indicating if the device can perform custom vibration.
-  bool deviceCanCustomVibrate = false;
 
   /// Flag indicating if rotation helper lines have started.
   bool _rotationStartedHelper = false;
@@ -157,7 +160,6 @@ class LayerInteractionManager {
     required ScaleUpdateDetails details,
     required Layer activeLayer,
     required Size editorSize,
-    required bool configEnabledHitVibration,
     required LayerInteractionStyle layerTheme,
   }) {
     /// Calculates the rotation angle (in radians) for a button moved to a
@@ -245,7 +247,6 @@ class LayerInteractionManager {
       checkRotationLine(
         activeLayer: activeLayer,
         editorSize: editorSize,
-        configEnabledHitVibration: configEnabledHitVibration,
       );
     }
   }
@@ -257,7 +258,6 @@ class LayerInteractionManager {
     required BuildContext context,
     required ScaleUpdateDetails detail,
     required Layer activeLayer,
-    required bool configEnabledHitVibration,
     required GlobalKey removeAreaKey,
     required Function(bool) onHoveredRemoveChanged,
   }) {
@@ -286,7 +286,7 @@ class LayerInteractionManager {
 
     if (editorScaleFactor > 1) return;
 
-    bool shouldVibrate = false;
+    bool hasLineHit = false;
     double posX = activeLayer.offset.dx;
     double posY = activeLayer.offset.dy;
 
@@ -309,7 +309,7 @@ class LayerInteractionManager {
             (helperGoNearLineLeft || helperGoNearLineRight)) ||
         (showVerticalHelperLine && hitAreaX)) {
       if (!showVerticalHelperLine) {
-        shouldVibrate = true;
+        hasLineHit = true;
         snapStartPosX = detail.focalPoint.dx;
       }
       showVerticalHelperLine = true;
@@ -326,7 +326,7 @@ class LayerInteractionManager {
             (helperGoNearLineTop || helperGoNearLineBottom)) ||
         (showHorizontalHelperLine && hitAreaY)) {
       if (!showHorizontalHelperLine) {
-        shouldVibrate = true;
+        hasLineHit = true;
         snapStartPosY = detail.focalPoint.dy;
       }
       showHorizontalHelperLine = true;
@@ -338,8 +338,13 @@ class LayerInteractionManager {
           posY <= 0 ? LayerLastPosition.top : LayerLastPosition.bottom;
     }
 
-    if (configEnabledHitVibration && shouldVibrate) {
-      _lineHitVibrate();
+    if (hasLineHit) {
+      if (showHorizontalHelperLine) {
+        helperLinesCallbacks?.handleHorizontalLineHit();
+      }
+      if (showVerticalHelperLine) {
+        helperLinesCallbacks?.handleVerticalLineHit();
+      }
     }
   }
 
@@ -351,7 +356,6 @@ class LayerInteractionManager {
     required Layer activeLayer,
     required Size editorSize,
     required EdgeInsets screenPaddingHelper,
-    required bool configEnabledHitVibration,
   }) {
     _activeScale = true;
 
@@ -366,7 +370,6 @@ class LayerInteractionManager {
         checkRotationLine(
           activeLayer: activeLayer,
           editorSize: editorSize,
-          configEnabledHitVibration: configEnabledHitVibration,
         );
       }
     }
@@ -379,7 +382,6 @@ class LayerInteractionManager {
   checkRotationLine({
     required Layer activeLayer,
     required Size editorSize,
-    required bool configEnabledHitVibration,
   }) {
     double rotation = activeLayer.rotation - baseAngleFactor;
     double hitSpanX = hitSpan / 2;
@@ -407,8 +409,8 @@ class LayerInteractionManager {
 
         rotationHelperLineX = posX + editorSize.width / 2;
         rotationHelperLineY = posY + editorSize.height / 2;
-        if (configEnabledHitVibration && !showRotationHelperLine) {
-          _lineHitVibrate();
+        if (!showRotationHelperLine) {
+          helperLinesCallbacks?.handleRotateLineHit();
         }
         showRotationHelperLine = true;
       }
@@ -548,36 +550,6 @@ class LayerInteractionManager {
           layer.offset.dx,
           imageHeight - layer.offset.dy,
         );
-    }
-  }
-
-  /// Vibrates the device briefly if enabled and supported.
-  ///
-  /// This function checks if helper lines hit vibration is enabled in the
-  /// widget's configurations (`widget.configs.helperLines.hitVibration`) and
-  /// whether the device supports vibration. If both conditions are met, it
-  /// triggers a brief vibration on the device.
-  ///
-  /// If the device supports custom vibrations, it uses the `Vibration.vibrate`
-  /// method with a duration of 3 milliseconds to produce the vibration.
-  ///
-  /// On older Android devices, it initiates vibration using
-  /// `Vibration.vibrate`, and then, after 3 milliseconds, cancels the
-  /// vibration using `Vibration.cancel`.
-  ///
-  /// This function is used to provide haptic feedback when helper lines are
-  /// interacted with, enhancing the user experience.
-  void _lineHitVibrate() {
-    if (deviceCanVibrate && deviceCanCustomVibrate) {
-      Vibration.vibrate(duration: 3);
-    } else if (!kIsWeb && Platform.isAndroid) {
-      /// On old android devices we can stop the vibration after 3 milliseconds
-      /// iOS: only works for custom haptic vibrations using CHHapticEngine.
-      /// This will set `deviceCanCustomVibrate` anyway to true so it's
-      /// impossible to fake it.
-      Vibration.vibrate();
-      Future.delayed(const Duration(milliseconds: 3))
-          .whenComplete(Vibration.cancel);
     }
   }
 

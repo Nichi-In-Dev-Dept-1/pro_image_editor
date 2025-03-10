@@ -2,9 +2,12 @@
 import 'package:flutter/widgets.dart';
 
 // Project imports:
-import '../layers/layer.dart';
-import 'standalone_editor_callbacks.dart';
-import 'utils/sub_editors_name.dart';
+import '../../layers/layer.dart';
+import '../standalone_editor_callbacks.dart';
+import '../utils/sub_editors_name.dart';
+import 'helper_lines/helper_lines_callbacks.dart';
+
+export 'helper_lines/helper_lines_callbacks.dart';
 
 /// A class representing callbacks for the main editor.
 class MainEditorCallbacks extends StandaloneEditorCallbacks {
@@ -27,6 +30,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
     this.onEditorZoomScaleUpdate,
     this.onEditorZoomScaleEnd,
     this.onEscapeButton,
+    this.helperLines = const HelperLinesCallbacks(),
     super.onInit,
     super.onAfterViewInit,
     super.onUpdateUI,
@@ -195,6 +199,10 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   ///
   ///  * [Route.onPopInvokedWithResult], which is similar.
   final PopInvokedWithResultCallback<dynamic>? onPopInvoked;
+
+  /// An instance of [HelperLinesCallbacks] that manages callback functions
+  /// for handling helper line hit events.
+  final HelperLinesCallbacks helperLines;
 
   /// Handles the addition of a layer.
   ///
