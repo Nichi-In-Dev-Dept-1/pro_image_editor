@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 // Project imports:
+import '../../shared/utils/file_constructor_utils.dart';
 import '/core/platform/io/io_helper.dart';
 import '/shared/utils/converters.dart';
 
@@ -87,10 +88,11 @@ class EditorImage {
   /// must not be null.
   EditorImage({
     this.byteArray,
-    this.file,
     this.networkUrl,
     this.assetPath,
-  }) : assert(
+    dynamic file,
+  })  : file = file == null ? null : ensureFileInstance(file),
+        assert(
           byteArray != null ||
               file != null ||
               networkUrl != null ||

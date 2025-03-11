@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.0.1
+- **FIX**(EditorImage): support `File` type in addition to file path
+
 ## 9.0.0
 - **FEAT**(callbacks): Add new callbacks that are triggered when a layer intersects with a helper line.
 - **FEAT**(TextLayer): Improve the text layer hit box for better gesture recognition.
