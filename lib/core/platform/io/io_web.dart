@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:web/web.dart' as web;
 
 /// A class representing a file with a given path.
@@ -9,7 +11,17 @@ class File {
   final String path;
 
   /// Write to the file path
-  Future<void> writeAsString(String value) {
+  Future<void> writeAsString(String value) async {
+    throw ArgumentError('This function is not supported on the web.');
+  }
+
+  /// Read bytes async
+  Future<Uint8List> readAsBytes() async {
+    throw ArgumentError('This function is not supported on the web.');
+  }
+
+  /// Read bytes sync
+  String readAsStringSync() {
     throw ArgumentError('This function is not supported on the web.');
   }
 }
@@ -77,7 +89,7 @@ class Platform {
   }
 
   /// Retrieves the number of processors available on the device.
-  int get numberOfProcessors => web.window.navigator.hardwareConcurrency;
+  static int get numberOfProcessors => web.window.navigator.hardwareConcurrency;
 }
 
 /// A reference to a directory (or _folder_) on the file system.

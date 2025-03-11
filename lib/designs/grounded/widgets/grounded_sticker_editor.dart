@@ -181,12 +181,13 @@ class _GroundedStickerEditorState extends State<GroundedStickerEditor> {
       return Container(
         constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(100)),
+          color: const Color(0xFF222222),
+          borderRadius: BorderRadius.circular(100),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Icons.search),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 12.0),

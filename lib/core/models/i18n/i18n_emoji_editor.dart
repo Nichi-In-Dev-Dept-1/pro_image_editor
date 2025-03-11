@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 /// Internationalization (i18n) settings for the Emoji Editor component.
 class I18nEmojiEditor {
   /// Creates an instance of [I18nEmojiEditor] with customizable
@@ -26,7 +28,34 @@ class I18nEmojiEditor {
     this.categoryObjects = 'Objects',
     this.categorySymbols = 'Symbols',
     this.categoryFlags = 'Flags',
+    this.enableSearchAutoI18n = false,
+    this.locale,
   });
+
+  /// Automatically translates emoji search terms based on the specified locale.
+  ///
+  /// **This increases the app size by approximately 2MB.**
+  ///
+  /// To optimize size, manually set an `emojiSet` in `EmojiEditorConfigs`
+  /// if only a single locale is needed.
+  ///
+  /// If `false` and no `emojiSet` is specified, it defaults to
+  /// `emojiSetEnglish`.
+  ///
+  /// Default: `false`
+  final bool enableSearchAutoI18n;
+
+  /// Defines the locale for selecting the appropriate language for the emoji
+  /// set, affecting emoji search results.
+  ///
+  /// This takes effect only if `enableSearchAutoLocale` is `true` or if you
+  /// manually configure an `emojiSet` in `EmojiEditorConfigs`.
+  ///
+  /// Supported languages: `en`, `de`, `es`, `fr`, `hi`, `it`, `ja`, `pt`,
+  /// `ru`, `zh`.
+  ///
+  /// Default: `Localizations.localeOf(context)`
+  final Locale? locale;
 
   /// Text for the bottom navigation bar item that opens the Emoji Editor.
   final String bottomNavigationBarText;

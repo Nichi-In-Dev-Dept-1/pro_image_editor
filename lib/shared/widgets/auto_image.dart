@@ -47,7 +47,7 @@ class AutoImage extends StatelessWidget {
         );
       case EditorImageType.file:
         return Image.file(
-          image.file!,
+          image.file! as dynamic,
           fit: fit,
           width: width,
           height: height,

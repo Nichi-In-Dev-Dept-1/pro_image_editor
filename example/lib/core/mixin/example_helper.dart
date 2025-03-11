@@ -1,9 +1,11 @@
 // Dart imports:
-import 'dart:typed_data';
+import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
+import 'package:vibration/vibration.dart';
 
 import '/features/preview_img.dart';
 import '../constants/example_constants.dart';
@@ -26,6 +28,22 @@ mixin ExampleHelperState<T extends StatefulWidget> on State<T> {
 
   /// Indicates whether image-resources are pre-cached.
   bool isPreCached = true;
+
+  bool _deviceCanVibrate = false;
+  bool _deviceCanCustomVibrate = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Vibration.hasVibrator().then((hasVibrator) async {
+      _deviceCanVibrate = hasVibrator;
+
+      if (!hasVibrator || !mounted) return;
+
+      _deviceCanCustomVibrate = await Vibration.hasCustomVibrationsSupport();
+    });
+  }
 
   /// Determines if the current layout should use desktop mode based on the
   /// screen width.
@@ -142,5 +160,30 @@ mixin ExampleHelperState<T extends StatefulWidget> on State<T> {
         onDone?.call();
       });
     });
+  }
+
+  /// Vibrates the device briefly if enabled and supported.
+  ///
+  /// If the device supports custom vibrations, it uses the `Vibration.vibrate`
+  /// method with a duration of 3 milliseconds to produce the vibration.
+  ///
+  /// On older Android devices, it initiates vibration using
+  /// `Vibration.vibrate`, and then, after 3 milliseconds, cancels the
+  /// vibration using `Vibration.cancel`.
+  ///
+  /// This function is used to provide haptic feedback when helper lines are
+  /// interacted with, enhancing the user experience.
+  void vibrateLineHit() {
+    if (_deviceCanVibrate && _deviceCanCustomVibrate) {
+      Vibration.vibrate(duration: 3);
+    } else if (!kIsWeb && Platform.isAndroid) {
+      /// On old android devices we can stop the vibration after 3 milliseconds
+      /// iOS: only works for custom haptic vibrations using CHHapticEngine.
+      /// This will set `deviceCanCustomVibrate` anyway to true so it's
+      /// impossible to fake it.
+      Vibration.vibrate();
+      Future.delayed(const Duration(milliseconds: 3))
+          .whenComplete(Vibration.cancel);
+    }
   }
 }

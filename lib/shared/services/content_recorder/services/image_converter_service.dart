@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
@@ -67,8 +65,7 @@ class ImageConverterService {
   }) async {
     format ??= configs.outputFormat;
 
-    if (configs.generateInsideSeparateThread ??
-        configs.enableIsolateGeneration) {
+    if (configs.enableIsolateGeneration) {
       try {
         /// For the case multithreading isn't supported we fall back to the
         /// main thread.
@@ -105,14 +102,19 @@ class ImageConverterService {
   Future<Uint8List?> _convertOnMainThread({
     required ui.Image image,
   }) async {
-    if (configs.captureOnlyDrawingBounds ?? configs.cropToDrawingBounds) {
+    if (configs.cropToDrawingBounds) {
       image = await dartUiRemoveTransparentImgAreas(image) ?? image;
     }
     return await encodeImageFromThreadRequest(
-      ThreadRequest.fromConfigs(
+      ThreadRequest(
         id: 'id',
         image: await convertFlutterUiToImage(image),
-        configs: configs,
+        outputFormat: configs.outputFormat,
+        singleFrame: configs.singleFrame,
+        jpegQuality: configs.jpegQuality,
+        jpegChroma: configs.jpegChroma,
+        pngFilter: configs.pngFilter,
+        pngLevel: configs.pngLevel,
       ),
     );
   }
@@ -135,8 +137,7 @@ class ImageConverterService {
   }) async {
     return ImageConvertThreadRequest(
       id: id,
-      generateOnlyImageBounds:
-          configs.captureOnlyDrawingBounds ?? configs.cropToDrawingBounds,
+      generateOnlyImageBounds: configs.cropToDrawingBounds,
       outputFormat: format,
       jpegChroma: configs.jpegChroma,
       jpegQuality: configs.jpegQuality,

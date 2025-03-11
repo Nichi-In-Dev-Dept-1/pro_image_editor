@@ -50,6 +50,9 @@ class _StickersExampleState extends State<StickersExample>
         onImageEditingStarted: onImageEditingStarted,
         onImageEditingComplete: onImageEditingComplete,
         onCloseEditor: () => onCloseEditor(enablePop: !isDesktopMode(context)),
+        mainEditorCallbacks: MainEditorCallbacks(
+          helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+        ),
       ),
       configs: ProImageEditorConfigs(
         designMode: platformDesignMode,

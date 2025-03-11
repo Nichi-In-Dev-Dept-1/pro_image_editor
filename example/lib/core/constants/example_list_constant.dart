@@ -1,3 +1,4 @@
+import 'package:example/features/emoji_translate_example.dart';
 import 'package:example/features/stickers_example.dart';
 import 'package:flutter/material.dart';
 
@@ -108,7 +109,7 @@ List<Example> kImageEditorExamples = const [
   Example(
     path: '/google-font',
     name: 'Google-Font',
-    icon: Icons.emoji_emotions_outlined,
+    icon: Icons.font_download_outlined,
     page: GoogleFontExample(),
   ),
   Example(
@@ -130,10 +131,10 @@ List<Example> kImageEditorExamples = const [
     page: MovableBackgroundImageExample(),
   ),
   Example(
-    path: '/frame',
-    name: 'Frame',
-    icon: Icons.filter_frames_outlined,
-    page: FrameExample(),
+    path: '/emoji-translate',
+    name: 'Emoji-Translate',
+    icon: Icons.emoji_emotions_outlined,
+    page: EmojiTranslateExample(),
   ),
   Example(
     path: '/zoom',
@@ -146,5 +147,11 @@ List<Example> kImageEditorExamples = const [
     name: 'Output-Format',
     icon: Icons.compare_outlined,
     page: ImageFormatConvertExample(),
+  ),
+  Example(
+    path: '/frame',
+    name: 'Frame',
+    icon: Icons.filter_frames_outlined,
+    page: FrameExample(),
   ),
 ];

@@ -2,17 +2,16 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-// Package imports:
-import 'package:image/image.dart' as img;
-
-// Project imports:
 import '/core/models/editor_configs/image_generation_configs/output_formats.dart';
 import '/core/models/multi_threading/thread_request_model.dart';
-import 'jpeg_encoder.dart';
+import '/plugins/image/src/formats/formats.dart';
+import '/plugins/image/src/formats/jpeg/jpeg_chroma.dart';
+import '/plugins/image/src/formats/png/png_filter.dart';
+import '/plugins/image/src/image/image.dart';
 
 /// Encodes an image into the specified format and returns the encoded data.
 ///
-/// This function processes an [img.Image] object and encodes it into the
+/// This function processes an [Image] object and encodes it into the
 /// desired format, such as JPEG or PNG, based on the provided parameters.
 /// The function supports encoding both single-frame and multi-frame images.
 ///
@@ -22,7 +21,7 @@ import 'jpeg_encoder.dart';
 /// the encoded image data.
 ///
 /// Parameters:
-/// - [image]: The [img.Image] object to be encoded.
+/// - [image]: The [Image] object to be encoded.
 /// - [outputFormat]: The format to which the image should be encoded, such
 ///   as JPEG or PNG.
 /// - [singleFrame]: Whether the image is a single frame (true) or part of
@@ -43,26 +42,27 @@ import 'jpeg_encoder.dart';
 /// - May throw exceptions related to encoding failures or invalid parameters.
 
 Future<Uint8List> encodeImage({
-  required img.Image image,
+  required Image image,
   required OutputFormat outputFormat,
   required bool singleFrame,
   required int jpegQuality,
-  required img.JpegChroma jpegChroma,
-  required img.PngFilter pngFilter,
+  required JpegChroma jpegChroma,
+  required PngFilter pngFilter,
   required int pngLevel,
   Completer<void>? destroy$,
 }) async {
   Uint8List bytes;
   switch (outputFormat) {
     case OutputFormat.jpg:
-      bytes = await JpegHealthyEncoder(quality: jpegQuality).encode(
+      bytes = await encodeJpg(
         image,
+        quality: jpegQuality,
         chroma: jpegChroma,
         destroy$: destroy$,
       );
       break;
     case OutputFormat.png:
-      bytes = img.encodePng(
+      bytes = encodePng(
         image,
         filter: pngFilter,
         level: pngLevel,
@@ -70,22 +70,22 @@ Future<Uint8List> encodeImage({
       );
       break;
     case OutputFormat.tiff:
-      bytes = img.encodeTiff(image, singleFrame: singleFrame);
+      bytes = encodeTiff(image, singleFrame: singleFrame);
       break;
     case OutputFormat.bmp:
-      bytes = img.encodeBmp(image);
+      bytes = encodeBmp(image);
       break;
     case OutputFormat.cur:
-      bytes = img.encodeCur(image, singleFrame: singleFrame);
+      bytes = encodeCur(image, singleFrame: singleFrame);
       break;
     case OutputFormat.pvr:
-      bytes = img.encodePvr(image, singleFrame: singleFrame);
+      bytes = encodePvr(image, singleFrame: singleFrame);
       break;
     case OutputFormat.tga:
-      bytes = img.encodeTga(image);
+      bytes = encodeTga(image);
       break;
     case OutputFormat.ico:
-      bytes = img.encodeIco(image, singleFrame: singleFrame);
+      bytes = encodeIco(image, singleFrame: singleFrame);
       break;
   }
   return bytes;

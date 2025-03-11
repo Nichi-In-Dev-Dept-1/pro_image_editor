@@ -1,7 +1,7 @@
-// Package imports:
-import 'package:image/image.dart' as img;
-
-import '../editor_configs/image_generation_configs/image_generation_configs.dart';
+import '/core/models/editor_configs/image_generation_configs/output_formats.dart';
+import '/plugins/image/src/formats/jpeg/jpeg_chroma.dart';
+import '/plugins/image/src/formats/png/png_filter.dart';
+import '/plugins/image/src/image/image.dart' as img;
 
 /// Represents an image object sent from the main thread.
 class ImageConvertThreadRequest extends ThreadRequest {
@@ -38,34 +38,6 @@ class ThreadRequest {
     required this.jpegChroma,
     this.generateOnlyImageBounds,
   });
-
-  /// Creates a [ThreadRequest] instance from the provided configurations.
-  ///
-  /// The [id] parameter is a unique identifier for the thread request.
-  ///
-  /// The [image] parameter is the image to be processed.
-  ///
-  /// The [configs] parameter contains the configuration settings for image
-  /// generation.
-  ///
-  /// Returns a [ThreadRequest] object initialized with the provided
-  /// configurations.
-  factory ThreadRequest.fromConfigs({
-    required String id,
-    required img.Image image,
-    required ImageGenerationConfigs configs,
-  }) {
-    return ThreadRequest(
-      id: id,
-      image: image,
-      outputFormat: configs.outputFormat,
-      singleFrame: configs.singleFrame,
-      jpegQuality: configs.jpegQuality,
-      jpegChroma: configs.jpegChroma,
-      pngFilter: configs.pngFilter,
-      pngLevel: configs.pngLevel,
-    );
-  }
 
   /// The unique identifier for this task.
   final String id;

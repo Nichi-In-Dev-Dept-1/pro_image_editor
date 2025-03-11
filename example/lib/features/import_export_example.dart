@@ -86,6 +86,9 @@ class _ImportExportExampleState extends State<ImportExportExample>
             onImageEditingComplete: onImageEditingComplete,
             onCloseEditor: () =>
                 onCloseEditor(enablePop: !isDesktopMode(context)),
+            mainEditorCallbacks: MainEditorCallbacks(
+              helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+            ),
           ),
           configs: ProImageEditorConfigs(
             imageGeneration: const ImageGenerationConfigs(

@@ -1,6 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
-
 import 'package:flutter/widgets.dart';
 
 import '/features/paint_editor/enums/paint_editor_enum.dart';
@@ -48,13 +45,6 @@ class PaintEditorConfigs {
     this.enableZoom = false,
     this.editorMinScale = 1.0,
     this.editorMaxScale = 5.0,
-    @Deprecated('Use enableModeFreeStyle instead.') this.hasOptionFreeStyle,
-    @Deprecated('Use enableModeArrow instead.') this.hasOptionArrow,
-    @Deprecated('Use enableModeLine instead.') this.hasOptionLine,
-    @Deprecated('Use enableModeRect instead.') this.hasOptionRect,
-    @Deprecated('Use enableModeCircle instead.') this.hasOptionCircle,
-    @Deprecated('Use enableModeDashLine instead.') this.hasOptionDashLine,
-    @Deprecated('Use enableModeEraser instead.') this.hasOptionEraser,
     this.enableModeFreeStyle = true,
     this.enableModeArrow = true,
     this.enableModeLine = true,
@@ -64,26 +54,14 @@ class PaintEditorConfigs {
     this.enableModeBlur = true,
     this.enableModePixelate = true,
     this.enableModeEraser = true,
-    @Deprecated('Use showToggleFillButton instead') this.canToggleFill,
-    @Deprecated('Use showLineWidthAdjustmentButton instead')
-    this.canChangeLineWidth,
-    @Deprecated('Use showOpacityAdjustmentButton instead')
-    this.canChangeOpacity,
     this.showToggleFillButton = true,
     this.showLineWidthAdjustmentButton = true,
     this.showOpacityAdjustmentButton = true,
-    @Deprecated('Use isInitiallyFilled instead') this.initialFill = false,
     this.isInitiallyFilled = false,
     this.showLayers = true,
     this.boundaryMargin = EdgeInsets.zero,
     this.minScale = double.negativeInfinity,
     this.maxScale = double.infinity,
-    @Deprecated('Use enableFreeStyleHighPerformanceScaling instead.')
-    this.freeStyleHighPerformanceScaling,
-    @Deprecated('Use enableFreeStyleHighPerformanceMoving instead.')
-    this.freeStyleHighPerformanceMoving,
-    @Deprecated('Use enableFreeStyleHighPerformanceHero instead.')
-    this.freeStyleHighPerformanceHero,
     this.enableFreeStyleHighPerformanceScaling,
     this.enableFreeStyleHighPerformanceMoving,
     this.enableFreeStyleHighPerformanceHero = false,
@@ -110,34 +88,6 @@ class PaintEditorConfigs {
   ///
   /// Default value is `false`.
   final bool enableZoom;
-
-  /// Indicating whether the free-style drawing option is enabled.
-  @Deprecated('Use enableModeFreeStyle instead.')
-  final bool? hasOptionFreeStyle;
-
-  /// Indicating whether the arrow drawing option is enabled.
-  @Deprecated('Use enableModeArrow instead.')
-  final bool? hasOptionArrow;
-
-  /// Indicating whether the line drawing option is enabled.
-  @Deprecated('Use enableModeLine instead.')
-  final bool? hasOptionLine;
-
-  /// Indicating whether the rectangle drawing option is enabled.
-  @Deprecated('Use enableModeRect instead.')
-  final bool? hasOptionRect;
-
-  /// Indicating whether the circle drawing option is enabled.
-  @Deprecated('Use enableModeCircle instead.')
-  final bool? hasOptionCircle;
-
-  /// Indicating whether the dash line drawing option is enabled.
-  @Deprecated('Use enableModeDashLine instead.')
-  final bool? hasOptionDashLine;
-
-  /// Indicating whether the eraser option is enabled.
-  @Deprecated('Use enableModeEraser instead.')
-  final bool? hasOptionEraser;
 
   /// Indicating whether the free-style drawing option is enabled.
   final bool enableModeFreeStyle;
@@ -170,18 +120,6 @@ class PaintEditorConfigs {
   /// Indicating whether the eraser option is enabled.
   final bool enableModeEraser;
 
-  /// Indicating whether the fill option can be toggled.
-  @Deprecated('Use showToggleFillButton instead')
-  final bool? canToggleFill;
-
-  /// Indicating whether the line width can be changed.
-  @Deprecated('Use showLineWidthAdjustmentButton instead')
-  final bool? canChangeLineWidth;
-
-  /// Indicating whether the opacity can be changed.
-  @Deprecated('Use showOpacityAdjustmentButton instead')
-  final bool? canChangeOpacity;
-
   /// Whether to show a button for toggle the fill state.
   final bool showToggleFillButton;
 
@@ -192,43 +130,10 @@ class PaintEditorConfigs {
   final bool showOpacityAdjustmentButton;
 
   /// Indicates the initial fill state.
-  @Deprecated('Use isInitiallyFilled instead')
-  final bool? initialFill;
-
-  /// Indicates the initial fill state.
   final bool isInitiallyFilled;
 
   /// Show the layers from the main-editor.
   final bool showLayers;
-
-  /// Enables high-performance scaling for free-style drawing when set to
-  /// `true`.
-  ///
-  /// When this option is enabled, it optimizes scaling for improved
-  /// performance.
-  ///
-  /// By default, it's set to `true` on mobile devices and `false` on desktop
-  /// devices.
-  @Deprecated('Use enableFreeStyleHighPerformanceScaling instead.')
-  final bool? freeStyleHighPerformanceScaling;
-
-  /// Enables high-performance moving for free-style drawing when set to `true`.
-  ///
-  /// When this option is enabled, it optimizes moving for improved performance.
-  ///
-  /// By default, it's set to `true` only on mobile-web devices.
-  @Deprecated('Use enableFreeStyleHighPerformanceMoving instead.')
-  final bool? freeStyleHighPerformanceMoving;
-
-  /// Enables high-performance hero-animations for free-style drawing when set
-  /// to `true`.
-  ///
-  /// When this option is enabled, it optimizes hero-animations for improved
-  /// performance.
-  ///
-  /// By default, it's set to `false`.
-  @Deprecated('Use enableFreeStyleHighPerformanceHero instead.')
-  final bool? freeStyleHighPerformanceHero;
 
   /// Enables high-performance scaling for free-style drawing when set to
   /// `true`.
@@ -330,24 +235,10 @@ class PaintEditorConfigs {
   /// others unchanged.
   PaintEditorConfigs copyWith({
     bool? enabled,
-    bool? hasOptionFreeStyle,
-    bool? hasOptionArrow,
-    bool? hasOptionLine,
-    bool? hasOptionRect,
-    bool? hasOptionCircle,
-    bool? hasOptionDashLine,
-    bool? hasOptionEraser,
-    bool? canToggleFill,
-    bool? canChangeLineWidth,
-    bool? canChangeOpacity,
     bool? showToggleFillButton,
     bool? showLineWidthAdjustmentButton,
     bool? showOpacityAdjustmentButton,
-    bool? initialFill,
     bool? isInitiallyFilled,
-    bool? freeStyleHighPerformanceScaling,
-    bool? freeStyleHighPerformanceMoving,
-    bool? freeStyleHighPerformanceHero,
     bool? enableFreeStyleHighPerformanceScaling,
     bool? enableFreeStyleHighPerformanceMoving,
     bool? enableFreeStyleHighPerformanceHero,
@@ -378,13 +269,6 @@ class PaintEditorConfigs {
       safeArea: safeArea ?? this.safeArea,
       enabled: enabled ?? this.enabled,
       enableZoom: enableZoom ?? this.enableZoom,
-      hasOptionFreeStyle: hasOptionFreeStyle ?? this.hasOptionFreeStyle,
-      hasOptionArrow: hasOptionArrow ?? this.hasOptionArrow,
-      hasOptionLine: hasOptionLine ?? this.hasOptionLine,
-      hasOptionRect: hasOptionRect ?? this.hasOptionRect,
-      hasOptionCircle: hasOptionCircle ?? this.hasOptionCircle,
-      hasOptionDashLine: hasOptionDashLine ?? this.hasOptionDashLine,
-      hasOptionEraser: hasOptionEraser ?? this.hasOptionEraser,
       enableModeFreeStyle: enableModeFreeStyle ?? this.enableModeFreeStyle,
       enableModeArrow: enableModeArrow ?? this.enableModeArrow,
       enableModeLine: enableModeLine ?? this.enableModeLine,
@@ -394,23 +278,13 @@ class PaintEditorConfigs {
       enableModeBlur: enableModeBlur ?? this.enableModeBlur,
       enableModePixelate: enableModePixelate ?? this.enableModePixelate,
       enableModeEraser: enableModeEraser ?? this.enableModeEraser,
-      canToggleFill: canToggleFill ?? this.canToggleFill,
-      canChangeLineWidth: canChangeLineWidth ?? this.canChangeLineWidth,
       showToggleFillButton: showToggleFillButton ?? this.showToggleFillButton,
       showLineWidthAdjustmentButton:
           showLineWidthAdjustmentButton ?? this.showLineWidthAdjustmentButton,
       showOpacityAdjustmentButton:
           showOpacityAdjustmentButton ?? this.showOpacityAdjustmentButton,
       showLayers: showLayers ?? this.showLayers,
-      canChangeOpacity: canChangeOpacity ?? this.canChangeOpacity,
-      initialFill: initialFill ?? this.initialFill,
       isInitiallyFilled: isInitiallyFilled ?? this.isInitiallyFilled,
-      freeStyleHighPerformanceScaling: freeStyleHighPerformanceScaling ??
-          this.freeStyleHighPerformanceScaling,
-      freeStyleHighPerformanceMoving:
-          freeStyleHighPerformanceMoving ?? this.freeStyleHighPerformanceMoving,
-      freeStyleHighPerformanceHero:
-          freeStyleHighPerformanceHero ?? this.freeStyleHighPerformanceHero,
       enableFreeStyleHighPerformanceScaling:
           enableFreeStyleHighPerformanceScaling ??
               this.enableFreeStyleHighPerformanceScaling,

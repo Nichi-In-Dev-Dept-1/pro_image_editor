@@ -124,6 +124,7 @@ class _WhatsAppExampleState extends State<WhatsAppExample>
               onImageEditingComplete: onImageEditingComplete,
               onCloseEditor: onCloseEditor,
               mainEditorCallbacks: MainEditorCallbacks(
+                helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
                 onScaleStart: _whatsAppHelper.onScaleStart,
                 onScaleUpdate: (details) {
                   _whatsAppHelper.onScaleUpdate(details, _editor!);

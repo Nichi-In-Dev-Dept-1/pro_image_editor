@@ -5,9 +5,13 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-// Package imports:
-import 'package:image/image.dart';
-import 'package:image/src/formats/jpeg/jpeg_marker.dart';
+import '/plugins/image/src/color/color.dart';
+import '/plugins/image/src/color/format.dart';
+import '/plugins/image/src/exif/exif_data.dart';
+import '/plugins/image/src/formats/jpeg/jpeg_marker.dart';
+import '/plugins/image/src/image/image.dart';
+import '/plugins/image/src/util/output_buffer.dart';
+import 'jpeg/jpeg_chroma.dart';
 
 /// Encode an image to the JPEG format.
 ///

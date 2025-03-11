@@ -140,7 +140,7 @@ class EditorImage {
       case EditorImageType.asset:
         return AssetImage(assetPath!);
       case EditorImageType.file:
-        return FileImage(file!);
+        return FileImage(file! as dynamic);
       case EditorImageType.network:
         return NetworkImage(networkUrl!);
     }

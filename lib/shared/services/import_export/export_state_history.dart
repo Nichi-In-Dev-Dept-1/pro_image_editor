@@ -282,8 +282,6 @@ class ExportStateHistory {
           (_configs.exportText && layer.runtimeType == TextLayer) ||
           (_configs.exportEmoji && layer.runtimeType == EmojiLayer)) {
         updateReference(layer);
-
-        // ignore: deprecated_member_use_from_same_package
       } else if (_configs.exportWidgets && layer.runtimeType == WidgetLayer) {
         WidgetLayer widgetLayer = layer as WidgetLayer;
 

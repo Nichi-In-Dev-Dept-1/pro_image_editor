@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
 import 'package:flutter/material.dart';
 
 import '/features/crop_rotate_editor/models/aspect_ratio_item.dart';
@@ -40,23 +38,14 @@ class CropRotateEditorConfigs {
     this.desktopCornerDragArea = 7,
     this.mobileCornerDragArea = kMinInteractiveDimension,
     this.enabled = true,
-    @Deprecated('Use showRotateButton instead') this.canRotate,
-    @Deprecated('Use showFlipButton instead') this.canFlip,
-    @Deprecated('Use showAspectRatioButton instead') this.canChangeAspectRatio,
-    @Deprecated('Use showResetButton instead') this.canReset,
     this.showRotateButton = true,
     this.showFlipButton = true,
     this.showAspectRatioButton = true,
     this.showResetButton = true,
-    @Deprecated('Use invertMouseScroll instead') this.reverseMouseScroll,
-    @Deprecated('Use invertDragDirection instead') this.reverseDragDirection,
     this.invertMouseScroll = false,
     this.invertDragDirection = false,
-    @Deprecated('Use enableRoundCropper instead') this.roundCropper,
     this.enableRoundCropper = false,
-    @Deprecated('Use enableTransformLayers instead') this.transformLayers,
     this.enableTransformLayers = true,
-    @Deprecated('Use enableProvideImageInfos instead') this.provideImageInfos,
     this.enableProvideImageInfos = false,
     this.enableDoubleTap = true,
     this.showLayers = true,
@@ -92,11 +81,10 @@ class CropRotateEditorConfigs {
         assert(desktopCornerDragArea > 0,
             'desktopCornerDragArea must be positive'),
         assert(
-            !(roundCropper ?? enableRoundCropper) ||
-                !(canChangeAspectRatio ?? showAspectRatioButton),
+            !enableRoundCropper || !showAspectRatioButton,
             'In enableRoundCropper mode, showAspectRatioButton must be '
             'disabled.'),
-        assert(!(roundCropper ?? enableRoundCropper) || initAspectRatio == 1,
+        assert(!enableRoundCropper || initAspectRatio == 1,
             'In enableRoundCropper mode, initAspectRatio must be 1.'),
         assert(
             mobileCornerDragArea > 0, 'mobileCornerDragArea must be positive'),
@@ -109,22 +97,6 @@ class CropRotateEditorConfigs {
 
   /// Indicates whether the editor is enabled.
   final bool enabled;
-
-  /// Indicating whether the image can be rotated.
-  @Deprecated('Use showRotateButton instead')
-  final bool? canRotate;
-
-  /// Indicating whether the image can be flipped.
-  @Deprecated('Use showFlipButton instead')
-  final bool? canFlip;
-
-  /// Indicating whether the aspect ratio of the image can be changed.
-  @Deprecated('Use showAspectRatioButton instead')
-  final bool? canChangeAspectRatio;
-
-  /// Indicating whether the editor can be reset.
-  @Deprecated('Use showResetButton instead')
-  final bool? canReset;
 
   /// Whether to show a button to rotate the image.
   final bool showRotateButton;
@@ -142,22 +114,10 @@ class CropRotateEditorConfigs {
   final bool showLayers;
 
   /// Layers will also be transformed like the crop-rotate image.
-  @Deprecated('Use enableTransformLayers instead')
-  final bool? transformLayers;
-
-  /// Layers will also be transformed like the crop-rotate image.
   final bool enableTransformLayers;
 
   /// Enables double-tap zoom functionality when set to true.
   final bool enableDoubleTap;
-
-  /// Determines if the mouse scroll direction should be reversed.
-  @Deprecated('Use invertMouseScroll instead')
-  final bool? reverseMouseScroll;
-
-  /// Determines if the drag direction should be reversed.
-  @Deprecated('Use invertDragDirection instead')
-  final bool? reverseDragDirection;
 
   /// Determines if the mouse scroll direction should be inverted.
   final bool invertMouseScroll;
@@ -169,23 +129,7 @@ class CropRotateEditorConfigs {
   /// profile images.
   ///
   /// The round cropper only supports an aspect ratio of 1.
-  @Deprecated('Use enableRoundCropper instead')
-  final bool? roundCropper;
-
-  /// The cropper is round and not rectangular, which is optimal for cutting
-  /// profile images.
-  ///
-  /// The round cropper only supports an aspect ratio of 1.
   final bool enableRoundCropper;
-
-  /// A boolean flag that determines whether the `imageInfos` parameter
-  /// should be included in the `onDone` callback.
-  ///
-  /// When set to `true`, the `imageInfos` parameter will be provided in the
-  /// `onDone` callback of the crop editor, containing detailed information
-  /// about the edited image. If set to `false`, `imageInfos` will be `null`.
-  @Deprecated('Use enableProvideImageInfos instead')
-  final bool? provideImageInfos;
 
   /// A boolean flag that determines whether the `imageInfos` parameter
   /// should be included in the `onDone` callback.
@@ -286,23 +230,14 @@ class CropRotateEditorConfigs {
   /// others unchanged.
   CropRotateEditorConfigs copyWith({
     bool? enabled,
-    bool? canRotate,
-    bool? canFlip,
-    bool? canChangeAspectRatio,
-    bool? canReset,
     bool? showRotateButton,
     bool? showFlipButton,
     bool? showAspectRatioButton,
     bool? showResetButton,
-    bool? transformLayers,
     bool? enableTransformLayers,
     bool? enableDoubleTap,
-    bool? reverseMouseScroll,
     bool? invertMouseScroll,
     bool? invertDragDirection,
-    bool? reverseDragDirection,
-    bool? roundCropper,
-    bool? provideImageInfos,
     bool? enableProvideImageInfos,
     bool? showLayers,
     double? initAspectRatio,
@@ -328,29 +263,20 @@ class CropRotateEditorConfigs {
   }) {
     return CropRotateEditorConfigs(
       safeArea: safeArea ?? this.safeArea,
-      provideImageInfos: provideImageInfos ?? this.provideImageInfos,
       enableProvideImageInfos:
           enableProvideImageInfos ?? this.enableProvideImageInfos,
       showLayers: showLayers ?? this.showLayers,
       enabled: enabled ?? this.enabled,
-      canRotate: canRotate ?? this.canRotate,
-      canFlip: canFlip ?? this.canFlip,
-      canChangeAspectRatio: canChangeAspectRatio ?? this.canChangeAspectRatio,
-      canReset: canReset ?? this.canReset,
       showRotateButton: showRotateButton ?? this.showRotateButton,
       showFlipButton: showFlipButton ?? this.showFlipButton,
       showAspectRatioButton:
           showAspectRatioButton ?? this.showAspectRatioButton,
       showResetButton: showResetButton ?? this.showResetButton,
-      transformLayers: transformLayers ?? this.transformLayers,
       enableTransformLayers:
           enableTransformLayers ?? this.enableTransformLayers,
       enableDoubleTap: enableDoubleTap ?? this.enableDoubleTap,
-      reverseMouseScroll: reverseMouseScroll ?? this.reverseMouseScroll,
-      reverseDragDirection: reverseDragDirection ?? this.reverseDragDirection,
       invertMouseScroll: invertMouseScroll ?? this.invertMouseScroll,
       invertDragDirection: invertDragDirection ?? this.invertDragDirection,
-      roundCropper: roundCropper ?? this.roundCropper,
       initAspectRatio: initAspectRatio ?? this.initAspectRatio,
       maxScale: maxScale ?? this.maxScale,
       mouseScaleFactor: mouseScaleFactor ?? this.mouseScaleFactor,

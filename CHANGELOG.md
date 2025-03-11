@@ -1,7 +1,19 @@
 # Changelog
 
-## 8.4.0
+## 9.0.0
+- **FEAT**(callbacks): Add new callbacks that are triggered when a layer intersects with a helper line.
 - **FEAT**(TextLayer): Improve the text layer hit box for better gesture recognition.
+- **FEAT**(File): The file constructor in the main editor and sub-editors now supports adding just the file path in addition to the File itself.
+
+- **FIX**(Layers): Fix incorrect layer selection when drawing lines overlay other layers
+
+#### Breaking Changes
+- Removed the vibration package dependency and the support for internal feedback vibration. You can read more about this change and see example code on how to implement feedback support [here](https://github.com/hm21/pro_image_editor/discussions/386).
+- Replaced `mime`, `image`, `archive`, and `crypto` packages with smaller, internally versions.
+- Moved configuration `locale` inside `EmojiEditorConfigs` to `I18nEmojiEditor`.
+- Changed the default behavior so that emoji search text is no longer automatically translated, reducing the size of the application by about 1.5MB. The example of how to enable auto-translation or translate a specific locale can be found [here](https://github.com/hm21/pro_image_editor/blob/stable/example/lib/features/emoji_translate_example.dart).
+- Removed all deprecated configuration settings.
+
 
 ## 8.3.6
 - **FIX**(design-grounded): Fixed an issue where the scrollbar in the grounded bottombar did not restore correctly after opening a subeditor.

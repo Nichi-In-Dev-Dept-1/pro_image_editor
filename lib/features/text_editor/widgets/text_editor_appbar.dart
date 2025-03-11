@@ -1,6 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
-
 import 'package:flutter/material.dart';
 
 import '/core/enums/design_mode.dart';
@@ -99,8 +96,7 @@ class TextEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
             designMode: designMode,
             title: i18n.smallScreenMoreTooltip,
             options: [
-              if (textEditorConfigs.canToggleTextAlign ??
-                  textEditorConfigs.showTextAlignButton)
+              if (textEditorConfigs.showTextAlignButton)
                 PopupMenuOption(
                   label: i18n.textAlign,
                   icon: Icon(align == TextAlign.left
@@ -115,8 +111,7 @@ class TextEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
                     }
                   },
                 ),
-              if (textEditorConfigs.canChangeFontScale ??
-                  textEditorConfigs.showFontScaleButton)
+              if (textEditorConfigs.showFontScaleButton)
                 PopupMenuOption(
                   label: i18n.fontScale,
                   icon: Icon(textEditorConfigs.icons.fontScale),
@@ -127,8 +122,7 @@ class TextEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
                     }
                   },
                 ),
-              if (textEditorConfigs.canToggleBackgroundMode ??
-                  textEditorConfigs.showBackgroundModeButton)
+              if (textEditorConfigs.showBackgroundModeButton)
                 PopupMenuOption(
                   label: i18n.backgroundMode,
                   icon: Icon(textEditorConfigs.icons.backgroundMode),
@@ -159,8 +153,7 @@ class TextEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   List<IconButton> _getConfigButtons() => [
-        if (textEditorConfigs.canToggleTextAlign ??
-            textEditorConfigs.showTextAlignButton)
+        if (textEditorConfigs.showTextAlignButton)
           IconButton(
             key: const ValueKey('TextAlignIconButton'),
             tooltip: i18n.textAlign,
@@ -171,16 +164,14 @@ class TextEditorAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ? textEditorConfigs.icons.alignRight
                     : textEditorConfigs.icons.alignCenter),
           ),
-        if (textEditorConfigs.canChangeFontScale ??
-            textEditorConfigs.showFontScaleButton)
+        if (textEditorConfigs.showFontScaleButton)
           IconButton(
             key: const ValueKey('BackgroundModeFontScaleButton'),
             tooltip: i18n.fontScale,
             onPressed: onOpenFontScaleBottomSheet,
             icon: Icon(textEditorConfigs.icons.fontScale),
           ),
-        if (textEditorConfigs.canToggleBackgroundMode ??
-            textEditorConfigs.showBackgroundModeButton)
+        if (textEditorConfigs.showBackgroundModeButton)
           IconButton(
             key: const ValueKey('BackgroundModeColorIconButton'),
             tooltip: i18n.backgroundMode,

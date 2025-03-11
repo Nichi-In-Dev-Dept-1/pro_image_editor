@@ -256,6 +256,7 @@ class _MovableBackgroundImageExampleState
             onCloseEditor: () =>
                 onCloseEditor(enablePop: !isDesktopMode(context)),
             mainEditorCallbacks: MainEditorCallbacks(
+              helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
               onAfterViewInit: () {
                 editorKey.currentState!.addLayer(
                   WidgetLayer(

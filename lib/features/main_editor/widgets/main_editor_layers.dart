@@ -9,7 +9,7 @@ import '/features/main_editor/services/layer_interaction_manager.dart';
 import '/features/main_editor/services/sizes_manager.dart';
 import '/plugins/defer_pointer/defer_pointer.dart';
 import '/shared/utils/unique_id_generator.dart';
-import '/shared/widgets/extended/extended_mouse_cursor.dart';
+import '/shared/widgets/extended/mouse_region/extended_rebuild_mouse_region.dart';
 import '/shared/widgets/layer/layer_widget.dart';
 import '../main_editor.dart';
 
@@ -44,7 +44,6 @@ class MainEditorLayers extends StatefulWidget {
     required this.configs,
     required this.callbacks,
     required this.sizesManager,
-    required this.mouseCursorsKey,
     required this.selectedLayerIndex,
     required this.activeLayers,
     required this.isSubEditorOpen,
@@ -76,9 +75,6 @@ class MainEditorLayers extends StatefulWidget {
   /// Handles interactions with editor layers.
   final LayerInteractionManager layerInteractionManager;
 
-  /// Key for managing mouse cursor regions.
-  final GlobalKey<ExtendedMouseRegionState> mouseCursorsKey;
-
   /// List of active layers in the editor.
   final List<Layer> activeLayers;
 
@@ -106,6 +102,9 @@ class MainEditorLayers extends StatefulWidget {
 
 class _MainEditorLayersState extends State<MainEditorLayers> {
   final _deferId = ValueNotifier(generateUniqueId());
+
+  /// Key for managing mouse cursor regions.
+  final _mouseCursorsKey = GlobalKey<ExtendedRebuildMouseRegionState>();
 
   // Helper methods for handling layer interactions
   void _handleEditTap(int index, Layer layer) {
@@ -178,13 +177,13 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
     final bool hasHit = widget.activeLayers
         .any((element) => element is PaintLayer && element.item.hit);
 
-    final activeCursor = widget.mouseCursorsKey.currentState!.currentCursor;
+    final activeCursor = _mouseCursorsKey.currentState!.currentCursor;
     final moveCursor = widget.layerInteraction.style.hoverCursor;
 
     if (hasHit && activeCursor != moveCursor) {
-      widget.mouseCursorsKey.currentState!.setCursor(moveCursor);
+      _mouseCursorsKey.currentState!.setCursor(moveCursor);
     } else if (!hasHit && activeCursor != SystemMouseCursors.basic) {
-      widget.mouseCursorsKey.currentState!.setCursor(SystemMouseCursors.basic);
+      _mouseCursorsKey.currentState!.setCursor(SystemMouseCursors.basic);
     }
   }
 
@@ -208,8 +207,8 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   /// Builds the layer repaint boundary widget
   Widget _buildLayerRepaintBoundary() {
     return RepaintBoundary(
-      child: ExtendedMouseRegion(
-        key: widget.mouseCursorsKey,
+      child: ExtendedRebuildMouseRegion(
+        key: _mouseCursorsKey,
         onHover: isDesktop ? _handleMouseHover : null,
         child: ValueListenableBuilder(
             valueListenable: _deferId,

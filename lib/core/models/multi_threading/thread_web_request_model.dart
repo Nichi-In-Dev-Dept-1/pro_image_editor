@@ -1,9 +1,11 @@
 // Package imports:
 import 'dart:js_interop' as js;
 
-import 'package:image/image.dart' as img;
-
-import '../../../shared/services/content_recorder/utils/web_worker_utils.dart';
+import '/plugins/image/src/color/format.dart';
+import '/plugins/image/src/formats/jpeg/jpeg_chroma.dart';
+import '/plugins/image/src/formats/png/png_filter.dart';
+import '/plugins/image/src/image/image.dart';
+import '/shared/services/content_recorder/utils/web_worker_utils.dart';
 import '../editor_configs/image_generation_configs/output_formats.dart';
 import 'thread_request_model.dart';
 
@@ -36,7 +38,7 @@ class ThreadWebRequest extends ThreadRequest {
       return (value as js.JSBoolean).toDart;
     }
 
-    img.Image parseImage(js.JSObject data) {
+    Image parseImage(js.JSObject data) {
       final jsWidth = jsGetProperty(data, 'width');
       final jsHeight = jsGetProperty(data, 'height');
       final jsFrameDuration = jsGetProperty(data, 'frameDuration');
@@ -56,7 +58,7 @@ class ThreadWebRequest extends ThreadRequest {
 
       final textData = jsTextData.dartify() as Map<String, String>?;
 
-      return img.Image.fromBytes(
+      return Image.fromBytes(
         bytes: dartBytes,
         width: convertInteger(jsWidth)!,
         height: convertInteger(jsHeight)!,
@@ -67,24 +69,24 @@ class ThreadWebRequest extends ThreadRequest {
         numChannels: convertInteger(jsNumChannels),
         rowStride: convertInteger(jsRowStride),
         frameType: frameType == null
-            ? img.FrameType.sequence
-            : img.FrameType.values.firstWhere((el) => el.name == frameType),
+            ? FrameType.sequence
+            : FrameType.values.firstWhere((el) => el.name == frameType),
         format: format == null
-            ? img.Format.uint8
-            : img.Format.values.firstWhere((el) => el.name == format),
+            ? Format.uint8
+            : Format.values.firstWhere((el) => el.name == format),
       );
     }
 
-    img.JpegChroma getJpegChroma(String? value) {
+    JpegChroma getJpegChroma(String? value) {
       return value == null
-          ? img.JpegChroma.yuv444
-          : img.JpegChroma.values.firstWhere((el) => el.name == value);
+          ? JpegChroma.yuv444
+          : JpegChroma.values.firstWhere((el) => el.name == value);
     }
 
-    img.PngFilter getPngFilter(String? value) {
+    PngFilter getPngFilter(String? value) {
       return value == null
-          ? img.PngFilter.none
-          : img.PngFilter.values.firstWhere((el) => el.name == value);
+          ? PngFilter.none
+          : PngFilter.values.firstWhere((el) => el.name == value);
     }
 
     OutputFormat getOutputFormat(String? value) {

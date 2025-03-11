@@ -15,6 +15,7 @@ class DrawPaintItem extends CustomPainter {
   DrawPaintItem({
     this.selected = false,
     required this.item,
+    this.onHitChanged,
     this.scale = 1,
     this.enabledHitDetection = false,
     this.freeStyleHighPerformance = false,
@@ -37,6 +38,12 @@ class DrawPaintItem extends CustomPainter {
 
   /// Indicates whether the layer is currently selected.
   bool selected = true;
+
+  /// Callback function that is triggered when a hit status changes.
+  ///
+  /// The [onHitChanged] function takes a boolean parameter [hasHit] which
+  /// indicates whether a hit has occurred (true) or not (false).
+  final Function(bool hasHit)? onHitChanged;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -169,6 +176,8 @@ class DrawPaintItem extends CustomPainter {
       default:
         item.hit = true;
     }
+
+    onHitChanged?.call(item.hit);
     return item.hit;
   }
 

@@ -33,8 +33,8 @@ class WhatsAppCategoryViewState extends State<EmojiEditorCategoryView>
             child: EmojiEditorBottomBar(
               widget.config,
               widget.tabController,
-              widget.state.categoryEmoji,
               closeSkinToneOverlay,
+              widget.state.categoryEmoji,
             ),
           ),
           _buildBackspaceButton(),

@@ -61,6 +61,9 @@ class _FrostedGlassExampleState extends State<FrostedGlassExample>
             onImageEditingStarted: onImageEditingStarted,
             onImageEditingComplete: onImageEditingComplete,
             onCloseEditor: onCloseEditor,
+            mainEditorCallbacks: MainEditorCallbacks(
+              helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+            ),
             stickerEditorCallbacks: StickerEditorCallbacks(
               onSearchChanged: (value) {
                 /// Filter your stickers

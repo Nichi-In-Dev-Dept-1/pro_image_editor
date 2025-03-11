@@ -525,6 +525,9 @@ class _GenerationConfigState extends State<GenerationConfig>
                 /// `generateHighQualityImage(rawImage)`.
               }
             : null,
+        mainEditorCallbacks: MainEditorCallbacks(
+          helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+        ),
       ),
       configs: ProImageEditorConfigs(
         designMode: platformDesignMode,

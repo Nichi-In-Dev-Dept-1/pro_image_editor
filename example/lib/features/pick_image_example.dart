@@ -26,6 +26,18 @@ class _PickImageExampleState extends State<PickImageExample>
   final bool _cameraIsSupported =
       kIsWeb || (!Platform.isWindows && !Platform.isLinux && !Platform.isMacOS);
 
+  late final _callbacks = ProImageEditorCallbacks(
+    onImageEditingStarted: onImageEditingStarted,
+    onImageEditingComplete: onImageEditingComplete,
+    onCloseEditor: onCloseEditor,
+    mainEditorCallbacks: MainEditorCallbacks(
+      helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+    ),
+  );
+  final _configs = ProImageEditorConfigs(
+    designMode: platformDesignMode,
+  );
+
   void _openPicker(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: source);
@@ -90,26 +102,14 @@ class _PickImageExampleState extends State<PickImageExample>
     if (path != null) {
       return ProImageEditor.file(
         File(path),
-        callbacks: ProImageEditorCallbacks(
-          onImageEditingStarted: onImageEditingStarted,
-          onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: onCloseEditor,
-        ),
-        configs: ProImageEditorConfigs(
-          designMode: platformDesignMode,
-        ),
+        callbacks: _callbacks,
+        configs: _configs,
       );
     } else {
       return ProImageEditor.memory(
         bytes!,
-        callbacks: ProImageEditorCallbacks(
-          onImageEditingStarted: onImageEditingStarted,
-          onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: onCloseEditor,
-        ),
-        configs: ProImageEditorConfigs(
-          designMode: platformDesignMode,
-        ),
+        callbacks: _callbacks,
+        configs: _configs,
       );
     }
   }

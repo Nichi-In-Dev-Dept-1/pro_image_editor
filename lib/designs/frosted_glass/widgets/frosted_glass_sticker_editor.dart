@@ -277,7 +277,10 @@ class _FrostedGlassStickerPageState extends State<FrostedGlassStickerPage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Icons.search),
+            const Icon(
+              Icons.search,
+              color: Color(0xFF161616),
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 12.0),
@@ -291,16 +294,21 @@ class _FrostedGlassStickerPageState extends State<FrostedGlassStickerPage> {
                         ?.call(value);
                     _searchFocus.requestFocus();
                   },
+                  style: const TextStyle(color: Color(0xFF161616)),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: widget.configs.i18n.emojiEditor.search,
+                    hintStyle: const TextStyle(color: Color(0xAF161616)),
                     isCollapsed: true,
                   ),
                 ),
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: const Icon(
+                Icons.close,
+                color: Color(0xFF161616),
+              ),
               onPressed: () {
                 setState(() {
                   if (_searchCtrl.text.isNotEmpty) {

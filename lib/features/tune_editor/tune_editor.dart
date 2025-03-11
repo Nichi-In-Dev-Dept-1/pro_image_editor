@@ -13,6 +13,7 @@ import '/core/platform/io/io_helper.dart';
 import '/features/tune_editor/widgets/tune_editor_bottombar.dart';
 import '/pro_image_editor.dart';
 import '/shared/services/content_recorder/widgets/content_recorder.dart';
+import '/shared/utils/file_constructor_utils.dart';
 import '/shared/widgets/layer/layer_stack.dart';
 import '/shared/widgets/transform/transformed_content_generator.dart';
 import '../filter_editor/widgets/filtered_image.dart';
@@ -67,7 +68,7 @@ class TuneEditor extends StatefulWidget
   }) {
     return TuneEditor._(
       key: key,
-      editorImage: EditorImage(file: file),
+      editorImage: EditorImage(file: ensureFileInstance(file)),
       initConfigs: initConfigs,
     );
   }
@@ -120,7 +121,7 @@ class TuneEditor extends StatefulWidget
       );
     } else if (file != null || editorImage?.file != null) {
       return TuneEditor.file(
-        file ?? editorImage!.file!,
+        ensureFileInstance(file ?? editorImage!.file!),
         key: key,
         initConfigs: initConfigs,
       );

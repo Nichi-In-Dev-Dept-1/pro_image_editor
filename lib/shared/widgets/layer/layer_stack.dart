@@ -1,6 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
-
 // Flutter imports:
 import 'package:flutter/material.dart';
 
@@ -89,9 +86,7 @@ class LayerStack extends StatelessWidget {
   final bool freeStyleHighPerformance;
 
   bool get _cutOutsideImageArea =>
-      cutOutsideImageArea ??
-      configs.imageGeneration.captureOnlyBackgroundImageArea ??
-      configs.imageGeneration.cropToImageBounds;
+      cutOutsideImageArea ?? configs.imageGeneration.cropToImageBounds;
 
   @override
   Widget build(BuildContext context) {
@@ -122,8 +117,7 @@ class LayerStack extends StatelessWidget {
                 }).toList()),
           ),
         ),
-        if (configs.imageGeneration.captureOnlyBackgroundImageArea ??
-            configs.imageGeneration.cropToImageBounds)
+        if (configs.imageGeneration.cropToImageBounds)
           RepaintBoundary(
             child: Hero(
               tag: 'crop_layer_painter_hero',
@@ -135,7 +129,7 @@ class LayerStack extends StatelessWidget {
                         backgroundColor: overlayColor,
                         imgRatio: transformConfigs?.cropRect.size.aspectRatio ??
                             transformHelper.mainImageSize.aspectRatio,
-                        isRoundCropper: configs.cropRotateEditor.roundCropper ??
+                        isRoundCropper:
                             configs.cropRotateEditor.enableRoundCropper,
                         is90DegRotated:
                             transformConfigs?.is90DegRotated ?? false,

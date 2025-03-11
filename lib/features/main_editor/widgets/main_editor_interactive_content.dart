@@ -1,6 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -122,8 +119,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
           ),
 
           /// Build crop area overlay
-          if (configs.imageGeneration.captureOnlyBackgroundImageArea ??
-              configs.imageGeneration.cropToImageBounds)
+          if (configs.imageGeneration.cropToImageBounds)
             _buildCropAreaOverlay(),
 
           /// Build helper content
@@ -155,11 +151,8 @@ class MainEditorInteractiveContent extends StatelessWidget {
       onInteractionStart: (details) {
         callbacks.mainEditorCallbacks?.onEditorZoomScaleStart?.call(details);
         layerInteractionManager.freeStyleHighPerformanceEditorZoom =
-            (paintConfigs.freeStyleHighPerformanceMoving ??
-                    paintConfigs.enableFreeStyleHighPerformanceMoving ??
-                    !isDesktop) ||
-                (paintConfigs.freeStyleHighPerformanceScaling ??
-                    paintConfigs.enableFreeStyleHighPerformanceScaling ??
+            (paintConfigs.enableFreeStyleHighPerformanceMoving ?? !isDesktop) ||
+                (paintConfigs.enableFreeStyleHighPerformanceScaling ??
                     !isDesktop);
 
         controllers.uiLayerCtrl.add(null);
@@ -204,9 +197,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
         stream: controllers.cropLayerPainterCtrl.stream,
         builder: (context, snapshot) {
           return CustomPaint(
-            foregroundPainter: configs
-                        .imageGeneration.captureOnlyBackgroundImageArea ??
-                    configs.imageGeneration.cropToImageBounds
+            foregroundPainter: configs.imageGeneration.cropToImageBounds
                 ? CropLayerPainter(
                     opacity:
                         configs.mainEditor.style.outsideCaptureAreaLayerOpacity,
@@ -215,8 +206,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
                         ? stateManager
                             .transformConfigs.cropRect.size.aspectRatio
                         : sizesManager.decodedImageSize.aspectRatio,
-                    isRoundCropper: configs.cropRotateEditor.roundCropper ??
-                        configs.cropRotateEditor.enableRoundCropper,
+                    isRoundCropper: configs.cropRotateEditor.enableRoundCropper,
                     is90DegRotated:
                         stateManager.transformConfigs.is90DegRotated,
                     interactiveViewerScale:

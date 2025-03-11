@@ -43,7 +43,7 @@ class EmojiEditorFullScreenSearchViewState
   void onTextInputChanged(String text) {
     links.clear();
     results.clear();
-    utils.searchEmoji(text, widget.state.categoryEmoji).then(
+    utils.searchEmoji(text, widget.config.emojiSet!(widget.config.locale)).then(
           (value) => setState(
             () => _updateResults(value),
           ),

@@ -35,6 +35,9 @@ class _HighlyConfigurableExampleState extends State<HighlyConfigurableExample>
         onImageEditingStarted: onImageEditingStarted,
         onImageEditingComplete: onImageEditingComplete,
         onCloseEditor: onCloseEditor,
+        mainEditorCallbacks: MainEditorCallbacks(
+          helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+        ),
       ),
       configs: ProImageEditorConfigs(
         designMode: platformDesignMode,
@@ -169,7 +172,6 @@ class _HighlyConfigurableExampleState extends State<HighlyConfigurableExample>
           showVerticalLine: true,
           showHorizontalLine: true,
           showRotateLine: true,
-          enableHitVibration: true,
           style: HelperLineStyle(
             horizontalColor: Color.fromARGB(255, 15, 196, 60),
             verticalColor: Color.fromARGB(255, 15, 196, 60),

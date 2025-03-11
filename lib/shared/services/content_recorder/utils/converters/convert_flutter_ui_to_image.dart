@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:image/image.dart' as img;
+import '/plugins/image/src/image/image.dart' as img;
 
 /// Converts a Flutter ui.Image to img.Image suitable for processing.
 ///

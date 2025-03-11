@@ -1,6 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
-
 // Flutter imports:
 import 'package:flutter/material.dart';
 
@@ -140,8 +137,7 @@ class _TransformedContentGeneratorState
   Widget _buildCropPainter({required Widget child}) {
     CutOutsideArea clipper = CutOutsideArea(configs: widget.transformConfigs);
 
-    if (widget.configs.cropRotateEditor.roundCropper ??
-        widget.configs.cropRotateEditor.enableRoundCropper) {
+    if (widget.configs.cropRotateEditor.enableRoundCropper) {
       return ClipOval(clipper: clipper, child: child);
     } else {
       return ClipRect(clipper: clipper, child: child);

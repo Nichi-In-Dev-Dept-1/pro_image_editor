@@ -2,7 +2,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// [ExtendedMouseRegion] is a stateful widget that allows you to handle
+/// [ExtendedRebuildMouseRegion] is a stateful widget that allows you to handle
 /// mouse events and update the mouse cursor without rebuilding the child
 /// widget.
 /// This widget provides a method to change the cursor dynamically,
@@ -18,12 +18,12 @@ import 'package:flutter/widgets.dart';
 /// the [opaque] parameter specifies whether the region is opaque,
 /// and the [hitTestBehavior] parameter defines the hit test behavior.
 /// The [child] parameter is the widget to be enclosed within the mouse region.
-class ExtendedMouseRegion extends StatefulWidget {
-  /// Creates an instance of [ExtendedMouseRegion].
+class ExtendedRebuildMouseRegion extends StatefulWidget {
+  /// Creates an instance of [ExtendedRebuildMouseRegion].
   ///
   /// The [child] parameter is required and specifies the widget that will be
   /// displayed within the mouse region. The other parameters are optional:
-  const ExtendedMouseRegion({
+  const ExtendedRebuildMouseRegion({
     super.key,
     this.onEnter,
     this.onExit,
@@ -56,11 +56,13 @@ class ExtendedMouseRegion extends StatefulWidget {
   final Widget child;
 
   @override
-  State<ExtendedMouseRegion> createState() => ExtendedMouseRegionState();
+  State<ExtendedRebuildMouseRegion> createState() =>
+      ExtendedRebuildMouseRegionState();
 }
 
-/// State class for [ExtendedMouseRegion], managing the mouse cursor.
-class ExtendedMouseRegionState extends State<ExtendedMouseRegion> {
+/// State class for [ExtendedRebuildMouseRegion], managing the mouse cursor.
+class ExtendedRebuildMouseRegionState
+    extends State<ExtendedRebuildMouseRegion> {
   /// The current mouse cursor to be displayed within the region.
   late MouseCursor currentCursor;
 

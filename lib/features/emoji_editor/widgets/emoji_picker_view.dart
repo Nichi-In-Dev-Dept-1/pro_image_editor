@@ -258,7 +258,7 @@ class _DefaultEmojiPickerViewState extends State<ProEmojiPickerView>
   }
 
   List<CategoryEmoji> get _categories {
-    return widget.state.categoryEmoji.toList();
+    return widget.state.categoryEmoji;
   }
 
   @override
@@ -420,6 +420,7 @@ class _DefaultEmojiPickerViewState extends State<ProEmojiPickerView>
     if (!widget.config.bottomActionBarConfig.enabled) {
       return const SizedBox.shrink();
     }
+
     return SizedBox(
       key: _searchBarKey,
       child: widget.config.bottomActionBarConfig.customBottomActionBar != null

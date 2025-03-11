@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
 import 'package:flutter/material.dart';
 
 import '/core/mixins/converted_configs.dart';
@@ -112,8 +110,7 @@ class _GroundedCropRotateBarState extends State<GroundedCropRotateBar>
               children: <Widget>[
                 ..._buildConfigs(),
                 if (cropRotateEditorConfigs.aspectRatios.isNotEmpty &&
-                    (cropRotateEditorConfigs.canChangeAspectRatio ??
-                        cropRotateEditorConfigs.showAspectRatioButton)) ...[
+                    cropRotateEditorConfigs.showAspectRatioButton) ...[
                   const SizedBox(width: 5),
                   _buildDivider(),
                   ...List.generate(

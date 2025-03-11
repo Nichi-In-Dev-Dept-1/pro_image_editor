@@ -1,6 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
-
 // Dart imports:
 import 'dart:math';
 import 'dart:ui';
@@ -25,10 +22,11 @@ import '/shared/mixins/extended_loop.dart';
 import '/shared/services/content_recorder/widgets/record_invisible_widget.dart';
 import '/shared/services/layer_transform_generator.dart';
 import '/shared/utils/debounce.dart';
+import '/shared/utils/file_constructor_utils.dart';
 import '/shared/widgets/extended/extended_custom_paint.dart';
-import '/shared/widgets/extended/extended_mouse_cursor.dart';
 import '/shared/widgets/extended/extended_transform_scale.dart';
 import '/shared/widgets/extended/extended_transform_translate.dart';
+import '/shared/widgets/extended/mouse_region/extended_rebuild_mouse_region.dart';
 import '/shared/widgets/layer/layer_stack.dart';
 import '/shared/widgets/screen_resize_detector.dart';
 import '/shared/widgets/transform/transformed_content_generator.dart';
@@ -90,7 +88,7 @@ class CropRotateEditor extends StatefulWidget
   }) {
     return CropRotateEditor._(
       key: key,
-      editorImage: EditorImage(file: file),
+      editorImage: EditorImage(file: ensureFileInstance(file)),
       initConfigs: initConfigs,
     );
   }
@@ -143,7 +141,7 @@ class CropRotateEditor extends StatefulWidget
       );
     } else if (file != null || editorImage?.file != null) {
       return CropRotateEditor.file(
-        file ?? editorImage!.file!,
+        ensureFileInstance(file ?? editorImage!.file!),
         key: key,
         initConfigs: initConfigs,
       );
@@ -194,7 +192,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
   /// Initialized to `Offset.zero`.
   Offset _editorScreenOffsetHelper = Offset.zero;
 
-  final _mouseCursorsKey = GlobalKey<ExtendedMouseRegionState>();
+  final _mouseCursorsKey = GlobalKey<ExtendedRebuildMouseRegionState>();
 
   /// A key used to access the state of the CropRotateGestureDetector widget.
   final _gestureKey = GlobalKey<CropRotateGestureDetectorState>();
@@ -361,8 +359,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
             ),
             fadeInOpacity: _painterOpacity,
             style: cropRotateEditorConfigs.style,
-            drawCircle: cropRotateEditorConfigs.roundCropper ??
-                cropRotateEditorConfigs.enableRoundCropper,
+            drawCircle: cropRotateEditorConfigs.enableRoundCropper,
           )
         : null;
   }
@@ -711,8 +708,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
       _updateAllStates();
 
       /// Read the image information in the case the user require them
-      if ((cropRotateEditorConfigs.provideImageInfos ??
-              cropRotateEditorConfigs.enableProvideImageInfos) &&
+      if (cropRotateEditorConfigs.enableProvideImageInfos &&
           imageInfos == null) {
         await setImageInfos(activeHistory: activeHistory);
       }
@@ -1079,8 +1075,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
     double dx = offset.dx;
     double dy = offset.dy;
 
-    if (cropRotateEditorConfigs.roundCropper ??
-        cropRotateEditorConfigs.enableRoundCropper) {
+    if (cropRotateEditorConfigs.enableRoundCropper) {
       double halfWidth = cropRect.width / 2;
       double halfHeight = cropRect.height / 2;
 
@@ -1329,8 +1324,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
             ) +
             _startingTranslate * _startingPinchScale;
 
-        bool roundCropper = (cropRotateEditorConfigs.roundCropper ??
-            cropRotateEditorConfigs.enableRoundCropper);
+        bool roundCropper = cropRotateEditorConfigs.enableRoundCropper;
 
         double imgW = _renderedImgConstraints.maxWidth;
         double imgH = _renderedImgConstraints.maxHeight;
@@ -1552,10 +1546,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
         translate +=
             Offset(details.focalPointDelta.dx, details.focalPointDelta.dy) /
                 scaleFactor *
-                ((cropRotateEditorConfigs.reverseDragDirection ??
-                        cropRotateEditorConfigs.invertDragDirection)
-                    ? -1
-                    : 1);
+                (cropRotateEditorConfigs.invertDragDirection ? -1 : 1);
         _setOffsetLimits();
         cropRotateEditorCallbacks?.handleMove();
 
@@ -1796,10 +1787,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
           (event.scrollDelta.dy / 50).abs().clamp(0.5, 2);
 
       double deltaY = event.scrollDelta.dy *
-          ((cropRotateEditorConfigs.reverseMouseScroll ??
-                  cropRotateEditorConfigs.invertMouseScroll)
-              ? -1
-              : 1);
+          (cropRotateEditorConfigs.invertMouseScroll ? -1 : 1);
 
       double startZoom = userScaleFactor;
       double newZoom = userScaleFactor;
@@ -2052,14 +2040,10 @@ class CropRotateEditorState extends State<CropRotateEditor>
           .call(this, rebuildController.stream);
     }
 
-    return (cropRotateEditorConfigs.canRotate ??
-                cropRotateEditorConfigs.showRotateButton) ||
-            (cropRotateEditorConfigs.canFlip ??
-                cropRotateEditorConfigs.showFlipButton) ||
-            (cropRotateEditorConfigs.canChangeAspectRatio ??
-                cropRotateEditorConfigs.showAspectRatioButton) ||
-            (cropRotateEditorConfigs.canReset ??
-                cropRotateEditorConfigs.showResetButton)
+    return cropRotateEditorConfigs.showRotateButton ||
+            cropRotateEditorConfigs.showFlipButton ||
+            cropRotateEditorConfigs.showAspectRatioButton ||
+            cropRotateEditorConfigs.showResetButton
         ? CropEditorBottombar(
             bottomBarScrollCtrl: _bottomBarScrollCtrl,
             i18n: i18n.cropRotateEditor,
@@ -2154,7 +2138,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
   }
 
   Widget _buildMouseCursor({required Widget child}) {
-    return ExtendedMouseRegion(
+    return ExtendedRebuildMouseRegion(
       key: _mouseCursorsKey,
       initCursor: _cursor,
       child: child,
@@ -2301,8 +2285,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
                 image: editorImage,
               ),
               if (cropRotateEditorConfigs.showLayers &&
-                  (cropRotateEditorConfigs.transformLayers ??
-                      cropRotateEditorConfigs.enableTransformLayers) &&
+                  cropRotateEditorConfigs.enableTransformLayers &&
                   layers != null)
                 ClipRRect(
                   clipBehavior: Clip.hardEdge,

@@ -74,6 +74,9 @@ class _ImageFormatConvertExampleState extends State<ImageFormatConvertExample>
           setGenerationTime();
         },
         onCloseEditor: () => onCloseEditor(enablePop: !isDesktopMode(context)),
+        mainEditorCallbacks: MainEditorCallbacks(
+          helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+        ),
       ),
       configs: ProImageEditorConfigs(
         designMode: platformDesignMode,

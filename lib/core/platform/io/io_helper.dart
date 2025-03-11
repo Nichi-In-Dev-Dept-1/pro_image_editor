@@ -1,1 +1,1 @@
-export 'dart:io' if (kIsWeb) 'io_web.dart';
+export 'io_web.dart' if (dart.library.io) 'dart:io';

@@ -1,6 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated values
-
 // Flutter imports:
 import 'package:flutter/widgets.dart';
 
@@ -38,13 +35,8 @@ class TextEditorConfigs {
   const TextEditorConfigs({
     this.enableSuggestions = true,
     this.enabled = true,
-    @Deprecated('Use enableAutocorrect instead') this.autocorrect,
     this.enableAutocorrect = true,
     this.showSelectFontStyleBottomBar = false,
-    @Deprecated('Use showTextAlignButton instead') this.canToggleTextAlign,
-    @Deprecated('Use showFontScaleButton instead') this.canChangeFontScale,
-    @Deprecated('Use showBackgroundModeButton instead')
-    this.canToggleBackgroundMode,
     this.showTextAlignButton = true,
     this.showFontScaleButton = true,
     this.showBackgroundModeButton = true,
@@ -69,18 +61,6 @@ class TextEditorConfigs {
 
   /// Indicates whether the text editor is enabled.
   final bool enabled;
-
-  /// Determines if the text alignment options can be toggled.
-  @Deprecated('Use showTextAlignButton instead')
-  final bool? canToggleTextAlign;
-
-  /// Determines if the font scale can be change.
-  @Deprecated('Use showFontScaleButton instead')
-  final bool? canChangeFontScale;
-
-  /// Determines if the background mode can be toggled.
-  @Deprecated('Use showBackgroundModeButton instead')
-  final bool? canToggleBackgroundMode;
 
   /// Whether to show the toggle button to change the text align.
   final bool showTextAlignButton;
@@ -142,10 +122,6 @@ class TextEditorConfigs {
   final bool enableSuggestions;
 
   /// Whether to enable autocorrection.
-  @Deprecated('Use enableAutocorrect instead')
-  final bool? autocorrect;
-
-  /// Whether to enable autocorrection.
   ///
   /// **Default** `true`.
   final bool enableAutocorrect;
@@ -170,10 +146,7 @@ class TextEditorConfigs {
   /// others unchanged.
   TextEditorConfigs copyWith({
     bool? enabled,
-    bool? canToggleTextAlign,
-    bool? canChangeFontScale,
     bool? showSelectFontStyleBottomBar,
-    bool? canToggleBackgroundMode,
     bool? enableMainEditorZoomFactor,
     double? initFontSize,
     TextAlign? initialTextAlign,
@@ -186,7 +159,6 @@ class TextEditorConfigs {
     double? minScale,
     double? maxScale,
     bool? enableSuggestions,
-    bool? autocorrect,
     bool? enableAutocorrect,
     EditorSafeArea? safeArea,
     TextEditorStyle? style,
@@ -196,12 +168,8 @@ class TextEditorConfigs {
     return TextEditorConfigs(
       safeArea: safeArea ?? this.safeArea,
       enabled: enabled ?? this.enabled,
-      canToggleTextAlign: canToggleTextAlign ?? this.canToggleTextAlign,
-      canChangeFontScale: canChangeFontScale ?? this.canChangeFontScale,
       showSelectFontStyleBottomBar:
           showSelectFontStyleBottomBar ?? this.showSelectFontStyleBottomBar,
-      canToggleBackgroundMode:
-          canToggleBackgroundMode ?? this.canToggleBackgroundMode,
       enableMainEditorZoomFactor:
           enableMainEditorZoomFactor ?? this.enableMainEditorZoomFactor,
       initFontSize: initFontSize ?? this.initFontSize,
@@ -216,7 +184,6 @@ class TextEditorConfigs {
       minScale: minScale ?? this.minScale,
       maxScale: maxScale ?? this.maxScale,
       enableSuggestions: enableSuggestions ?? this.enableSuggestions,
-      autocorrect: autocorrect ?? this.autocorrect,
       enableAutocorrect: enableAutocorrect ?? this.enableAutocorrect,
       style: style ?? this.style,
       icons: icons ?? this.icons,

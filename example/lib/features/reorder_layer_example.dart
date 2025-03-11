@@ -54,11 +54,11 @@ class _ReorderLayerExampleState extends State<ReorderLayerExample>
         onImageEditingStarted: onImageEditingStarted,
         onImageEditingComplete: onImageEditingComplete,
         onCloseEditor: () => onCloseEditor(enablePop: !isDesktopMode(context)),
+        mainEditorCallbacks: MainEditorCallbacks(
+          helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
+        ),
       ),
       configs: ProImageEditorConfigs(
-        helperLines: const HelperLineConfigs(
-          enableHitVibration: false,
-        ),
         designMode: platformDesignMode,
         mainEditor: MainEditorConfigs(
           enableCloseButton: !isDesktopMode(context),
