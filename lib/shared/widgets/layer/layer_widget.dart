@@ -276,10 +276,15 @@ class _LayerWidgetState extends State<LayerWidget>
       left: offsetX,
       child: FractionalTranslation(
         translation: const Offset(-0.5, -0.5),
-        child: Transform(
-          transform: transformMatrix,
-          alignment: Alignment.center,
-          child: _buildInteractionHandlers(),
+        child: Hero(
+          // Important that hero is above transform
+          createRectTween: (begin, end) => RectTween(begin: begin, end: end),
+          tag: widget.layerData.id,
+          child: Transform(
+            transform: transformMatrix,
+            alignment: Alignment.center,
+            child: _buildInteractionHandlers(),
+          ),
         ),
       ),
     );
@@ -317,7 +322,9 @@ class _LayerWidgetState extends State<LayerWidget>
                   onPointerUp: _onPointerUp,
                   child: Padding(
                     padding: EdgeInsets.all(widget.selected ? 7.0 : 0),
-                    child: _buildHero(),
+                    child: FittedBox(
+                      child: _buildContent(),
+                    ),
                   ),
                 ),
               );
@@ -342,16 +349,6 @@ class _LayerWidgetState extends State<LayerWidget>
             child: child,
           );
         });
-  }
-
-  Widget _buildHero() {
-    return Hero(
-      createRectTween: (begin, end) => RectTween(begin: begin, end: end),
-      tag: widget.layerData.id,
-      child: FittedBox(
-        child: _buildContent(),
-      ),
-    );
   }
 
   /// Builds the content widget based on the type of layer being displayed.
