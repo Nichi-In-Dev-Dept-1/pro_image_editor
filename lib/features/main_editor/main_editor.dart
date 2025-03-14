@@ -931,6 +931,10 @@ class ProImageEditorState extends State<ProImageEditor>
     _controllers.cropLayerPainterCtrl.add(null);
   }
 
+  /// Returns the current scale factor of the image editor.
+  double get editorScaleFactor =>
+      _interactiveViewer.currentState?.scaleFactor ?? 1.0;
+
   /// Handle the start of a scaling operation.
   ///
   /// This method is called when a scaling operation begins and initializes the
