@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.0.3
+- **FEAT**: Add getter `editorScaleFactor` to retrieve current scale factor. See pull request [#392](https://github.com/hm21/pro_image_editor/pull/392) for more details.
+
 ## 9.0.2
 - **STYLE**: Improved Dart code formatting
 
