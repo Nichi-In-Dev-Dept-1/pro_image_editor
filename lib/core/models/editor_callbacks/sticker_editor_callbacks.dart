@@ -29,7 +29,7 @@ class StickerEditorCallbacks extends StandaloneEditorCallbacks {
   /// - [editorState]: The current state of the image editor, providing access
   ///   to relevant editor properties and methods for modifying the editing
   ///   environment.
-  /// - [sticker]: The `StickerLayerData` instance representing the sticker
+  /// - [sticker]: The `WidgetLayer` instance representing the sticker
   ///   that was tapped. This includes the sticker's properties such as its
   ///   widget, position, rotation, scale, and more.
   /// - [index]: The index of the sticker in the list of active layers, which

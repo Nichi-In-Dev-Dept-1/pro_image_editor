@@ -1,6 +1,6 @@
 name: pro_image_editor
 description: "A Flutter image editor: Seamlessly enhance your images with user-friendly editing features."
-version: 9.0.4
+version: 9.0.5
 homepage: https://github.com/hm21/pro_image_editor/
 repository: https://github.com/hm21/pro_image_editor/
 documentation: https://github.com/hm21/pro_image_editor/
@@ -55,7 +55,6 @@ flutter:
   assets:
     - lib/web/web_worker.dart.js
     - lib/web/web_worker.dart.js.map
-    - lib/web/web_worker.dart.wasm
   shaders:
     - lib/shared/shaders/pixelate.frag
   fonts:

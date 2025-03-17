@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.0.5
+- **FIX**(Wasm): Fixes an issue where image generation fails when using WebAssembly. Resolves [#391](https://github.com/hm21/pro_image_editor/issues/391).
+
 ## 9.0.4
 - **DOCS**(readme): simplify README for better readability
 

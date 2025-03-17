@@ -43,27 +43,28 @@ class WebWorkerThread extends Thread {
 
       if (worker.isDefinedAndNotNull) {
         worker.onmessage = (web.MessageEvent event) {
-          final jsObj = event.data as js.JSObject?;
+          try {
+            final jsObj = event.data as js.JSObject?;
 
-          if (jsObj == null) return;
+            if (jsObj == null) return;
 
-          /// Grab the "id" property as a JSString and convert to Dart String
-          final jsId = jsGetProperty(jsObj, 'id');
-          final dartId = (jsId as js.JSString).toDart; // String
+            /// Grab the "id" property as a JSString and convert to Dart String
+            final jsId = jsGetProperty(jsObj, 'id');
+            final dartId = (jsId as js.JSString).toDart; // String
 
-          /// Grab the "bytes" property as a JSArrayBuffer and convert to
-          /// Dart ByteBuffer
-          final jsBytes = jsGetProperty(jsObj, 'bytes');
-          final dartBytes = (jsBytes as js.JSArray).toDart;
+            /// Grab the "bytes" property as a JSArrayBuffer and convert to
+            /// Dart ByteBuffer
+            final jsBytes = jsGetProperty(jsObj, 'bytes');
+            final dartBytes = (jsBytes as js.JSArrayBuffer?)?.toDart;
 
-          activeTasks--;
-          List<dynamic>? bytes = dartBytes as List<dynamic>?;
-          onMessage(ThreadResponse(
-            bytes: bytes != null
-                ? Uint8List.fromList(List.castFrom<dynamic, int>(bytes))
-                : null,
-            id: dartId,
-          ));
+            activeTasks--;
+            onMessage(ThreadResponse(
+              bytes: dartBytes?.asUint8List(),
+              id: dartId,
+            ));
+          } catch (e) {
+            debugPrint(e.toString());
+          }
         }.toJS;
 
         readyState.complete(true);

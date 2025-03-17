@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+import 'dart:typed_data';
 
 /// A function that converts a Dart object to a JavaScript object.
 @JS('Object.getOwnPropertyDescriptor')
@@ -31,6 +32,10 @@ JSAny? jsGetProperty(JSObject obj, String propertyName) {
 JSAny? jsify(Object? dartObject) {
   if (dartObject == null) {
     return dartObject?.jsify();
+  }
+
+  if (dartObject is Uint8List) {
+    return dartObject.buffer.toJS;
   }
 
   if (dartObject is List) {
