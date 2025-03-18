@@ -61,7 +61,7 @@ class WhatsappFilters extends StatelessWidget {
             transformConfigs: editor.stateManager.transformConfigs,
             itemScaleFactor:
                 max(0, min(1, 1 / 120 * whatsAppHelper.filterShowHelper)),
-            editorImage: editor.editorImage,
+            editorImage: editor.editorImage!,
             blurFactor: editor.stateManager.activeBlur,
             configs: editor.configs,
             selectedFilter: editor.stateManager.activeFilters.isNotEmpty

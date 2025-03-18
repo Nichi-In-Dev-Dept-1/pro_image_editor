@@ -20,6 +20,7 @@ import 'state_history_configs.dart';
 import 'sticker_editor_configs.dart';
 import 'text_editor_configs.dart';
 import 'tune_editor_configs.dart';
+import 'video_editor_configs.dart';
 
 export '/features/crop_rotate_editor/models/aspect_ratio_item.dart';
 export '/shared/utils/platform_info.dart';
@@ -100,6 +101,7 @@ class ProImageEditorConfigs {
     this.layerInteraction = const LayerInteractionConfigs(),
     this.dialogConfigs = const DialogConfigs(),
     this.progressIndicatorConfigs = const ProgressIndicatorConfigs(),
+    this.videoEditor = const VideoEditorConfigs(),
     this.designMode = ImageEditorDesignMode.material,
   });
 
@@ -160,6 +162,9 @@ class ProImageEditorConfigs {
   /// Configuration for customizing progress indicators.
   final ProgressIndicatorConfigs progressIndicatorConfigs;
 
+  /// Configurations for video editing
+  final VideoEditorConfigs videoEditor;
+
   /// Creates a copy of this `ProImageEditorConfigs` object with the given
   /// fields replaced with new values.
   ProImageEditorConfigs copyWith({
@@ -182,6 +187,7 @@ class ProImageEditorConfigs {
     ImageEditorDesignMode? designMode,
     DialogConfigs? dialogConfigs,
     ProgressIndicatorConfigs? progressIndicatorConfigs,
+    VideoEditorConfigs? videoEditor,
   }) {
     return ProImageEditorConfigs(
       theme: theme ?? this.theme,
@@ -204,6 +210,7 @@ class ProImageEditorConfigs {
       dialogConfigs: dialogConfigs ?? this.dialogConfigs,
       progressIndicatorConfigs:
           progressIndicatorConfigs ?? this.progressIndicatorConfigs,
+      videoEditor: videoEditor ?? this.videoEditor,
     );
   }
 }

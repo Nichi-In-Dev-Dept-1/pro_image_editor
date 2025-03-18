@@ -1,3 +1,5 @@
+import 'package:pro_image_editor/core/models/editor_callbacks/video_editor_callbacks.dart';
+
 import 'blur_editor_callbacks.dart';
 import 'crop_rotate_editor_callbacks.dart';
 import 'editor_callbacks_typedef.dart';
@@ -37,6 +39,7 @@ class ProImageEditorCallbacks {
     this.emojiEditorCallbacks,
     this.stickerEditorCallbacks,
     this.tuneEditorCallbacks,
+    this.videoEditorCallbacks,
   });
 
   /// A callback function that is triggered when the image generation is
@@ -106,4 +109,7 @@ class ProImageEditorCallbacks {
 
   /// Callbacks from the tune editor.
   final TuneEditorCallbacks? tuneEditorCallbacks;
+
+  /// Callbacks from the video editor.
+  final VideoEditorCallbacks? videoEditorCallbacks;
 }

@@ -119,7 +119,7 @@ class _GroundedFilterBarState extends State<GroundedFilterBar>
                   widget.editor.mainBodySize, widget.editor.editorBodySize),
               mainImageSize: widget.editor.getMinimumSize(
                   widget.editor.mainImageSize, widget.editor.editorBodySize),
-              editorImage: widget.editor.editorImage,
+              editorImage: widget.editor.editorImage!,
               activeFilters: widget.editor.appliedFilters,
               blurFactor: widget.editor.appliedBlurFactor,
               configs: configs,

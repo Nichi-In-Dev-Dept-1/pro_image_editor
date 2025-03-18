@@ -9,9 +9,12 @@ import '/features/main_editor/controllers/main_editor_controllers.dart';
 import '/features/main_editor/services/layer_interaction_manager.dart';
 import '/shared/services/content_recorder/widgets/content_recorder.dart';
 import '/shared/widgets/extended/extended_interactive_viewer.dart';
+import '/shared/widgets/video/video_editor_configurable.dart';
+import '/shared/widgets/video/video_editor_controls_widget.dart';
 import '../main_editor.dart';
 import '../services/sizes_manager.dart';
 import '../services/state_manager.dart';
+import '../services/video_manager.dart';
 import 'main_editor_font_preloader.dart';
 
 /// A widget representing the interactive content area of the main editor,
@@ -21,6 +24,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
   /// builders, managers, configurations, and callbacks.
   ///
   /// - [buildImage]: A builder function to create the image widget.
+  /// - [buildImage]: A builder function to create the video widget.
   /// - [buildLayers]: A builder function to create the layer widgets.
   /// - [buildHelperLines]: A builder function to create the helper lines
   ///   widget.
@@ -40,6 +44,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
   const MainEditorInteractiveContent({
     super.key,
     required this.buildImage,
+    required this.buildVideo,
     required this.buildLayers,
     required this.buildHelperLines,
     required this.buildRemoveIcon,
@@ -54,10 +59,15 @@ class MainEditorInteractiveContent extends StatelessWidget {
     required this.stateManager,
     required this.interactiveViewerKey,
     required this.state,
+    required this.isVideoEditor,
+    required this.videoManager,
   });
 
   /// A builder function to create the image widget.
   final Widget Function() buildImage;
+
+  /// A builder function to create the video widget.
+  final Widget Function() buildVideo;
 
   /// A builder function to create the layer widgets.
   final Widget Function() buildLayers;
@@ -101,6 +111,12 @@ class MainEditorInteractiveContent extends StatelessWidget {
   /// Indicates whether the final image is being processed.
   final bool processFinalImage;
 
+  /// Indicates whether the image or video editor is active.
+  final bool isVideoEditor;
+
+  /// Manages video-related functionalities within the main editor.
+  final VideoManager videoManager;
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -121,6 +137,13 @@ class MainEditorInteractiveContent extends StatelessWidget {
           /// Build crop area overlay
           if (configs.imageGeneration.cropToImageBounds)
             _buildCropAreaOverlay(),
+
+          /// Build video controls
+          if (isVideoEditor)
+            VideoEditorConfigurable(
+              videoManager: videoManager,
+              child: VideoEditorControlsWidget(),
+            ),
 
           /// Build helper content
           if (!processFinalImage) ...[
@@ -180,7 +203,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
         alignment: Alignment.center,
         fit: StackFit.expand,
         children: [
-          buildImage(),
+          if (isVideoEditor) buildVideo() else buildImage(),
           buildLayers(),
           if (configs.mainEditor.widgets.bodyItemsRecorded != null)
             ...configs.mainEditor.widgets.bodyItemsRecorded!(

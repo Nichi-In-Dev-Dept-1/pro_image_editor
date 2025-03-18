@@ -11,7 +11,7 @@ import '/shared/widgets/animated/fade_in_up.dart';
 import '../types/filter_matrix.dart';
 import '../utils/filter_generator/filter_model.dart';
 import '../utils/filter_generator/filter_presets.dart';
-import 'filtered_image.dart';
+import 'filtered_widget.dart';
 
 /// A widget for displaying a list of filter editor items, allowing users
 /// to select and apply filters to an image.
@@ -281,7 +281,7 @@ class _FilterEditorItemListState extends State<FilterEditorItemList> {
               scale: scale,
               child: Transform.translate(
                 offset: offset,
-                child: FilteredImage(
+                child: FilteredWidget(
                   image: widget.editorImage,
                   fit: transformConfigs.isNotEmpty
                       ? BoxFit.contain

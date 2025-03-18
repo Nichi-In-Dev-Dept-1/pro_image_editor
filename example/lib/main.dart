@@ -3,6 +3,7 @@ import 'package:example/shared/widgets/not_found_example.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:media_kit/media_kit.dart';
 
 import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,6 +14,9 @@ import 'core/constants/example_list_constant.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Necessary initialization for package:media_kit.
+  MediaKit.ensureInitialized();
 
   await Supabase.initialize(
     url: 'SUPABASE_URL',

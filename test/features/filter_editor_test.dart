@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pro_image_editor/core/models/init_configs/filter_editor_init_configs.dart';
 import 'package:pro_image_editor/features/filter_editor/filter_editor.dart';
-import 'package:pro_image_editor/features/filter_editor/widgets/filtered_image.dart';
+import 'package:pro_image_editor/features/filter_editor/widgets/filtered_widget.dart';
 
 // Project imports:
 import '../fake/fake_image.dart';
@@ -39,7 +39,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(FilteredImage), findsWidgets);
+      expect(find.byType(FilteredWidget), findsWidgets);
     });
     testWidgets('should change filter factor', (WidgetTester tester) async {
       var key = GlobalKey<FilterEditorState>();

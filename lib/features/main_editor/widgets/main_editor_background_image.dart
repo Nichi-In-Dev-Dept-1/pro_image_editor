@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/editor_image.dart';
 import '/features/filter_editor/widgets/filter_generator.dart';
-import '/features/filter_editor/widgets/filtered_image.dart';
 import '/shared/widgets/auto_image.dart';
 import '/shared/widgets/transform/transformed_content_generator.dart';
+import '../../filter_editor/widgets/filtered_widget.dart';
 import '../services/sizes_manager.dart';
 import '../services/state_manager.dart';
 
@@ -67,7 +67,7 @@ class MainEditorBackgroundImage extends StatelessWidget {
           : TransformedContentGenerator(
               transformConfigs: stateManager.transformConfigs,
               configs: configs,
-              child: FilteredImage(
+              child: FilteredWidget(
                 filterKey: backgroundImageColorFilterKey,
                 width: sizesManager.decodedImageSize.width,
                 height: sizesManager.decodedImageSize.height,

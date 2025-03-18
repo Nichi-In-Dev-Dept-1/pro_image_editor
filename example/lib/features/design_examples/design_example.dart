@@ -90,7 +90,7 @@ class _DesignExampleState extends State<DesignExample>
       theme: Theme.of(context),
     );
 
-    await precacheImage(NetworkImage(_urlFrostedGlass), context);
+    await precacheImage(NetworkImage(url), context);
 
     LoadingDialog.instance.hide();
 

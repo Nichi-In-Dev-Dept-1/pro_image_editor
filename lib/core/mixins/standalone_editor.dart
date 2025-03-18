@@ -28,7 +28,9 @@ mixin StandaloneEditor<T extends EditorInitConfigs> {
   T get initConfigs;
 
   /// Returns the editor image
-  EditorImage get editorImage;
+  EditorImage? get editorImage;
+
+  Widget? get videoPlayer;
 }
 
 /// A mixin providing access to standalone editor configurations and image
@@ -40,7 +42,10 @@ mixin StandaloneEditorState<T extends StatefulWidget,
   I get initConfigs => (widget as StandaloneEditor<I>).initConfigs;
 
   /// Returns the image being edited.
-  EditorImage get editorImage => (widget as StandaloneEditor<I>).editorImage;
+  EditorImage? get editorImage => (widget as StandaloneEditor<I>).editorImage;
+
+  /// Returns the video being edited.
+  Widget? get videoPlayer => (widget as StandaloneEditor<I>).videoPlayer;
 
   @override
   ProImageEditorConfigs get configs => initConfigs.configs;
@@ -107,7 +112,7 @@ mixin StandaloneEditorState<T extends StatefulWidget,
   }) async {
     if (imageInfos == null || forceUpdate == true) {
       imageInfos = (await decodeImageInfos(
-        bytes: await editorImage.safeByteArray(context),
+        bytes: await editorImage!.safeByteArray(context),
         screenSize: editorBodySize,
         configs: activeHistory,
       ));
@@ -119,7 +124,7 @@ mixin StandaloneEditorState<T extends StatefulWidget,
   @protected
   void doneEditing({
     dynamic returnValue,
-    required EditorImage editorImage,
+    EditorImage? editorImage,
     Function? onCloseWithValue,
     Function(Uint8List?)? onSetFakeHero,
   }) async {
@@ -127,6 +132,7 @@ mixin StandaloneEditorState<T extends StatefulWidget,
     initConfigs.onImageEditingStarted?.call();
 
     if (initConfigs.convertToUint8List) {
+      /// TODO: export video code
       createScreenshot = true;
       LoadingDialog.instance.show(
         context,
@@ -152,7 +158,7 @@ mixin StandaloneEditorState<T extends StatefulWidget,
             : null,
         originalImageBytes: screenshotHistoryPosition > 0
             ? null
-            : await editorImage.safeByteArray(context),
+            : await editorImage!.safeByteArray(context),
       );
 
       createScreenshot = false;

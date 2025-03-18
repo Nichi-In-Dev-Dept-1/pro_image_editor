@@ -1,11 +1,10 @@
-import 'package:example/features/emoji_translate_example.dart';
-import 'package:example/features/stickers_example.dart';
 import 'package:flutter/material.dart';
 
 import '/features/crop_to_main_editor.dart';
 import '/features/custom_widgets_example.dart';
 import '/features/default_example.dart';
 import '/features/design_examples/design_example.dart';
+import '/features/emoji_translate_example.dart';
 import '/features/firebase_supabase_example.dart';
 import '/features/frame_example.dart';
 import '/features/generation_configs_example.dart';
@@ -19,6 +18,8 @@ import '/features/round_cropper_example.dart';
 import '/features/selectable_layer_example.dart';
 import '/features/signature_drawing_example.dart';
 import '/features/standalone_example.dart';
+import '/features/stickers_example.dart';
+import '/features/video_examples/video_example.dart';
 import '/features/zoom_example.dart';
 import '../models/example_model.dart';
 
@@ -51,6 +52,12 @@ List<Example> kImageEditorExamples = const [
     name: 'Standalone-Editors',
     icon: Icons.view_in_ar_outlined,
     page: StandaloneExample(),
+  ),
+  Example(
+    path: '/video',
+    name: 'Video-Editor',
+    icon: Icons.video_camera_back_outlined,
+    page: VideoExample(),
   ),
   Example(
     path: '/init-crop-editor',
