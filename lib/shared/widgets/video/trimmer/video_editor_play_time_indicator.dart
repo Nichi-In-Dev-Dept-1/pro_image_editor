@@ -21,7 +21,7 @@ class VideoEditorPlayTimeIndicator extends StatelessWidget {
               barWidth / videoDuration * durationSpan.start.inMicroseconds;
 
           double maxX =
-              barWidth / videoDuration * durationSpan.end.inMicroseconds;
+              barWidth / videoDuration * durationSpan.end.inMicroseconds - 1;
 
           return ValueListenableBuilder(
               valueListenable: player.controller.playTimeNotifier,

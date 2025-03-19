@@ -21,6 +21,8 @@ class VideoEditorConfigs {
     this.animatedIndicatorDuration = const Duration(milliseconds: 200),
     this.animatedIndicatorSwitchInCurve = Curves.ease,
     this.animatedIndicatorSwitchOutCurve = Curves.ease,
+    this.trimBarMinScale = 1,
+    this.trimBarMaxScale = 3,
   });
 
   final VideoEditorIcons icons;
@@ -30,6 +32,8 @@ class VideoEditorConfigs {
   final bool initialPlay;
   final bool initialMuted;
   final bool trimBarInvertMouseScroll;
+  final double trimBarMinScale;
+  final double trimBarMaxScale;
 
   final Duration minTrimDuration;
 

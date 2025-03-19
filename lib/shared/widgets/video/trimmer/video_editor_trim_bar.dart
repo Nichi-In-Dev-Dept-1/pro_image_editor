@@ -21,8 +21,6 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
   double _trimEnd = 1;
   double _scale = 1.0;
   double _baseScale = 1.0;
-  static const double _minScale = 1.0;
-  static const double _maxScale = 3.0;
   final _scrollCtrl = ScrollController();
 
   VideoEditorConfigurable get _player => VideoEditorConfigurable.of(context);
@@ -128,10 +126,10 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
     // Adjust zoom based on scroll direction
     if (deltaY > 0) {
       newZoom -= factor;
-      newZoom = max(_minScale, newZoom);
+      newZoom = max(_player.configs.trimBarMinScale, newZoom);
     } else if (deltaY < 0) {
       newZoom += factor;
-      newZoom = min(_maxScale, newZoom);
+      newZoom = min(_player.configs.trimBarMaxScale, newZoom);
     }
 
     /// Get the local mouse position relative to the trim bar
@@ -188,10 +186,11 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
               _baseScale = _scale;
             },
             onScaleUpdate: (ScaleUpdateDetails details) {
-              setState(() {
-                _scale =
-                    (_baseScale * details.scale).clamp(_minScale, _maxScale);
-              });
+              _scale = (_baseScale * details.scale).clamp(
+                _player.configs.trimBarMinScale,
+                _player.configs.trimBarMaxScale,
+              );
+              setState(() {});
             },
             child: SingleChildScrollView(
               padding: _player.contentPadding,
