@@ -56,6 +56,14 @@ class ProVideoController {
     callbacks.onMuteToggle?.call(isMuted);
   }
 
+  void setTrimSpan(TrimDurationSpan span) {
+    trimDurationSpanNotifier.value = TrimDurationSpan(
+      start: span.start,
+      end: span.end,
+    );
+    callbacks.onTrimSpanChanged?.call(trimDurationSpanNotifier.value);
+  }
+
   void setTrimStart(Duration duration) {
     trimDurationSpanNotifier.value = TrimDurationSpan(
       start: duration,

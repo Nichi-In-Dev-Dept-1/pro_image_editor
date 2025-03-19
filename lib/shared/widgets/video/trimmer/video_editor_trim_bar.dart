@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pro_image_editor/core/models/video/trim_duration_span_model.dart';
 import '../video_editor_configurable.dart';
 import 'video_editor_trim_handle.dart';
 import 'video_editor_trim_thumbnail_bar.dart';
@@ -25,9 +26,19 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
 
   VideoEditorConfigurable get _player => VideoEditorConfigurable.of(context);
 
-  int get _videoDuration => _player.controller.videoDuration.inSeconds;
+  int get _videoDuration => _player.controller.videoDuration.inMicroseconds;
   double get minTrimPercentage =>
-      _player.configs.minTrimDuration.inSeconds / _videoDuration;
+      _player.configs.minTrimDuration.inMicroseconds / _videoDuration;
+
+  void _updateTrimSpan() {
+    _player.controller.setTrimSpan(
+      TrimDurationSpan(
+        start: Duration(microseconds: (trimStart * _videoDuration).toInt()),
+        end: Duration(microseconds: (trimEnd * _videoDuration).toInt()),
+      ),
+    );
+    setState(() {});
+  }
 
   void _updateTrimStart(double value) {
     double minEnd = value + minTrimPercentage;
@@ -39,10 +50,7 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
       trimEnd = 1;
     }
 
-    _player.controller.setTrimStart(
-      Duration(seconds: (trimStart * _videoDuration).toInt()),
-    );
-    setState(() {});
+    _updateTrimSpan();
   }
 
   void _updateTrimEnd(double value) {
@@ -55,10 +63,7 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
       trimEnd = minTrimPercentage;
     }
 
-    _player.controller.setTrimEnd(
-      Duration(seconds: (trimEnd * _videoDuration).toInt()),
-    );
-    setState(() {});
+    _updateTrimSpan();
   }
 
   void _updateScrollbar(double value) {
