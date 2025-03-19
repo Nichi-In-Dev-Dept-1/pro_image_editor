@@ -113,6 +113,55 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
     setState(() {});
   }
 
+  void _handleMouseScroll(PointerSignalEvent event, double trimBarWidth) {
+    if (event is! PointerScrollEvent) return;
+
+    // Define zoom factor dynamically based on scroll speed
+    double factor = 0.05 * (event.scrollDelta.dy / 50).abs().clamp(0.5, 2);
+
+    double deltaY = event.scrollDelta.dy *
+        (_player.configs.trimBarInvertMouseScroll ? -1 : 1);
+
+    double startZoom = _scale;
+    double newZoom = _scale;
+
+    // Adjust zoom based on scroll direction
+    if (deltaY > 0) {
+      newZoom -= factor;
+      newZoom = max(_minScale, newZoom);
+    } else if (deltaY < 0) {
+      newZoom += factor;
+      newZoom = min(_maxScale, newZoom);
+    }
+
+    /// Get the local mouse position relative to the trim bar
+    double mouseX = event.localPosition.dx;
+
+    /// Get the total scrollable width
+    double scaledWidth = trimBarWidth * startZoom;
+    double newScaledWidth = trimBarWidth * newZoom;
+
+    /// Convert mouse position to percentage in the current zoom level
+    double mousePositionPercent = (mouseX + _scrollCtrl.offset) / scaledWidth;
+
+    /// Compute the new scroll offset so that zooming happens around
+    /// the mouse pointer
+    double newScrollOffset = (mousePositionPercent * newScaledWidth) - mouseX;
+
+    /// Ensure new scroll offset is within valid range
+    double clampedScrollOffset = max(
+      0,
+      min(_scrollCtrl.position.maxScrollExtent, newScrollOffset),
+    );
+
+    setState(() {
+      _scale = newZoom;
+    });
+
+    // Apply the new scroll position
+    _scrollCtrl.jumpTo(clampedScrollOffset);
+  }
+
   double get _minInteractiveDimension =>
       Theme.of(context).materialTapTargetSize == MaterialTapTargetSize.padded
           ? kMinInteractiveDimension
@@ -133,15 +182,7 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
             max(_minInteractiveDimension, _player.style.trimBarHandlerWidth);
 
         return Listener(
-          onPointerSignal: (event) {
-            /// TODO: improve that it directly also scroll to the pointer position
-            if (event is PointerScrollEvent) {
-              double scaleChange = -event.scrollDelta.dy * 0.01;
-              setState(() {
-                _scale = (_scale + scaleChange).clamp(_minScale, _maxScale);
-              });
-            }
-          },
+          onPointerSignal: (ev) => _handleMouseScroll(ev, trimBarWidth),
           child: GestureDetector(
             onScaleStart: (ScaleStartDetails details) {
               _baseScale = _scale;

@@ -15,6 +15,7 @@ class VideoEditorConfigs {
     this.widgets = const VideoEditorWidgets(),
     this.initialPlay = false,
     this.initialMuted = false,
+    this.trimBarInvertMouseScroll = false,
     this.controlsPosition = VideoEditorControlPosition.top,
     this.minTrimDuration = const Duration(seconds: 7),
     this.animatedIndicatorDuration = const Duration(milliseconds: 200),
@@ -28,6 +29,7 @@ class VideoEditorConfigs {
 
   final bool initialPlay;
   final bool initialMuted;
+  final bool trimBarInvertMouseScroll;
 
   final Duration minTrimDuration;
 
