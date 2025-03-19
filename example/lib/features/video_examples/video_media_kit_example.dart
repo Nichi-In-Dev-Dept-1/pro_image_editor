@@ -29,7 +29,7 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
   final VideoEditorConfigs _configs = const VideoEditorConfigs(
     initialMuted: true,
     initialPlay: false,
-    minTrimDuration: Duration(seconds: 2),
+    minTrimDuration: Duration(seconds: 7),
   );
   ProVideoController? _proVideoController;
 

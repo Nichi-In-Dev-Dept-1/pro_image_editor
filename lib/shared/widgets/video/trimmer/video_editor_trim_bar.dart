@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pro_image_editor/core/models/video/trim_duration_span_model.dart';
-import 'package:pro_image_editor/shared/widgets/video/trimmer/video_editor_play_time_indicator.dart';
+
+import '/core/models/editor_configs/pro_image_editor_configs.dart';
+import '/core/models/video/trim_duration_span_model.dart';
+import '/shared/widgets/video/trimmer/video_editor_play_time_indicator.dart';
 import '../video_editor_configurable.dart';
 import 'video_editor_trim_handle.dart';
 import 'video_editor_trim_thumbnail_bar.dart';
@@ -160,11 +162,6 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
     _scrollCtrl.jumpTo(clampedScrollOffset);
   }
 
-  double get _minInteractiveDimension =>
-      Theme.of(context).materialTapTargetSize == MaterialTapTargetSize.padded
-          ? kMinInteractiveDimension
-          : 0;
-
   @override
   Widget build(BuildContext context) {
     if (_player.widgets.trimBar != null) return _player.widgets.trimBar!;
@@ -176,26 +173,33 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
         double scaledWidth = trimBarWidth * _scale;
         double trimWidth = (_trimEnd - _trimStart) * scaledWidth;
         double offsetLeftHandler = _trimStart * scaledWidth;
-        double offsetRightHandler = _trimEnd * scaledWidth -
-            max(_minInteractiveDimension, _player.style.trimBarHandlerWidth);
+        double offsetRightHandler =
+            _trimEnd * scaledWidth - _player.style.trimBarHandlerWidth;
 
-        return Listener(
-          onPointerSignal: (ev) => _handleMouseScroll(ev, trimBarWidth),
-          child: GestureDetector(
-            onScaleStart: (ScaleStartDetails details) {
-              _baseScale = _scale;
-            },
-            onScaleUpdate: (ScaleUpdateDetails details) {
-              _scale = (_baseScale * details.scale).clamp(
-                _player.configs.trimBarMinScale,
-                _player.configs.trimBarMaxScale,
-              );
-              setState(() {});
-            },
-            child: SingleChildScrollView(
-              padding: _player.contentPadding,
-              controller: _scrollCtrl,
-              scrollDirection: Axis.horizontal,
+        /// Ensure there is always a small gap between the handlers
+        if (offsetLeftHandler + _player.style.trimBarHandlerWidth + 4 >=
+            offsetRightHandler) {
+          offsetRightHandler =
+              offsetLeftHandler + _player.style.trimBarHandlerWidth + 4;
+        }
+
+        return SingleChildScrollView(
+          padding: _player.contentPadding,
+          controller: _scrollCtrl,
+          scrollDirection: Axis.horizontal,
+          child: Listener(
+            onPointerSignal: (ev) => _handleMouseScroll(ev, trimBarWidth),
+            child: GestureDetector(
+              onScaleStart: (ScaleStartDetails details) {
+                _baseScale = _scale;
+              },
+              onScaleUpdate: (ScaleUpdateDetails details) {
+                _scale = (_baseScale * details.scale).clamp(
+                  _player.configs.trimBarMinScale,
+                  _player.configs.trimBarMaxScale,
+                );
+                setState(() {});
+              },
               child: Container(
                 width: scaledWidth,
                 padding: const EdgeInsets.only(top: 8.0),
@@ -203,10 +207,13 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
                   children: [
                     /// Trimmer background
                     GestureDetector(
-                      onHorizontalDragEnd: (_) => _triggerTrimSpanEnd(),
-                      onHorizontalDragUpdate: (details) {
-                        _updateScrollbar(details.delta.dx);
-                      },
+                      onHorizontalDragEnd:
+                          !isDesktop ? null : (_) => _triggerTrimSpanEnd(),
+                      onHorizontalDragUpdate: !isDesktop
+                          ? null
+                          : (details) {
+                              _updateScrollbar(details.delta.dx);
+                            },
                       child: const VideoEditorTrimThumbnailBar(),
                     ),
 
@@ -216,10 +223,6 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
                       offsetRightHandler,
                       scaledWidth,
                     ),
-
-                    /// Play-time indicator
-                    if (!_isUpdatingTrimBar)
-                      VideoEditorPlayTimeIndicator(trimBarWidth: scaledWidth),
 
                     /// Trim body area
                     _buildTrimBodyArea(
@@ -294,28 +297,36 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
       left: offsetLeftHandler,
       width: offsetRightHandler -
           offsetLeftHandler +
-          max(_minInteractiveDimension, _player.style.trimBarHandlerWidth),
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onHorizontalDragEnd: (_) => _triggerTrimSpanEnd(),
-        onHorizontalDragUpdate: (details) =>
-            _updateDragTrimBar(details, scaledWidth),
-        child: MouseRegion(
-          cursor: SystemMouseCursors.move,
-          child: Container(
-            width: trimWidth,
-            height: _player.style.trimBarHeight,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: _player.style.trimBarBackground,
-                width: _player.style.trimBarBorderWidth,
-              ),
-              borderRadius: BorderRadius.circular(
-                _player.style.trimBarHandlerRadius,
+          _player.style.trimBarHandlerWidth,
+      child: Stack(
+        children: [
+          /// Play-time indicator
+          if (!_isUpdatingTrimBar)
+            VideoEditorPlayTimeIndicator(areaWidth: trimWidth),
+
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onHorizontalDragEnd: (_) => _triggerTrimSpanEnd(),
+            onHorizontalDragUpdate: (details) =>
+                _updateDragTrimBar(details, scaledWidth),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.move,
+              child: Container(
+                width: trimWidth,
+                height: _player.style.trimBarHeight,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: _player.style.trimBarBackground,
+                    width: _player.style.trimBarBorderWidth,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    _player.style.trimBarHandlerRadius,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -335,10 +346,7 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
             _updateTrimEnd(min(1, newValue));
           }
         },
-        child: VideoEditorTrimHandle(
-          isLeft: isLeft,
-          minInteractiveDimension: _minInteractiveDimension,
-        ),
+        child: VideoEditorTrimHandle(isLeft: isLeft),
       ),
     );
   }

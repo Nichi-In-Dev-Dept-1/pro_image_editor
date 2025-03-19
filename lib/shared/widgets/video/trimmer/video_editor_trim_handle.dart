@@ -1,25 +1,18 @@
-import 'dart:math';
-
 import 'package:flutter/widgets.dart';
 
 import '../video_editor_configurable.dart';
 
 class VideoEditorTrimHandle extends StatelessWidget {
-  const VideoEditorTrimHandle({
-    super.key,
-    required this.isLeft,
-    required this.minInteractiveDimension,
-  });
+  const VideoEditorTrimHandle({super.key, required this.isLeft});
 
   final bool isLeft;
-  final double minInteractiveDimension;
 
   @override
   Widget build(BuildContext context) {
     var player = VideoEditorConfigurable.of(context);
 
     return SizedBox(
-      width: max(minInteractiveDimension, player.style.trimBarHandlerWidth),
+      width: player.style.trimBarHandlerWidth,
       child: Align(
         alignment: isLeft ? Alignment.centerLeft : Alignment.centerRight,
         child: MouseRegion(

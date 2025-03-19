@@ -44,14 +44,16 @@ class VideoEditorConfigs {
   final Curve animatedIndicatorSwitchOutCurve;
 
   VideoEditorConfigs copyWith({
-    Widget? videoPlayer,
     VideoEditorIcons? icons,
     VideoEditorStyle? style,
     VideoEditorWidgets? widgets,
-    Duration? minTrimDuration,
-    VideoEditorControlPosition? controlsPosition,
     bool? initialPlay,
     bool? initialMuted,
+    bool? trimBarInvertMouseScroll,
+    double? trimBarMinScale,
+    double? trimBarMaxScale,
+    Duration? minTrimDuration,
+    VideoEditorControlPosition? controlsPosition,
     Duration? animatedIndicatorDuration,
     Curve? animatedIndicatorSwitchInCurve,
     Curve? animatedIndicatorSwitchOutCurve,
@@ -60,10 +62,14 @@ class VideoEditorConfigs {
       icons: icons ?? this.icons,
       style: style ?? this.style,
       widgets: widgets ?? this.widgets,
-      minTrimDuration: minTrimDuration ?? this.minTrimDuration,
-      controlsPosition: controlsPosition ?? this.controlsPosition,
       initialPlay: initialPlay ?? this.initialPlay,
       initialMuted: initialMuted ?? this.initialMuted,
+      trimBarInvertMouseScroll:
+          trimBarInvertMouseScroll ?? this.trimBarInvertMouseScroll,
+      trimBarMinScale: trimBarMinScale ?? this.trimBarMinScale,
+      trimBarMaxScale: trimBarMaxScale ?? this.trimBarMaxScale,
+      minTrimDuration: minTrimDuration ?? this.minTrimDuration,
+      controlsPosition: controlsPosition ?? this.controlsPosition,
       animatedIndicatorDuration:
           animatedIndicatorDuration ?? this.animatedIndicatorDuration,
       animatedIndicatorSwitchInCurve:
@@ -83,6 +89,11 @@ class VideoEditorConfigs {
         other.widgets == widgets &&
         other.initialPlay == initialPlay &&
         other.initialMuted == initialMuted &&
+        other.trimBarInvertMouseScroll == trimBarInvertMouseScroll &&
+        other.trimBarMinScale == trimBarMinScale &&
+        other.trimBarMaxScale == trimBarMaxScale &&
+        other.minTrimDuration == minTrimDuration &&
+        other.controlsPosition == controlsPosition &&
         other.animatedIndicatorDuration == animatedIndicatorDuration &&
         other.animatedIndicatorSwitchInCurve ==
             animatedIndicatorSwitchInCurve &&
@@ -97,6 +108,11 @@ class VideoEditorConfigs {
         widgets.hashCode ^
         initialPlay.hashCode ^
         initialMuted.hashCode ^
+        trimBarInvertMouseScroll.hashCode ^
+        trimBarMinScale.hashCode ^
+        trimBarMaxScale.hashCode ^
+        minTrimDuration.hashCode ^
+        controlsPosition.hashCode ^
         animatedIndicatorDuration.hashCode ^
         animatedIndicatorSwitchInCurve.hashCode ^
         animatedIndicatorSwitchOutCurve.hashCode;

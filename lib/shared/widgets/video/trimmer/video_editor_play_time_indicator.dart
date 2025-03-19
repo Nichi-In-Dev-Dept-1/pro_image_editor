@@ -3,34 +3,32 @@ import 'package:flutter/material.dart';
 import '../video_editor_configurable.dart';
 
 class VideoEditorPlayTimeIndicator extends StatelessWidget {
-  const VideoEditorPlayTimeIndicator({super.key, required this.trimBarWidth});
+  const VideoEditorPlayTimeIndicator({super.key, required this.areaWidth});
 
-  final double trimBarWidth;
+  final double areaWidth;
 
   @override
   Widget build(BuildContext context) {
     var player = VideoEditorConfigurable.of(context);
 
-    int videoDuration = player.controller.videoDuration.inMicroseconds;
-    double barWidth = trimBarWidth;
+    double handlerWidth = player.configs.style.trimBarHandlerWidth;
+    double barWidth = areaWidth - 2 * handlerWidth;
 
     return ValueListenableBuilder(
         valueListenable: player.controller.trimDurationSpanNotifier,
         builder: (_, durationSpan, __) {
-          double minX =
-              barWidth / videoDuration * durationSpan.start.inMicroseconds;
-
-          double maxX =
-              barWidth / videoDuration * durationSpan.end.inMicroseconds - 1;
+          Duration startDuration = durationSpan.start;
+          int areaDuration = durationSpan.duration.inMicroseconds;
 
           return ValueListenableBuilder(
               valueListenable: player.controller.playTimeNotifier,
               builder: (_, playTime, __) {
-                double startX =
-                    barWidth / videoDuration * playTime.inMicroseconds;
+                int convertedPlay = (playTime - startDuration).inMicroseconds;
+
+                double startX = barWidth / areaDuration * convertedPlay;
 
                 return Positioned(
-                  left: startX.clamp(minX, maxX.floorToDouble()),
+                  left: handlerWidth + startX,
                   top: player.style.trimBarBorderWidth,
                   bottom: player.style.trimBarBorderWidth,
                   width: player.style.trimBarPlayTimeIndicatorWidth,

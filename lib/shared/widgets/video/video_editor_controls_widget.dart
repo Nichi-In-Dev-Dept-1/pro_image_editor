@@ -29,14 +29,38 @@ class VideoEditorControlsWidget extends StatelessWidget {
                 const VideoEditorTrimBar(),
                 Padding(
                   padding: player.contentPadding,
-                  child: const Row(
-                    spacing: 12,
-                    children: [
-                      VideoEditorMuteButton(),
-                      VideoEditorInfoBanner(),
-                      Spacer(),
-                      VideoEditorTrimInfoWidget()
-                    ],
+                  child: LayoutBuilder(
+                    builder: (_, constraints) {
+                      if (constraints.maxWidth +
+                              player.contentPadding.horizontal >=
+                          330) {
+                        return const Row(
+                          children: [
+                            VideoEditorMuteButton(),
+                            SizedBox(width: 12),
+                            VideoEditorInfoBanner(),
+                            Spacer(),
+                            VideoEditorTrimInfoWidget()
+                          ],
+                        );
+                      } else {
+                        return const Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            VideoEditorMuteButton(),
+                            Spacer(),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              spacing: 6,
+                              children: [
+                                VideoEditorInfoBanner(),
+                                VideoEditorTrimInfoWidget()
+                              ],
+                            )
+                          ],
+                        );
+                      }
+                    },
                   ),
                 ),
               ],

@@ -12,12 +12,13 @@ class VideoEditorMuteButton extends StatelessWidget {
         builder: (_, isMuted, __) {
           return player.widgets.muteButton?.call != null
               ? player.widgets.muteButton!(player.controller.setMuteState)
-              : Container(
-                  decoration: ShapeDecoration(
-                    shape: const CircleBorder(),
-                    color: player.style.muteButtonBackground,
+              : IconButtonTheme(
+                  data: IconButtonThemeData(
+                    style: IconButton.styleFrom(
+                      backgroundColor: player.style.muteButtonBackground,
+                    ),
                   ),
-                  child: IconButton(
+                  child: IconButton.filled(
                     onPressed: () {
                       player.controller.setMuteState(!isMuted);
                     },
