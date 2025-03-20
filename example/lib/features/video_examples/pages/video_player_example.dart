@@ -139,7 +139,9 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
                     ),
                   ),
                 ),
-                videoEditor: videoConfigs,
+                videoEditor: videoConfigs.copyWith(
+                  playTimeSmoothingDuration: const Duration(milliseconds: 600),
+                ),
               ),
             ),
     );

@@ -146,7 +146,9 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
                     ),
                   ),
                 ),
-                videoEditor: videoConfigs,
+                videoEditor: videoConfigs.copyWith(
+                  playTimeSmoothingDuration: const Duration(milliseconds: 600),
+                ),
               ),
             ),
     );

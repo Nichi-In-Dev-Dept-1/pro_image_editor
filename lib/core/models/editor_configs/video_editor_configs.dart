@@ -29,6 +29,7 @@ class VideoEditorConfigs {
     this.animatedIndicatorSwitchOutCurve = Curves.ease,
     this.trimBarMinScale = 1,
     this.trimBarMaxScale = 3,
+    this.playTimeSmoothingDuration = Duration.zero,
   });
 
   /// Configurable icons for the video editor.
@@ -55,6 +56,12 @@ class VideoEditorConfigs {
   /// Maximum scale factor for the trim bar.
   final double trimBarMaxScale;
 
+  /// In some video players, the playtime indicator does not refresh at 60 FPS,
+  /// resulting in a choppy appearance and noticeable "jumps."
+  /// To improve smoothness, we use `AnimatedPosition` with a duration to
+  /// create a more fluid transition.
+  final Duration playTimeSmoothingDuration;
+
   /// Minimum trim duration allowed.
   final Duration minTrimDuration;
 
@@ -80,6 +87,7 @@ class VideoEditorConfigs {
     bool? trimBarInvertMouseScroll,
     double? trimBarMinScale,
     double? trimBarMaxScale,
+    Duration? playTimeSmoothingDuration,
     Duration? minTrimDuration,
     VideoEditorControlPosition? controlsPosition,
     Duration? animatedIndicatorDuration,
@@ -96,6 +104,8 @@ class VideoEditorConfigs {
           trimBarInvertMouseScroll ?? this.trimBarInvertMouseScroll,
       trimBarMinScale: trimBarMinScale ?? this.trimBarMinScale,
       trimBarMaxScale: trimBarMaxScale ?? this.trimBarMaxScale,
+      playTimeSmoothingDuration:
+          playTimeSmoothingDuration ?? this.playTimeSmoothingDuration,
       minTrimDuration: minTrimDuration ?? this.minTrimDuration,
       controlsPosition: controlsPosition ?? this.controlsPosition,
       animatedIndicatorDuration:
@@ -120,6 +130,7 @@ class VideoEditorConfigs {
         other.trimBarInvertMouseScroll == trimBarInvertMouseScroll &&
         other.trimBarMinScale == trimBarMinScale &&
         other.trimBarMaxScale == trimBarMaxScale &&
+        other.playTimeSmoothingDuration == playTimeSmoothingDuration &&
         other.minTrimDuration == minTrimDuration &&
         other.controlsPosition == controlsPosition &&
         other.animatedIndicatorDuration == animatedIndicatorDuration &&
@@ -139,6 +150,7 @@ class VideoEditorConfigs {
         trimBarInvertMouseScroll.hashCode ^
         trimBarMinScale.hashCode ^
         trimBarMaxScale.hashCode ^
+        playTimeSmoothingDuration.hashCode ^
         minTrimDuration.hashCode ^
         controlsPosition.hashCode ^
         animatedIndicatorDuration.hashCode ^

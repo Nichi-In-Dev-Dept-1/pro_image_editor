@@ -162,7 +162,9 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
                     ),
                   ),
                 ),
-                videoEditor: videoConfigs,
+                videoEditor: videoConfigs.copyWith(
+                  playTimeSmoothingDuration: const Duration(milliseconds: 600),
+                ),
               ),
             ),
     );

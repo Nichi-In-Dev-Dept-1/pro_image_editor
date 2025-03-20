@@ -35,7 +35,8 @@ class VideoEditorPlayTimeIndicator extends StatelessWidget {
 
                 double startX = barWidth / areaDuration * convertedPlay;
 
-                return Positioned(
+                return AnimatedPositioned(
+                  duration: player.configs.playTimeSmoothingDuration,
                   left: handlerWidth + startX,
                   top: player.style.trimBarBorderWidth,
                   bottom: player.style.trimBarBorderWidth,
