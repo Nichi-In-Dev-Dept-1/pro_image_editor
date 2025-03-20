@@ -197,7 +197,7 @@ class StateManager {
   ///
   /// - `limit`: The maximum number of states to retain in the history. Must
   /// be 1 or greater.
-  void setHistoryLimit(int limit) {
+  void setHistoryLimit(int limit, bool enableScreenshotLimit) {
     if (limit <= 0) {
       throw ArgumentError('The state history limit must be 1 or greater!');
     }
@@ -205,10 +205,10 @@ class StateManager {
       if (_historyPointer > 0) {
         _historyPointer--;
         _stateHistory.removeAt(0);
-        screenshots.removeAt(0);
+        if (enableScreenshotLimit) screenshots.removeAt(0);
       } else {
         _stateHistory.removeLast();
-        screenshots.removeLast();
+        if (enableScreenshotLimit) screenshots.removeLast();
       }
     }
   }
@@ -229,11 +229,15 @@ class StateManager {
   /// 1. The history pointer is updated to point to the latest state.
   /// 2. The history list size is adjusted according to `historyLimit`.
   /// 3. Active editor components are refreshed.
-  void addHistory(EditorStateHistory history, {int historyLimit = 1000}) {
+  void addHistory(
+    EditorStateHistory history, {
+    int historyLimit = 1000,
+    bool enableScreenshotLimit = true,
+  }) {
     _cleanForwardChanges();
     _stateHistory.add(history);
     historyPointer = _stateHistory.length - 1;
-    setHistoryLimit(historyLimit);
+    setHistoryLimit(historyLimit, enableScreenshotLimit);
     updateActiveItems();
   }
 

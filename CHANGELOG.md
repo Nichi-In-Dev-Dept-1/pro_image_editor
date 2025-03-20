@@ -1,7 +1,10 @@
 # Changelog
 
-## 9.0.6
+## 9.0.7
 - **FIX**(import): Resolve state restoration issue causing layer shift on cropped images. Resolves [#292](https://github.com/hm21/pro_image_editor/issues/292).
+
+## 9.0.6
+- **FIX**(state-history): Resolve issue where the state history limitation does not work when `enableBackgroundGeneration` is set to `false`.
 
 ## 9.0.5
 - **FIX**(Wasm): Fixes an issue where image generation fails when using WebAssembly. Resolves [#391](https://github.com/hm21/pro_image_editor/issues/391).

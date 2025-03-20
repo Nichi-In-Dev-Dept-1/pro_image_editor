@@ -649,7 +649,8 @@ class ProImageEditorState extends State<ProImageEditor>
         filters: filters ?? [],
         tuneAdjustments: tuneAdjustments ?? [],
       ),
-      historyLimit: configs.stateHistory.stateHistoryLimit,
+      historyLimit: stateHistoryConfigs.stateHistoryLimit,
+      enableScreenshotLimit: imageGenerationConfigs.enableBackgroundGeneration,
     );
     if (!blockCaptureScreenshot) {
       if (!heroScreenshotRequired) {
