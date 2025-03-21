@@ -1,8 +1,8 @@
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 
 import '/core/constants/editor_style_constants.dart';
 import '/core/models/i18n/i18n_emoji_editor.dart';
+import '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart';
 
 /// Search view header for the emoji editor, allowing search input and emoji
 /// display.

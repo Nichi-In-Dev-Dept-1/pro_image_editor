@@ -4,7 +4,7 @@ import 'dart:ui';
 
 import 'emoji_editor_configs.dart';
 
-export 'package:emoji_picker_flutter/emoji_picker_flutter.dart'
+export '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart'
     show
         CategoryEmoji,
         emojiSetChinese,

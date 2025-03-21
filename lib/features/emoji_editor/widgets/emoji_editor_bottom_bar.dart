@@ -1,5 +1,6 @@
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+
+import '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart';
 import '../services/emoji_state_manager.dart';
 
 /// Represents the bottom bar for the emoji editor.

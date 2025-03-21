@@ -1,4 +1,6 @@
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart'
+import 'package:flutter/widgets.dart';
+
+import '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart'
     show
         BottomActionBarConfig,
         CategoryViewConfig,
@@ -8,16 +10,11 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart'
         SearchViewConfig,
         SkinToneConfig,
         ViewOrderConfig;
-
-// Flutter imports:
-import 'package:flutter/widgets.dart';
-
-// Project imports:
 import '../../constants/editor_style_constants.dart';
 import 'draggable_sheet_style.dart';
 import 'types/style_types.dart';
 
-export 'package:emoji_picker_flutter/emoji_picker_flutter.dart'
+export '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart'
     show
         BottomActionBarConfig,
         CategoryViewConfig,

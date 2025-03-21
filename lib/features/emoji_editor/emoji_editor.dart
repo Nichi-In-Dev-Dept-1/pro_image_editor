@@ -1,13 +1,13 @@
 // Dart imports:
 import 'dart:math';
 
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:emoji_picker_flutter/locales/default_emoji_set_locale.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_configs_mixin.dart';
+import '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart';
+import '/plugins/emoji_picker_flutter/locales/default_emoji_set_locale.dart';
 import '/pro_image_editor.dart';
 import './widgets/emoji_editor_category_view.dart';
 import 'widgets/emoji_editor_full_screen_search.dart';

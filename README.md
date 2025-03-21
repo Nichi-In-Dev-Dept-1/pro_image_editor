@@ -293,19 +293,19 @@ Check out the web [demo](https://hm21.github.io/pro_image_editor/) to explore al
 
 A big thanks to the authors of these amazing packages.
 
-- [emoji_picker_flutter](https://pub.dev/packages/emoji_picker_flutter)
+- Packages created by the Dart team:
+  - [http](https://pub.dev/packages/http)
+  - [plugin_platform_interface](https://pub.dev/packages/plugin_platform_interface)
+  - [web](https://pub.dev/packages/web)
 
-Packages created by the Dart team:
-- [http](https://pub.dev/packages/http)
-- [web](https://pub.dev/packages/web)
 
-
-Packages that are used with a minor modified version, but are not a direct dependency:
-- [archive](https://pub.dev/packages/archive)
-- [defer_pointer](https://pub.dev/packages/defer_pointer)
-- [image](https://pub.dev/packages/image)
-- [mime](https://pub.dev/packages/mime)
-- [rounded_background_text](https://pub.dev/packages/rounded_background_text)
+- Packages that are used with a minor modified version, but are not a direct dependency:
+  - [archive](https://pub.dev/packages/archive)
+  - [defer_pointer](https://pub.dev/packages/defer_pointer)
+  - [emoji_picker_flutter](https://pub.dev/packages/emoji_picker_flutter)
+  - [image](https://pub.dev/packages/image)
+  - [mime](https://pub.dev/packages/mime)
+  - [rounded_background_text](https://pub.dev/packages/rounded_background_text)
 
 ## Contributors
 <a href="https://github.com/hm21/pro_image_editor/graphs/contributors">

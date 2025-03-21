@@ -3,7 +3,7 @@
 library;
 
 /// Emoji
-export 'package:emoji_picker_flutter/emoji_picker_flutter.dart'
+export '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart'
     show Emoji, RecentTabBehavior, CategoryIcons, Category, CategoryEmoji;
 
 export 'core/models/editor_callbacks/pro_image_editor_callbacks.dart';

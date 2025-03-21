@@ -1,5 +1,6 @@
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+
+import '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart';
 
 /// Manages the state of the emoji picker, including the active category.
 class EmojiStateManager extends InheritedWidget {
