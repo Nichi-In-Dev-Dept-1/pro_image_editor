@@ -6,6 +6,5 @@
         - macOS
         - Linux
         - Windows
-    - Generate Thumbnails
-        - Implement a native solution
     - Fix Web Video Player (May require a new native solution)
+    - Remove deprecated warnings on the video constructors

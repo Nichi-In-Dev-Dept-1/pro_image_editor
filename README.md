@@ -28,6 +28,7 @@ The ProImageEditor is a Flutter widget designed for image editing within your ap
 - **[✨ Features](#features)**
 - **[🔧 Setup](#setup)**
 - **[❓ Usage](#usage)**
+- **[📽️ Video-Editor](#video-editor)**
 - **[💖 Sponsors](#sponsors)**
 - **[📦 Included Packages](#included-packages)**
 - **[🤝 Contributors](#contributors)**
@@ -153,6 +154,7 @@ The ProImageEditor is a Flutter widget designed for image editing within your ap
 
 
 #### Planned features
+- ✨ Video-Editor 
 - ✨ Paint-Editor 
   - Freestyle-Painter with improved performance and hitbox
 - ✨ AI Futures => Perhaps integrating Adobe Firefly
@@ -279,6 +281,14 @@ The editor provides extensive customization options, allowing you to modify text
 
 Check out the web [demo](https://hm21.github.io/pro_image_editor/) to explore all possibilities. You can find the example code for all demos [here](https://github.com/hm21/pro_image_editor/tree/stable/example/lib/features).
 
+
+## Video-Editor
+
+The video editor is an upcoming feature and has been added to the example folder. The demo does not currently support exporting edited videos—it simply provides a preview of what video editing could look like.
+
+To keep the image editor as lightweight as possible, you’ll need to manually include both the [pro_video_editor](https://github.com/hm21/pro_video_editor) package and a video player package of your choice.
+
+If you're interested in contributing to this feature, feel free to open a pull request in the [pro_video_editor](https://github.com/hm21/pro_video_editor/pulls) repository. Alternatively, sponsoring the package would enable me to dedicate more time to its development and to this functionality.
 
 
 ## Sponsors 

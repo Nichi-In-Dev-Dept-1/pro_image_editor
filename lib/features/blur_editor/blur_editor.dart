@@ -130,7 +130,10 @@ class BlurEditor extends StatefulWidget
     );
   }
 
+  /// 🚧 The Video Editor is under development and not ready for use.
+  ///
   /// Constructs a `BlurEditor` widget with an video player.
+  @Deprecated('The Video Editor is under development and not ready for use.')
   factory BlurEditor.video(
     ProVideoController videoController, {
     Key? key,

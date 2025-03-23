@@ -159,6 +159,8 @@ class PaintEditor extends StatefulWidget
     );
   }
 
+  /// 🚧 The Video Editor is under development and not ready for use.
+  ///
   /// Constructs a `PaintEditor` widget with an video player.
   factory PaintEditor.video(
     ProVideoController videoController, {

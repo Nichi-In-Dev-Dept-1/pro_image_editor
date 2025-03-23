@@ -151,7 +151,9 @@ class CropRotateEditor extends StatefulWidget
     );
   }
 
-  /// Constructs a `BlurEditor` widget with an video player.
+  /// 🚧 The Video Editor is under development and not ready for use.
+  ///
+  /// Constructs a `CropRotateEditor` widget with an video player.
   factory CropRotateEditor.video(
     ProVideoController videoController, {
     Key? key,

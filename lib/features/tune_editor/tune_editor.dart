@@ -132,7 +132,10 @@ class TuneEditor extends StatefulWidget
     );
   }
 
-  /// Constructs a `BlurEditor` widget with an video player.
+  /// 🚧 The Video Editor is under development and not ready for use.
+  ///
+  /// Constructs a `TuneEditor` widget with an video player.
+  @Deprecated('The Video Editor is under development and not ready for use.')
   factory TuneEditor.video(
     ProVideoController videoController, {
     Key? key,

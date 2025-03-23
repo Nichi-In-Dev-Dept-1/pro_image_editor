@@ -111,6 +111,8 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
       duration: const Duration(milliseconds: 220),
       child: proVideoController == null
           ? const VideoInitializingWidget()
+          // TODO: remove deprecated warning
+          // ignore: deprecated_member_use
           : ProImageEditor.video(
               proVideoController!,
               callbacks: ProImageEditorCallbacks(

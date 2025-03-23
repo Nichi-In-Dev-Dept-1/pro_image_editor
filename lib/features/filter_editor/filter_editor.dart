@@ -133,7 +133,9 @@ class FilterEditor extends StatefulWidget
     );
   }
 
-  /// Constructs a `BlurEditor` widget with an video player.
+  /// 🚧 The Video Editor is under development and not ready for use.
+  ///
+  /// Constructs a `FilterEditor` widget with an video player.
   factory FilterEditor.video(
     ProVideoController videoController, {
     Key? key,
