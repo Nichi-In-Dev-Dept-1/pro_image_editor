@@ -1,5 +1,10 @@
 # Changelog
 
+## 9.2.0
+- **FEAT**: Added `clearLayerSelection` method to reset selected layers.
+- **FEAT**: Added `selectLayerByIndex` method to select a layer using its index.
+- **FEAT**: Added `selectLayerById` method to select a layer by its unique ID.
+
 ## 9.1.0
 - **FEAT**: Replaced the external packages [`emoji_picker_flutter`](https://pub.dev/packages/emoji_picker_flutter), [`universal_io`](https://pub.dev/packages/universal_io), and [`flutter_web_plugins`](https://api.flutter.dev/flutter/flutter_web_plugins) with lightweight internal implementations.  
   The editor now only relies on official Dart and Flutter packages, reducing dependencies and improving maintainability.
