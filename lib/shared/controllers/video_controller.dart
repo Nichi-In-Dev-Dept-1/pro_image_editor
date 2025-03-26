@@ -56,6 +56,16 @@ class ProVideoController {
     TrimDurationSpan(start: Duration.zero, end: videoDuration),
   );
 
+  /// The start time of the trimmed video segment.
+  ///
+  /// Retrieved from the [trimDurationSpanNotifier].
+  Duration get startTime => trimDurationSpanNotifier.value.start;
+
+  /// The end time of the trimmed video segment.
+  ///
+  /// Retrieved from the [trimDurationSpanNotifier].
+  Duration get endTime => trimDurationSpanNotifier.value.end;
+
   /// Initializes the controller with provided callback and config functions.
   void initialize({
     required VideoEditorCallbacks Function() callbacksFunction,

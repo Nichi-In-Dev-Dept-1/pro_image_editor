@@ -1,4 +1,5 @@
 import 'package:chewie/chewie.dart';
+import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:pro_video_editor/pro_video_editor.dart';
@@ -38,10 +39,10 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
   }
 
   void _initializePlayer() async {
-    EditorVideo video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
+    video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
 
-    await setVideoInformations(video);
-    await generateThumbnails(video);
+    await setVideoInformations();
+    await generateThumbnails();
     if (!mounted) return;
 
     _videoPlayerController =
@@ -137,6 +138,12 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
                 ),
               ),
               configs: ProImageEditorConfigs(
+                dialogConfigs: DialogConfigs(
+                  widgets: DialogWidgets(
+                    loadingDialog: (message, configs) =>
+                        const VideoProgressAlert(),
+                  ),
+                ),
                 mainEditor: MainEditorConfigs(
                   widgets: MainEditorWidgets(
                     removeLayerArea: (removeAreaKey, editor, rebuildStream) =>

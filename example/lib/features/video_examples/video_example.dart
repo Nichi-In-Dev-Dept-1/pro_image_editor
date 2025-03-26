@@ -26,16 +26,17 @@ class _VideoExampleState extends State<VideoExample>
 
   late final _videoPackages = [
     _Package(
-      title: 'Package "media_kit"',
-      enabled: !kIsWeb || _isWebEditingSupported,
-      example: const VideoMediaKitExample(),
-    ),
-    _Package(
       title: 'Package "video_player"',
+      subTitle: 'Recommended for Android and iOS',
       enabled: (kIsWeb && _isWebEditingSupported) ||
           (!kIsWeb &&
               (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)),
       example: const VideoPlayerExample(),
+    ),
+    _Package(
+      title: 'Package "media_kit"',
+      enabled: !kIsWeb || _isWebEditingSupported,
+      example: const VideoMediaKitExample(),
     ),
     _Package(
       title: 'Package "flick_video_player"',
@@ -113,21 +114,15 @@ class _VideoExampleState extends State<VideoExample>
                   fontWeight: FontWeight.w500,
                 ),
               ),
-            )
-          else
-            const ParagraphInfoWidget(
-              margin: EdgeInsets.fromLTRB(16, 16, 16, 8),
-              color: Color.fromARGB(255, 54, 89, 244),
-              child: Text(
-                'Choose the video player package that best suits your needs:',
-              ),
             ),
           ..._videoPackages.map((pkg) {
             return ListTile(
               enabled: pkg.enabled,
               leading: const Icon(Icons.movie),
               title: Text(pkg.title),
-              subtitle: pkg.enabled ? null : _buildNotSupportedMsg(),
+              subtitle: pkg.enabled
+                  ? (pkg.subTitle.isNotEmpty ? Text(pkg.subTitle) : null)
+                  : _buildNotSupportedMsg(pkg.subTitle),
               trailing: const Icon(Icons.chevron_right),
               onTap: pkg.enabled ? () => _openExample(pkg.example) : null,
             );
@@ -137,18 +132,28 @@ class _VideoExampleState extends State<VideoExample>
     );
   }
 
-  Widget _buildNotSupportedMsg() {
-    return const Text('This package is not supported on that platform.');
+  Widget _buildNotSupportedMsg(String subTitle) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      spacing: 3,
+      children: [
+        Text(subTitle),
+        const Text('This package is not supported on that platform.'),
+      ],
+    );
   }
 }
 
 class _Package {
   _Package({
     required this.title,
+    this.subTitle = '',
     required this.enabled,
     required this.example,
   });
   final String title;
+  final String subTitle;
   final bool enabled;
   final Widget example;
 }

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:vibration/vibration.dart';
 
-import '/features/preview_img.dart';
+import '../../features/preview/preview_img.dart';
 import '../constants/example_constants.dart';
 export '/shared/widgets/prepare_image_widget.dart';
 

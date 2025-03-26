@@ -2,6 +2,8 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import '../complete_parameters.dart';
+
 /// A typedef representing a callback function invoked when image editing is
 /// complete.
 ///
@@ -10,6 +12,14 @@ import 'dart:ui' as ui;
 /// It should return a Future indicating the completion of any asynchronous
 /// operations.
 typedef ImageEditingCompleteCallback = Future<void> Function(Uint8List bytes);
+
+/// Signature for a callback that handles a [CompleteParameters] object.
+///
+/// Typically used to process or export video frames based on complete
+/// transformation and filter parameters.
+typedef CompleteWidthParametersCallback = Future<void> Function(
+  CompleteParameters parameters,
+);
 
 /// A callback function type that is invoked when a thumbnail image is
 /// generated.

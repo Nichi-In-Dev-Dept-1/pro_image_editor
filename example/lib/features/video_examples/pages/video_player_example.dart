@@ -1,6 +1,8 @@
+import 'dart:async';
+
+import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
-import 'package:pro_video_editor/pro_video_editor.dart';
 import 'package:video_player/video_player.dart';
 
 import '/core/constants/example_constants.dart';
@@ -35,10 +37,8 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
   }
 
   void _initializePlayer() async {
-    EditorVideo video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
-
-    await setVideoInformations(video);
-    await generateThumbnails(video);
+    await setVideoInformations();
+    await generateThumbnails();
     if (!mounted) return;
 
     _videoController =
@@ -116,6 +116,8 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
           : ProImageEditor.video(
               proVideoController!,
               callbacks: ProImageEditorCallbacks(
+                onCompleteWithParameters: generateVideo,
+                onCloseEditor: onCloseEditor,
                 videoEditorCallbacks: VideoEditorCallbacks(
                   onPause: _videoController.pause,
                   onPlay: _videoController.play,
@@ -131,6 +133,12 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
                 ),
               ),
               configs: ProImageEditorConfigs(
+                dialogConfigs: DialogConfigs(
+                  widgets: DialogWidgets(
+                    loadingDialog: (message, configs) =>
+                        const VideoProgressAlert(),
+                  ),
+                ),
                 mainEditor: MainEditorConfigs(
                   widgets: MainEditorWidgets(
                     removeLayerArea: (removeAreaKey, editor, rebuildStream) =>

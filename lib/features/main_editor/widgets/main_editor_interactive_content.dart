@@ -24,7 +24,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
   /// builders, managers, configurations, and callbacks.
   ///
   /// - [buildImage]: A builder function to create the image widget.
-  /// - [buildImage]: A builder function to create the video widget.
+  /// - [buildVideo]: A builder function to create the video widget.
   /// - [buildLayers]: A builder function to create the layer widgets.
   /// - [buildHelperLines]: A builder function to create the helper lines
   ///   widget.
@@ -119,12 +119,14 @@ class MainEditorInteractiveContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isLayerSelected = selectedLayerIndex >= 0;
+
     return Center(
       child: Stack(
         children: [
           MainEditorFontPreloader(emojiEditorConfigs: configs.emojiEditor),
           Padding(
-            padding: selectedLayerIndex >= 0 &&
+            padding: isLayerSelected &&
                     configs.layerInteraction.hideToolbarOnInteraction
                 ? EdgeInsets.only(
                     top: sizesManager.appBarHeight,
@@ -140,9 +142,14 @@ class MainEditorInteractiveContent extends StatelessWidget {
 
           /// Build video controls
           if (isVideoEditor)
-            VideoEditorConfigurable(
-              controller: videoController!,
-              child: const VideoEditorControlsWidget(),
+            AnimatedSwitcher(
+              duration: configs.layerInteraction.videoControlsSwitchDuration,
+              child: isLayerSelected
+                  ? const SizedBox.shrink()
+                  : VideoEditorConfigurable(
+                      controller: videoController!,
+                      child: const VideoEditorControlsWidget(),
+                    ),
             ),
 
           /// Build helper content
@@ -190,7 +197,16 @@ class MainEditorInteractiveContent extends StatelessWidget {
         controllers.uiLayerCtrl.add(null);
         controllers.cropLayerPainterCtrl.add(null);
       },
-      child: _buildContentRecorder(),
+      child: isVideoEditor
+          ? Stack(
+              alignment: Alignment.center,
+              fit: StackFit.expand,
+              children: [
+                buildVideo(),
+                _buildContentRecorder(),
+              ],
+            )
+          : _buildContentRecorder(),
     );
   }
 
@@ -203,7 +219,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
         alignment: Alignment.center,
         fit: StackFit.expand,
         children: [
-          if (isVideoEditor) buildVideo() else buildImage(),
+          buildImage(),
           buildLayers(),
           if (configs.mainEditor.widgets.bodyItemsRecorded != null)
             ...configs.mainEditor.widgets.bodyItemsRecorded!(

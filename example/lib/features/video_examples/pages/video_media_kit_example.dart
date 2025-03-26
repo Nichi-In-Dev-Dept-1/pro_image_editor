@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -7,7 +8,6 @@ import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:pro_video_editor/pro_video_editor.dart';
 
 import '/core/constants/example_constants.dart';
-import '/core/mixin/example_helper.dart';
 import '../mixins/video_editor_mixin.dart';
 import '../widgets/video_initializing_widget.dart';
 
@@ -21,7 +21,7 @@ class VideoMediaKitExample extends StatefulWidget {
 }
 
 class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
-    with ExampleHelperState<VideoMediaKitExample>, VideoEditorMixin {
+    with VideoEditorMixin {
   /// IMPORTANT: Ensure that you have called `MediaKit.ensureInitialized();`
   /// in the main method.
 
@@ -41,10 +41,10 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
   }
 
   void _initializePlayer() async {
-    EditorVideo video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
+    video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
 
-    await setVideoInformations(video);
-    await generateThumbnails(video);
+    await setVideoInformations();
+    await generateThumbnails();
     if (!mounted) return;
 
     await _player.open(
@@ -149,6 +149,12 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
                 ),
               ),
               configs: ProImageEditorConfigs(
+                dialogConfigs: DialogConfigs(
+                  widgets: DialogWidgets(
+                    loadingDialog: (message, configs) =>
+                        const VideoProgressAlert(),
+                  ),
+                ),
                 mainEditor: MainEditorConfigs(
                   widgets: MainEditorWidgets(
                     removeLayerArea: (removeAreaKey, editor, rebuildStream) =>

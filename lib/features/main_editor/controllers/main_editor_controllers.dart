@@ -15,6 +15,7 @@ class MainEditorControllers {
   MainEditorControllers(
     ProImageEditorConfigs configs,
     ProImageEditorCallbacks callbacks,
+    bool isVideoEditor,
   ) {
     bottomBarScrollCtrl = ScrollController();
     helperLineCtrl = StreamController.broadcast();
@@ -24,6 +25,7 @@ class MainEditorControllers {
     cropLayerPainterCtrl = StreamController.broadcast();
     screenshot = ContentRecorderController(
       configs: configs.imageGeneration,
+      isVideoEditor: isVideoEditor,
       enableThumbnailGeneration: callbacks.onThumbnailGenerated != null,
     );
   }

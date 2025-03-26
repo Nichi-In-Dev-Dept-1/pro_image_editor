@@ -188,6 +188,20 @@ class TransformConfigs {
     return factor == RotateAngleSide.left || factor == RotateAngleSide.right;
   }
 
+  /// Converts the angle (in radians) to the number of 90-degree turns
+  /// (quarter turns).
+  ///
+  /// The method assumes that a 90-degree turn is equivalent to π/2 radians.
+  /// It calculates the number of quarter turns by dividing the angle by π/2
+  /// and rounding the result to the nearest integer.
+  ///
+  /// Returns:
+  ///   An integer representing the number of 90-degree turns.
+  int angleToTurns() {
+    const double halfPi = 3.141592653589793 / 2; // 90 degrees
+    return (angle / halfPi).round();
+  }
+
   /// Converts the transformation configurations to a map.
   ///
   /// This method returns a map representation of the transformation settings,

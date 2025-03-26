@@ -26,6 +26,8 @@ class LayerInteractionConfigs {
     this.selectable = LayerInteractionSelectable.auto,
     this.initialSelected = false,
     this.hideToolbarOnInteraction = false,
+    this.hideVideoControlsOnInteraction = true,
+    this.videoControlsSwitchDuration = const Duration(milliseconds: 220),
     this.icons = const LayerInteractionIcons(),
     this.widgets = const LayerInteractionWidgets(),
     this.style = const LayerInteractionStyle(),
@@ -44,6 +46,13 @@ class LayerInteractionConfigs {
   /// Determines whether the toolbars should be hidden when the user interacts
   /// with the editor.
   final bool hideToolbarOnInteraction;
+
+  /// Determines whether the video controls should be hidden when the user
+  /// interacts with the editor.
+  final bool hideVideoControlsOnInteraction;
+
+  /// The duration of the switch animation when the video controls show/hide.
+  final Duration videoControlsSwitchDuration;
 
   /// Defines icons used in layer interactions.
   final LayerInteractionIcons icons;
@@ -64,6 +73,8 @@ class LayerInteractionConfigs {
     LayerInteractionSelectable? selectable,
     bool? initialSelected,
     bool? hideToolbarOnInteraction,
+    bool? hideVideoControlsOnInteraction,
+    Duration? videoControlsSwitchDuration,
     LayerInteractionIcons? icons,
     LayerInteractionWidgets? widgets,
     LayerInteractionStyle? style,
@@ -75,6 +86,10 @@ class LayerInteractionConfigs {
       initialSelected: initialSelected ?? this.initialSelected,
       hideToolbarOnInteraction:
           hideToolbarOnInteraction ?? this.hideToolbarOnInteraction,
+      hideVideoControlsOnInteraction:
+          hideVideoControlsOnInteraction ?? this.hideVideoControlsOnInteraction,
+      videoControlsSwitchDuration:
+          videoControlsSwitchDuration ?? this.videoControlsSwitchDuration,
       style: style ?? this.style,
     );
   }

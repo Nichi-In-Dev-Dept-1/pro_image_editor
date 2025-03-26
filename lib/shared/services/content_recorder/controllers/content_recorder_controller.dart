@@ -29,6 +29,7 @@ class ContentRecorderController {
   /// Optionally enables thumbnail generation and skips initialization.
   ContentRecorderController({
     required ImageGenerationConfigs configs,
+    required this.isVideoEditor,
     this.enableThumbnailGeneration = false,
     bool ignoreGeneration = false,
   }) : _configs = configs {
@@ -38,6 +39,9 @@ class ContentRecorderController {
 
     _initializeMultiThreading(ignoreGeneration);
   }
+
+  /// A flag indicating whether the editor capture videos.
+  final bool isVideoEditor;
 
   /// A flag indicating whether thumbnail generation is enabled.
   final bool enableThumbnailGeneration;
@@ -77,7 +81,13 @@ class ContentRecorderController {
     }
 
     _imageConverterService = ImageConverterService(
-      configs: _configs,
+      /// For video editing is it important to enforce the following
+      /// configurations
+      configs: _configs.copyWith(
+        cropToDrawingBounds:
+            isVideoEditor ? false : _configs.cropToDrawingBounds,
+        cropToImageBounds: isVideoEditor ? true : _configs.cropToImageBounds,
+      ),
       threadManager: _threadManager,
     );
     _imageRenderService = ImageRenderService(_configs);
@@ -122,6 +132,9 @@ class ContentRecorderController {
     /// platform, but web worker is not supported, we return null.
     if (kIsWeb && stateHistoryScreenshot && (!_threadManager.isSupported)) {
       return null;
+    }
+    if (isVideoEditor) {
+      outputFormat = OutputFormat.png;
     }
 
     outputFormat ??= _configs.outputFormat;
@@ -199,6 +212,9 @@ class ContentRecorderController {
     if (!_configs.enableBackgroundGeneration ||
         !_configs.enableIsolateGeneration) {
       return null;
+    }
+    if (isVideoEditor) {
+      outputFormat = OutputFormat.png;
     }
     ThreadCaptureState isolateCaptureState = ThreadCaptureState();
 

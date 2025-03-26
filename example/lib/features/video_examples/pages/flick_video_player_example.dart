@@ -1,3 +1,4 @@
+import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
@@ -37,10 +38,10 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
   }
 
   void _initializePlayer() async {
-    EditorVideo video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
+    video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
 
-    await setVideoInformations(video);
-    await generateThumbnails(video);
+    await setVideoInformations();
+    await generateThumbnails();
     if (!mounted) return;
 
     _flickManager = FlickManager(
@@ -140,6 +141,12 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
                 ),
               ),
               configs: ProImageEditorConfigs(
+                dialogConfigs: DialogConfigs(
+                  widgets: DialogWidgets(
+                    loadingDialog: (message, configs) =>
+                        const VideoProgressAlert(),
+                  ),
+                ),
                 mainEditor: MainEditorConfigs(
                   widgets: MainEditorWidgets(
                     removeLayerArea: (removeAreaKey, editor, rebuildStream) =>

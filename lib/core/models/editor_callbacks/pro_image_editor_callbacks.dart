@@ -27,6 +27,7 @@ class ProImageEditorCallbacks {
   /// Creates a new instance of [ProImageEditorCallbacks].
   const ProImageEditorCallbacks({
     this.onImageEditingComplete,
+    this.onCompleteWithParameters,
     this.onThumbnailGenerated,
     this.onImageEditingStarted,
     this.onCloseEditor,
@@ -54,6 +55,12 @@ class ProImageEditorCallbacks {
   ///
   /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_capture_image.jpeg?raw=true" alt="Schema" height="500px"/>
   final ImageEditingCompleteCallback? onImageEditingComplete;
+
+  /// A callback that runs when export completes with full parameters.
+  ///
+  /// Provides access to all transformation, filter, and timing values used
+  /// during the export process.
+  final CompleteWidthParametersCallback? onCompleteWithParameters;
 
   /// A callback function that is called when the editing is complete and the
   /// thumbnail image is generated, along with capturing the original image as

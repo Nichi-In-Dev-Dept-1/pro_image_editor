@@ -238,6 +238,7 @@ mixin StandaloneEditorState<T extends StatefulWidget,
     super.initState();
     screenshotCtrl = ContentRecorderController(
       configs: configs.imageGeneration,
+      isVideoEditor: videoController != null,
       ignoreGeneration: !initConfigs.convertToUint8List,
     );
     rebuildController = StreamController.broadcast();

@@ -31,6 +31,7 @@ class MainEditorBackgroundImage extends StatelessWidget {
     required this.editorImage,
     required this.backgroundImageColorFilterKey,
     required this.isInitialized,
+    required this.heroTag,
   });
 
   /// The main image being edited in the editor.
@@ -51,10 +52,13 @@ class MainEditorBackgroundImage extends StatelessWidget {
   /// Indicates whether the editor has been fully initialized.
   final bool isInitialized;
 
+  /// A unique hero tag for the Image Editor widget.
+  final String heroTag;
+
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: configs.heroTag,
+      tag: heroTag,
       createRectTween: (begin, end) => RectTween(begin: begin, end: end),
       child: !isInitialized
           ? AutoImage(

@@ -32,6 +32,7 @@ Future<Uint8List?> generateHighQualityImage(
   ),
 }) async {
   var recorder = ContentRecorderController(
+    isVideoEditor: false,
     configs: configs.copyWith(
       processorConfigs: configs.processorConfigs.copyWith(
         processorMode: ProcessorMode.minimum,

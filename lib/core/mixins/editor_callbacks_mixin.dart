@@ -55,6 +55,13 @@ mixin SimpleCallbacksAccessState<T extends StatefulWidget> on State<T> {
   ImageEditingCompleteCallback? get onImageEditingComplete =>
       callbacks.onImageEditingComplete;
 
+  /// A callback that runs when export completes with full parameters.
+  ///
+  /// Provides access to all transformation, filter, and timing values used
+  /// during the export process.
+  CompleteWidthParametersCallback? get onCompleteWithParameters =>
+      callbacks.onCompleteWithParameters;
+
   /// A callback function that will be called before the image editor will
   /// close.
   ///
