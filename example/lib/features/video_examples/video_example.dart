@@ -74,8 +74,9 @@ class _VideoExampleState extends State<VideoExample>
             margin: EdgeInsets.fromLTRB(16, 4, 16, 16),
             color: Colors.red,
             child: Text(
-              'The video editor is still under development and is only fully '
-              'supported on Android.',
+              'The package used to process edited videos is still under '
+              'development and currently supports only Android, iOS, and '
+              'macOS.',
               style: TextStyle(
                 color: Colors.red,
                 fontSize: 16,
@@ -103,28 +104,29 @@ class _VideoExampleState extends State<VideoExample>
               margin: EdgeInsets.fromLTRB(16, 16, 16, 4),
               color: Colors.red,
               child: Text(
-                'The package didn\'t support web editing. I '
-                'recommend trying it out on any Dart-native platform, such as '
+                'The package does not support video editing on the web. You '
+                'can try it on any Dart-native platform, such as '
                 'Android or iOS.',
                 style: TextStyle(
                   color: Colors.red,
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-            ),
-          ..._videoPackages.map((pkg) {
-            return ListTile(
-              enabled: pkg.enabled,
-              leading: const Icon(Icons.movie),
-              title: Text(pkg.title),
-              subtitle: pkg.enabled
-                  ? (pkg.subTitle.isNotEmpty ? Text(pkg.subTitle) : null)
-                  : _buildNotSupportedMsg(pkg.subTitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: pkg.enabled ? () => _openExample(pkg.example) : null,
-            );
-          }),
+            )
+          else
+            ..._videoPackages.map((pkg) {
+              return ListTile(
+                enabled: pkg.enabled,
+                leading: const Icon(Icons.movie),
+                title: Text(pkg.title),
+                subtitle: pkg.enabled
+                    ? (pkg.subTitle.isNotEmpty ? Text(pkg.subTitle) : null)
+                    : _buildNotSupportedMsg(pkg.subTitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: pkg.enabled ? () => _openExample(pkg.example) : null,
+              );
+            }),
         ],
       ),
     );

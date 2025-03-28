@@ -546,7 +546,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
   }
 
   void _initializeVideoEditor() async {
-    if (!isVideoEditor) return;
+    if (!isVideoEditor || !initConfigs.convertToUint8List) return;
 
     _isVideoPlayerReady = false;
     Future<Uint8List> createTransparentImage(
