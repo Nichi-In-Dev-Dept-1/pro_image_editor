@@ -144,9 +144,11 @@ class _StandaloneExampleState extends State<StandaloneExample>
               /// delay the final result enableBackgroundGeneration: true,
               ),
         ),
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
+        callbacks: ProImageEditorCallbacks(
+          onImageEditingStarted: onImageEditingStarted,
+          onImageEditingComplete: onImageEditingComplete,
+          onCloseEditor: onCloseEditor,
+        ),
       ),
     );
   }
@@ -168,9 +170,11 @@ class _StandaloneExampleState extends State<StandaloneExample>
               /// enableBackgroundGeneration: true,
               ),
         ),
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
+        callbacks: ProImageEditorCallbacks(
+          onImageEditingStarted: onImageEditingStarted,
+          onImageEditingComplete: onImageEditingComplete,
+          onCloseEditor: onCloseEditor,
+        ),
       ),
     );
   }
@@ -181,9 +185,11 @@ class _StandaloneExampleState extends State<StandaloneExample>
       initConfigs: FilterEditorInitConfigs(
         theme: Theme.of(context),
         convertToUint8List: true,
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
+        callbacks: ProImageEditorCallbacks(
+          onImageEditingStarted: onImageEditingStarted,
+          onImageEditingComplete: onImageEditingComplete,
+          onCloseEditor: onCloseEditor,
+        ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,
         ),
@@ -197,9 +203,11 @@ class _StandaloneExampleState extends State<StandaloneExample>
       initConfigs: TuneEditorInitConfigs(
         theme: Theme.of(context),
         convertToUint8List: true,
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
+        callbacks: ProImageEditorCallbacks(
+          onImageEditingStarted: onImageEditingStarted,
+          onImageEditingComplete: onImageEditingComplete,
+          onCloseEditor: onCloseEditor,
+        ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,
         ),
@@ -213,9 +221,11 @@ class _StandaloneExampleState extends State<StandaloneExample>
       initConfigs: BlurEditorInitConfigs(
         theme: Theme.of(context),
         convertToUint8List: true,
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
+        callbacks: ProImageEditorCallbacks(
+          onImageEditingStarted: onImageEditingStarted,
+          onImageEditingComplete: onImageEditingComplete,
+          onCloseEditor: onCloseEditor,
+        ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,
         ),

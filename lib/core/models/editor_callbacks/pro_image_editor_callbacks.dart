@@ -1,5 +1,3 @@
-import 'package:pro_image_editor/core/models/editor_callbacks/video_editor_callbacks.dart';
-
 import 'blur_editor_callbacks.dart';
 import 'crop_rotate_editor_callbacks.dart';
 import 'editor_callbacks_typedef.dart';
@@ -10,6 +8,7 @@ import 'paint_editor_callbacks.dart';
 import 'sticker_editor_callbacks.dart';
 import 'text_editor_callbacks.dart';
 import 'tune_editor_callbacks.dart';
+import 'video_editor_callbacks.dart';
 
 export 'blur_editor_callbacks.dart';
 export 'crop_rotate_editor_callbacks.dart';
@@ -21,6 +20,7 @@ export 'sticker_editor_callbacks.dart';
 export 'text_editor_callbacks.dart';
 export 'tune_editor_callbacks.dart';
 export 'utils/sub_editors_name.dart';
+export 'video_editor_callbacks.dart';
 
 /// A class representing callbacks for the Image Editor.
 class ProImageEditorCallbacks {

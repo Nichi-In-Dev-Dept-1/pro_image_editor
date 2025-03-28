@@ -22,7 +22,7 @@ class VideoEditorConfigurable extends InheritedWidget {
   final ProVideoController controller;
 
   /// Default padding for video editor content.
-  final contentPadding = const EdgeInsets.symmetric(horizontal: 14);
+  final contentPadding = const EdgeInsets.symmetric(horizontal: 16);
 
   /// Returns the current video editor configurations.
   VideoEditorConfigs get configs => controller.configs;

@@ -1853,46 +1853,11 @@ class ProImageEditorState extends State<ProImageEditor>
         await onImageEditingComplete?.call(bytes);
 
         final transform = stateManager.transformConfigs;
-        final cropRect = transform.cropRect;
         final isTransformed = transform.isNotEmpty;
 
-        double originalWidth = _imageInfos!.rawSize.width;
-        double originalHeight = _imageInfos!.rawSize.height;
-
-        double renderWidth = transform.originalSize.width;
-        double renderHeight = transform.originalSize.height;
-
-        /// Calculate scale factors based on crop dimensions
-        double widthScale = renderWidth / cropRect.width;
-        double heightScale = renderHeight / cropRect.height;
-
-        Offset transformOffset = transform.offset;
-
-        double horizontalPadding =
-            (renderWidth - cropRect.width / transform.scaleUser) / 2;
-        double verticalPadding =
-            (renderHeight - cropRect.height / transform.scaleUser) / 2;
-
-        /// Calculate crop offset in original coordinates
-        Offset cropOffset = Offset(
-          horizontalPadding - transformOffset.dx,
-          verticalPadding - transformOffset.dy,
-        );
-
-        /// Calculate scale factors for the offset
-        double offsetXScale = renderWidth / cropOffset.dx;
-        double offsetYScale = renderHeight / cropOffset.dy;
-
-        Size outputSize = Size(
-              originalWidth / widthScale,
-              originalHeight / heightScale,
-            ) /
-            transform.scaleUser;
-
-        Offset outputOffset = Offset(
-          max(0, originalWidth / offsetXScale),
-          max(0, originalHeight / offsetYScale),
-        );
+        Size originalImageSize = _imageInfos!.rawSize;
+        Size outputSize = transform.getCropSize(originalImageSize);
+        Offset outputOffset = transform.getCropStartOffset(originalImageSize);
 
         await onCompleteWithParameters?.call(
           CompleteParameters(
@@ -1907,8 +1872,8 @@ class ProImageEditorState extends State<ProImageEditor>
             cropHeight: isTransformed ? outputSize.height.round() : null,
             cropX: isTransformed ? outputOffset.dx.round() : null,
             cropY: isTransformed ? outputOffset.dy.round() : null,
-            flipX: transform.flipX,
-            flipY: transform.flipY,
+            flipX: transform.is90DegRotated ? transform.flipY : transform.flipX,
+            flipY: transform.is90DegRotated ? transform.flipX : transform.flipY,
             rotateTurns: transform.angleToTurns(),
             image: bytes,
           ),

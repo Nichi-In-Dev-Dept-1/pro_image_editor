@@ -1,6 +1,9 @@
 // Dart imports:
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'dart:math';
 import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -10,6 +13,7 @@ import 'package:flutter/services.dart';
 import '/core/mixins/converted_callbacks.dart';
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/standalone_editor.dart';
+import '/core/models/complete_parameters.dart';
 import '/core/models/transform_helper.dart';
 import '/core/platform/io/io_helper.dart';
 import '/features/crop_rotate_editor/widgets/crop_editor_appbar.dart';
@@ -372,10 +376,13 @@ class CropRotateEditorState extends State<CropRotateEditor>
   /// Returns the current mouse cursor style.
   MouseCursor get _cursor => _mouseCursor;
 
+  bool _isVideoPlayerReady = true;
+
   @override
   void initState() {
     super.initState();
 
+    _initializeVideoEditor();
     // Initialize debounce
     _onScaleEndDebounce = Debounce(const Duration(milliseconds: 10));
     _onScaleAllowUpdateDebounce = Debounce(const Duration(milliseconds: 1));
@@ -538,7 +545,48 @@ class CropRotateEditorState extends State<CropRotateEditor>
     setState(() {});
   }
 
-  void _decodeImage() async {
+  void _initializeVideoEditor() async {
+    if (!isVideoEditor) return;
+
+    _isVideoPlayerReady = false;
+    Future<Uint8List> createTransparentImage(
+        double width, double height) async {
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, width, height));
+      final paint = Paint()..color = const ui.Color.fromARGB(0, 0, 0, 0);
+      canvas.drawRect(Rect.fromLTWH(0.0, 0.0, width, height), paint);
+
+      final picture = recorder.endRecording();
+      final img = await picture.toImage(width.toInt(), height.toInt());
+      final pngBytes = await img.toByteData(format: ui.ImageByteFormat.png);
+
+      return pngBytes!.buffer.asUint8List();
+    }
+
+    widget.videoController!.initialize(
+      configsFunction: () => configs.videoEditor,
+      callbacksFunction: () =>
+          callbacks.videoEditorCallbacks ?? VideoEditorCallbacks(),
+    );
+
+    final resolution = widget.videoController!.initialResolution;
+
+    videoBackgroundImage = EditorImage(
+      byteArray: await createTransparentImage(
+        resolution.width,
+        resolution.height,
+      ),
+    );
+    _isVideoPlayerReady = true;
+
+    if (!mounted) return;
+
+    setState(() {});
+    await _decodeImage();
+  }
+
+  Future<void> _decodeImage() async {
+    if (!_isVideoPlayerReady && isVideoEditor) return;
     _imageSizeIsDecoded = false;
     _imageNeedDecode = false;
 
@@ -684,6 +732,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
     }
     _interactionActive = true;
     initConfigs.onImageEditingStarted?.call();
+    initConfigs.callbacks.onImageEditingStarted?.call();
 
     /// If the user set a custom initAspectRatio we need to enforce add
     /// a history even there was no changes
@@ -770,12 +819,57 @@ class CropRotateEditorState extends State<CropRotateEditor>
         debugPrint('Failed to capture the final image.');
       }
 
-      await initConfigs.onImageEditingComplete
-          ?.call(bytes ?? Uint8List.fromList([]));
+      if (!mounted) return;
+
+      var imageBytes = bytes ?? Uint8List.fromList([]);
+
+      await initConfigs.onImageEditingComplete?.call(imageBytes);
+      await initConfigs.callbacks.onImageEditingComplete?.call(imageBytes);
+
+      /// Return complete parameters if requested
+      if (initConfigs.callbacks.onCompleteWithParameters != null) {
+        final isTransformed = transformC.isNotEmpty;
+
+        Size originalImageSize;
+        if (isVideoEditor) {
+          originalImageSize = videoController!.initialResolution;
+        } else {
+          var decodedImage = await decodeImageFromList(imageBytes);
+          originalImageSize = Size(
+            decodedImage.width.toDouble(),
+            decodedImage.height.toDouble(),
+          );
+        }
+        Size? outputSize = transformC.getCropSize(originalImageSize);
+        Offset? outputOffset = transformC.getCropStartOffset(originalImageSize);
+
+        await callbacks.onCompleteWithParameters?.call(
+          CompleteParameters(
+            blur: appliedBlurFactor,
+            colorFilters: [
+              ...appliedFilters,
+              ...appliedTuneAdjustments.map((item) => item.matrix),
+            ],
+            cropWidth: isTransformed ? outputSize.width.round() : null,
+            cropHeight: isTransformed ? outputSize.height.round() : null,
+            cropX: isTransformed ? outputOffset.dx.round() : null,
+            cropY: isTransformed ? outputOffset.dy.round() : null,
+            flipX:
+                transformC.is90DegRotated ? transformC.flipY : transformC.flipX,
+            flipY:
+                transformC.is90DegRotated ? transformC.flipX : transformC.flipY,
+            rotateTurns: transformC.angleToTurns(),
+            startTime: null,
+            endTime: null,
+            image: imageBytes,
+          ),
+        );
+      }
 
       LoadingDialog.instance.hide();
 
       initConfigs.onCloseEditor?.call();
+      initConfigs.callbacks.onCloseEditor?.call();
     }
     cropRotateEditorCallbacks?.handleDone();
     _interactionActive = false;
@@ -2383,7 +2477,9 @@ class CropRotateEditorState extends State<CropRotateEditor>
           height: h,
           configs: configs,
           image: editorImage,
-          videoPlayer: videoController?.videoPlayer,
+          videoPlayer: isVideoEditor && initConfigs.convertToUint8List
+              ? const SizedBox.shrink()
+              : videoController?.videoPlayer,
           filters: appliedFilters,
           tuneAdjustments: appliedTuneAdjustments,
           blurFactor: appliedBlurFactor,

@@ -19,6 +19,7 @@ class VideoEditorControlsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var player = VideoEditorConfigurable.of(context);
 
+    bool isAudioSupported = player.configs.isAudioSupported;
     bool alignTop =
         player.configs.controlsPosition == VideoEditorControlPosition.top;
 
@@ -38,22 +39,24 @@ class VideoEditorControlsWidget extends StatelessWidget {
                       if (constraints.maxWidth +
                               player.contentPadding.horizontal >=
                           330) {
-                        return const Row(
+                        return Row(
                           children: [
-                            VideoEditorMuteButton(),
-                            SizedBox(width: 12),
-                            VideoEditorInfoBanner(),
-                            Spacer(),
-                            VideoEditorTrimInfoWidget()
+                            if (isAudioSupported) ...[
+                              const VideoEditorMuteButton(),
+                              const SizedBox(width: 12),
+                            ],
+                            const VideoEditorInfoBanner(),
+                            const Spacer(),
+                            const VideoEditorTrimInfoWidget()
                           ],
                         );
                       } else {
-                        return const Row(
+                        return Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            VideoEditorMuteButton(),
-                            Spacer(),
-                            Column(
+                            if (isAudioSupported) const VideoEditorMuteButton(),
+                            const Spacer(),
+                            const Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               spacing: 6,
                               children: [

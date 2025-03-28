@@ -132,10 +132,7 @@ class TuneEditor extends StatefulWidget
     );
   }
 
-  /// 🚧 The Video Editor is under development and not ready for use.
-  ///
   /// Constructs a `TuneEditor` widget with an video player.
-  @Deprecated('The Video Editor is under development and not ready for use.')
   factory TuneEditor.video(
     ProVideoController videoController, {
     Key? key,
@@ -267,6 +264,12 @@ class TuneEditorState extends State<TuneEditor>
     doneEditing(
       editorImage: editorImage,
       returnValue: tuneAdjustmentMatrix,
+      blur: appliedBlurFactor,
+      colorFilters: [
+        ...appliedFilters,
+        ...tuneAdjustmentMatrix.map((item) => item.matrix),
+      ],
+      transform: initialTransformConfigs,
     );
     tuneEditorCallbacks?.handleDone();
   }
@@ -427,13 +430,16 @@ class TuneEditorState extends State<TuneEditor>
         alignment: Alignment.center,
         fit: StackFit.expand,
         children: [
+          if (initConfigs.convertToUint8List && isVideoEditor)
+            _buildBackground(),
           ContentRecorder(
             controller: screenshotCtrl,
             child: Stack(
               alignment: Alignment.center,
               fit: StackFit.expand,
               children: [
-                _buildBackground(),
+                if (!initConfigs.convertToUint8List || !isVideoEditor)
+                  _buildBackground(),
                 if (tuneEditorConfigs.showLayers && layers != null)
                   _buildLayers(),
                 if (tuneEditorConfigs.widgets.bodyItemsRecorded != null)

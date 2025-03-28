@@ -37,10 +37,12 @@ class _RoundCropperExampleState extends State<RoundCropperExample>
       initConfigs: CropRotateEditorInitConfigs(
         theme: Theme.of(context),
         convertToUint8List: true,
-        onImageEditingStarted: onImageEditingStarted,
-        onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: () => onCloseEditor(enablePop: !isDesktopMode(context)),
         enableCloseButton: !isDesktopMode(context),
+        callbacks: ProImageEditorCallbacks(
+          onImageEditingStarted: onImageEditingStarted,
+          onImageEditingComplete: onImageEditingComplete,
+          onCloseEditor: onCloseEditor,
+        ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,
           imageGeneration: const ImageGenerationConfigs(

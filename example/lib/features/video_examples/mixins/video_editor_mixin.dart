@@ -9,11 +9,15 @@ import 'package:pro_video_editor/pro_video_editor.dart';
 
 /// A mixin for handling video editing states.
 mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
+  /// The target format for the exported video.
+  final outputFormat = VideoOutputFormat.mp4;
+
   /// Video editor configuration settings.
-  final VideoEditorConfigs videoConfigs = const VideoEditorConfigs(
+  late final VideoEditorConfigs videoConfigs = VideoEditorConfigs(
     initialMuted: true,
     initialPlay: false,
-    minTrimDuration: Duration(seconds: 7),
+    isAudioSupported: outputFormat != VideoOutputFormat.gif,
+    minTrimDuration: const Duration(seconds: 7),
   );
 
   /// Indicates whether a seek operation is in progress.
@@ -124,8 +128,8 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
       ),
 
       /// Generation configurations
-      outputFormat: VideoOutputFormat.mp4,
-      outputQuality: OutputQuality.high,
+      outputFormat: outputFormat,
+      outputQuality: OutputQuality.mediumHigh,
       encodingPreset: EncodingPreset.ultrafast,
     );
     exportedVideo = await VideoUtilsService.instance.exportVideo(exportModel);

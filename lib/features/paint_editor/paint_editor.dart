@@ -501,20 +501,27 @@ class PaintEditorState extends State<PaintEditor>
   /// changes.
   void done() async {
     doneEditing(
-        editorImage: widget.editorImage,
-        onSetFakeHero: (bytes) {
-          if (initConfigs.enableFakeHero) {
-            setState(() {
-              _fakeHeroBytes = bytes;
-            });
-          }
-        },
-        onCloseWithValue: () {
-          if (!canUndo) return Navigator.pop(context);
-          Navigator.of(context).pop(
-            _exportPaintedItems(editorBodySize),
-          );
-        });
+      editorImage: widget.editorImage,
+      onSetFakeHero: (bytes) {
+        if (initConfigs.enableFakeHero) {
+          setState(() {
+            _fakeHeroBytes = bytes;
+          });
+        }
+      },
+      onCloseWithValue: () {
+        if (!canUndo) return Navigator.pop(context);
+        Navigator.of(context).pop(
+          _exportPaintedItems(editorBodySize),
+        );
+      },
+      blur: appliedBlurFactor,
+      colorFilters: [
+        ...appliedFilters,
+        ...appliedTuneAdjustments.map((item) => item.matrix),
+      ],
+      transform: initialTransformConfigs,
+    );
     paintEditorCallbacks?.handleDone();
   }
 
@@ -711,9 +718,10 @@ class PaintEditorState extends State<PaintEditor>
         return Theme(
           data: theme,
           child: Material(
-            color: initConfigs.convertToUint8List
-                ? paintEditorConfigs.style.background
-                : Colors.transparent,
+            color:
+                initConfigs.convertToUint8List && initConfigs.convertToUint8List
+                    ? paintEditorConfigs.style.background
+                    : Colors.transparent,
             textStyle: platformTextStyle(context, designMode),
             child: Stack(
               alignment: Alignment.center,
@@ -766,57 +774,51 @@ class PaintEditorState extends State<PaintEditor>
           callbacks.paintEditorCallbacks?.onEditorZoomScaleEnd?.call(details);
           setState(() {});
         },
-        child: ContentRecorder(
-          autoDestroyController: false,
-          controller: screenshotCtrl,
-          child: Stack(
-            alignment: Alignment.center,
-            fit: StackFit.expand,
-            children: [
-              if (!widget.paintOnly)
-                TransformedContentGenerator(
-                  isVideoPlayer: videoController != null,
-                  configs: configs,
-                  transformConfigs:
-                      initialTransformConfigs ?? TransformConfigs.empty(),
-                  child: FilteredWidget(
-                    width: getMinimumSize(mainImageSize, editorBodySize).width,
-                    height:
-                        getMinimumSize(mainImageSize, editorBodySize).height,
-                    configs: configs,
-                    image: editorImage,
-                    videoPlayer: videoController?.videoPlayer,
-                    filters: appliedFilters,
-                    tuneAdjustments: appliedTuneAdjustments,
-                    blurFactor: appliedBlurFactor,
-                  ),
-                )
-              else
-                SizedBox(
-                  width: configs.imageGeneration.maxOutputSize.width,
-                  height: configs.imageGeneration.maxOutputSize.height,
-                ),
+        child: Stack(
+          alignment: Alignment.center,
+          fit: StackFit.expand,
+          children: [
+            if (initConfigs.convertToUint8List && isVideoEditor)
+              _buildBackground(),
+            ContentRecorder(
+              autoDestroyController: false,
+              controller: screenshotCtrl,
+              child: Stack(
+                alignment: Alignment.center,
+                fit: StackFit.expand,
+                children: [
+                  if (!widget.paintOnly)
+                    if (!initConfigs.convertToUint8List || !isVideoEditor)
+                      _buildBackground()
+                    else
+                      SizedBox(
+                        width: configs.imageGeneration.maxOutputSize.width,
+                        height: configs.imageGeneration.maxOutputSize.height,
+                      ),
 
-              /// Build layers
-              if (paintEditorConfigs.showLayers && layers != null)
-                LayerStack(
-                  configs: configs,
-                  layers: layers!,
-                  transformHelper: TransformHelper(
-                    mainBodySize: getMinimumSize(mainBodySize, editorBodySize),
-                    mainImageSize:
-                        getMinimumSize(mainImageSize, editorBodySize),
-                    editorBodySize: editorBodySize,
-                    transformConfigs: initialTransformConfigs,
-                  ),
-                  overlayColor: paintEditorConfigs.style.background,
-                ),
-              _buildPainter(),
-              if (paintEditorConfigs.widgets.bodyItemsRecorded != null)
-                ...paintEditorConfigs.widgets.bodyItemsRecorded!(
-                    this, rebuildController.stream),
-            ],
-          ),
+                  /// Build layers
+                  if (paintEditorConfigs.showLayers && layers != null)
+                    LayerStack(
+                      configs: configs,
+                      layers: layers!,
+                      transformHelper: TransformHelper(
+                        mainBodySize:
+                            getMinimumSize(mainBodySize, editorBodySize),
+                        mainImageSize:
+                            getMinimumSize(mainImageSize, editorBodySize),
+                        editorBodySize: editorBodySize,
+                        transformConfigs: initialTransformConfigs,
+                      ),
+                      overlayColor: paintEditorConfigs.style.background,
+                    ),
+                  _buildPainter(),
+                  if (paintEditorConfigs.widgets.bodyItemsRecorded != null)
+                    ...paintEditorConfigs.widgets.bodyItemsRecorded!(
+                        this, rebuildController.stream),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
 
@@ -830,6 +832,24 @@ class PaintEditorState extends State<PaintEditor>
         ...paintEditorConfigs.widgets.bodyItems!(
             this, rebuildController.stream),
     ];
+  }
+
+  Widget _buildBackground() {
+    return TransformedContentGenerator(
+      isVideoPlayer: videoController != null,
+      configs: configs,
+      transformConfigs: initialTransformConfigs ?? TransformConfigs.empty(),
+      child: FilteredWidget(
+        width: getMinimumSize(mainImageSize, editorBodySize).width,
+        height: getMinimumSize(mainImageSize, editorBodySize).height,
+        configs: configs,
+        image: editorImage,
+        videoPlayer: videoController?.videoPlayer,
+        filters: appliedFilters,
+        tuneAdjustments: appliedTuneAdjustments,
+        blurFactor: appliedBlurFactor,
+      ),
+    );
   }
 
   /// Builds the bottom navigation bar of the paint editor.

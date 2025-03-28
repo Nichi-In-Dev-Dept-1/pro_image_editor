@@ -7,6 +7,8 @@ import '../editor_callbacks/pro_image_editor_callbacks.dart';
 import '../editor_configs/pro_image_editor_configs.dart';
 import '../layers/layer.dart';
 
+/// TODO: Remove deprecated callbacks
+
 /// Configuration class for initializing the image editor.
 ///
 /// This class holds various configurations needed to initialize the image
@@ -39,8 +41,10 @@ abstract class EditorInitConfigs {
     this.appliedTuneAdjustments = const [],
     this.appliedBlurFactor = 0,
     this.layers,
-    this.onCloseEditor,
+    @Deprecated('Use [callbacks.onCloseEditor] instead') this.onCloseEditor,
+    @Deprecated('Use [callbacks.onImageEditingComplete] instead')
     this.onImageEditingComplete,
+    @Deprecated('Use [callbacks.onImageEditingStarted] instead')
     this.onImageEditingStarted,
     this.convertToUint8List = false,
     this.enableCloseButton = true,
@@ -83,6 +87,8 @@ abstract class EditorInitConfigs {
   /// editor.
   final bool convertToUint8List;
 
+  /// **Deprecated:** Use `callbacks.onImageEditingComplete` instead.
+  ///
   /// A callback function that will be called when the editing is done,
   /// and it returns the edited image as a `Uint8List` with the format `jpg`.
   ///
@@ -90,15 +96,22 @@ abstract class EditorInitConfigs {
   /// [onImageEditingComplete] function when the editing is completed.
   ///
   /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_capture_image.jpeg?raw=true" alt="Schema" height="500px"/>
+  @Deprecated('Use [callbacks.onImageEditingComplete] instead')
   final ImageEditingCompleteCallback? onImageEditingComplete;
 
+  /// **Deprecated:** Use `callbacks.onImageEditingStarted` instead.
+  ///
   /// A callback function that is triggered when the image generation is
   /// started.
+  @Deprecated('Use [callbacks.onImageEditingStarted] instead')
   final Function()? onImageEditingStarted;
 
+  /// **Deprecated:** Use `callbacks.onCloseEditor` instead.
+  ///
   /// A callback function that will be called before the image editor will
   /// close.
   ///
   /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_capture_image.jpeg?raw=true" alt="Schema" height="500px" />
+  @Deprecated('Use [callbacks.onCloseEditor] instead')
   final ImageEditingEmptyCallback? onCloseEditor;
 }

@@ -161,10 +161,12 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
   }
 
   Widget _buildVideoPlayer() {
-    return AspectRatio(
-      aspectRatio: _videoController.value.size.aspectRatio,
-      child: VideoPlayer(
-        _videoController,
+    return Center(
+      child: AspectRatio(
+        aspectRatio: _videoController.value.size.aspectRatio,
+        child: VideoPlayer(
+          _videoController,
+        ),
       ),
     );
   }

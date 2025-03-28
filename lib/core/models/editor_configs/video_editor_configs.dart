@@ -22,6 +22,7 @@ class VideoEditorConfigs {
     this.initialPlay = false,
     this.initialMuted = false,
     this.trimBarInvertMouseScroll = false,
+    this.isAudioSupported = true,
     this.controlsPosition = VideoEditorControlPosition.top,
     this.minTrimDuration = const Duration(seconds: 7),
     this.animatedIndicatorDuration = const Duration(milliseconds: 200),
@@ -49,6 +50,9 @@ class VideoEditorConfigs {
 
   /// Whether to invert mouse scroll behavior on the trim bar.
   final bool trimBarInvertMouseScroll;
+
+  /// Indicates if the output format support audio.
+  final bool isAudioSupported;
 
   /// Minimum scale factor for the trim bar.
   final double trimBarMinScale;
@@ -85,6 +89,7 @@ class VideoEditorConfigs {
     bool? initialPlay,
     bool? initialMuted,
     bool? trimBarInvertMouseScroll,
+    bool? isAudioSupported,
     double? trimBarMinScale,
     double? trimBarMaxScale,
     Duration? playTimeSmoothingDuration,
@@ -100,6 +105,7 @@ class VideoEditorConfigs {
       widgets: widgets ?? this.widgets,
       initialPlay: initialPlay ?? this.initialPlay,
       initialMuted: initialMuted ?? this.initialMuted,
+      isAudioSupported: isAudioSupported ?? this.isAudioSupported,
       trimBarInvertMouseScroll:
           trimBarInvertMouseScroll ?? this.trimBarInvertMouseScroll,
       trimBarMinScale: trimBarMinScale ?? this.trimBarMinScale,
@@ -127,6 +133,7 @@ class VideoEditorConfigs {
         other.widgets == widgets &&
         other.initialPlay == initialPlay &&
         other.initialMuted == initialMuted &&
+        other.isAudioSupported == isAudioSupported &&
         other.trimBarInvertMouseScroll == trimBarInvertMouseScroll &&
         other.trimBarMinScale == trimBarMinScale &&
         other.trimBarMaxScale == trimBarMaxScale &&
@@ -147,6 +154,7 @@ class VideoEditorConfigs {
         widgets.hashCode ^
         initialPlay.hashCode ^
         initialMuted.hashCode ^
+        isAudioSupported.hashCode ^
         trimBarInvertMouseScroll.hashCode ^
         trimBarMinScale.hashCode ^
         trimBarMaxScale.hashCode ^

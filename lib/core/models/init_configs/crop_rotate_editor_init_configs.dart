@@ -3,6 +3,8 @@ import '/features/crop_rotate_editor/models/transform_factors.dart';
 import '/shared/utils/decode_image.dart';
 import 'editor_init_configs.dart';
 
+/// TODO: Remove deprecated callbacks
+
 /// A typedef representing a callback function signature for completing the
 /// crop and rotate editing process.
 ///
@@ -56,8 +58,10 @@ class CropRotateEditorInitConfigs extends EditorInitConfigs {
     super.appliedFilters,
     super.appliedTuneAdjustments,
     super.appliedBlurFactor,
-    super.onCloseEditor,
+    @Deprecated('Use [callbacks.onCloseEditor] instead') super.onCloseEditor,
+    @Deprecated('Use [callbacks.onImageEditingComplete] instead')
     super.onImageEditingComplete,
+    @Deprecated('Use [callbacks.onImageEditingStarted] instead')
     super.onImageEditingStarted,
     super.convertToUint8List,
     super.enableCloseButton,

@@ -57,9 +57,11 @@ class _SignatureDrawingExampleState extends State<SignatureDrawingExample>
                     initConfigs: PaintEditorInitConfigs(
                       theme: Theme.of(context),
                       convertToUint8List: true,
-                      onImageEditingStarted: onImageEditingStarted,
-                      onImageEditingComplete: onImageEditingComplete,
-                      onCloseEditor: onCloseEditor,
+                      callbacks: ProImageEditorCallbacks(
+                        onImageEditingStarted: onImageEditingStarted,
+                        onImageEditingComplete: onImageEditingComplete,
+                        onCloseEditor: onCloseEditor,
+                      ),
                       configs: ProImageEditorConfigs(
                         designMode: platformDesignMode,
                         paintEditor: PaintEditorConfigs(
@@ -111,9 +113,11 @@ class _SignatureDrawingExampleState extends State<SignatureDrawingExample>
                     initConfigs: PaintEditorInitConfigs(
                       theme: Theme.of(context),
                       convertToUint8List: true,
-                      onImageEditingStarted: onImageEditingStarted,
-                      onImageEditingComplete: onImageEditingComplete,
-                      onCloseEditor: onCloseEditor,
+                      callbacks: ProImageEditorCallbacks(
+                        onImageEditingStarted: onImageEditingStarted,
+                        onImageEditingComplete: onImageEditingComplete,
+                        onCloseEditor: onCloseEditor,
+                      ),
                       configs: ProImageEditorConfigs(
                         designMode: platformDesignMode,
                         paintEditor: const PaintEditorConfigs(
