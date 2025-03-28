@@ -1,10 +1,7 @@
 # Changelog
 
-## 9.4.0
-- **FEAT**: Video editing has now been fully implemented in the image editor across all platforms except the web, for which support is not planned. For more details and a list of limitations, please refer to [that discussion](https://github.com/hm21/pro_image_editor/discussions/406) thread.
-
 ## 9.3.0
-- **FEAT**: Added video editing support for Android platforms.
+- **FEAT**: Video editing has now been fully implemented in the image editor across all platforms except the web, for which support is not planned. For more details and a list of limitations, please refer to [that discussion](https://github.com/hm21/pro_image_editor/discussions/406) thread.
 
 ## 9.2.0
 - **FEAT**: Added `clearLayerSelection` method to reset selected layers.
