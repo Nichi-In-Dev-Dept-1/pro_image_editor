@@ -95,6 +95,7 @@ class ThreadWebRequest extends ThreadRequest {
           : OutputFormat.values.firstWhere((el) => el.name == value);
     }
 
+    int getJpgBackgroundColor(int? value) => value ?? 0xFF000000;
     int getJpgQuality(int? value) => value ?? 100;
     int getPngLevel(int? value) => value ?? 6;
     bool getSingleFrame(bool? value) => value ?? false;
@@ -105,6 +106,7 @@ class ThreadWebRequest extends ThreadRequest {
         jsGetProperty(jsObj, 'generateOnlyImageBounds');
     final jsJpegChroma = jsGetProperty(jsObj, 'jpegChroma');
     final jsJpegQuality = jsGetProperty(jsObj, 'jpegQuality');
+    final jsJpegBackgroundColor = jsGetProperty(jsObj, 'jpegBackgroundColor');
     final jsPngFilter = jsGetProperty(jsObj, 'pngFilter');
     final jsPngLevel = jsGetProperty(jsObj, 'pngLevel');
     final jsSingleFrame = jsGetProperty(jsObj, 'singleFrame');
@@ -117,6 +119,8 @@ class ThreadWebRequest extends ThreadRequest {
       generateOnlyImageBounds: convertBool(jsGenerateOnlyImageBounds),
       jpegChroma: getJpegChroma(convertString(jsJpegChroma)),
       jpegQuality: getJpgQuality(convertInteger(jsJpegQuality)),
+      jpegBackgroundColor:
+          getJpgBackgroundColor(convertInteger(jsJpegBackgroundColor)),
       pngFilter: getPngFilter(convertString(jsPngFilter)),
       pngLevel: getPngLevel(convertInteger(jsPngLevel)),
       singleFrame: getSingleFrame(convertBool(jsSingleFrame)),
@@ -155,6 +159,7 @@ class ThreadWebRequest extends ThreadRequest {
     required super.pngLevel,
     required super.pngFilter,
     required super.jpegQuality,
+    required super.jpegBackgroundColor,
     required super.jpegChroma,
   });
 

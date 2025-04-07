@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 
 import '/plugins/image/src/formats/jpeg/jpeg_chroma.dart';
 import '/plugins/image/src/formats/png/png_filter.dart';
-
 import 'output_formats.dart';
 import 'processor_configs.dart';
 
@@ -32,6 +31,7 @@ class ImageGenerationConfigs {
     this.pngLevel = 6,
     this.pngFilter = PngFilter.none,
     this.jpegChroma = JpegChroma.yuv444,
+    this.jpegBackgroundColor = const Color(0xFFFFFFFF),
     this.outputFormat = OutputFormat.jpg,
     this.processorConfigs = const ProcessorConfigs(),
     this.maxOutputSize = const Size(2000, 2000),
@@ -154,6 +154,11 @@ class ImageGenerationConfigs {
   /// quality.
   final int jpegQuality;
 
+  /// The background color used when generating JPEG images.
+  /// This color is applied to areas of the image that are transparent,
+  /// as JPEG format does not support transparency.
+  final Color jpegBackgroundColor;
+
   /// The maximum output size for the image. It will maintain the image's aspect
   /// ratio but will fit within the specified constraints, similar to
   /// `BoxFit.contain`.
@@ -182,12 +187,11 @@ class ImageGenerationConfigs {
   /// others unchanged.
   ImageGenerationConfigs copyWith({
     bool? cropToImageBounds,
+    bool? cropToDrawingBounds,
+    bool? enableBackgroundGeneration,
+    bool? enableIsolateGeneration,
     bool? allowEmptyEditingCompletion,
     bool? enableUseOriginalBytes,
-    bool? enableIsolateGeneration,
-    bool? enableBackgroundGeneration,
-    bool? cropToDrawingBounds,
-    bool? awaitLoadingDialogContext,
     double? customPixelRatio,
     ProcessorConfigs? processorConfigs,
     OutputFormat? outputFormat,
@@ -195,21 +199,22 @@ class ImageGenerationConfigs {
     int? pngLevel,
     PngFilter? pngFilter,
     int? jpegQuality,
+    Color? jpegBackgroundColor,
     Size? maxOutputSize,
     Size? maxThumbnailSize,
     JpegChroma? jpegChroma,
   }) {
     return ImageGenerationConfigs(
       cropToImageBounds: cropToImageBounds ?? this.cropToImageBounds,
+      cropToDrawingBounds: cropToDrawingBounds ?? this.cropToDrawingBounds,
+      enableBackgroundGeneration:
+          enableBackgroundGeneration ?? this.enableBackgroundGeneration,
+      enableIsolateGeneration:
+          enableIsolateGeneration ?? this.enableIsolateGeneration,
       allowEmptyEditingCompletion:
           allowEmptyEditingCompletion ?? this.allowEmptyEditingCompletion,
       enableUseOriginalBytes:
           enableUseOriginalBytes ?? this.enableUseOriginalBytes,
-      enableIsolateGeneration:
-          enableIsolateGeneration ?? this.enableIsolateGeneration,
-      enableBackgroundGeneration:
-          enableBackgroundGeneration ?? this.enableBackgroundGeneration,
-      cropToDrawingBounds: cropToDrawingBounds ?? this.cropToDrawingBounds,
       customPixelRatio: customPixelRatio ?? this.customPixelRatio,
       processorConfigs: processorConfigs ?? this.processorConfigs,
       outputFormat: outputFormat ?? this.outputFormat,
@@ -217,6 +222,7 @@ class ImageGenerationConfigs {
       pngLevel: pngLevel ?? this.pngLevel,
       pngFilter: pngFilter ?? this.pngFilter,
       jpegQuality: jpegQuality ?? this.jpegQuality,
+      jpegBackgroundColor: jpegBackgroundColor ?? this.jpegBackgroundColor,
       maxOutputSize: maxOutputSize ?? this.maxOutputSize,
       maxThumbnailSize: maxThumbnailSize ?? this.maxThumbnailSize,
       jpegChroma: jpegChroma ?? this.jpegChroma,

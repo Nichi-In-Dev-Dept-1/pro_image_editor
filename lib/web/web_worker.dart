@@ -92,6 +92,7 @@ class WebWorkerManager {
     Uint8List bytes = await encodeImage(
       jpegChroma: data.jpegChroma,
       jpegQuality: data.jpegQuality,
+      jpegBackgroundColor: data.jpegBackgroundColor,
       pngFilter: data.pngFilter,
       pngLevel: data.pngLevel,
       singleFrame: data.singleFrame,

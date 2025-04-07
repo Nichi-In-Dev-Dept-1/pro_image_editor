@@ -62,6 +62,7 @@ Future<void> _handleThreadRequest(
     outputFormat: message.outputFormat,
     singleFrame: message.singleFrame,
     jpegQuality: message.jpegQuality,
+    jpegBackgroundColor: message.jpegBackgroundColor,
     jpegChroma: message.jpegChroma,
     pngFilter: message.pngFilter,
     pngLevel: message.pngLevel,

@@ -443,6 +443,7 @@ class ContentRecorderController {
       outputFormat: _configs.outputFormat,
       singleFrame: _configs.singleFrame,
       jpegQuality: _configs.jpegQuality,
+      jpegBackgroundColor: _configs.jpegBackgroundColor.toARGB32(),
       jpegChroma: _configs.jpegChroma,
       pngFilter: _configs.pngFilter,
       pngLevel: _configs.pngLevel,

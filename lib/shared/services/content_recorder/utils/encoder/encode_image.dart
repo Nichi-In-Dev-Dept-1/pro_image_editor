@@ -49,6 +49,7 @@ Future<Uint8List> encodeImage({
   required JpegChroma jpegChroma,
   required PngFilter pngFilter,
   required int pngLevel,
+  required int jpegBackgroundColor,
   Completer<void>? destroy$,
 }) async {
   Uint8List bytes;
@@ -59,6 +60,7 @@ Future<Uint8List> encodeImage({
         quality: jpegQuality,
         chroma: jpegChroma,
         destroy$: destroy$,
+        backgroundColor: jpegBackgroundColor,
       );
       break;
     case OutputFormat.png:
@@ -113,5 +115,6 @@ Future<Uint8List> encodeImageFromThreadRequest(ThreadRequest threadRequest) {
     jpegChroma: threadRequest.jpegChroma,
     pngFilter: threadRequest.pngFilter,
     pngLevel: threadRequest.pngLevel,
+    jpegBackgroundColor: threadRequest.jpegQuality,
   );
 }

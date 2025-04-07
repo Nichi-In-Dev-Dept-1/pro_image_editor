@@ -127,7 +127,7 @@ class _SignatureDrawingExampleState extends State<SignatureDrawingExample>
                           ),
                         ),
                         imageGeneration: ImageGenerationConfigs(
-                          outputFormat: OutputFormat.png,
+                          outputFormat: OutputFormat.jpg,
                           customPixelRatio:
                               MediaQuery.devicePixelRatioOf(context),
                           maxOutputSize: const Size(2000, 2000),

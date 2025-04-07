@@ -17,6 +17,7 @@ import 'tiff_encoder.dart';
 Future<Uint8List> encodeJpg(
   Image image, {
   int quality = 100,
+  required int backgroundColor,
   JpegChroma chroma = JpegChroma.yuv444,
   Completer<void>? destroy$,
 }) =>
@@ -24,6 +25,7 @@ Future<Uint8List> encodeJpg(
       image,
       chroma: chroma,
       destroy$: destroy$,
+      backgroundColor: backgroundColor,
     );
 
 /// Encode an image to the PNG format.

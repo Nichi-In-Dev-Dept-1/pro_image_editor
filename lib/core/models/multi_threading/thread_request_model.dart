@@ -15,6 +15,7 @@ class ImageConvertThreadRequest extends ThreadRequest {
     required super.pngLevel,
     required super.pngFilter,
     required super.jpegQuality,
+    required super.jpegBackgroundColor,
     required super.jpegChroma,
   });
 
@@ -35,6 +36,7 @@ class ThreadRequest {
     required this.outputFormat,
     required this.pngFilter,
     required this.jpegQuality,
+    required this.jpegBackgroundColor,
     required this.jpegChroma,
     this.generateOnlyImageBounds,
   });
@@ -60,6 +62,11 @@ class ThreadRequest {
 
   /// Specifies the quality level for JPEG images. Ranges from 2 to 100.
   final int jpegQuality;
+
+  /// The background color used when generating JPEG images.
+  /// This color is applied to areas of the image that are transparent,
+  /// as JPEG format does not support transparency.
+  final int jpegBackgroundColor;
 
   /// Specifies the chroma subsampling method for JPEG images.
   final JpegChroma jpegChroma;
@@ -104,6 +111,7 @@ class ThreadRequest {
       'jpegChroma': jpegChroma.name,
       'pngFilter': pngFilter.name,
       'jpegQuality': jpegQuality,
+      'jpegBackgroundColor': jpegBackgroundColor,
       'pngLevel': pngLevel,
       'singleFrame': singleFrame,
       'image': imageToMap(),
@@ -163,6 +171,7 @@ class ThreadRequest {
       generateOnlyImageBounds: generateOnlyImageBounds,
       jpegChroma: jpegChroma,
       jpegQuality: jpegQuality,
+      jpegBackgroundColor: jpegBackgroundColor,
       pngFilter: pngFilter,
       pngLevel: pngLevel,
       singleFrame: singleFrame,
