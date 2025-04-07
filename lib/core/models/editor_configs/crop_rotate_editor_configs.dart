@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '/features/crop_rotate_editor/models/aspect_ratio_item.dart';
-import '/features/crop_rotate_editor/models/rotate_direction.dart';
 import '../custom_widgets/crop_rotate_editor_widgets.dart';
 import '../icons/crop_rotate_editor_icons.dart';
 import '../styles/crop_rotate_editor_style.dart';
+import '/features/crop_rotate_editor/models/aspect_ratio_item.dart';
+import '/features/crop_rotate_editor/models/rotate_direction.dart';
 import 'utils/editor_safe_area.dart';
 
-export '/features/crop_rotate_editor/models/rotate_direction.dart';
-export '/features/crop_rotate_editor/models/transform_factors.dart';
 export '../custom_widgets/crop_rotate_editor_widgets.dart';
 export '../icons/crop_rotate_editor_icons.dart';
 export '../styles/crop_rotate_editor_style.dart';
+export '/features/crop_rotate_editor/models/rotate_direction.dart';
+export '/features/crop_rotate_editor/models/transform_factors.dart';
 
 /// Configuration options for a crop and rotate editor.
 ///
@@ -234,16 +234,18 @@ class CropRotateEditorConfigs {
     bool? showFlipButton,
     bool? showAspectRatioButton,
     bool? showResetButton,
+    bool? showLayers,
     bool? enableTransformLayers,
     bool? enableDoubleTap,
     bool? invertMouseScroll,
     bool? invertDragDirection,
+    bool? enableRoundCropper,
     bool? enableProvideImageInfos,
-    bool? showLayers,
     double? initAspectRatio,
     double? maxScale,
     double? mouseScaleFactor,
     double? doubleTapScaleFactor,
+    double? maxWidthFactor,
     List<AspectRatioItem>? aspectRatios,
     Duration? animationDuration,
     Duration? cropDragAnimationDuration,
@@ -262,25 +264,26 @@ class CropRotateEditorConfigs {
     CropRotateEditorWidgets? widgets,
   }) {
     return CropRotateEditorConfigs(
-      safeArea: safeArea ?? this.safeArea,
-      enableProvideImageInfos:
-          enableProvideImageInfos ?? this.enableProvideImageInfos,
-      showLayers: showLayers ?? this.showLayers,
       enabled: enabled ?? this.enabled,
       showRotateButton: showRotateButton ?? this.showRotateButton,
       showFlipButton: showFlipButton ?? this.showFlipButton,
       showAspectRatioButton:
           showAspectRatioButton ?? this.showAspectRatioButton,
       showResetButton: showResetButton ?? this.showResetButton,
+      showLayers: showLayers ?? this.showLayers,
       enableTransformLayers:
           enableTransformLayers ?? this.enableTransformLayers,
       enableDoubleTap: enableDoubleTap ?? this.enableDoubleTap,
       invertMouseScroll: invertMouseScroll ?? this.invertMouseScroll,
       invertDragDirection: invertDragDirection ?? this.invertDragDirection,
+      enableRoundCropper: enableRoundCropper ?? this.enableRoundCropper,
+      enableProvideImageInfos:
+          enableProvideImageInfos ?? this.enableProvideImageInfos,
       initAspectRatio: initAspectRatio ?? this.initAspectRatio,
       maxScale: maxScale ?? this.maxScale,
       mouseScaleFactor: mouseScaleFactor ?? this.mouseScaleFactor,
       doubleTapScaleFactor: doubleTapScaleFactor ?? this.doubleTapScaleFactor,
+      maxWidthFactor: maxWidthFactor ?? this.maxWidthFactor,
       aspectRatios: aspectRatios ?? this.aspectRatios,
       animationDuration: animationDuration ?? this.animationDuration,
       cropDragAnimationDuration:
@@ -301,6 +304,7 @@ class CropRotateEditorConfigs {
       desktopCornerDragArea:
           desktopCornerDragArea ?? this.desktopCornerDragArea,
       mobileCornerDragArea: mobileCornerDragArea ?? this.mobileCornerDragArea,
+      safeArea: safeArea ?? this.safeArea,
       style: style ?? this.style,
       icons: icons ?? this.icons,
       widgets: widgets ?? this.widgets,
