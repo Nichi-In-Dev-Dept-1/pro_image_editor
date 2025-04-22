@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.4.1
+- **FEAT**(callback): Added `onSelectedLayerChanged` callback to notify when the selected layer changes. More details in PR [#423](https://github.com/hm21/pro_image_editor/pull/423).
+
 ## 9.4.0
 - **FEAT**(jpeg-encoder): Add `jpegBackgroundColor` option to `ImageGenerationConfigs` to allow customization of JPEG background color.
 - **FIX**(crop_editor): Add missing copyWith parameters to ensure proper cloning of configuration states.
