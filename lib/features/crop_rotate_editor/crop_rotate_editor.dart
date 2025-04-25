@@ -824,6 +824,8 @@ class CropRotateEditorState extends State<CropRotateEditor>
       await initConfigs.onImageEditingComplete?.call(imageBytes);
       await initConfigs.callbacks.onImageEditingComplete?.call(imageBytes);
 
+      if (!mounted) return;
+
       /// Return complete parameters if requested
       if (initConfigs.callbacks.onCompleteWithParameters != null) {
         final isTransformed = transformC.isNotEmpty;
@@ -832,12 +834,15 @@ class CropRotateEditorState extends State<CropRotateEditor>
         if (isVideoEditor) {
           originalImageSize = videoController!.initialResolution;
         } else {
-          var decodedImage = await decodeImageFromList(imageBytes);
+          var rawOriginalSize =
+              await widget.editorImage?.safeByteArray(context) ?? imageBytes;
+          var decodedImage = await decodeImageFromList(rawOriginalSize);
           originalImageSize = Size(
             decodedImage.width.toDouble(),
             decodedImage.height.toDouble(),
           );
         }
+
         Size? outputSize = transformC.getCropSize(originalImageSize);
         Offset? outputOffset = transformC.getCropStartOffset(originalImageSize);
 

@@ -61,6 +61,13 @@ class ProImageEditorCallbacks {
   ///
   /// Provides access to all transformation, filter, and timing values used
   /// during the export process.
+  ///
+  /// The order in which the changes are applied is as follows:
+  /// 1. Rotate
+  /// 2. Flip
+  /// 3. Crop
+  /// 4. Scale
+  /// 5. Offset
   final CompleteWidthParametersCallback? onCompleteWithParameters;
 
   /// A callback function that is called when the editing is complete and the
