@@ -147,7 +147,7 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: onCloseEditor,
+          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
         ),
       ),
     );
@@ -173,7 +173,7 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: onCloseEditor,
+          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
         ),
       ),
     );
@@ -188,7 +188,7 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: onCloseEditor,
+          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
         ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,
@@ -206,7 +206,7 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: onCloseEditor,
+          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
         ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,
@@ -224,7 +224,7 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: onCloseEditor,
+          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
         ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,

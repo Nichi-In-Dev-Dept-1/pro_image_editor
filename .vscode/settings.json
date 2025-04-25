@@ -19,5 +19,11 @@
     ],
     "diffEditor.experimental.showEmptyDecorations": true,
     "diffEditor.hideUnchangedRegions.enabled": false,
-    "editor.minimap.showMarkSectionHeaders": true
+    "editor.minimap.showMarkSectionHeaders": true,
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    }
 }

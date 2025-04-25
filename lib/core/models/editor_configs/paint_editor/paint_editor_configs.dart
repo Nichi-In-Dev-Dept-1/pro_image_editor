@@ -59,6 +59,7 @@ class PaintEditorConfigs {
     this.showOpacityAdjustmentButton = true,
     this.isInitiallyFilled = false,
     this.showLayers = true,
+    this.enableShareZoomMatrix = true,
     this.boundaryMargin = EdgeInsets.zero,
     this.minScale = double.negativeInfinity,
     this.maxScale = double.infinity,
@@ -134,6 +135,9 @@ class PaintEditorConfigs {
 
   /// Show the layers from the main-editor.
   final bool showLayers;
+
+  /// Shares the zoom matrix between the main and paint editor.
+  final bool enableShareZoomMatrix;
 
   /// Enables high-performance scaling for free-style drawing when set to
   /// `true`.
@@ -253,6 +257,7 @@ class PaintEditorConfigs {
     bool? enableModeBlur,
     bool? enableModePixelate,
     bool? enableModeEraser,
+    bool? enableShareZoomMatrix,
     PaintMode? initialPaintMode,
     double? editorMinScale,
     double? editorMaxScale,
@@ -278,6 +283,8 @@ class PaintEditorConfigs {
       enableModeBlur: enableModeBlur ?? this.enableModeBlur,
       enableModePixelate: enableModePixelate ?? this.enableModePixelate,
       enableModeEraser: enableModeEraser ?? this.enableModeEraser,
+      enableShareZoomMatrix:
+          enableShareZoomMatrix ?? this.enableShareZoomMatrix,
       showToggleFillButton: showToggleFillButton ?? this.showToggleFillButton,
       showLineWidthAdjustmentButton:
           showLineWidthAdjustmentButton ?? this.showLineWidthAdjustmentButton,

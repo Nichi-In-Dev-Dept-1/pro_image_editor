@@ -60,4 +60,28 @@ class FilterEditorCallbacks extends StandaloneEditorCallbacks {
     onFilterChanged?.call(filter);
     handleUpdateUI();
   }
+
+  /// Creates a copy with modified editor callbacks.
+  FilterEditorCallbacks copyWith({
+    ValueChanged<double>? onFilterFactorChange,
+    ValueChanged<double>? onFilterFactorChangeEnd,
+    ValueChanged<FilterModel>? onFilterChanged,
+    Function()? onInit,
+    Function()? onAfterViewInit,
+    Function()? onUpdateUI,
+    Function()? onDone,
+    Function()? onCloseEditor,
+  }) {
+    return FilterEditorCallbacks(
+      onFilterFactorChange: onFilterFactorChange ?? this.onFilterFactorChange,
+      onFilterFactorChangeEnd:
+          onFilterFactorChangeEnd ?? this.onFilterFactorChangeEnd,
+      onFilterChanged: onFilterChanged ?? this.onFilterChanged,
+      onInit: onInit ?? this.onInit,
+      onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
+      onUpdateUI: onUpdateUI ?? this.onUpdateUI,
+      onDone: onDone ?? this.onDone,
+      onCloseEditor: onCloseEditor ?? this.onCloseEditor,
+    );
+  }
 }

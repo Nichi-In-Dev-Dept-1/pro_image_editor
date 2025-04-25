@@ -17,6 +17,7 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
     this.onEditorZoomScaleStart,
     this.onEditorZoomScaleUpdate,
     this.onEditorZoomScaleEnd,
+    this.onEditorZoomMatrix4Change,
     this.onOpacityChange,
     super.onInit,
     super.onAfterViewInit,
@@ -98,6 +99,9 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
   ///  * [onEditorZoomScaleEnd], which handles the end of the same interaction.
   final GestureScaleStartCallback? onEditorZoomScaleStart;
 
+  /// Called when the editor zoom matrix changes.
+  final Function(Matrix4 value)? onEditorZoomMatrix4Change;
+
   /// Called when the user updates a pan or scale gesture on the editor.
   ///
   /// At the time this is called, the [TransformationController] will have
@@ -171,5 +175,49 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
   void handleColorChanged() {
     onColorChanged?.call();
     handleUpdateUI();
+  }
+
+  /// Creates a copy with modified editor callbacks.
+  PaintEditorCallbacks copyWith({
+    ValueChanged<double>? onLineWidthChanged,
+    ValueChanged<PaintMode>? onPaintModeChanged,
+    ValueChanged<bool>? onToggleFill,
+    ValueChanged<double>? onOpacityChange,
+    Function()? onDrawingDone,
+    Function()? onColorChanged,
+    GestureScaleEndCallback? onEditorZoomScaleEnd,
+    GestureScaleStartCallback? onEditorZoomScaleStart,
+    Function(Matrix4 value)? onEditorZoomMatrix4Change,
+    GestureScaleUpdateCallback? onEditorZoomScaleUpdate,
+    Function()? onInit,
+    Function()? onAfterViewInit,
+    Function()? onUpdateUI,
+    Function()? onDone,
+    Function()? onRedo,
+    Function()? onUndo,
+    Function()? onCloseEditor,
+  }) {
+    return PaintEditorCallbacks(
+      onLineWidthChanged: onLineWidthChanged ?? this.onLineWidthChanged,
+      onPaintModeChanged: onPaintModeChanged ?? this.onPaintModeChanged,
+      onToggleFill: onToggleFill ?? this.onToggleFill,
+      onOpacityChange: onOpacityChange ?? this.onOpacityChange,
+      onDrawingDone: onDrawingDone ?? this.onDrawingDone,
+      onColorChanged: onColorChanged ?? this.onColorChanged,
+      onEditorZoomScaleEnd: onEditorZoomScaleEnd ?? this.onEditorZoomScaleEnd,
+      onEditorZoomScaleStart:
+          onEditorZoomScaleStart ?? this.onEditorZoomScaleStart,
+      onEditorZoomMatrix4Change:
+          onEditorZoomMatrix4Change ?? this.onEditorZoomMatrix4Change,
+      onEditorZoomScaleUpdate:
+          onEditorZoomScaleUpdate ?? this.onEditorZoomScaleUpdate,
+      onInit: onInit ?? this.onInit,
+      onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
+      onUpdateUI: onUpdateUI ?? this.onUpdateUI,
+      onDone: onDone ?? this.onDone,
+      onRedo: onRedo ?? this.onRedo,
+      onUndo: onUndo ?? this.onUndo,
+      onCloseEditor: onCloseEditor ?? this.onCloseEditor,
+    );
   }
 }

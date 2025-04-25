@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.5.0
+- **FEAT**(callback): Added `copyWith` method to all callback models. More details in Feature-Request [#424](https://github.com/hm21/pro_image_editor/pull/424).
+- **FEAT**(zoom): Preserved zoom state by sharing Matrix4 between paint and main editor
+
 ## 9.4.1
 - **FEAT**(callback): Added `onSelectedLayerChanged` callback to notify when the selected layer changes. More details in PR [#423](https://github.com/hm21/pro_image_editor/pull/423).
 

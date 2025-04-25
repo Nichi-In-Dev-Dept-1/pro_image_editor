@@ -9,6 +9,7 @@ export '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart'
 export 'core/models/editor_callbacks/pro_image_editor_callbacks.dart';
 
 /// Configs and Callbacks
+export 'core/enums/editor_mode.dart';
 export 'core/models/editor_configs/pro_image_editor_configs.dart';
 export 'core/models/editor_image.dart';
 export 'core/models/history/state_history.dart';

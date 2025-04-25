@@ -867,7 +867,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
       LoadingDialog.instance.hide();
 
       initConfigs.onCloseEditor?.call();
-      initConfigs.callbacks.onCloseEditor?.call();
+      initConfigs.callbacks.onCloseEditor?.call(EditorMode.cropRotate);
     }
     cropRotateEditorCallbacks?.handleDone();
     _interactionActive = false;

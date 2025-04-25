@@ -40,7 +40,7 @@ class _DefaultExampleState extends State<DefaultExample>
   late final _callbacks = ProImageEditorCallbacks(
     onImageEditingStarted: onImageEditingStarted,
     onImageEditingComplete: onImageEditingComplete,
-    onCloseEditor: onCloseEditor,
+    onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
     mainEditorCallbacks: MainEditorCallbacks(
       helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
     ),

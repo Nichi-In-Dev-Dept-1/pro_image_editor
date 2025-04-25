@@ -40,6 +40,8 @@ class ExtendedInteractiveViewer extends StatefulWidget {
     required this.onInteractionStart,
     required this.onInteractionUpdate,
     required this.onInteractionEnd,
+    this.onMatrix4Change,
+    this.initialMatrix4,
   });
 
   /// A margin for the visible boundaries of the child.
@@ -134,6 +136,12 @@ class ExtendedInteractiveViewer extends StatefulWidget {
   ///  * [onInteractionEnd], which handles the end of the same interaction.
   final GestureScaleUpdateCallback? onInteractionUpdate;
 
+  /// Called when the Matrix4 value changes.
+  final Function(Matrix4 value)? onMatrix4Change;
+
+  /// The initial Matrix4 value.
+  final Matrix4? initialMatrix4;
+
   @override
   State<ExtendedInteractiveViewer> createState() =>
       ExtendedInteractiveViewerState();
@@ -147,9 +155,24 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer> {
   @override
   void initState() {
     super.initState();
-    _transformCtrl = TransformationController();
+    _transformCtrl = TransformationController(widget.initialMatrix4)
+      ..addListener(() {
+        widget.onMatrix4Change?.call(_transformCtrl.value);
+      });
     _enableInteraction = widget.enableInteraction;
   }
+
+  @override
+  void dispose() {
+    _transformCtrl.dispose();
+    super.dispose();
+  }
+
+  /// Gets the current transform matrix.
+  Matrix4 get transformMatrix4 => _transformCtrl.value;
+
+  /// Sets the transform matrix.
+  set transformMatrix4(Matrix4 value) => _transformCtrl.value = value;
 
   /// Sets the interaction state to the given value and updates the UI
   /// accordingly.
@@ -193,7 +216,6 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer> {
         child: widget.child,
       );
     }
-
     return InteractiveViewer(
       boundaryMargin: widget.boundaryMargin,
       transformationController: _transformCtrl,

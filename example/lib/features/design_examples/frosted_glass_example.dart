@@ -60,7 +60,8 @@ class _FrostedGlassExampleState extends State<FrostedGlassExample>
         callbacks: ProImageEditorCallbacks(
             onImageEditingStarted: onImageEditingStarted,
             onImageEditingComplete: onImageEditingComplete,
-            onCloseEditor: onCloseEditor,
+            onCloseEditor: (editorMode) =>
+                onCloseEditor(editorMode: editorMode),
             mainEditorCallbacks: MainEditorCallbacks(
               helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
             ),

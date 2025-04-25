@@ -8,4 +8,15 @@ class EmojiEditorCallbacks extends StandaloneEditorCallbacks {
     super.onInit,
     super.onAfterViewInit,
   });
+
+  /// Creates a copy with modified editor callbacks.
+  EmojiEditorCallbacks copyWith({
+    Function()? onInit,
+    Function()? onAfterViewInit,
+  }) {
+    return EmojiEditorCallbacks(
+      onInit: onInit ?? this.onInit,
+      onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
+    );
+  }
 }

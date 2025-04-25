@@ -75,8 +75,10 @@ class _CropToMainEditorExampleState extends State<CropToMainEditorExample>
           key: editorKey,
           callbacks: ProImageEditorCallbacks(
             onImageEditingStarted: onImageEditingStarted,
-            onCloseEditor: () =>
-                onCloseEditor(enablePop: !isDesktopMode(context)),
+            onCloseEditor: (editorMode) => onCloseEditor(
+              editorMode: editorMode,
+              enablePop: !isDesktopMode(context),
+            ),
             onImageEditingComplete: onImageEditingComplete,
             mainEditorCallbacks: MainEditorCallbacks(
               helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),

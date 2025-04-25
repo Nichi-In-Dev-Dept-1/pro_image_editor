@@ -44,4 +44,26 @@ class BlurEditorCallbacks extends StandaloneEditorCallbacks {
     onBlurFactorChangeEnd?.call(finalFactor);
     handleUpdateUI();
   }
+
+  /// Creates a copy with modified editor callbacks.
+  BlurEditorCallbacks copyWith({
+    ValueChanged<double>? onBlurFactorChange,
+    ValueChanged<double>? onBlurFactorChangeEnd,
+    Function()? onInit,
+    Function()? onAfterViewInit,
+    Function()? onUpdateUI,
+    Function()? onDone,
+    Function()? onCloseEditor,
+  }) {
+    return BlurEditorCallbacks(
+      onBlurFactorChange: onBlurFactorChange ?? this.onBlurFactorChange,
+      onBlurFactorChangeEnd:
+          onBlurFactorChangeEnd ?? this.onBlurFactorChangeEnd,
+      onInit: onInit ?? this.onInit,
+      onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
+      onUpdateUI: onUpdateUI ?? this.onUpdateUI,
+      onDone: onDone ?? this.onDone,
+      onCloseEditor: onCloseEditor ?? this.onCloseEditor,
+    );
+  }
 }

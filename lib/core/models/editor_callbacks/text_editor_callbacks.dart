@@ -136,4 +136,36 @@ class TextEditorCallbacks extends StandaloneEditorCallbacks {
     onBackgroundModeChanged?.call(newMode);
     handleUpdateUI();
   }
+
+  /// Creates a copy with modified editor callbacks.
+  TextEditorCallbacks copyWith({
+    ValueChanged<String>? onChanged,
+    VoidCallback? onEditingComplete,
+    ValueChanged<String>? onSubmitted,
+    ValueChanged<int>? onColorChanged,
+    ValueChanged<TextAlign>? onTextAlignChanged,
+    ValueChanged<double>? onFontScaleChanged,
+    ValueChanged<LayerBackgroundMode>? onBackgroundModeChanged,
+    Function()? onInit,
+    Function()? onAfterViewInit,
+    Function()? onDone,
+    Function()? onCloseEditor,
+    Function()? onUpdateUI,
+  }) {
+    return TextEditorCallbacks(
+      onChanged: onChanged ?? this.onChanged,
+      onEditingComplete: onEditingComplete ?? this.onEditingComplete,
+      onSubmitted: onSubmitted ?? this.onSubmitted,
+      onColorChanged: onColorChanged ?? this.onColorChanged,
+      onTextAlignChanged: onTextAlignChanged ?? this.onTextAlignChanged,
+      onFontScaleChanged: onFontScaleChanged ?? this.onFontScaleChanged,
+      onBackgroundModeChanged:
+          onBackgroundModeChanged ?? this.onBackgroundModeChanged,
+      onInit: onInit ?? this.onInit,
+      onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
+      onDone: onDone ?? this.onDone,
+      onCloseEditor: onCloseEditor ?? this.onCloseEditor,
+      onUpdateUI: onUpdateUI ?? this.onUpdateUI,
+    );
+  }
 }

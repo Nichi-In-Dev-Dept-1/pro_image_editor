@@ -1349,6 +1349,17 @@ class ProImageEditorState extends State<ProImageEditor>
   /// After closing the paint editor, any changes made are applied to the
   /// image's layers.
   void openPaintEditor() async {
+    var paintCallbacks =
+        callbacks.paintEditorCallbacks ?? const PaintEditorCallbacks();
+    var overridenPaintCallbacks = paintCallbacks.copyWith(
+      onEditorZoomMatrix4Change: (value) {
+        callbacks.paintEditorCallbacks?.onEditorZoomMatrix4Change?.call(value);
+        if (paintEditorConfigs.enableShareZoomMatrix) {
+          _interactiveViewer.currentState?.transformMatrix4 = value;
+        }
+      },
+    );
+
     List<PaintLayer>? paintItemLayers = await openPage<List<PaintLayer>>(
       PaintEditor.autoSource(
         key: paintEditor,
@@ -1356,7 +1367,8 @@ class ProImageEditorState extends State<ProImageEditor>
         videoController: widget.videoController,
         initConfigs: PaintEditorInitConfigs(
           configs: configs,
-          callbacks: callbacks,
+          callbacks:
+              callbacks.copyWith(paintEditorCallbacks: overridenPaintCallbacks),
           layers: activeLayers,
           theme: _theme,
           mainImageSize: sizesManager.decodedImageSize,
@@ -1365,6 +1377,7 @@ class ProImageEditorState extends State<ProImageEditor>
           appliedBlurFactor: stateManager.activeBlur,
           appliedFilters: stateManager.activeFilters,
           appliedTuneAdjustments: stateManager.activeTuneAdjustments,
+          initialZoomMatrix: _interactiveViewer.currentState?.transformMatrix4,
         ),
       ),
       duration: const Duration(milliseconds: 150),
@@ -1883,7 +1896,7 @@ class ProImageEditorState extends State<ProImageEditor>
 
       LoadingDialog.instance.hide();
 
-      onCloseEditor?.call();
+      onCloseEditor?.call(EditorMode.main);
 
       /// Allow users to continue editing if they didn't close the editor.
       setState(() => _isProcessingFinalImage = false);
@@ -1942,7 +1955,7 @@ class ProImageEditorState extends State<ProImageEditor>
       if (onCloseEditor == null) {
         Navigator.pop(context);
       } else {
-        onCloseEditor!.call();
+        onCloseEditor!.call(EditorMode.main);
       }
     } else {
       closeWarning();
@@ -1998,7 +2011,7 @@ class ProImageEditorState extends State<ProImageEditor>
       if (onCloseEditor == null) {
         if (mounted) Navigator.pop(context);
       } else {
-        onCloseEditor!.call();
+        onCloseEditor!.call(EditorMode.main);
       }
     }
 

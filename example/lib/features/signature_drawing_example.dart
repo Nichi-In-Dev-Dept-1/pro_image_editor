@@ -60,7 +60,8 @@ class _SignatureDrawingExampleState extends State<SignatureDrawingExample>
                       callbacks: ProImageEditorCallbacks(
                         onImageEditingStarted: onImageEditingStarted,
                         onImageEditingComplete: onImageEditingComplete,
-                        onCloseEditor: onCloseEditor,
+                        onCloseEditor: (editorMode) =>
+                            onCloseEditor(editorMode: editorMode),
                       ),
                       configs: ProImageEditorConfigs(
                         designMode: platformDesignMode,
@@ -117,7 +118,8 @@ class _SignatureDrawingExampleState extends State<SignatureDrawingExample>
                       callbacks: ProImageEditorCallbacks(
                         onImageEditingStarted: onImageEditingStarted,
                         onImageEditingComplete: onImageEditingComplete,
-                        onCloseEditor: onCloseEditor,
+                        onCloseEditor: (editorMode) =>
+                            onCloseEditor(editorMode: editorMode),
                       ),
                       configs: ProImageEditorConfigs(
                         designMode: platformDesignMode,

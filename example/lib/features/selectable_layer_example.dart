@@ -52,7 +52,10 @@ class _SelectableLayerExampleState extends State<SelectableLayerExample>
       callbacks: ProImageEditorCallbacks(
         onImageEditingStarted: onImageEditingStarted,
         onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: () => onCloseEditor(enablePop: !isDesktopMode(context)),
+        onCloseEditor: (editorMode) => onCloseEditor(
+          editorMode: editorMode,
+          enablePop: !isDesktopMode(context),
+        ),
         mainEditorCallbacks: MainEditorCallbacks(
           helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
         ),

@@ -1,3 +1,4 @@
+import '../../enums/editor_mode.dart';
 import 'blur_editor_callbacks.dart';
 import 'crop_rotate_editor_callbacks.dart';
 import 'editor_callbacks_typedef.dart';
@@ -10,6 +11,7 @@ import 'text_editor_callbacks.dart';
 import 'tune_editor_callbacks.dart';
 import 'video_editor_callbacks.dart';
 
+export '../../enums/sub_editors_name.dart';
 export 'blur_editor_callbacks.dart';
 export 'crop_rotate_editor_callbacks.dart';
 export 'editor_callbacks_typedef.dart';
@@ -19,7 +21,6 @@ export 'paint_editor_callbacks.dart';
 export 'sticker_editor_callbacks.dart';
 export 'text_editor_callbacks.dart';
 export 'tune_editor_callbacks.dart';
-export 'utils/sub_editors_name.dart';
 export 'video_editor_callbacks.dart';
 
 /// A class representing callbacks for the Image Editor.
@@ -88,7 +89,7 @@ class ProImageEditorCallbacks {
   /// close.
   ///
   /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_capture_image.jpeg?raw=true" alt="Schema" height="500px" />
-  final ImageEditingEmptyCallback? onCloseEditor;
+  final Function(EditorMode editorMode)? onCloseEditor;
 
   /// Callbacks from the main editor.
   final MainEditorCallbacks? mainEditorCallbacks;
@@ -119,4 +120,47 @@ class ProImageEditorCallbacks {
 
   /// Callbacks from the video editor.
   final VideoEditorCallbacks? videoEditorCallbacks;
+
+  /// Creates a copy with modified editor callbacks.
+  ProImageEditorCallbacks copyWith({
+    Function()? onImageEditingStarted,
+    ImageEditingCompleteCallback? onImageEditingComplete,
+    CompleteWidthParametersCallback? onCompleteWithParameters,
+    ThumbnailGeneratedCallback? onThumbnailGenerated,
+    Function(EditorMode editorMode)? onCloseEditor,
+    MainEditorCallbacks? mainEditorCallbacks,
+    PaintEditorCallbacks? paintEditorCallbacks,
+    TextEditorCallbacks? textEditorCallbacks,
+    CropRotateEditorCallbacks? cropRotateEditorCallbacks,
+    FilterEditorCallbacks? filterEditorCallbacks,
+    BlurEditorCallbacks? blurEditorCallbacks,
+    EmojiEditorCallbacks? emojiEditorCallbacks,
+    StickerEditorCallbacks? stickerEditorCallbacks,
+    TuneEditorCallbacks? tuneEditorCallbacks,
+    VideoEditorCallbacks? videoEditorCallbacks,
+  }) {
+    return ProImageEditorCallbacks(
+      onImageEditingStarted:
+          onImageEditingStarted ?? this.onImageEditingStarted,
+      onImageEditingComplete:
+          onImageEditingComplete ?? this.onImageEditingComplete,
+      onCompleteWithParameters:
+          onCompleteWithParameters ?? this.onCompleteWithParameters,
+      onThumbnailGenerated: onThumbnailGenerated ?? this.onThumbnailGenerated,
+      onCloseEditor: onCloseEditor ?? this.onCloseEditor,
+      mainEditorCallbacks: mainEditorCallbacks ?? this.mainEditorCallbacks,
+      paintEditorCallbacks: paintEditorCallbacks ?? this.paintEditorCallbacks,
+      textEditorCallbacks: textEditorCallbacks ?? this.textEditorCallbacks,
+      cropRotateEditorCallbacks:
+          cropRotateEditorCallbacks ?? this.cropRotateEditorCallbacks,
+      filterEditorCallbacks:
+          filterEditorCallbacks ?? this.filterEditorCallbacks,
+      blurEditorCallbacks: blurEditorCallbacks ?? this.blurEditorCallbacks,
+      emojiEditorCallbacks: emojiEditorCallbacks ?? this.emojiEditorCallbacks,
+      stickerEditorCallbacks:
+          stickerEditorCallbacks ?? this.stickerEditorCallbacks,
+      tuneEditorCallbacks: tuneEditorCallbacks ?? this.tuneEditorCallbacks,
+      videoEditorCallbacks: videoEditorCallbacks ?? this.videoEditorCallbacks,
+    );
+  }
 }

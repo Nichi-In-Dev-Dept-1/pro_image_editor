@@ -507,7 +507,8 @@ class _GenerationConfigState extends State<GenerationConfig>
       callbacks: ProImageEditorCallbacks(
         onImageEditingStarted: onImageEditingStarted,
         onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: () => onCloseEditor(
+        onCloseEditor: (editorMode) => onCloseEditor(
+          editorMode: editorMode,
           showThumbnail: _generateThumbnail,
           rawOriginalImage: _rawOriginalImage,
           generationConfigs: generationConfigs,

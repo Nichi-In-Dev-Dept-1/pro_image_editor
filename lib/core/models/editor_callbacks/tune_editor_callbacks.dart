@@ -62,4 +62,32 @@ class TuneEditorCallbacks extends StandaloneEditorCallbacks {
     onTuneChanged?.call(id);
     handleUpdateUI();
   }
+
+  /// Creates a copy with modified editor callbacks.
+  TuneEditorCallbacks copyWith({
+    ValueChanged<List<TuneAdjustmentMatrix>>? onTuneFactorChange,
+    ValueChanged<List<TuneAdjustmentMatrix>>? onTuneFactorChangeEnd,
+    ValueChanged<String>? onTuneChanged,
+    Function()? onInit,
+    Function()? onAfterViewInit,
+    Function()? onUpdateUI,
+    Function()? onDone,
+    Function()? onRedo,
+    Function()? onUndo,
+    Function()? onCloseEditor,
+  }) {
+    return TuneEditorCallbacks(
+      onTuneFactorChange: onTuneFactorChange ?? this.onTuneFactorChange,
+      onTuneFactorChangeEnd:
+          onTuneFactorChangeEnd ?? this.onTuneFactorChangeEnd,
+      onTuneChanged: onTuneChanged ?? this.onTuneChanged,
+      onInit: onInit ?? this.onInit,
+      onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
+      onUpdateUI: onUpdateUI ?? this.onUpdateUI,
+      onDone: onDone ?? this.onDone,
+      onRedo: onRedo ?? this.onRedo,
+      onUndo: onUndo ?? this.onUndo,
+      onCloseEditor: onCloseEditor ?? this.onCloseEditor,
+    );
+  }
 }

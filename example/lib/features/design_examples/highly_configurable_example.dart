@@ -34,7 +34,7 @@ class _HighlyConfigurableExampleState extends State<HighlyConfigurableExample>
       callbacks: ProImageEditorCallbacks(
         onImageEditingStarted: onImageEditingStarted,
         onImageEditingComplete: onImageEditingComplete,
-        onCloseEditor: onCloseEditor,
+        onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
         mainEditorCallbacks: MainEditorCallbacks(
           helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
         ),

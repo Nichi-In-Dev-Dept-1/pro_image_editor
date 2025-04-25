@@ -1,6 +1,7 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+import '../enums/editor_mode.dart';
 import '../models/editor_callbacks/pro_image_editor_callbacks.dart';
 
 /// A mixin providing access to simple editor callbacks.
@@ -66,5 +67,5 @@ mixin SimpleCallbacksAccessState<T extends StatefulWidget> on State<T> {
   /// close.
   ///
   /// <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/schema_capture_image.jpeg?raw=true" alt="Schema" height="500px" />
-  ImageEditingEmptyCallback? get onCloseEditor => callbacks.onCloseEditor;
+  Function(EditorMode editorMode)? get onCloseEditor => callbacks.onCloseEditor;
 }

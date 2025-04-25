@@ -51,4 +51,19 @@ class HelperLinesCallbacks {
     onLineHit?.call();
     onHitRotateLine?.call();
   }
+
+  /// Creates a copy with modified editor callbacks.
+  HelperLinesCallbacks copyWith({
+    Function()? onLineHit,
+    Function()? onHitVerticalLine,
+    Function()? onHitHorizontalLine,
+    Function()? onHitRotateLine,
+  }) {
+    return HelperLinesCallbacks(
+      onLineHit: onLineHit ?? this.onLineHit,
+      onHitVerticalLine: onHitVerticalLine ?? this.onHitVerticalLine,
+      onHitHorizontalLine: onHitHorizontalLine ?? this.onHitHorizontalLine,
+      onHitRotateLine: onHitRotateLine ?? this.onHitRotateLine,
+    );
+  }
 }

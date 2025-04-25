@@ -47,7 +47,7 @@ class _GroundedDesignExampleState extends State<GroundedDesignExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: onCloseEditor,
+          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
           mainEditorCallbacks: MainEditorCallbacks(
             helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
             onStartCloseSubEditor: (value) {

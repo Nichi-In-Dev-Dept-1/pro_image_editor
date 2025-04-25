@@ -756,6 +756,9 @@ class PaintEditorState extends State<PaintEditor>
     return [
       ExtendedInteractiveViewer(
         key: _interactiveViewer,
+        initialMatrix4: paintEditorConfigs.enableShareZoomMatrix
+            ? initConfigs.initialZoomMatrix
+            : null,
         enableZoom: _enableZoom,
         boundaryMargin: paintEditorConfigs.boundaryMargin,
         minScale: paintEditorConfigs.editorMinScale,
@@ -778,6 +781,8 @@ class PaintEditorState extends State<PaintEditor>
           callbacks.paintEditorCallbacks?.onEditorZoomScaleEnd?.call(details);
           setState(() {});
         },
+        onMatrix4Change:
+            callbacks.paintEditorCallbacks?.onEditorZoomMatrix4Change,
         child: Stack(
           alignment: Alignment.center,
           fit: StackFit.expand,

@@ -140,4 +140,43 @@ class CropRotateEditorCallbacks extends StandaloneEditorCallbacks {
     onReset?.call();
     handleUpdateUI();
   }
+
+  /// Creates a copy with modified editor callbacks.
+  CropRotateEditorCallbacks copyWith({
+    ValueChanged<double>? onRotateStart,
+    ValueChanged<double>? onRotateEnd,
+    FlipCallback? onFlip,
+    ValueChanged<double>? onRatioSelected,
+    Function()? onMove,
+    Function()? onResize,
+    Function()? onScale,
+    Function()? onDoubleTap,
+    Function()? onReset,
+    Function()? onInit,
+    Function()? onAfterViewInit,
+    Function()? onUpdateUI,
+    Function()? onDone,
+    Function()? onRedo,
+    Function()? onUndo,
+    Function()? onCloseEditor,
+  }) {
+    return CropRotateEditorCallbacks(
+      onRotateStart: onRotateStart ?? this.onRotateStart,
+      onRotateEnd: onRotateEnd ?? this.onRotateEnd,
+      onFlip: onFlip ?? this.onFlip,
+      onRatioSelected: onRatioSelected ?? this.onRatioSelected,
+      onMove: onMove ?? this.onMove,
+      onResize: onResize ?? this.onResize,
+      onScale: onScale ?? this.onScale,
+      onDoubleTap: onDoubleTap ?? this.onDoubleTap,
+      onReset: onReset ?? this.onReset,
+      onInit: onInit ?? this.onInit,
+      onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
+      onUpdateUI: onUpdateUI ?? this.onUpdateUI,
+      onDone: onDone ?? this.onDone,
+      onRedo: onRedo ?? this.onRedo,
+      onUndo: onUndo ?? this.onUndo,
+      onCloseEditor: onCloseEditor ?? this.onCloseEditor,
+    );
+  }
 }

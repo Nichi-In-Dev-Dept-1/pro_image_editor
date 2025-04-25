@@ -1,10 +1,9 @@
 // Flutter imports:
 import 'package:flutter/widgets.dart';
 
-// Project imports:
+import '../../../enums/sub_editors_name.dart';
 import '../../layers/layer.dart';
 import '../standalone_editor_callbacks.dart';
-import '../utils/sub_editors_name.dart';
 import 'helper_lines/helper_lines_callbacks.dart';
 
 export 'helper_lines/helper_lines_callbacks.dart';
@@ -301,5 +300,66 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   void handleScaleEnd(ScaleEndDetails details) {
     onScaleEnd?.call(details);
     handleUpdateUI();
+  }
+
+  /// Creates a copy with modified editor callbacks.
+  MainEditorCallbacks copyWith({
+    Function(Layer)? onAddLayer,
+    Function(Layer)? onUpdateLayer,
+    Function(Layer)? onRemoveLayer,
+    Function(SubEditor)? onOpenSubEditor,
+    Function(SubEditor)? onEndCloseSubEditor,
+    Function(SubEditor)? onStartCloseSubEditor,
+    Function()? onTap,
+    Function()? onDoubleTap,
+    Function()? onLongPress,
+    Function()? onEscapeButton,
+    Function(ScaleStartDetails)? onScaleStart,
+    Function(ScaleUpdateDetails)? onScaleUpdate,
+    Function(ScaleEndDetails)? onScaleEnd,
+    GestureScaleEndCallback? onEditorZoomScaleEnd,
+    GestureScaleStartCallback? onEditorZoomScaleStart,
+    GestureScaleUpdateCallback? onEditorZoomScaleUpdate,
+    PopInvokedWithResultCallback<dynamic>? onPopInvoked,
+    HelperLinesCallbacks? helperLines,
+    ValueChanged<String>? onSelectedLayerChanged,
+    Function()? onInit,
+    Function()? onAfterViewInit,
+    Function()? onUpdateUI,
+    Function()? onDone,
+    Function()? onRedo,
+    Function()? onUndo,
+  }) {
+    return MainEditorCallbacks(
+      onAddLayer: onAddLayer ?? this.onAddLayer,
+      onUpdateLayer: onUpdateLayer ?? this.onUpdateLayer,
+      onRemoveLayer: onRemoveLayer ?? this.onRemoveLayer,
+      onOpenSubEditor: onOpenSubEditor ?? this.onOpenSubEditor,
+      onEndCloseSubEditor: onEndCloseSubEditor ?? this.onEndCloseSubEditor,
+      onStartCloseSubEditor:
+          onStartCloseSubEditor ?? this.onStartCloseSubEditor,
+      onTap: onTap ?? this.onTap,
+      onDoubleTap: onDoubleTap ?? this.onDoubleTap,
+      onLongPress: onLongPress ?? this.onLongPress,
+      onEscapeButton: onEscapeButton ?? this.onEscapeButton,
+      onScaleStart: onScaleStart ?? this.onScaleStart,
+      onScaleUpdate: onScaleUpdate ?? this.onScaleUpdate,
+      onScaleEnd: onScaleEnd ?? this.onScaleEnd,
+      onEditorZoomScaleEnd: onEditorZoomScaleEnd ?? this.onEditorZoomScaleEnd,
+      onEditorZoomScaleStart:
+          onEditorZoomScaleStart ?? this.onEditorZoomScaleStart,
+      onEditorZoomScaleUpdate:
+          onEditorZoomScaleUpdate ?? this.onEditorZoomScaleUpdate,
+      onPopInvoked: onPopInvoked ?? this.onPopInvoked,
+      helperLines: helperLines ?? this.helperLines,
+      onSelectedLayerChanged:
+          onSelectedLayerChanged ?? this.onSelectedLayerChanged,
+      onInit: onInit ?? this.onInit,
+      onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
+      onUpdateUI: onUpdateUI ?? this.onUpdateUI,
+      onDone: onDone ?? this.onDone,
+      onRedo: onRedo ?? this.onRedo,
+      onUndo: onUndo ?? this.onUndo,
+    );
   }
 }

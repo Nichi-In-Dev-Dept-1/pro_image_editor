@@ -15,6 +15,7 @@ import '/shared/controllers/video_controller.dart';
 import '/shared/services/content_recorder/controllers/content_recorder_controller.dart';
 import '/shared/utils/decode_image.dart';
 import '/shared/widgets/overlays/loading_dialog/loading_dialog.dart';
+import '../enums/editor_mode.dart';
 import '../models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '../models/editor_configs/pro_image_editor_configs.dart';
 import '../models/editor_image.dart';
@@ -233,7 +234,7 @@ mixin StandaloneEditorState<T extends StatefulWidget,
       LoadingDialog.instance.hide();
 
       initConfigs.onCloseEditor?.call();
-      initConfigs.callbacks.onCloseEditor?.call();
+      initConfigs.callbacks.onCloseEditor?.call(editorMode);
     } else {
       if (onCloseWithValue == null) {
         Navigator.pop(context, returnValue);
@@ -250,16 +251,40 @@ mixin StandaloneEditorState<T extends StatefulWidget,
       Navigator.pop(context);
     } else {
       initConfigs.onCloseEditor?.call();
-      initConfigs.callbacks.onCloseEditor?.call();
+      initConfigs.callbacks.onCloseEditor?.call(editorMode);
     }
-    if (I is PaintEditorInitConfigs) {
-      paintEditorCallbacks?.handleCloseEditor();
-    } else if (I is CropRotateEditorInitConfigs) {
-      cropRotateEditorCallbacks?.handleCloseEditor();
-    } else if (I is FilterEditorInitConfigs) {
-      filterEditorCallbacks?.handleCloseEditor();
-    } else if (I is BlurEditorInitConfigs) {
-      blurEditorCallbacks?.handleCloseEditor();
+
+    switch (editorMode) {
+      case EditorMode.paint:
+        paintEditorCallbacks?.handleCloseEditor();
+        break;
+      case EditorMode.cropRotate:
+        cropRotateEditorCallbacks?.handleCloseEditor();
+        break;
+      case EditorMode.filter:
+        filterEditorCallbacks?.handleCloseEditor();
+        break;
+      case EditorMode.blur:
+        blurEditorCallbacks?.handleCloseEditor();
+        break;
+      default:
+        throw UnimplementedError();
+    }
+  }
+
+  /// Returns the editor mode based on the init config type.
+  EditorMode get editorMode {
+    switch (initConfigs) {
+      case PaintEditorInitConfigs():
+        return EditorMode.paint;
+      case CropRotateEditorInitConfigs():
+        return EditorMode.cropRotate;
+      case FilterEditorInitConfigs():
+        return EditorMode.filter;
+      case BlurEditorInitConfigs():
+        return EditorMode.blur;
+      default:
+        throw UnimplementedError();
     }
   }
 

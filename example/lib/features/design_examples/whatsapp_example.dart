@@ -122,7 +122,8 @@ class _WhatsAppExampleState extends State<WhatsAppExample>
           callbacks: ProImageEditorCallbacks(
               onImageEditingStarted: onImageEditingStarted,
               onImageEditingComplete: onImageEditingComplete,
-              onCloseEditor: onCloseEditor,
+              onCloseEditor: (editorMode) =>
+                  onCloseEditor(editorMode: editorMode),
               mainEditorCallbacks: MainEditorCallbacks(
                 helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
                 onScaleStart: _whatsAppHelper.onScaleStart,

@@ -34,4 +34,21 @@ class VideoEditorCallbacks {
   ///
   /// Provides the final [TrimDurationSpan].
   final Function(TrimDurationSpan durationSpan)? onTrimSpanEnd;
+
+  /// Creates a copy with modified editor callbacks.
+  VideoEditorCallbacks copyWith({
+    Function()? onPlay,
+    Function()? onPause,
+    Function(bool isMuted)? onMuteToggle,
+    Function(TrimDurationSpan durationSpan)? onTrimSpanUpdate,
+    Function(TrimDurationSpan durationSpan)? onTrimSpanEnd,
+  }) {
+    return VideoEditorCallbacks(
+      onPlay: onPlay ?? this.onPlay,
+      onPause: onPause ?? this.onPause,
+      onMuteToggle: onMuteToggle ?? this.onMuteToggle,
+      onTrimSpanUpdate: onTrimSpanUpdate ?? this.onTrimSpanUpdate,
+      onTrimSpanEnd: onTrimSpanEnd ?? this.onTrimSpanEnd,
+    );
+  }
 }

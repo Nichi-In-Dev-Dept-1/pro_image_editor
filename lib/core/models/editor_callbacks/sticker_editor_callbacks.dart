@@ -60,4 +60,23 @@ class StickerEditorCallbacks extends StandaloneEditorCallbacks {
   /// This callback is activated exclusively when the editor mode is set to
   /// 'WhatsApp'.
   final Function(String value)? onSearchChanged;
+
+  /// Creates a copy with modified editor callbacks.
+  StickerEditorCallbacks copyWith({
+    Function(
+      ProImageEditorState editorState,
+      WidgetLayer sticker,
+      int index,
+    )? onTapEditSticker,
+    Function(String value)? onSearchChanged,
+    Function()? onInit,
+    Function()? onAfterViewInit,
+  }) {
+    return StickerEditorCallbacks(
+      onInit: onInit ?? this.onInit,
+      onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
+      onTapEditSticker: onTapEditSticker ?? this.onTapEditSticker,
+      onSearchChanged: onSearchChanged ?? this.onSearchChanged,
+    );
+  }
 }
