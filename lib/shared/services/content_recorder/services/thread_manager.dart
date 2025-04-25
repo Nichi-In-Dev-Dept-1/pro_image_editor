@@ -19,7 +19,8 @@ abstract class ThreadManager<T extends Thread> {
   /// Constructs a `ThreadManager` instance with the specified configuration and
   /// initializes the threading environment.
   ThreadManager(this.configs) {
-    initialize();
+    /// Only initialize multithreading if it's enabled.
+    if (this.configs.enableIsolateGeneration) initialize();
   }
 
   /// List of threads.
