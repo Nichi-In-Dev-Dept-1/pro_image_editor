@@ -174,10 +174,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
     var paintConfigs = configs.paintEditor;
     return ExtendedInteractiveViewer(
       key: interactiveViewerKey,
-      boundaryMargin: mainConfigs.boundaryMargin,
-      enableZoom: mainConfigs.enableZoom,
-      minScale: mainConfigs.editorMinScale,
-      maxScale: mainConfigs.editorMaxScale,
+      zoomConfigs: mainConfigs,
       onInteractionStart: (details) {
         callbacks.mainEditorCallbacks?.onEditorZoomScaleStart?.call(details);
         layerInteractionManager.freeStyleHighPerformanceEditorZoom =
@@ -196,6 +193,10 @@ class MainEditorInteractiveContent extends StatelessWidget {
         layerInteractionManager.freeStyleHighPerformanceEditorZoom = false;
         controllers.uiLayerCtrl.add(null);
         controllers.cropLayerPainterCtrl.add(null);
+      },
+      onMatrix4Change: (value) {
+        controllers.cropLayerPainterCtrl.add(null);
+        callbacks.mainEditorCallbacks?.onEditorZoomMatrix4Change?.call(value);
       },
       child: isVideoEditor
           ? Stack(

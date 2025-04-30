@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.6.0
+- **FEAT**(double-tap):  Support double-tap to zoom in/out when zoom is enabled. More details in Feature-Request [#429](https://github.com/hm21/pro_image_editor/pull/429).
+
 ## 9.5.2
 - **FIX**(zoom): Fixed issue where config `enableMainEditorZoomFactor` had no effect when creating a new text-layer. Resolves [#426](https://github.com/hm21/pro_image_editor/issues/426).
 

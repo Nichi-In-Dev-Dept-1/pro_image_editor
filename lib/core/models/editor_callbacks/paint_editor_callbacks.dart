@@ -19,6 +19,7 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
     this.onEditorZoomScaleEnd,
     this.onEditorZoomMatrix4Change,
     this.onOpacityChange,
+    this.onDoubleTap,
     super.onInit,
     super.onAfterViewInit,
     super.onUndo,
@@ -53,6 +54,10 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
 
   /// A callback function that is triggered when the color is changed.
   final Function()? onColorChanged;
+
+  /// A callback function that is triggered when the user `doubleTap`
+  /// on the body.
+  final Function()? onDoubleTap;
 
   /// Called when the user ends a pan or scale gesture on the widget.
   ///
@@ -189,6 +194,7 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
     GestureScaleStartCallback? onEditorZoomScaleStart,
     Function(Matrix4 value)? onEditorZoomMatrix4Change,
     GestureScaleUpdateCallback? onEditorZoomScaleUpdate,
+    Function()? onDoubleTap,
     Function()? onInit,
     Function()? onAfterViewInit,
     Function()? onUpdateUI,
@@ -211,6 +217,7 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
           onEditorZoomMatrix4Change ?? this.onEditorZoomMatrix4Change,
       onEditorZoomScaleUpdate:
           onEditorZoomScaleUpdate ?? this.onEditorZoomScaleUpdate,
+      onDoubleTap: onDoubleTap ?? this.onDoubleTap,
       onInit: onInit ?? this.onInit,
       onAfterViewInit: onAfterViewInit ?? this.onAfterViewInit,
       onUpdateUI: onUpdateUI ?? this.onUpdateUI,

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pro_image_editor/shared/mixins/editor_zoom.mixin.dart';
 
 import '/core/constants/image_constants.dart';
 import '/core/mixins/converted_callbacks.dart';
@@ -198,9 +199,11 @@ class PaintEditorState extends State<PaintEditor>
     with
         ImageEditorConvertedConfigs,
         ImageEditorConvertedCallbacks,
-        StandaloneEditorState<PaintEditor, PaintEditorInitConfigs> {
+        StandaloneEditorState<PaintEditor, PaintEditorInitConfigs>,
+        EditorZoomMixin {
   final _paintCanvas = GlobalKey<PaintCanvasState>();
-  final _interactiveViewer = GlobalKey<ExtendedInteractiveViewerState>();
+  @override
+  final interactiveViewer = GlobalKey<ExtendedInteractiveViewerState>();
 
   /// Controller for managing paint operations within the widget's context.
   late final PaintController paintCtrl;
@@ -474,7 +477,7 @@ class PaintEditorState extends State<PaintEditor>
     paintCtrl.setMode(mode);
     paintEditorCallbacks?.handlePaintModeChanged(mode);
     rebuildController.add(null);
-    _interactiveViewer.currentState?.setEnableInteraction(
+    interactiveViewer.currentState?.setEnableInteraction(
       mode == PaintMode.moveAndZoom,
     );
     _paintCanvas.currentState?.setState(() {});
@@ -754,80 +757,88 @@ class PaintEditorState extends State<PaintEditor>
 
   List<Widget> _buildInteractiveContent() {
     return [
-      ExtendedInteractiveViewer(
-        key: _interactiveViewer,
-        initialMatrix4: paintEditorConfigs.enableShareZoomMatrix
-            ? initConfigs.initialZoomMatrix
-            : null,
-        enableZoom: _enableZoom,
-        boundaryMargin: paintEditorConfigs.boundaryMargin,
-        minScale: paintEditorConfigs.editorMinScale,
-        maxScale: paintEditorConfigs.editorMaxScale,
-        enableInteraction: paintMode == PaintMode.moveAndZoom,
-        onInteractionStart: (details) {
-          _freeStyleHighPerformance =
-              (paintEditorConfigs.enableFreeStyleHighPerformanceMoving ??
-                      !isDesktop) ||
-                  (paintEditorConfigs.enableFreeStyleHighPerformanceScaling ??
-                      !isDesktop);
+      Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: (details) {
+          bool isDoubleTap = detectDoubleTap(details);
+          if (!isDoubleTap) return;
 
-          callbacks.paintEditorCallbacks?.onEditorZoomScaleStart?.call(details);
-          setState(() {});
+          handleDoubleTap(context, details, paintEditorConfigs);
+          paintEditorCallbacks?.onDoubleTap?.call();
         },
-        onInteractionUpdate:
-            callbacks.paintEditorCallbacks?.onEditorZoomScaleUpdate,
-        onInteractionEnd: (details) {
-          _freeStyleHighPerformance = false;
-          callbacks.paintEditorCallbacks?.onEditorZoomScaleEnd?.call(details);
-          setState(() {});
-        },
-        onMatrix4Change:
-            callbacks.paintEditorCallbacks?.onEditorZoomMatrix4Change,
-        child: Stack(
-          alignment: Alignment.center,
-          fit: StackFit.expand,
-          children: [
-            if (initConfigs.convertToUint8List && isVideoEditor)
-              _buildBackground(),
-            ContentRecorder(
-              autoDestroyController: false,
-              controller: screenshotCtrl,
-              child: Stack(
-                alignment: Alignment.center,
-                fit: StackFit.expand,
-                children: [
-                  if (!widget.paintOnly)
-                    if (!initConfigs.convertToUint8List || !isVideoEditor)
-                      _buildBackground()
-                    else
-                      SizedBox(
-                        width: configs.imageGeneration.maxOutputSize.width,
-                        height: configs.imageGeneration.maxOutputSize.height,
-                      ),
+        child: ExtendedInteractiveViewer(
+          key: interactiveViewer,
+          initialMatrix4: paintEditorConfigs.enableShareZoomMatrix
+              ? initConfigs.initialZoomMatrix
+              : null,
+          zoomConfigs: paintEditorConfigs,
+          enableInteraction: paintMode == PaintMode.moveAndZoom,
+          onInteractionStart: (details) {
+            _freeStyleHighPerformance =
+                (paintEditorConfigs.enableFreeStyleHighPerformanceMoving ??
+                        !isDesktop) ||
+                    (paintEditorConfigs.enableFreeStyleHighPerformanceScaling ??
+                        !isDesktop);
 
-                  /// Build layers
-                  if (paintEditorConfigs.showLayers && layers != null)
-                    LayerStack(
-                      configs: configs,
-                      layers: layers!,
-                      transformHelper: TransformHelper(
-                        mainBodySize:
-                            getMinimumSize(mainBodySize, editorBodySize),
-                        mainImageSize:
-                            getMinimumSize(mainImageSize, editorBodySize),
-                        editorBodySize: editorBodySize,
-                        transformConfigs: initialTransformConfigs,
+            callbacks.paintEditorCallbacks?.onEditorZoomScaleStart
+                ?.call(details);
+            setState(() {});
+          },
+          onInteractionUpdate:
+              callbacks.paintEditorCallbacks?.onEditorZoomScaleUpdate,
+          onInteractionEnd: (details) {
+            _freeStyleHighPerformance = false;
+            callbacks.paintEditorCallbacks?.onEditorZoomScaleEnd?.call(details);
+            setState(() {});
+          },
+          onMatrix4Change:
+              callbacks.paintEditorCallbacks?.onEditorZoomMatrix4Change,
+          child: Stack(
+            alignment: Alignment.center,
+            fit: StackFit.expand,
+            children: [
+              if (initConfigs.convertToUint8List && isVideoEditor)
+                _buildBackground(),
+              ContentRecorder(
+                autoDestroyController: false,
+                controller: screenshotCtrl,
+                child: Stack(
+                  alignment: Alignment.center,
+                  fit: StackFit.expand,
+                  children: [
+                    if (!widget.paintOnly)
+                      if (!initConfigs.convertToUint8List || !isVideoEditor)
+                        _buildBackground()
+                      else
+                        SizedBox(
+                          width: configs.imageGeneration.maxOutputSize.width,
+                          height: configs.imageGeneration.maxOutputSize.height,
+                        ),
+
+                    /// Build layers
+                    if (paintEditorConfigs.showLayers && layers != null)
+                      LayerStack(
+                        configs: configs,
+                        layers: layers!,
+                        transformHelper: TransformHelper(
+                          mainBodySize:
+                              getMinimumSize(mainBodySize, editorBodySize),
+                          mainImageSize:
+                              getMinimumSize(mainImageSize, editorBodySize),
+                          editorBodySize: editorBodySize,
+                          transformConfigs: initialTransformConfigs,
+                        ),
+                        overlayColor: paintEditorConfigs.style.background,
                       ),
-                      overlayColor: paintEditorConfigs.style.background,
-                    ),
-                  _buildPainter(),
-                  if (paintEditorConfigs.widgets.bodyItemsRecorded != null)
-                    ...paintEditorConfigs.widgets.bodyItemsRecorded!(
-                        this, rebuildController.stream),
-                ],
+                    _buildPainter(),
+                    if (paintEditorConfigs.widgets.bodyItemsRecorded != null)
+                      ...paintEditorConfigs.widgets.bodyItemsRecorded!(
+                          this, rebuildController.stream),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
 

@@ -1,42 +1,19 @@
 import 'package:flutter/widgets.dart';
+import '/core/models/editor_configs/utils/zoom_configs.dart';
 
 /// A widget that provides interactive viewing capabilities with zoom and pan
 /// functionality.
 ///
 /// The [ExtendedInteractiveViewer] wraps a given child widget and allows users
-/// to interact with it through zooming and panning. The interactivity can be
-/// enabled or disabled, and the zoom levels can be controlled with [minScale]
-/// and [maxScale].
-///
-/// Example usage:
-/// ```dart
-/// ExtendedInteractiveViewer(
-///   enableZoom: true,
-///   enableInteraction: true,
-///   minScale: 0.5,
-///   maxScale: 3.0,
-///   child: YourWidget(),
-/// );
+/// to interact with it through zooming and panning.
 /// ```
-///
-/// The [ExtendedInteractiveViewer] requires the following parameters:
-/// - [child]: The widget to be displayed and interacted with.
-/// - [enableZoom]: A boolean indicating whether zoom functionality is
-/// enabled.
-/// - [minScale]: The minimum scale factor for zooming.
-/// - [maxScale]: The maximum scale factor for zooming.
-///
-/// Optionally, you can control the interactivity using [enableInteraction].
 class ExtendedInteractiveViewer extends StatefulWidget {
   /// Creates an [ExtendedInteractiveViewer] with the given parameters.
   const ExtendedInteractiveViewer({
     super.key,
     required this.child,
     this.enableInteraction = true,
-    required this.boundaryMargin,
-    required this.enableZoom,
-    required this.minScale,
-    required this.maxScale,
+    required this.zoomConfigs,
     required this.onInteractionStart,
     required this.onInteractionUpdate,
     required this.onInteractionEnd,
@@ -44,35 +21,20 @@ class ExtendedInteractiveViewer extends StatefulWidget {
     this.initialMatrix4,
   });
 
-  /// A margin for the visible boundaries of the child.
-  final EdgeInsets boundaryMargin;
+  /// Configuration options that control zoom behavior and limits.
+  ///
+  /// Provides settings such as whether zoom is enabled, min/max scale factors,
+  /// double-tap zoom behavior, and boundary constraints.
+  final ZoomConfigs zoomConfigs;
 
   /// The child widget to be displayed and interacted with.
   final Widget child;
-
-  /// Indicates whether the editor supports zoom functionality.
-  ///
-  /// When set to `true`, the editor allows users to zoom in and out. If set to
-  /// `false`, the content remains at a fixed scale.
-  final bool enableZoom;
 
   /// Indicates whether user interactions such as panning and zooming are
   /// enabled.
   ///
   /// Default value is `true`.
   final bool enableInteraction;
-
-  /// The minimum scale factor for zooming.
-  ///
-  /// This determines the lowest level of zoom that can be applied to the child
-  /// widget, ensuring content remains usable.
-  final double minScale;
-
-  /// The maximum scale factor for zooming.
-  ///
-  /// This determines the highest level of zoom that can be applied to the child
-  /// widget.
-  final double maxScale;
 
   /// Called when the user ends a pan or scale gesture on the widget.
   ///
@@ -148,8 +110,10 @@ class ExtendedInteractiveViewer extends StatefulWidget {
 }
 
 /// The state for [ExtendedInteractiveViewer], managing the interactivity state.
-class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer> {
+class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
+    with TickerProviderStateMixin {
   late TransformationController _transformCtrl;
+  late final AnimationController _animationCtrl;
   late bool _enableInteraction;
 
   @override
@@ -159,12 +123,17 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer> {
       ..addListener(() {
         widget.onMatrix4Change?.call(_transformCtrl.value);
       });
+    _animationCtrl = AnimationController(
+      vsync: this,
+      duration: widget.zoomConfigs.doubleTapZoomDuration,
+    );
     _enableInteraction = widget.enableInteraction;
   }
 
   @override
   void dispose() {
     _transformCtrl.dispose();
+    _animationCtrl.dispose();
     super.dispose();
   }
 
@@ -188,6 +157,81 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer> {
     _transformCtrl.value = Matrix4.identity();
   }
 
+  /// Instantly sets the zoom transformation to a specific [offset] and [scale].
+  ///
+  /// If [offset] is null, [Offset.zero] is used. If [scale] is null, 1.0 is
+  /// used.
+  /// This method bypasses animation and immediately updates the view.
+  void zoomTo({Offset? offset, double? scale}) {
+    final effectiveOffset = offset ?? Offset.zero;
+    final effectiveScale = scale ?? 1.0;
+
+    _transformCtrl.value = Matrix4.identity()
+      ..translate(effectiveOffset.dx, effectiveOffset.dy)
+      ..scale(effectiveScale);
+  }
+
+  /// Animates zooming to a specific [offset] and [scale] over [duration].
+  ///
+  /// The transition uses the provided [curve] to control easing. If [offset]
+  /// or [scale] is null, they default to [Offset.zero] and 1.0 respectively.
+  Future<void> animateZoomToPoint({
+    Offset? offset,
+    double? scale,
+    Duration duration = const Duration(milliseconds: 300),
+    Curve curve = Curves.easeInOut,
+  }) async {
+    if (_animationCtrl.isAnimating) return;
+    final effectiveOffset = offset ?? Offset.zero;
+    final effectiveScale = scale ?? 1.0;
+
+    final targetMatrix = Matrix4.identity()
+      ..translate(effectiveOffset.dx, effectiveOffset.dy)
+      ..scale(effectiveScale);
+
+    final tween = Matrix4Tween(
+      begin: _transformCtrl.value,
+      end: targetMatrix,
+    );
+
+    _animationCtrl
+      ..duration = duration
+      ..reset();
+
+    final animation = tween.animate(CurvedAnimation(
+      parent: _animationCtrl,
+      curve: curve,
+    ));
+
+    void listener() {
+      _transformCtrl.value = animation.value;
+    }
+
+    _animationCtrl.addListener(listener);
+    await _animationCtrl.forward();
+    _animationCtrl.removeListener(listener);
+  }
+
+  /// Quickly toggles zoom in or out based on the current [scaleFactor].
+  ///
+  /// If the view is currently zoomed in (scale > 1), this will reset to the
+  /// default scale and position. Otherwise, it will zoom in to [scale] centered
+  /// around the given [offset]. Uses animation with optional [duration] and
+  /// [curve].
+  Future<void> quickZoomTo(
+    Offset offset,
+    double scale, {
+    Duration? duration,
+    Curve? curve,
+  }) async {
+    if (!_enableInteraction) return;
+    if (scaleFactor > 1) {
+      await animateZoomToPoint(offset: Offset.zero, scale: 1);
+    } else {
+      await animateZoomToPoint(offset: -offset, scale: scale);
+    }
+  }
+
   /// The factor by which the current transformation is scaled.
   /// Returns the maximum scale factor applied on any axis.
   double get scaleFactor {
@@ -206,7 +250,7 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.enableZoom) return widget.child;
+    if (!widget.zoomConfigs.enableZoom) return widget.child;
 
     /// If we disable the interaction we need to return it as Transform widget
     /// that the InteractiveViewer will not absorb the scale events.
@@ -217,12 +261,12 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer> {
       );
     }
     return InteractiveViewer(
-      boundaryMargin: widget.boundaryMargin,
+      boundaryMargin: widget.zoomConfigs.boundaryMargin,
       transformationController: _transformCtrl,
       panEnabled: _enableInteraction,
       scaleEnabled: _enableInteraction,
-      minScale: widget.minScale,
-      maxScale: widget.maxScale,
+      minScale: widget.zoomConfigs.editorMinScale,
+      maxScale: widget.zoomConfigs.editorMaxScale,
       onInteractionStart: widget.onInteractionStart,
       onInteractionUpdate: widget.onInteractionUpdate,
       onInteractionEnd: widget.onInteractionEnd,

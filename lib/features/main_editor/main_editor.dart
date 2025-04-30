@@ -28,6 +28,7 @@ import '/shared/utils/file_constructor_utils.dart';
 import '/shared/widgets/adaptive_dialog.dart';
 import '/shared/widgets/extended/extended_interactive_viewer.dart';
 import '/shared/widgets/screen_resize_detector.dart';
+import '../../shared/mixins/editor_zoom.mixin.dart';
 import '../filter_editor/types/filter_matrix.dart';
 import '../filter_editor/widgets/filter_generator.dart';
 import '../tune_editor/models/tune_adjustment_matrix.dart';
@@ -358,11 +359,13 @@ class ProImageEditorState extends State<ProImageEditor>
         ImageEditorConvertedConfigs,
         SimpleConfigsAccessState,
         SimpleCallbacksAccessState,
-        MainEditorGlobalKeys {
+        MainEditorGlobalKeys,
+        EditorZoomMixin {
   final _bottomBarKey = GlobalKey();
   final _removeAreaKey = GlobalKey();
   final _backgroundImageColorFilterKey = GlobalKey<ColorFilterGeneratorState>();
-  final _interactiveViewer = GlobalKey<ExtendedInteractiveViewerState>();
+  @override
+  final interactiveViewer = GlobalKey<ExtendedInteractiveViewerState>();
   late final StreamController<void> _rebuildController;
 
   /// Helper class for managing sizes and layout calculations.
@@ -547,7 +550,7 @@ class ProImageEditorState extends State<ProImageEditor>
   }
 
   void _checkInteractiveViewer() {
-    _interactiveViewer.currentState?.setEnableInteraction(
+    interactiveViewer.currentState?.setEnableInteraction(
       selectedLayerIndex < 0 && layerInteractionManager.selectedLayerId.isEmpty,
     );
   }
@@ -972,15 +975,11 @@ class ProImageEditorState extends State<ProImageEditor>
     });
   }
 
-  /// Resets the zoom and pan of the image editor.
+  @override
   void resetZoom() {
-    _interactiveViewer.currentState?.reset();
+    super.resetZoom();
     _controllers.cropLayerPainterCtrl.add(null);
   }
-
-  /// Returns the current scale factor of the image editor.
-  double get editorScaleFactor =>
-      _interactiveViewer.currentState?.scaleFactor ?? 1.0;
 
   /// Handle the start of a scaling operation.
   ///
@@ -1069,10 +1068,9 @@ class ProImageEditorState extends State<ProImageEditor>
           details: details,
           editorSize: sizesManager.bodySize,
           layerTheme: layerInteraction.style,
-          editorScaleFactor:
-              _interactiveViewer.currentState?.scaleFactor ?? 1.0,
+          editorScaleFactor: interactiveViewer.currentState?.scaleFactor ?? 1.0,
           editorScaleOffset:
-              _interactiveViewer.currentState?.offset ?? Offset.zero,
+              interactiveViewer.currentState?.offset ?? Offset.zero,
         );
       _activeLayer!.key.currentState!.setState(() {});
       checkUpdateHelperLineUI();
@@ -1080,7 +1078,7 @@ class ProImageEditorState extends State<ProImageEditor>
     }
 
     double editorScaleFactor =
-        _interactiveViewer.currentState?.scaleFactor ?? 1.0;
+        interactiveViewer.currentState?.scaleFactor ?? 1.0;
 
     layerInteractionManager.enabledHitDetection = false;
     if (details.pointerCount == 1) {
@@ -1147,7 +1145,7 @@ class ProImageEditorState extends State<ProImageEditor>
         theme: _theme,
         callbacks: callbacks,
         scaleFactor: textEditorConfigs.enableMainEditorZoomFactor
-            ? _interactiveViewer.currentState?.scaleFactor ?? 1.0
+            ? interactiveViewer.currentState?.scaleFactor ?? 1.0
             : 1.0,
       ),
 
@@ -1355,7 +1353,7 @@ class ProImageEditorState extends State<ProImageEditor>
       onEditorZoomMatrix4Change: (value) {
         callbacks.paintEditorCallbacks?.onEditorZoomMatrix4Change?.call(value);
         if (paintEditorConfigs.enableShareZoomMatrix) {
-          _interactiveViewer.currentState?.transformMatrix4 = value;
+          interactiveViewer.currentState?.transformMatrix4 = value;
         }
       },
     );
@@ -1377,7 +1375,7 @@ class ProImageEditorState extends State<ProImageEditor>
           appliedBlurFactor: stateManager.activeBlur,
           appliedFilters: stateManager.activeFilters,
           appliedTuneAdjustments: stateManager.activeTuneAdjustments,
-          initialZoomMatrix: _interactiveViewer.currentState?.transformMatrix4,
+          initialZoomMatrix: interactiveViewer.currentState?.transformMatrix4,
         ),
       ),
       duration: const Duration(milliseconds: 150),
@@ -1413,7 +1411,7 @@ class ProImageEditorState extends State<ProImageEditor>
         theme: _theme,
         callbacks: callbacks,
         scaleFactor: textEditorConfigs.enableMainEditorZoomFactor
-            ? _interactiveViewer.currentState?.scaleFactor ?? 1.0
+            ? interactiveViewer.currentState?.scaleFactor ?? 1.0
             : 1.0,
       ),
       duration: duration,
@@ -2254,6 +2252,13 @@ class ProImageEditorState extends State<ProImageEditor>
               duration: const Duration(milliseconds: 200),
               child: Listener(
                 behavior: HitTestBehavior.translucent,
+                onPointerDown: (details) {
+                  bool isDoubleTap = detectDoubleTap(details);
+                  if (!isDoubleTap) return;
+
+                  handleDoubleTap(context, details, mainEditorConfigs);
+                  mainEditorCallbacks?.onDoubleTap?.call();
+                },
                 onPointerSignal: isDesktop && _activeLayer != null
                     ? (event) {
                         if (_activeLayer == null) return;
@@ -2275,7 +2280,6 @@ class ProImageEditorState extends State<ProImageEditor>
                     widget.videoController?.togglePlayState();
                     mainEditorCallbacks?.onTap?.call();
                   },
-                  onDoubleTap: mainEditorCallbacks?.onDoubleTap,
                   onLongPress: mainEditorCallbacks?.onLongPress,
                   onScaleStart: _onScaleStart,
                   onScaleUpdate: _onScaleUpdate,
@@ -2308,7 +2312,7 @@ class ProImageEditorState extends State<ProImageEditor>
       processFinalImage: _isProcessingFinalImage,
       rebuildController: _rebuildController,
       stateManager: stateManager,
-      interactiveViewerKey: _interactiveViewer,
+      interactiveViewerKey: interactiveViewer,
       state: this,
       videoController: widget.videoController,
       isVideoEditor: _isVideoEditor,
@@ -2367,7 +2371,7 @@ class ProImageEditorState extends State<ProImageEditor>
       sizesManager: sizesManager,
       layerInteractionManager: layerInteractionManager,
       controllers: _controllers,
-      interactiveViewer: _interactiveViewer,
+      interactiveViewer: interactiveViewer,
       helperLines: helperLines,
       configs: configs,
     );

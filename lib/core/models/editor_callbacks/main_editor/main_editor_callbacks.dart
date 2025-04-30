@@ -31,6 +31,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
     this.onEscapeButton,
     this.helperLines = const HelperLinesCallbacks(),
     this.onSelectedLayerChanged,
+    this.onEditorZoomMatrix4Change,
     super.onInit,
     super.onAfterViewInit,
     super.onUpdateUI,
@@ -182,6 +183,9 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   ///  * [onEditorZoomScaleEnd], which handles the end of the same interaction.
   final GestureScaleUpdateCallback? onEditorZoomScaleUpdate;
 
+  /// Called when the editor zoom matrix changes.
+  final Function(Matrix4 value)? onEditorZoomMatrix4Change;
+
   /// {@template flutter.widgets.PopScope.onPopInvoked}
   /// Called after a route pop was handled.
   /// {@endtemplate}
@@ -320,6 +324,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
     GestureScaleEndCallback? onEditorZoomScaleEnd,
     GestureScaleStartCallback? onEditorZoomScaleStart,
     GestureScaleUpdateCallback? onEditorZoomScaleUpdate,
+    Function(Matrix4 value)? onEditorZoomMatrix4Change,
     PopInvokedWithResultCallback<dynamic>? onPopInvoked,
     HelperLinesCallbacks? helperLines,
     ValueChanged<String>? onSelectedLayerChanged,
@@ -350,6 +355,8 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
           onEditorZoomScaleStart ?? this.onEditorZoomScaleStart,
       onEditorZoomScaleUpdate:
           onEditorZoomScaleUpdate ?? this.onEditorZoomScaleUpdate,
+      onEditorZoomMatrix4Change:
+          onEditorZoomMatrix4Change ?? this.onEditorZoomMatrix4Change,
       onPopInvoked: onPopInvoked ?? this.onPopInvoked,
       helperLines: helperLines ?? this.helperLines,
       onSelectedLayerChanged:
