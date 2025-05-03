@@ -1,4 +1,4 @@
-import 'package:example/shared/widgets/video_progress_alert.dart';
+/* import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
@@ -181,3 +181,4 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
     );
   }
 }
+ */

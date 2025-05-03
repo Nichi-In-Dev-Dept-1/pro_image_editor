@@ -1,4 +1,4 @@
-import 'package:chewie/chewie.dart';
+/* import 'package:chewie/chewie.dart';
 import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
@@ -174,3 +174,4 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
     );
   }
 }
+ */

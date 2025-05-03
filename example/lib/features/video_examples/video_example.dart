@@ -1,15 +1,12 @@
 // Flutter imports:
-import 'dart:io';
+
+// ignore_for_file: unused_element, unused_element_parameter
 
 import 'package:example/shared/widgets/paragraph_info_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '/core/mixin/example_helper.dart';
-import '/features/video_examples/pages/chewie_player_example.dart';
-import '/features/video_examples/pages/flick_video_player_example.dart';
-import '/features/video_examples/pages/video_player_example.dart';
-import 'pages/video_media_kit_example.dart';
 
 /// The video example widget
 class VideoExample extends StatefulWidget {
@@ -25,7 +22,7 @@ class _VideoExampleState extends State<VideoExample>
   final _isWebEditingSupported = false;
 
   late final _videoPackages = [
-    _Package(
+    /* _Package(
       title: 'Package "video_player"',
       subTitle: 'Recommended for Android and iOS',
       enabled: (kIsWeb && _isWebEditingSupported) ||
@@ -51,7 +48,7 @@ class _VideoExampleState extends State<VideoExample>
           (!kIsWeb &&
               (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)),
       example: const ChewiePlayerExample(),
-    ),
+    ), */
   ];
 
   void _openExample(Widget page) {
@@ -75,8 +72,7 @@ class _VideoExampleState extends State<VideoExample>
             color: Colors.red,
             child: Text(
               'The package used to process edited videos is still under '
-              'development and currently supports only Android, iOS, and '
-              'macOS.',
+              'development.',
               style: TextStyle(
                 color: Colors.red,
                 fontSize: 16,
@@ -93,10 +89,11 @@ class _VideoExampleState extends State<VideoExample>
               'editing to be set up in just a few lines of code. Additional '
               'required native code implementations are provided by my new '
               'package, pro_video_editor.'
-              '\n\n'
+              /*  '\n\n'
               'Choose one of the packages below that best suits your needs. '
               'Be sure to review which platforms each package supports, as '
-              'well as their pros and cons, before making a decision.',
+              'well as their pros and cons, before making a decision.' */
+              ,
             ),
           ),
           if (kIsWeb && !_isWebEditingSupported)
@@ -116,7 +113,8 @@ class _VideoExampleState extends State<VideoExample>
             )
           else
             ..._videoPackages.map((pkg) {
-              return ListTile(
+              return Container();
+              /*  return ListTile(
                 enabled: pkg.enabled,
                 leading: const Icon(Icons.movie),
                 title: Text(pkg.title),
@@ -125,7 +123,7 @@ class _VideoExampleState extends State<VideoExample>
                     : _buildNotSupportedMsg(pkg.subTitle),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: pkg.enabled ? () => _openExample(pkg.example) : null,
-              );
+              ); */
             }),
         ],
       ),

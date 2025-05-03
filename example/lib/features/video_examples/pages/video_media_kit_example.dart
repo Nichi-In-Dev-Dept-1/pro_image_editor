@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flutter/material.dart';
@@ -184,3 +184,4 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
     );
   }
 }
+ */

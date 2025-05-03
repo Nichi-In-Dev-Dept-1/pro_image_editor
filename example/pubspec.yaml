@@ -31,7 +31,7 @@ dependencies:
   flutter_colorpicker: ^1.1.0
   vibration: ^3.1.1
 
-  pro_video_editor: ^0.0.9
+  # pro_video_editor: ^0.0.9
   chewie: ^1.11.0
   video_player: ^2.9.3
   flick_video_player: ^0.9.0
