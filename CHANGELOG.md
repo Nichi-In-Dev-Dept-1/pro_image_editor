@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.7.1
+ - **Fix**(Import): Ensure imported numbers are type-safe even if int and double are incorrect. This resolve issue [#447](https://github.com/hm21/pro_image_editor/issues/447)
+
 ## 9.7.0
 - **FEAT**(image-converter): Add singleton `ImageConverter` class for format conversion without the image editor.
 
