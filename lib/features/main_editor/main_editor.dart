@@ -2203,6 +2203,10 @@ class ProImageEditorState extends State<ProImageEditor>
               child: Theme(
                 data: _theme,
                 child: SafeArea(
+                  top: mainEditorConfigs.safeArea.top,
+                  bottom: mainEditorConfigs.safeArea.bottom,
+                  left: mainEditorConfigs.safeArea.left,
+                  right: mainEditorConfigs.safeArea.right,
                   child: LayoutBuilder(builder: (context, constraints) {
                     sizesManager.editorSize = constraints.biggest;
                     return Scaffold(
