@@ -12,6 +12,8 @@ import '/core/models/complete_parameters.dart';
 import '/features/filter_editor/types/filter_matrix.dart';
 import '/features/tune_editor/models/tune_adjustment_matrix.dart';
 import '/shared/controllers/video_controller.dart';
+import '/shared/factories/editor_factory.dart';
+import '/shared/factories/editor_mapper.dart';
 import '/shared/services/content_recorder/controllers/content_recorder_controller.dart';
 import '/shared/utils/decode_image.dart';
 import '/shared/widgets/overlays/loading_dialog/loading_dialog.dart';
@@ -19,11 +21,7 @@ import '../enums/editor_mode.dart';
 import '../models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '../models/editor_configs/pro_image_editor_configs.dart';
 import '../models/editor_image.dart';
-import '../models/init_configs/blur_editor_init_configs.dart';
-import '../models/init_configs/crop_rotate_editor_init_configs.dart';
 import '../models/init_configs/editor_init_configs.dart';
-import '../models/init_configs/filter_editor_init_configs.dart';
-import '../models/init_configs/paint_editor_init_configs.dart';
 import '../models/layers/layer.dart';
 import '../models/multi_threading/thread_capture_model.dart';
 import 'converted_configs.dart';
@@ -254,38 +252,12 @@ mixin StandaloneEditorState<T extends StatefulWidget,
       initConfigs.callbacks.onCloseEditor?.call(editorMode);
     }
 
-    switch (editorMode) {
-      case EditorMode.paint:
-        paintEditorCallbacks?.handleCloseEditor();
-        break;
-      case EditorMode.cropRotate:
-        cropRotateEditorCallbacks?.handleCloseEditor();
-        break;
-      case EditorMode.filter:
-        filterEditorCallbacks?.handleCloseEditor();
-        break;
-      case EditorMode.blur:
-        blurEditorCallbacks?.handleCloseEditor();
-        break;
-      default:
-        throw UnimplementedError();
-    }
+    EditorFactory.getEditor(editorMode).handleCloseEditor();
   }
 
   /// Returns the editor mode based on the init config type.
   EditorMode get editorMode {
-    switch (initConfigs) {
-      case PaintEditorInitConfigs():
-        return EditorMode.paint;
-      case CropRotateEditorInitConfigs():
-        return EditorMode.cropRotate;
-      case FilterEditorInitConfigs():
-        return EditorMode.filter;
-      case BlurEditorInitConfigs():
-        return EditorMode.blur;
-      default:
-        throw UnimplementedError();
-    }
+    return EditorMapper.getEditorModeFromConfigs(initConfigs);
   }
 
   /// Takes a screenshot of the current editor state.

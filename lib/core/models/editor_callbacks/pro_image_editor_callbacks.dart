@@ -15,6 +15,7 @@ export '../../enums/sub_editors_name.dart';
 export 'blur_editor_callbacks.dart';
 export 'crop_rotate_editor_callbacks.dart';
 export 'editor_callbacks_typedef.dart';
+export 'emoji_editor_callbacks.dart';
 export 'filter_editor_callbacks.dart';
 export 'main_editor/main_editor_callbacks.dart';
 export 'paint_editor_callbacks.dart';

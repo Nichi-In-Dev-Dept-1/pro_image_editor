@@ -104,8 +104,8 @@ class TextLayer extends Layer {
     double? height = tryParseDouble(map[keyConverter('height')]);
     double? letterSpacing = tryParseDouble(map[keyConverter('letterSpacing')]);
     double? fontScale = tryParseDouble(map[keyConverter('fontScale')]) ?? 1.0;
-    double? colorPickerPosition = 
-      tryParseDouble(map[keyConverter('colorPickerPosition')]) ?? 0.0;
+    double? colorPickerPosition =
+        tryParseDouble(map[keyConverter('colorPickerPosition')]) ?? 0.0;
     int? fontWeight = tryParseInt(map[keyConverter('fontWeight')]);
     String? fontStyle = map[keyConverter('fontStyle')] as String?;
     String? decoration = map[keyConverter('decoration')] as String?;

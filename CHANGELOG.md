@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.7.2
+ - **Fix**(Tune-Editor): Ensure the back button works properly. This resolve issue [#449](https://github.com/hm21/pro_image_editor/issues/449)
+
 ## 9.7.1
  - **Fix**(Import): Ensure imported numbers are type-safe even if int and double are incorrect. This resolve issue [#447](https://github.com/hm21/pro_image_editor/issues/447)
 
