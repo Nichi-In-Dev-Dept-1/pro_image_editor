@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pro_image_editor/features/tune_editor/utils/heuristic_request.dart';
 
 import '/core/mixins/converted_callbacks.dart';
 import '/core/mixins/converted_configs.dart';
@@ -208,12 +209,14 @@ class TuneEditorState extends State<TuneEditor>
   /// Determines whether redo can be performed on the current state.
   bool get canRedo => _redoStack.isNotEmpty;
 
+  Map<String, double>? _autoTuneValues;
+
   @override
   void initState() {
     super.initState();
     uiStream = StreamController.broadcast();
     uiStream.stream.listen((_) => rebuildController.add(null));
-
+    _prepareAutoTuneHeuristics(context);
     var items = tuneEditorConfigs.tuneAdjustmentOptions ??
         tunePresets(
           icons: tuneEditorConfigs.icons,
@@ -300,6 +303,33 @@ class TuneEditorState extends State<TuneEditor>
     }
   }
 
+  /// apply autoTune
+  void applyAutoTune() {
+    debugPrint('applyAutoTune tapped');
+    debugPrint('applyAutoTune $_autoTuneValues');
+    if (_autoTuneValues != null) {
+      var brightness = _autoTuneValues!['brightness'] ?? 0;
+      var contrast = _autoTuneValues!['contrast'] ?? 0;
+      var saturation = _autoTuneValues!['saturation'] ?? 0;
+      var exposure = _autoTuneValues!['exposure'] ?? 0;
+      var hue = _autoTuneValues!['hue'] ?? 0;
+      var temperature = _autoTuneValues!['temperature'] ?? 0;
+      var sharpness = _autoTuneValues!['sharpness'] ?? 0;
+      var fade = _autoTuneValues!['fade'] ?? 0;
+      var luminance = _autoTuneValues!['luminance'] ?? 0;
+
+      _setAutoValue(brightness, 0);
+      _setAutoValue(contrast, 1);
+      _setAutoValue(saturation, 2);
+      _setAutoValue(exposure, 3);
+      _setAutoValue(hue, 4);
+      _setAutoValue(temperature, 5);
+      _setAutoValue(sharpness, 6);
+      _setAutoValue(fade, 7);
+      _setAutoValue(luminance, 8);
+    }
+  }
+
   /// Undoes the last action.
   ///
   /// Moves the last action from the undo stack to the redo stack and restores
@@ -329,6 +359,33 @@ class TuneEditorState extends State<TuneEditor>
           ),
         )
         .toList();
+  }
+
+
+  void _setAutoValue(double value, int selectedIndex) {
+    onChangedStart(value);
+    var selectedItem = tuneAdjustmentList[selectedIndex];
+
+    int index =
+    tuneAdjustmentMatrix.indexWhere((item) => item.id == selectedItem.id);
+
+    var item = TuneAdjustmentMatrix(
+      id: selectedItem.id,
+      value: value,
+      matrix: selectedItem.toMatrix(value),
+    );
+    if (index >= 0) {
+      tuneAdjustmentMatrix[index] = item;
+    } else {
+      tuneAdjustmentMatrix.add(item);
+    }
+
+    /// Important that the hash-code update
+    tuneAdjustmentMatrix = [...tuneAdjustmentMatrix];
+
+    uiStream.add(null);
+    tuneEditorCallbacks?.handleTuneFactorChange(tuneAdjustmentMatrix);
+    onChangedEnd(value);
   }
 
   /// Handles changes in the tune factor value.
@@ -521,5 +578,12 @@ class TuneEditorState extends State<TuneEditor>
       },
       selectedIndex: selectedIndex,
     );
+  }
+
+  Future<void> _prepareAutoTuneHeuristics(BuildContext context) async {
+    var data = await widget.editorImage?.safeByteArray(context);
+    if(data != null) {
+      _autoTuneValues = await computeHeuristicAdjustmentsIsolate(data);
+    }
   }
 }
