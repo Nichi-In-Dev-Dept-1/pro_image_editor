@@ -128,7 +128,8 @@ class _FilterEditorItemListState extends State<FilterEditorItemList> {
 
   /// Builds a horizontal list of filter preview buttons.
   Widget _buildFilterList() {
-    return SizedBox(
+    return Container(
+      color: _filterConfigs.style.appBarBackground,
       height: widget.listHeight,
       child: Scrollbar(
         controller: _scrollCtrl,

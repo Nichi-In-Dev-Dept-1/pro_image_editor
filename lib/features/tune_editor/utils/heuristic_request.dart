@@ -8,7 +8,8 @@ class HeuristicRequest {
   HeuristicRequest(this.imageBytes);
 }
 
-Future<Map<String, double>?> computeHeuristicAdjustmentsIsolate(Uint8List imageBytes) async {
+Future<Map<String, double>?> computeHeuristicAdjustmentsIsolate(
+    Uint8List imageBytes) async {
   final codec = await ui.instantiateImageCodec(imageBytes);
   final frame = await codec.getNextFrame();
   final image = frame.image;
@@ -47,44 +48,54 @@ Future<void> _heuristicIsolateEntry(List<dynamic> args) async {
 
     if (a == 0) continue;
 
-    // Brightness & Luminance
     final brightness = 0.299 * r + 0.587 * g + 0.114 * b;
     totalBrightness += brightness;
     luminanceValues.add(brightness);
 
-    // Saturation (from lightness)
     final maxRGB = [r, g, b].reduce(max);
     final minRGB = [r, g, b].reduce(min);
     final lightness = (maxRGB + minRGB) / 2;
-    double saturation = (maxRGB - minRGB);
-    if (lightness != 0) saturation /= lightness;
+
+    double saturation = 0.0;
+    final delta = maxRGB - minRGB;
+    if (delta != 0) {
+      saturation = (lightness == 0 || lightness == 255)
+          ? 0
+          : delta / (1 - ((2 * lightness / 255.0) - 1).abs());
+    }
     totalSaturation += saturation;
 
-    // Hue calculation
     double hue = 0;
-    if (maxRGB != minRGB) {
+    if (delta != 0) {
       if (maxRGB == r) {
-        hue = (g - b) / (maxRGB - minRGB);
+        hue = ((g - b) / delta) % 6;
       } else if (maxRGB == g) {
-        hue = 2.0 + (b - r) / (maxRGB - minRGB);
+        hue = ((b - r) / delta) + 2;
       } else {
-        hue = 4.0 + (r - g) / (maxRGB - minRGB);
+        hue = ((r - g) / delta) + 4;
       }
       hue *= 60;
       if (hue < 0) hue += 360;
     }
     totalHue += hue;
 
-    // Temperature (red-blue balance)
     totalRed += r;
     totalBlue += b;
 
-    // Sharpness (high-frequency variation between adjacent pixels)
-    final rNext = pixels[i + 4].toDouble();
-    final gNext = pixels[i + 5].toDouble();
-    final bNext = pixels[i + 6].toDouble();
-    final sharpness = (r - rNext).abs() + (g - gNext).abs() + (b - bNext).abs();
-    sharpnessScore += sharpness;
+    if (i + 8 < length) {
+      final rNext = pixels[i + 4].toDouble();
+      final gNext = pixels[i + 5].toDouble();
+      final bNext = pixels[i + 6].toDouble();
+
+      final rNext2 = pixels[i + 8].toDouble();
+      final gNext2 = pixels[i + 9].toDouble();
+      final bNext2 = pixels[i + 10].toDouble();
+
+      final sharpness =
+          ((r - rNext).abs() + (g - gNext).abs() + (b - bNext).abs()) +
+              ((r - rNext2).abs() + (g - gNext2).abs() + (b - bNext2).abs());
+      sharpnessScore += sharpness / 2;
+    }
 
     validPixelCount++;
   }
@@ -103,20 +114,25 @@ Future<void> _heuristicIsolateEntry(List<dynamic> args) async {
   final avgSharpness = sharpnessScore / validPixelCount;
 
   final mean = avgBrightness;
-  final sumSquareDiffs =
-  luminanceValues.fold(0.0, (acc, l) => acc + pow(l - mean, 2));
+  final sumSquareDiffs = luminanceValues.fold(
+    0.0,
+    (acc, l) => acc + pow(l - mean, 2),
+  );
   final contrastStdDev = sqrt(sumSquareDiffs / validPixelCount);
 
-  // Heuristic Adjustments
-  double brightnessValue = ((128 - avgBrightness) / 255).clamp(-0.5, 0.5);
-  double contrastValue = ((50 - contrastStdDev) / 100).clamp(-0.3, 0.5);
-  double saturationValue = ((0.6 - avgSaturation) / 1.0).clamp(-0.3, 0.5);
-  double exposureValue = ((200 - avgBrightness) / 255).clamp(-0.5, 0.5);
-  double hueValue = ((180 - avgHue).abs() / 180).clamp(-0.3, 0.3); // shift if hue is too far from neutral
-  double temperatureValue = avgTemperature.clamp(-0.3, 0.3);
-  double sharpnessValue = ((avgSharpness - 10) / 100).clamp(-0.3, 0.3);
-  double fadeValue = (1 - contrastStdDev / 100).clamp(-0.3, 0.3);
-  double luminanceValue = avgBrightness / 255.0;
+  final avgBrightnessNormalized = avgBrightness / 255.0;
+
+  double brightnessValue = (0.5 - avgBrightnessNormalized).clamp(-0.5, 0.5);
+  double contrastValue = (0.4 - (contrastStdDev / 128.0)).clamp(-0.3, 0.5);
+  double saturationValue = (0.6 - avgSaturation).clamp(-0.3, 0.5);
+  double exposureValue = ((avgBrightness - 127.5) / 127.5).clamp(-0.5, 0.5);
+  double hueValue = ((avgHue - 120) / 180).clamp(-0.3, 0.3);
+  double temperatureValue = avgTemperature.clamp(-0.2, 0.2);
+  double sharpnessValue = ((avgSharpness - 20) / 100).clamp(-0.3, 0.3);
+  double fadeValue =
+      ((128 - avgBrightness).abs() / 128.0 * (1 - contrastStdDev / 100))
+          .clamp(-0.3, 0.3);
+  double luminanceValue = avgBrightnessNormalized;
 
   sendPort.send({
     'brightness': brightnessValue,
@@ -130,5 +146,3 @@ Future<void> _heuristicIsolateEntry(List<dynamic> args) async {
     'luminance': luminanceValue,
   });
 }
-
-
