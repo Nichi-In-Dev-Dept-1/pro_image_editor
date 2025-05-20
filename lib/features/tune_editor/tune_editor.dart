@@ -321,12 +321,12 @@ class TuneEditorState extends State<TuneEditor>
       _setAutoValue(brightness, 0);
       _setAutoValue(contrast, 1);
       _setAutoValue(saturation, 2);
-      _setAutoValue(exposure, 3);
-      _setAutoValue(hue, 4);
-      _setAutoValue(temperature, 5);
-      _setAutoValue(sharpness, 6);
-      _setAutoValue(fade, 7);
-      _setAutoValue(luminance, 8);
+      // _setAutoValue(exposure, 3);
+      // _setAutoValue(hue, 4);
+      // _setAutoValue(temperature, 5);
+      // _setAutoValue(sharpness, 6);
+      // _setAutoValue(fade, 7);
+      // _setAutoValue(luminance, 8);
     }
   }
 
