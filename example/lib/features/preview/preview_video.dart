@@ -1,4 +1,4 @@
-/* import 'dart:math';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -38,7 +38,7 @@ class PreviewVideo extends StatefulWidget {
 class _PreviewVideoState extends State<PreviewVideo> {
   final _valueStyle = const TextStyle(fontStyle: FontStyle.italic);
 
-  late Future<VideoInformation> _videoInfos;
+  late Future<VideoMetadata> _videoMetadata;
   late final int _generationTime = widget.generationTime.inMilliseconds;
   final _player = Player();
   late final _controller = VideoController(_player);
@@ -49,7 +49,7 @@ class _PreviewVideoState extends State<PreviewVideo> {
   void initState() {
     super.initState();
 
-    _videoInfos = VideoUtilsService.instance.getVideoInformation(EditorVideo(
+    _videoMetadata = VideoUtilsService.instance.getVideoInformation(EditorVideo(
       byteArray: widget.bytes,
     ));
     _initializePlayer();
@@ -97,16 +97,23 @@ class _PreviewVideoState extends State<PreviewVideo> {
   }
 
   Widget _buildVideoPlayer(BoxConstraints constraints) {
-    return FutureBuilder<VideoInformation>(
-        future: _videoInfos,
+    return FutureBuilder<VideoMetadata>(
+        future: _videoMetadata,
         builder: (context, snapshot) {
           final aspectRatio = snapshot.data?.resolution.aspectRatio ?? 1;
+          final rotation = snapshot.data?.rotation ?? 0;
+
+          int convertedRotation = rotation % 360;
+
+          final is90DegRotated =
+              convertedRotation == 90 || convertedRotation == 270;
 
           final maxWidth = constraints.maxWidth;
           final maxHeight = constraints.maxHeight;
 
           double width = maxWidth;
-          double height = width / aspectRatio;
+          double height =
+              is90DegRotated ? width * aspectRatio : width / aspectRatio;
 
           if (height > maxHeight) {
             height = maxHeight;
@@ -143,8 +150,8 @@ class _PreviewVideoState extends State<PreviewVideo> {
               borderRadius: BorderRadius.circular(7),
             ),
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            child: FutureBuilder<VideoInformation>(
-                future: _videoInfos,
+            child: FutureBuilder<VideoMetadata>(
+                future: _videoMetadata,
                 builder: (context, snapshot) {
                   var data = snapshot.data;
 
@@ -213,7 +220,7 @@ class _PreviewVideoState extends State<PreviewVideo> {
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
-                            '${data.duration.inMilliseconds} ms',
+                            '${data.duration.inSeconds} s',
                             style: _valueStyle,
                             textAlign: TextAlign.right,
                           ),
@@ -228,4 +235,3 @@ class _PreviewVideoState extends State<PreviewVideo> {
     );
   }
 }
- */

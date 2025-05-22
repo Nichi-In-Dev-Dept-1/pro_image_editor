@@ -1,4 +1,4 @@
-/* import 'package:example/shared/widgets/video_progress_alert.dart';
+import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
@@ -38,11 +38,8 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
   }
 
   void _initializePlayer() async {
+    generateThumbnails();
     video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
-
-    await setVideoInformations();
-    await generateThumbnails();
-    if (!mounted) return;
 
     _flickManager = FlickManager(
       videoPlayerController:
@@ -56,16 +53,20 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
       },
     );
 
-    await _flickManager.flickControlManager?.setVolume(
-      videoConfigs.initialMuted ? 0.0 : 100.0,
-      isMute: videoConfigs.initialMuted,
-    );
+    await Future.wait([
+      if (_flickManager.flickControlManager != null)
+        _flickManager.flickControlManager!.setVolume(
+          videoConfigs.initialMuted ? 0.0 : 100.0,
+          isMute: videoConfigs.initialMuted,
+        ),
+      setMetadata(),
+    ]);
 
     proVideoController = ProVideoController(
       videoPlayer: _buildVideoPlayer(),
-      initialResolution: videoInformation.resolution,
-      videoDuration: videoInformation.duration,
-      fileSize: videoInformation.fileSize,
+      initialResolution: videoMetadata.resolution,
+      videoDuration: videoMetadata.duration,
+      fileSize: videoMetadata.fileSize,
       thumbnails: thumbnails,
     );
     _flickManager.flickVideoManager!.videoPlayerController!
@@ -74,7 +75,7 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
   }
 
   void _onDurationChange() {
-    var totalVideoDuration = videoInformation.duration;
+    var totalVideoDuration = videoMetadata.duration;
     var duration = _flickManager.flickVideoManager!.videoPlayerValue!.position;
     proVideoController!.setPlayTime(duration);
 
@@ -181,4 +182,3 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
     );
   }
 }
- */

@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import '/shared/widgets/video/video_editor_configurable.dart';
+import 'video_editor_trim_skeleton.dart';
 
 /// Displays a thumbnail preview of the video trim selection.
 ///
@@ -12,6 +14,7 @@ class VideoEditorTrimThumbnailBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var player = VideoEditorConfigurable.of(context);
+
     return Container(
       clipBehavior: Clip.hardEdge,
       height: player.style.trimBarHeight,
@@ -19,17 +22,27 @@ class VideoEditorTrimThumbnailBar extends StatelessWidget {
         gradient: player.style.trimBarGradientBackground,
         borderRadius: BorderRadius.circular(player.style.trimBarHandlerRadius),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: player.controller.thumbnails.map((item) {
-          return Expanded(
-            child: Image(
-              image: item,
-              fit: BoxFit.cover,
-            ),
-          );
-        }).toList(),
-      ),
+      child: ValueListenableBuilder(
+          valueListenable: player.controller.thumbnailsNotifier,
+          builder: (_, thumbnails, __) {
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: thumbnails == null
+                  ? player.widgets.trimBarSkeletonLoader ??
+                      const VideoEditorTrimSkeleton()
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: thumbnails.map((item) {
+                        return Expanded(
+                          child: Image(
+                            image: item,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+            );
+          }),
     );
   }
 }

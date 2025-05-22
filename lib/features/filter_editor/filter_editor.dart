@@ -411,8 +411,10 @@ class FilterEditorState extends State<FilterEditor>
                 editorImage: editorImage,
                 image: editorImage != null
                     ? null
-                    : widget.videoController!.thumbnails.isNotEmpty
-                        ? Image(image: widget.videoController!.thumbnails.first)
+                    : widget.videoController!.thumbnails?.isNotEmpty == true
+                        ? Image(
+                            image: widget.videoController!.thumbnails!.first,
+                          )
                         : Image.memory(kImageEditorTransparentBytes),
                 activeFilters: appliedFilters,
                 blurFactor: appliedBlurFactor,
