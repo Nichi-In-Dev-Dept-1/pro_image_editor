@@ -1,3 +1,4 @@
+import 'package:example/features/background_remover_example.dart';
 import 'package:flutter/material.dart';
 
 import '/features/crop_to_main_editor.dart';
@@ -58,6 +59,12 @@ List<Example> kImageEditorExamples = const [
     name: 'Video-Editor',
     icon: Icons.video_camera_back_outlined,
     page: VideoExample(),
+  ),
+  Example(
+    path: '/background-remover',
+    name: 'AI-Background-Remover',
+    icon: Icons.content_cut,
+    page: BackgroundRemoverExample(),
   ),
   Example(
     path: '/init-crop-editor',
