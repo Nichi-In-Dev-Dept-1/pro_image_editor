@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/services.dart';
+import 'package:pro_image_editor/shared/extensions/double_extension.dart';
 
 import '/core/mixins/converted_callbacks.dart';
 import '/core/mixins/converted_configs.dart';
@@ -914,9 +915,9 @@ class CropRotateEditorState extends State<CropRotateEditor>
       await screenshotCtrl.capture(
         imageInfos: imageInfos!,
         screenshots: screenshotHistory,
-        targetSize: _rotated90deg
+        /*   targetSize: _rotated90deg
             ? imageInfos!.renderedSize.flipped
-            : imageInfos!.renderedSize,
+            : imageInfos!.renderedSize, */
         widget: _screenshotWidget(transformC),
       );
     });
@@ -1539,8 +1540,8 @@ class CropRotateEditorState extends State<CropRotateEditor>
           switch (_currentCropAreaPart) {
             case CropAreaPart.topLeft:
               cropRect = Rect.fromLTRB(
-                dx.clamp(minLeft, maxRight),
-                dy.clamp(minTop, maxBottom),
+                dx.safeMinClamp(minLeft, maxRight),
+                dy.safeMinClamp(minTop, maxBottom),
                 cropRect.right,
                 cropRect.bottom,
               );
@@ -1549,31 +1550,31 @@ class CropRotateEditorState extends State<CropRotateEditor>
             case CropAreaPart.topRight:
               cropRect = Rect.fromLTRB(
                 cropRect.left,
-                dy.clamp(minTop, maxBottom),
-                dx.clamp(cornerGap + cropRect.left, minRight),
+                dy.safeMinClamp(minTop, maxBottom),
+                dx.safeMinClamp(cornerGap + cropRect.left, minRight),
                 cropRect.bottom,
               );
 
               break;
             case CropAreaPart.bottomLeft:
               cropRect = Rect.fromLTRB(
-                dx.clamp(minLeft, maxRight),
+                dx.safeMinClamp(minLeft, maxRight),
                 cropRect.top,
                 cropRect.right,
-                dy.clamp(cornerGap + cropRect.top, minBottom),
+                dy.safeMinClamp(cornerGap + cropRect.top, minBottom),
               );
               break;
             case CropAreaPart.bottomRight:
               cropRect = Rect.fromLTRB(
                 cropRect.left,
                 cropRect.top,
-                dx.clamp(cornerGap + cropRect.left, minRight),
-                dy.clamp(cornerGap + cropRect.top, minBottom),
+                dx.safeMinClamp(cornerGap + cropRect.left, minRight),
+                dy.safeMinClamp(cornerGap + cropRect.top, minBottom),
               );
               break;
             case CropAreaPart.left:
               cropRect = Rect.fromLTRB(
-                dx.clamp(minLeft, maxRight),
+                dx.safeMinClamp(minLeft, maxRight),
                 cropRect.top,
                 cropRect.right,
                 cropRect.bottom,
@@ -1584,14 +1585,14 @@ class CropRotateEditorState extends State<CropRotateEditor>
               cropRect = Rect.fromLTRB(
                 cropRect.left,
                 cropRect.top,
-                dx.clamp(cornerGap + cropRect.left, minRight),
+                dx.safeMinClamp(cornerGap + cropRect.left, minRight),
                 cropRect.bottom,
               );
               break;
             case CropAreaPart.top:
               cropRect = Rect.fromLTRB(
                 cropRect.left,
-                dy.clamp(minTop, maxBottom),
+                dy.safeMaxClamp(minTop, maxBottom),
                 cropRect.right,
                 cropRect.bottom,
               );
@@ -1601,7 +1602,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
                 cropRect.left,
                 cropRect.top,
                 cropRect.right,
-                dy.clamp(cornerGap + cropRect.top, minBottom),
+                dy.safeMinClamp(cornerGap + cropRect.top, minBottom),
               );
               break;
             default:

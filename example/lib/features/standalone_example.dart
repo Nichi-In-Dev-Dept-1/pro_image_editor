@@ -147,7 +147,8 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
+          onCloseEditor: (editorMode) =>
+              onCloseEditor(editorMode: EditorMode.main),
         ),
       ),
     );
@@ -173,7 +174,8 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
+          onCloseEditor: (editorMode) =>
+              onCloseEditor(editorMode: EditorMode.main),
         ),
       ),
     );
@@ -188,7 +190,8 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
+          onCloseEditor: (editorMode) =>
+              onCloseEditor(editorMode: EditorMode.main),
         ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,
@@ -206,7 +209,8 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
+          onCloseEditor: (editorMode) =>
+              onCloseEditor(editorMode: EditorMode.main),
         ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,
@@ -224,7 +228,8 @@ class _StandaloneExampleState extends State<StandaloneExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
+          onCloseEditor: (editorMode) =>
+              onCloseEditor(editorMode: EditorMode.main),
         ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,

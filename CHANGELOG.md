@@ -1,7 +1,13 @@
 # Changelog
 
+## 9.9.3
+- **FIX**(Main-Editor & Paint-Editor): Fix the main editor size calculation to reduce layers shiftting and fix the disable layers not allowign zoom gestures on main editor
+
+## 9.9.2
+ - **FIX**(Crop-Rotate-Editor): Ensure the editor respects the `maxOutputSize` constraint.
+
 ## 9.9.1
- - **FIX**(Main-Editor & Paint-Editor): Fix the main editor size calculation to reduce layers shiftting and fix the disable layers not allowign zoom gestures on main editor
+ - **FIX**(Crop-Rotate-Editor): Prevent crashes when clamping values with reversed lower and upper limits. This resolves issue [#462](https://github.com/hm21/pro_image_editor/issues/462).
 
 ## 9.9.0
  - **FEAT**(Sticker-Editor): Added `builder` parameter to `StickerEditorConfigs`, which will replace `buildStickers` in the future. The new `builder` supports directly returning a `WidgetLayer` instead of just a `Widget`, enabling more flexibility and control.
