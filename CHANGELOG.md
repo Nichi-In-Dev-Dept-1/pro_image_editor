@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.9.2
+ - **FIX**(Crop-Rotate-Editor): Ensure the editor respects the `maxOutputSize` constraint.
+
 ## 9.9.1
  - **FIX**(Crop-Rotate-Editor): Prevent crashes when clamping values with reversed lower and upper limits. This resolves issue [#462](https://github.com/hm21/pro_image_editor/issues/462).
 
