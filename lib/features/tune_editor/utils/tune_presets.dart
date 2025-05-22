@@ -10,6 +10,17 @@ List<TuneAdjustmentItem> tunePresets({
 }) =>
     [
       TuneAdjustmentItem(
+        id: 'auto',
+        icon: icons.auto,
+        label: i18n.auto,
+        min: 0.0,
+        max: 1.0,
+        divisions: 100,
+        toMatrix: (value) {
+          return ColorFilterAddons.rgbScale(1, 1, 1);
+        },
+      ),
+      TuneAdjustmentItem(
         id: 'brightness',
         icon: icons.brightness,
         label: i18n.brightness,

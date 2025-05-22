@@ -13,6 +13,7 @@ class TuneEditorIcons {
   /// Tune Editor interface.
   const TuneEditorIcons({
     this.bottomNavBar = Icons.tune_rounded,
+    this.auto = Icons.auto_awesome,
     this.brightness = Icons.brightness_4_outlined,
     this.contrast = Icons.contrast,
     this.saturation = Icons.water_drop_outlined,
@@ -33,6 +34,8 @@ class TuneEditorIcons {
 
   /// Icon for the "Brightness" adjustment control.
   final IconData brightness;
+  /// Icon for the "Brightness" adjustment control.
+  final IconData auto;
 
   /// Icon for the "Contrast" adjustment control.
   final IconData contrast;
@@ -85,6 +88,7 @@ class TuneEditorIcons {
   TuneEditorIcons copyWith({
     IconData? bottomNavBar,
     IconData? brightness,
+    IconData? auto,
     IconData? contrast,
     IconData? saturation,
     IconData? exposure,
@@ -101,6 +105,7 @@ class TuneEditorIcons {
     return TuneEditorIcons(
       bottomNavBar: bottomNavBar ?? this.bottomNavBar,
       brightness: brightness ?? this.brightness,
+      auto: auto ?? this.auto,
       contrast: contrast ?? this.contrast,
       saturation: saturation ?? this.saturation,
       exposure: exposure ?? this.exposure,

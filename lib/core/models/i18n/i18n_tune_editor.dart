@@ -10,6 +10,7 @@ class I18nTuneEditor {
     this.back = 'Back',
     this.done = 'Done',
     this.brightness = 'Brightness',
+    this.auto = 'Auto',
     this.contrast = 'Contrast',
     this.saturation = 'Saturation',
     this.exposure = 'Exposure',
@@ -39,6 +40,9 @@ class I18nTuneEditor {
 
   /// Text for the "Brightness" adjustment control.
   final String brightness;
+
+  /// Text for the "auto" adjustment control.
+  final String auto;
 
   /// Text for the "Contrast" adjustment control.
   final String contrast;
@@ -95,6 +99,8 @@ class I18nTuneEditor {
     String? sharpness,
     String? fade,
     String? luminance,
+    String? auto,
+
   }) {
     return I18nTuneEditor(
       bottomNavigationBarText:
@@ -112,6 +118,7 @@ class I18nTuneEditor {
       sharpness: sharpness ?? this.sharpness,
       fade: fade ?? this.fade,
       luminance: luminance ?? this.luminance,
+      auto: auto ?? this.auto,
     );
   }
 }

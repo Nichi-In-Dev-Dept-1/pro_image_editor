@@ -304,23 +304,28 @@ class TuneEditorState extends State<TuneEditor>
   }
 
   /// apply autoTune
-  void applyAutoTune() {
+  void applyAutoTune(double autoTuneIntensity) {
     debugPrint('applyAutoTune tapped');
     debugPrint('applyAutoTune $_autoTuneValues');
     if (_autoTuneValues != null) {
-      var brightness = _autoTuneValues!['brightness'] ?? 0;
-      var contrast = _autoTuneValues!['contrast'] ?? 0;
-      var saturation = _autoTuneValues!['saturation'] ?? 0;
-      var exposure = _autoTuneValues!['exposure'] ?? 0;
-      var hue = _autoTuneValues!['hue'] ?? 0;
-      var temperature = _autoTuneValues!['temperature'] ?? 0;
-      var sharpness = _autoTuneValues!['sharpness'] ?? 0;
-      var fade = _autoTuneValues!['fade'] ?? 0;
-      var luminance = _autoTuneValues!['luminance'] ?? 0;
+      var brightness =
+          (_autoTuneValues!['brightness'] ?? 0) * autoTuneIntensity;
+      var contrast =
+          1 + ((_autoTuneValues!['contrast'] ?? 0) - 1) * autoTuneIntensity;
+      var saturation =
+          1 + ((_autoTuneValues!['saturation'] ?? 0) - 1) * autoTuneIntensity;
+      // var exposure = (_autoTuneValues!['exposure'] ?? 0) * autoTuneIntensity;
+      // var hue = (_autoTuneValues!['hue'] ?? 0) * autoTuneIntensity;
+      // var temperature =
+      //     (_autoTuneValues!['temperature'] ?? 0) * autoTuneIntensity;
+      // var sharpness = (_autoTuneValues!['sharpness'] ?? 0) * autoTuneIntensity;
+      // var fade = (_autoTuneValues!['fade'] ?? 0) * autoTuneIntensity;
+      // var luminance = (_autoTuneValues!['luminance'] ?? 0) * autoTuneIntensity;
 
       _setAutoValue(brightness, 0);
       _setAutoValue(contrast, 1);
       _setAutoValue(saturation, 2);
+      // Optionally uncomment others:
       // _setAutoValue(exposure, 3);
       // _setAutoValue(hue, 4);
       // _setAutoValue(temperature, 5);
@@ -361,13 +366,12 @@ class TuneEditorState extends State<TuneEditor>
         .toList();
   }
 
-
   void _setAutoValue(double value, int selectedIndex) {
     onChangedStart(value);
     var selectedItem = tuneAdjustmentList[selectedIndex];
 
     int index =
-    tuneAdjustmentMatrix.indexWhere((item) => item.id == selectedItem.id);
+        tuneAdjustmentMatrix.indexWhere((item) => item.id == selectedItem.id);
 
     var item = TuneAdjustmentMatrix(
       id: selectedItem.id,
@@ -394,6 +398,10 @@ class TuneEditorState extends State<TuneEditor>
 
     int index =
         tuneAdjustmentMatrix.indexWhere((item) => item.id == selectedItem.id);
+
+    if(index == 0) {
+      applyAutoTune(value);
+    }
 
     var item = TuneAdjustmentMatrix(
       id: selectedItem.id,
@@ -582,7 +590,7 @@ class TuneEditorState extends State<TuneEditor>
 
   Future<void> _prepareAutoTuneHeuristics(BuildContext context) async {
     var data = await widget.editorImage?.safeByteArray(context);
-    if(data != null) {
+    if (data != null) {
       _autoTuneValues = await computeHeuristicAdjustmentsIsolate(data);
     }
   }
