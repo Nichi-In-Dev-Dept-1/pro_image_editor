@@ -15,8 +15,10 @@ class ProVideoController {
     required this.videoDuration,
     required this.initialResolution,
     required this.fileSize,
-    required this.thumbnails,
-  });
+    List<ImageProvider>? thumbnails,
+  }) {
+    this.thumbnails = thumbnails;
+  }
 
   /// The video player widget.
   final Widget videoPlayer;
@@ -30,8 +32,21 @@ class ProVideoController {
   /// The size of the video file in bytes.
   final int fileSize;
 
-  /// Stores generated thumbnails for the trimmer bar and filter background.
-  final List<ImageProvider> thumbnails;
+  /// A [ValueNotifier] that holds a list of [ImageProvider] objects
+  /// representing video thumbnails.
+  ///
+  /// The [thumbnailsNotifier] notifies its listeners whenever the list of
+  /// thumbnails changes.
+  final thumbnailsNotifier = ValueNotifier<List<ImageProvider>?>(null);
+
+  /// The [thumbnails] getter returns the current list of thumbnails, or `null`
+  /// if not set.
+  List<ImageProvider>? get thumbnails => thumbnailsNotifier.value;
+
+  /// The [thumbnails] setter updates the list of thumbnails and notifies
+  /// listeners.
+  set thumbnails(List<ImageProvider>? value) =>
+      thumbnailsNotifier.value = value;
 
   late VideoEditorCallbacks Function() _callbacksFunction;
   late VideoEditorConfigs Function() _configsFunction;

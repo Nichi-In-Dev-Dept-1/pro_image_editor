@@ -1,4 +1,4 @@
-/* import 'dart:async';
+import 'dart:async';
 
 import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flutter/material.dart';
@@ -37,27 +37,27 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
   }
 
   void _initializePlayer() async {
-    await setVideoInformations();
-    await generateThumbnails();
-    if (!mounted) return;
+    generateThumbnails();
 
     _videoController =
         VideoPlayerController.asset(kVideoEditorExampleAssetPath);
 
-    await _videoController.initialize();
-    await _videoController.setLooping(false);
-    await _videoController.setVolume(videoConfigs.initialMuted ? 0 : 100);
-    if (videoConfigs.initialPlay) {
-      await _videoController.play();
-    } else {
-      await _videoController.pause();
-    }
+    await Future.wait([
+      setMetadata(),
+      _videoController.initialize(),
+      _videoController.setLooping(false),
+      _videoController.setVolume(videoConfigs.initialMuted ? 0 : 100),
+      videoConfigs.initialPlay
+          ? _videoController.play()
+          : _videoController.pause(),
+    ]);
+    if (!mounted) return;
 
     proVideoController = ProVideoController(
       videoPlayer: _buildVideoPlayer(),
-      initialResolution: videoInformation.resolution,
-      videoDuration: videoInformation.duration,
-      fileSize: videoInformation.fileSize,
+      initialResolution: videoMetadata.resolution,
+      videoDuration: videoMetadata.duration,
+      fileSize: videoMetadata.fileSize,
       thumbnails: thumbnails,
     );
 
@@ -67,7 +67,7 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
   }
 
   void _onDurationChange() {
-    var totalVideoDuration = videoInformation.duration;
+    var totalVideoDuration = videoMetadata.duration;
     var duration = _videoController.value.position;
     proVideoController!.setPlayTime(duration);
 
@@ -111,52 +111,55 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
       duration: const Duration(milliseconds: 220),
       child: proVideoController == null
           ? const VideoInitializingWidget()
-          : ProImageEditor.video(
-              proVideoController!,
-              callbacks: ProImageEditorCallbacks(
-                onCompleteWithParameters: generateVideo,
-                onCloseEditor: onCloseEditor,
-                videoEditorCallbacks: VideoEditorCallbacks(
-                  onPause: _videoController.pause,
-                  onPlay: _videoController.play,
-                  onMuteToggle: (isMuted) {
-                    _videoController.setVolume(isMuted ? 0 : 100);
-                  },
-                  onTrimSpanUpdate: (durationSpan) {
-                    if (_videoController.value.isPlaying) {
-                      proVideoController!.pause();
-                    }
-                  },
-                  onTrimSpanEnd: _seekToPosition,
-                ),
-              ),
-              configs: ProImageEditorConfigs(
-                dialogConfigs: DialogConfigs(
-                  widgets: DialogWidgets(
-                    loadingDialog: (message, configs) =>
-                        const VideoProgressAlert(),
-                  ),
-                ),
-                mainEditor: MainEditorConfigs(
-                  widgets: MainEditorWidgets(
-                    removeLayerArea: (removeAreaKey, editor, rebuildStream) =>
-                        VideoEditorRemoveArea(
-                      removeAreaKey: removeAreaKey,
-                      editor: editor,
-                      rebuildStream: rebuildStream,
-                    ),
-                  ),
-                ),
-                paintEditor: const PaintEditorConfigs(
-                  /// Blur and pixelate are not supported.
-                  enableModePixelate: false,
-                  enableModeBlur: false,
-                ),
-                videoEditor: videoConfigs.copyWith(
-                  playTimeSmoothingDuration: const Duration(milliseconds: 600),
-                ),
-              ),
+          : _buildEditor(),
+    );
+  }
+
+  Widget _buildEditor() {
+    return ProImageEditor.video(
+      proVideoController!,
+      callbacks: ProImageEditorCallbacks(
+        onCompleteWithParameters: generateVideo,
+        onCloseEditor: onCloseEditor,
+        videoEditorCallbacks: VideoEditorCallbacks(
+          onPause: _videoController.pause,
+          onPlay: _videoController.play,
+          onMuteToggle: (isMuted) {
+            _videoController.setVolume(isMuted ? 0 : 100);
+          },
+          onTrimSpanUpdate: (durationSpan) {
+            if (_videoController.value.isPlaying) {
+              proVideoController!.pause();
+            }
+          },
+          onTrimSpanEnd: _seekToPosition,
+        ),
+      ),
+      configs: ProImageEditorConfigs(
+        dialogConfigs: DialogConfigs(
+          widgets: DialogWidgets(
+            loadingDialog: (message, configs) => const VideoProgressAlert(),
+          ),
+        ),
+        mainEditor: MainEditorConfigs(
+          widgets: MainEditorWidgets(
+            removeLayerArea: (removeAreaKey, editor, rebuildStream) =>
+                VideoEditorRemoveArea(
+              removeAreaKey: removeAreaKey,
+              editor: editor,
+              rebuildStream: rebuildStream,
             ),
+          ),
+        ),
+        paintEditor: const PaintEditorConfigs(
+          /// Blur and pixelate are not supported.
+          enableModePixelate: false,
+          enableModeBlur: false,
+        ),
+        videoEditor: videoConfigs.copyWith(
+          playTimeSmoothingDuration: const Duration(milliseconds: 600),
+        ),
+      ),
     );
   }
 
@@ -171,4 +174,3 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
     );
   }
 }
- */

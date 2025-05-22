@@ -1,4 +1,4 @@
-/* import 'dart:typed_data';
+import 'dart:typed_data';
 
 import 'package:example/core/constants/example_constants.dart';
 import 'package:example/features/preview/preview_video.dart';
@@ -13,11 +13,11 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
   final outputFormat = VideoOutputFormat.mp4;
 
   /// Video editor configuration settings.
-  late final VideoEditorConfigs videoConfigs = VideoEditorConfigs(
+  late final VideoEditorConfigs videoConfigs = const VideoEditorConfigs(
     initialMuted: true,
     initialPlay: false,
-    isAudioSupported: outputFormat != VideoOutputFormat.gif,
-    minTrimDuration: const Duration(seconds: 7),
+    isAudioSupported: true,
+    minTrimDuration: Duration(seconds: 7),
   );
 
   /// Indicates whether a seek operation is in progress.
@@ -33,15 +33,15 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
   ProVideoController? proVideoController;
 
   /// Stores generated thumbnails for the trimmer bar and filter background.
-  final List<ImageProvider> thumbnails = [];
+  List<ImageProvider>? thumbnails;
 
   /// Holds information about the selected video.
   ///
-  /// This will be populated via [setVideoInformations].
-  late VideoInformation videoInformation;
+  /// This will be populated via [setMetadata].
+  late VideoMetadata videoMetadata;
 
   /// Number of thumbnails to generate across the video timeline.
-  final int thumbnailCount = 7;
+  final int thumbnailCount = 10;
 
   /// The video currently loaded in the editor.
   EditorVideo video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
@@ -52,50 +52,44 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
   /// The duration it took to generate the exported video.
   Duration videoGenerationTime = Duration.zero;
 
-  /// Loads and sets [videoInformation] for the given [video].
-  ///
-  /// Uses the [VideoUtilsService] to extract metadata such as duration,
-  /// resolution, and format.
-  Future<void> setVideoInformations() async {
-    videoInformation =
-        await VideoUtilsService.instance.getVideoInformation(video);
+  /// Loads and sets [videoMetadata] for the given [video].
+  Future<void> setMetadata() async {
+    videoMetadata = await VideoUtilsService.instance.getVideoInformation(video);
   }
 
-  /// Generates thumbnails for the given [video] using calculated timestamps.
-  ///
-  /// The function computes evenly spaced timestamps based on the video's
-  /// duration and the fixed [thumbnailCount]. It also calculates the desired
-  /// image width in physical pixels, accounting for the device pixel ratio
-  /// and video aspect ratio.
-  ///
-  /// The resulting thumbnails are added to a local list as [MemoryImage]s.
-  Future<void> generateThumbnails() async {
-    int videoDuration = videoInformation.duration.inMilliseconds;
-    int firstPosition = 1000;
+  /// Generates thumbnails for the given [video].
+  void generateThumbnails() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      var imageWidth = MediaQuery.sizeOf(context).width /
+          thumbnailCount *
+          MediaQuery.devicePixelRatioOf(context);
 
-    double step = (videoDuration - firstPosition) / (thumbnailCount - 1);
+      /// `getKeyFrames` is faster than `getThumbnails` but the timestamp is
+      /// more "random".
+      var thumbnailList = await VideoUtilsService.instance.getKeyFrames(
+        KeyFramesConfigs(
+          video: video,
+          outputSize: Size.square(imageWidth),
+          boxFit: ThumbnailBoxFit.cover,
+          maxOutputFrames: thumbnailCount,
+          outputFormat: ThumbnailFormat.jpeg,
+        ),
+      );
 
-    var timestamps = List.generate(thumbnailCount, (i) {
-      return Duration(milliseconds: (step * i).toInt());
+      List<ImageProvider> temporaryThumbnails =
+          thumbnailList.map(MemoryImage.new).toList();
+
+      /// Optional precache every thumbnail
+      var cacheList =
+          temporaryThumbnails.map((item) => precacheImage(item, context));
+      await Future.wait(cacheList);
+      thumbnails = temporaryThumbnails;
+
+      if (proVideoController != null) {
+        proVideoController!.thumbnails = thumbnails;
+      }
     });
-
-    var imageWidth = MediaQuery.sizeOf(context).width /
-        thumbnailCount *
-        MediaQuery.devicePixelRatioOf(context) *
-        videoInformation.resolution.aspectRatio;
-
-    var thumbnailList = await VideoUtilsService.instance
-        .createVideoThumbnails(CreateVideoThumbnail(
-      video: video,
-      timestamps: timestamps,
-      imageWidth: imageWidth,
-    ));
-
-    thumbnails.addAll(thumbnailList.map(MemoryImage.new));
-
-    /// Optional precache every thumbnail
-    var cacheList = thumbnails.map((item) => precacheImage(item, context));
-    await Future.wait(cacheList);
   }
 
   /// Generates the final video based on the given [parameters].
@@ -105,48 +99,28 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
   Future<void> generateVideo(CompleteParameters parameters) async {
     final stopwatch = Stopwatch()..start();
 
-    var devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
     var videoBytes = await video.safeByteArray();
 
-    var exportModel = ExportVideoModel(
+    var exportModel = RenderVideoModel(
       videoBytes: videoBytes,
       imageBytes: parameters.image,
       blur: parameters.blur,
-      colorFilters: parameters.colorFilters,
+      colorMatrixList: parameters.colorFilters,
       startTime: parameters.startTime,
       endTime: parameters.endTime,
-      videoDuration: videoInformation.duration,
       transform: ExportTransform(
         width: parameters.cropWidth,
         height: parameters.cropHeight,
-        rotateTurns: parameters.rotateTurns,
-        x: parameters.cropX?.toString(),
-        y: parameters.cropY?.toString(),
+        rotateTurns: 4 - parameters.rotateTurns,
+        x: parameters.cropX,
+        y: parameters.cropY,
         flipX: parameters.flipX,
         flipY: parameters.flipY,
       ),
-
-      ///
-      devicePixelRatio: devicePixelRatio,
       enableAudio: proVideoController?.isAudioEnabled ?? true,
-
-      /// Generation configurations
       outputFormat: outputFormat,
-      outputQuality: OutputQuality.mediumHigh,
-      encodingPreset: EncodingPreset.ultrafast,
-
-      /// Other
-      /// customFilter: '',
-      /// encoding: const VideoEncoding(
-      ///   aviEncodingConfig: AviEncodingConfig(),
-      ///   gifEncodingConfig: GifEncodingConfig(),
-      ///   mkvEncodingConfig: MkvEncodingConfig(),
-      ///   movEncodingConfig: MovEncodingConfig(),
-      ///   mp4EncodingConfig: Mp4EncodingConfig(),
-      ///   webMEncodingConfig: WebMEncodingConfig(),
-      /// ),
     );
-    exportedVideo = await VideoUtilsService.instance.exportVideo(exportModel);
+    exportedVideo = await VideoUtilsService.instance.renderVideo(exportModel);
     videoGenerationTime = stopwatch.elapsed;
   }
 
@@ -174,4 +148,3 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
     }
   }
 }
- */

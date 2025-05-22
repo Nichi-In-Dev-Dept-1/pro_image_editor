@@ -1,4 +1,4 @@
-/* import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:pro_video_editor/pro_video_editor.dart';
@@ -72,4 +72,3 @@ class VideoProgressAlert extends StatelessWidget {
         });
   }
 }
- */
