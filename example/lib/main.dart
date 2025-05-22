@@ -208,17 +208,22 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               extended: true,
               destinations: kImageEditorExamples.map((example) {
+                var color = const Color(0xFFF5F5F5).withAlpha(
+                  example.disabled ? 150 : 255,
+                );
                 return NavigationRailDestination(
                   icon: Icon(
                     example.icon,
-                    color: const Color(0xFFF5F5F5),
+                    color: color,
                   ),
                   label: Text(
-                    example.name,
-                    style: const TextStyle(
-                      color: Color(0xFFF5F5F5),
+                    example.name +
+                        (example.disabled ? '\nNot supported on the web' : ''),
+                    style: TextStyle(
+                      color: color,
                     ),
                   ),
+                  disabled: example.disabled,
                 );
               }).toList(),
               selectedIndex: _railIndex,
@@ -277,15 +282,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: kImageEditorExamples
                       .map(
-                        (example) => ListTile(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              example.path,
-                            );
-                          },
-                          leading: Icon(example.icon),
-                          title: Text(example.name),
-                          trailing: const Icon(Icons.chevron_right_rounded),
+                        (example) => Opacity(
+                          opacity: example.disabled ? 0.6 : 1,
+                          child: ListTile(
+                            onTap: example.disabled
+                                ? null
+                                : () {
+                                    Navigator.of(context).pushNamed(
+                                      example.path,
+                                    );
+                                  },
+                            leading: Icon(example.icon),
+                            title: Text(example.name),
+                            subtitle: example.disabled
+                                ? Text(example.disabledMessage)
+                                : null,
+                            trailing: const Icon(Icons.chevron_right_rounded),
+                          ),
                         ),
                       )
                       .toList(),

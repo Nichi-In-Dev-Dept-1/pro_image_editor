@@ -1,7 +1,6 @@
 // Flutter imports:
 import 'dart:typed_data';
 
-import 'package:example/core/constants/example_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_background_remover/image_background_remover.dart';
@@ -23,11 +22,13 @@ class BackgroundRemoverExample extends StatefulWidget {
 
 class _BackgroundRemoverExampleState extends State<BackgroundRemoverExample>
     with ExampleHelperState<BackgroundRemoverExample> {
+  final _url = 'https://picsum.photos/id/669/1600';
+
   @override
   void initState() {
     super.initState();
     BackgroundRemover.instance.initializeOrt();
-    preCacheImage(assetPath: kImageEditorExampleAssetPath);
+    preCacheImage(networkUrl: _url);
   }
 
   @override
@@ -98,7 +99,7 @@ class _BackgroundRemoverExampleState extends State<BackgroundRemoverExample>
     if (!isPreCached) return const PrepareImageWidget();
 
     return ProImageEditor.network(
-      'https://picsum.photos/id/669/1600',
+      _url,
       key: editorKey,
       callbacks: ProImageEditorCallbacks(
         onImageEditingStarted: onImageEditingStarted,
@@ -113,68 +114,75 @@ class _BackgroundRemoverExampleState extends State<BackgroundRemoverExample>
       ),
       configs: ProImageEditorConfigs(
         designMode: platformDesignMode,
+        imageGeneration: const ImageGenerationConfigs(
+          outputFormat: OutputFormat.png,
+        ),
         mainEditor: MainEditorConfigs(
           enableCloseButton: !isDesktopMode(context),
-          widgets: MainEditorWidgets(
-            bodyItems: (editor, rebuildStream) {
-              return [
-                ReactiveWidget(
-                  stream: rebuildStream,
-                  builder: (_) =>
-                      editor.selectedLayerIndex >= 0 || editor.isSubEditorOpen
-                          ? const SizedBox.shrink()
-                          : Positioned(
-                              bottom: 20,
-                              left: 0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.shade700,
-                                  borderRadius: const BorderRadius.only(
-                                    topRight: Radius.circular(100),
-                                    bottomRight: Radius.circular(100),
-                                  ),
-                                ),
-                                child: IconButton(
-                                  onPressed: _removeBackground,
-                                  icon: const Icon(
-                                    Icons.content_cut,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                ),
-                ReactiveWidget(
-                  stream: rebuildStream,
-                  builder: (_) =>
-                      editor.selectedLayerIndex >= 0 || editor.isSubEditorOpen
-                          ? const SizedBox.shrink()
-                          : Positioned(
-                              bottom: 20,
-                              right: 0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.green.shade700,
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(100),
-                                    bottomLeft: Radius.circular(100),
-                                  ),
-                                ),
-                                child: IconButton(
-                                  onPressed: _openPicker,
-                                  icon: const Icon(
-                                    Icons.image,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                ),
-              ];
-            },
-          ),
+          widgets: _buildBodyItems(),
         ),
       ),
+    );
+  }
+
+  MainEditorWidgets _buildBodyItems() {
+    return MainEditorWidgets(
+      bodyItems: (editor, rebuildStream) {
+        return [
+          ReactiveWidget(
+            stream: rebuildStream,
+            builder: (_) =>
+                editor.selectedLayerIndex >= 0 || editor.isSubEditorOpen
+                    ? const SizedBox.shrink()
+                    : Positioned(
+                        bottom: 20,
+                        left: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade700,
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(100),
+                              bottomRight: Radius.circular(100),
+                            ),
+                          ),
+                          child: IconButton(
+                            onPressed: _removeBackground,
+                            icon: const Icon(
+                              Icons.content_cut,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+          ),
+          ReactiveWidget(
+            stream: rebuildStream,
+            builder: (_) =>
+                editor.selectedLayerIndex >= 0 || editor.isSubEditorOpen
+                    ? const SizedBox.shrink()
+                    : Positioned(
+                        bottom: 20,
+                        right: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade700,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(100),
+                              bottomLeft: Radius.circular(100),
+                            ),
+                          ),
+                          child: IconButton(
+                            onPressed: _openPicker,
+                            icon: const Icon(
+                              Icons.image,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+          ),
+        ];
+      },
     );
   }
 }

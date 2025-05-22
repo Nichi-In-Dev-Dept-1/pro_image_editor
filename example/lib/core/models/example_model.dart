@@ -17,6 +17,8 @@ class Example {
     required this.name,
     required this.icon,
     required this.page,
+    this.disabled = false,
+    this.disabledMessage = '',
   });
 
   /// The navigation route or identifier for the example.
@@ -30,4 +32,10 @@ class Example {
 
   /// The widget representing the content of the example.
   final Widget page;
+
+  /// Indicates whether the example is disabled.
+  final bool disabled;
+
+  /// Message to display when the example is disabled.
+  final String disabledMessage;
 }
