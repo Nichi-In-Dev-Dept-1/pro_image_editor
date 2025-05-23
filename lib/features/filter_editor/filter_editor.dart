@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pro_image_editor/core/utils/size_utils.dart';
+import '/core/utils/size_utils.dart';
 
 import '/core/constants/image_constants.dart';
 import '/core/mixins/converted_callbacks.dart';
