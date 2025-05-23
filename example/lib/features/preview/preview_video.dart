@@ -176,7 +176,7 @@ class _PreviewVideoState extends State<PreviewVideo> {
                       ]),
                       tableSpace,
                       TableRow(children: [
-                        const Text('Image-Size'),
+                        const Text('Video-Size'),
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(

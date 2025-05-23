@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:example/core/constants/example_constants.dart';
 import 'package:example/features/preview/preview_video.dart';
 import 'package:flutter/material.dart';
-import 'package:pro_image_editor/core/models/complete_parameters.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:pro_video_editor/pro_video_editor.dart';
 
