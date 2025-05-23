@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '/core/utils/size_utils.dart';
 
 import '/core/mixins/converted_callbacks.dart';
 import '/core/mixins/converted_configs.dart';
@@ -14,6 +13,7 @@ import '/core/models/editor_image.dart';
 import '/core/models/init_configs/blur_editor_init_configs.dart';
 import '/core/models/transform_helper.dart';
 import '/core/platform/io/io_helper.dart';
+import '/core/utils/size_utils.dart';
 import '/features/blur_editor/widgets/blur_editor_bottombar.dart';
 import '/shared/controllers/video_controller.dart';
 import '/shared/services/content_recorder/widgets/content_recorder.dart';
@@ -169,6 +169,7 @@ class BlurEditorState extends State<BlurEditor>
 
   /// Represents the selected blur state.
   double get blurFactor => _blurFactor.value;
+
   set blurFactor(double value) {
     _blurFactor.value = value;
   }
