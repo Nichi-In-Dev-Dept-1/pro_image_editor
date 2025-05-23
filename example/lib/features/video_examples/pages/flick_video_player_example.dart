@@ -145,7 +145,7 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
                 dialogConfigs: DialogConfigs(
                   widgets: DialogWidgets(
                     loadingDialog: (message, configs) =>
-                        const VideoProgressAlert(),
+                        VideoProgressAlert(taskId: taskId),
                   ),
                 ),
                 mainEditor: MainEditorConfigs(

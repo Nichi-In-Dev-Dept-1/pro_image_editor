@@ -138,7 +138,8 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample>
       configs: ProImageEditorConfigs(
         dialogConfigs: DialogConfigs(
           widgets: DialogWidgets(
-            loadingDialog: (message, configs) => const VideoProgressAlert(),
+            loadingDialog: (message, configs) =>
+                VideoProgressAlert(taskId: taskId),
           ),
         ),
         mainEditor: MainEditorConfigs(

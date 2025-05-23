@@ -51,9 +51,14 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
   /// The duration it took to generate the exported video.
   Duration videoGenerationTime = Duration.zero;
 
+  /// The task ID used for rendering the video.
+  /// It's optional, but when multiple operations run simultaneously,
+  /// it allows tracking each task individually.
+  final taskId = DateTime.now().microsecondsSinceEpoch.toString();
+
   /// Loads and sets [videoMetadata] for the given [video].
   Future<void> setMetadata() async {
-    videoMetadata = await VideoUtilsService.instance.getVideoInformation(video);
+    videoMetadata = await VideoUtilsService.instance.getMetadata(video);
   }
 
   /// Generates thumbnails for the given [video].
@@ -101,6 +106,7 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
     var videoBytes = await video.safeByteArray();
 
     var exportModel = RenderVideoModel(
+      id: taskId,
       videoBytes: videoBytes,
       imageBytes: parameters.image,
       blur: parameters.blur,

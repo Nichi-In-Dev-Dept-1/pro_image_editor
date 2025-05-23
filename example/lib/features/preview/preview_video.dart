@@ -49,10 +49,16 @@ class _PreviewVideoState extends State<PreviewVideo> {
   void initState() {
     super.initState();
 
-    _videoMetadata = VideoUtilsService.instance.getVideoInformation(EditorVideo(
+    _videoMetadata = VideoUtilsService.instance.getMetadata(EditorVideo(
       byteArray: widget.bytes,
     ));
     _initializePlayer();
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
   }
 
   void _initializePlayer() async {

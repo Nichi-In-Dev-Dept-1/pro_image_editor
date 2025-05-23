@@ -303,8 +303,6 @@ mixin StandaloneEditorState<T extends StatefulWidget,
     super.dispose();
   }
 
-
-
   Future<Uint8List> _createTransparentImage() async {
     if (_transparentImageBytes != null) return _transparentImageBytes!;
 
