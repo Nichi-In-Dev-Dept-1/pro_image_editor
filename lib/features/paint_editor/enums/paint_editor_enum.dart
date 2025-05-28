@@ -22,6 +22,9 @@ enum PaintMode {
   /// Draws a dashed line between two points.
   dashLine,
 
+  /// Draws a Polygon with multiple connected lines.
+  polygon,
+
   /// Remove paint-items when hit.
   eraser,
 

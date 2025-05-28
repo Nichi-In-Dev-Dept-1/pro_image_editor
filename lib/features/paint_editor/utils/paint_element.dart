@@ -36,8 +36,9 @@ class PaintElement {
 
     PaintMode mode = item.mode;
     List<Offset?> offsets = item.offsets;
-    Offset? start = item.offsets[0];
-    Offset? end = item.offsets[1];
+    if (offsets.length <= 1) return;
+    Offset? start = offsets[0];
+    Offset? end = offsets[1];
 
     switch (mode) {
       case PaintMode.freeStyle:
@@ -67,6 +68,13 @@ class PaintElement {
         var ovalRect = Rect.fromPoints(start! * scale, end! * scale);
         path.addOval(ovalRect);
         canvas.drawPath(path, painter);
+        break;
+      case PaintMode.polygon:
+        var path = drawPolygon(offsets: offsets, scale: scale);
+        if (offsets.first == offsets.last && item.fill) {
+          painter.style = PaintingStyle.fill;
+        }
+        if (path != null) canvas.drawPath(path, painter);
         break;
       default:
         throw ArgumentError('$mode is not a valid PaintMode');
@@ -207,5 +215,31 @@ class PaintElement {
     }
 
     canvas.drawPath(dashPath, painter);
+  }
+
+  /// Draws a polygon by connecting all points and optionally filling it.
+  Path? drawPolygon({
+    required List<Offset?> offsets,
+    required double scale,
+  }) {
+    if (offsets.isEmpty || offsets.any((o) => o == null)) return null;
+
+    final points = offsets.whereType<Offset>().map((o) => o * scale).toList();
+
+    if (points.length < 2) return null;
+
+    final path = Path()..moveTo(points.first.dx, points.first.dy);
+
+    for (var i = 1; i < points.length; i++) {
+      path.lineTo(points[i].dx, points[i].dy);
+    }
+
+    // Close the path only if the first and last points are (almost) equal
+    const double threshold = 0.5; // tweak as needed
+    if ((points.first - points.last).distance < threshold) {
+      path.close();
+    }
+
+    return path;
   }
 }

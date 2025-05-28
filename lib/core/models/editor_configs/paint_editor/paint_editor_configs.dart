@@ -57,6 +57,7 @@ class PaintEditorConfigs extends ZoomConfigs {
     this.enableModeRect = true,
     this.enableModeCircle = true,
     this.enableModeDashLine = true,
+    this.enableModePolygon = true,
     this.enableModeBlur = true,
     this.enableModePixelate = true,
     this.enableModeEraser = true,
@@ -66,6 +67,7 @@ class PaintEditorConfigs extends ZoomConfigs {
     this.isInitiallyFilled = false,
     this.showLayers = true,
     this.enableShareZoomMatrix = true,
+    this.polygonConnectionThreshold = 20,
     this.minScale = double.negativeInfinity,
     this.maxScale = double.infinity,
     this.enableFreeStyleHighPerformanceScaling,
@@ -102,6 +104,9 @@ class PaintEditorConfigs extends ZoomConfigs {
 
   /// Indicating whether the dash line drawing option is enabled.
   final bool enableModeDashLine;
+
+  /// Indicating whether the polygon drawing option is enabled.
+  final bool enableModePolygon;
 
   /// Indicating whether the blur drawing option is enabled.
   final bool enableModeBlur;
@@ -176,6 +181,10 @@ class PaintEditorConfigs extends ZoomConfigs {
   /// The maximum scale factor from the layer.
   final double maxScale;
 
+  /// The maximum distance between the first and last point to be auto
+  /// connected when drawing polygons.
+  final double polygonConnectionThreshold;
+
   /// Defines the safe area configuration for the editor.
   final EditorSafeArea safeArea;
 
@@ -202,6 +211,7 @@ class PaintEditorConfigs extends ZoomConfigs {
     bool? enableModeRect,
     bool? enableModeCircle,
     bool? enableModeDashLine,
+    bool? enableModePolygon,
     bool? enableModeBlur,
     bool? enableModePixelate,
     bool? enableModeEraser,
@@ -225,6 +235,7 @@ class PaintEditorConfigs extends ZoomConfigs {
     bool? enableZoom,
     double? editorMinScale,
     double? editorMaxScale,
+    double? polygonConnectionThreshold,
     EdgeInsets? boundaryMargin,
     bool? enableDoubleTapZoom,
     double? doubleTapZoomFactor,
@@ -239,6 +250,7 @@ class PaintEditorConfigs extends ZoomConfigs {
       enableModeRect: enableModeRect ?? this.enableModeRect,
       enableModeCircle: enableModeCircle ?? this.enableModeCircle,
       enableModeDashLine: enableModeDashLine ?? this.enableModeDashLine,
+      enableModePolygon: enableModePolygon ?? this.enableModePolygon,
       enableModeBlur: enableModeBlur ?? this.enableModeBlur,
       enableModePixelate: enableModePixelate ?? this.enableModePixelate,
       enableModeEraser: enableModeEraser ?? this.enableModeEraser,
@@ -270,6 +282,8 @@ class PaintEditorConfigs extends ZoomConfigs {
       enableZoom: enableZoom ?? this.enableZoom,
       editorMinScale: editorMinScale ?? this.editorMinScale,
       editorMaxScale: editorMaxScale ?? this.editorMaxScale,
+      polygonConnectionThreshold:
+          polygonConnectionThreshold ?? this.polygonConnectionThreshold,
       enableDoubleTapZoom: enableDoubleTapZoom ?? this.enableDoubleTapZoom,
       doubleTapZoomFactor: doubleTapZoomFactor ?? this.doubleTapZoomFactor,
       doubleTapZoomDuration:

@@ -290,6 +290,12 @@ class PaintEditorState extends State<PaintEditor>
             icon: paintEditorConfigs.icons.dashLine,
             label: i18n.paintEditor.dashLine,
           ),
+        if (paintEditorConfigs.enableModePolygon)
+          PaintModeBottomBarItem(
+            mode: PaintMode.polygon,
+            icon: paintEditorConfigs.icons.polygon,
+            label: i18n.paintEditor.polygon,
+          ),
         if (paintEditorConfigs.enableModePixelate &&
             ShaderManager.instance.isShaderFilterSupported)
           PaintModeBottomBarItem(
@@ -594,7 +600,10 @@ class PaintEditorState extends State<PaintEditor>
           e.mode == PaintMode.line ||
           e.mode == PaintMode.dashLine ||
           e.mode == PaintMode.arrow ||
-          ((e.mode == PaintMode.rect || e.mode == PaintMode.circle) && !e.fill);
+          ((e.mode == PaintMode.polygon ||
+                  e.mode == PaintMode.rect ||
+                  e.mode == PaintMode.circle) &&
+              !e.fill);
 
       // Scale and offset the offsets of the paint layer
       double strokeHelperWidth = onlyStrokeMode ? e.strokeWidth : 0;

@@ -73,7 +73,9 @@ class PaintController extends ChangeNotifier {
   /// paint.
   PaintedModel get paintedModel => PaintedModel(
         mode: mode,
-        offsets: mode == PaintMode.freeStyle ? [..._offsets] : [start, end],
+        offsets: mode == PaintMode.freeStyle || mode == PaintMode.polygon
+            ? [..._offsets]
+            : [start, end],
         color: color,
         strokeWidth: strokeWidth,
         fill: fill,
@@ -191,6 +193,8 @@ class PaintController extends ChangeNotifier {
 
   /// Sets the paint mode to the specified mode and notifies listeners.
   void setMode(PaintMode mode) {
+    setInProgress(false);
+    reset();
     _mode = mode;
     notifyListeners();
   }

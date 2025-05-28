@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.10.0
+- **FEAT**(polygon): Added new paint-mode "polygon".
+
 ## 9.9.5
 - **FIX**(widget-layer): `copyWith` now correctly includes `exportConfigs`. 
 

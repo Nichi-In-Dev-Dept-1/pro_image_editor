@@ -54,6 +54,7 @@ class PaintEditorIcons {
     this.rectangle = Icons.crop_free,
     this.circle = Icons.lens_outlined,
     this.dashLine = Icons.power_input,
+    this.polygon = Icons.pentagon_outlined,
     this.pixelate = Icons.grid_on,
     this.blur = Icons.blur_on_rounded,
     this.applyChanges = Icons.done,
@@ -105,6 +106,9 @@ class PaintEditorIcons {
   /// The icon for the dashed line drawing tool.
   final IconData dashLine;
 
+  /// The icon for the polygon drawing tool.
+  final IconData polygon;
+
   /// The icon for the blur drawing tool.
   final IconData blur;
 
@@ -146,6 +150,7 @@ class PaintEditorIcons {
     IconData? rectangle,
     IconData? circle,
     IconData? dashLine,
+    IconData? polygon,
     IconData? blur,
     IconData? pixelate,
     IconData? backButton,
@@ -167,6 +172,7 @@ class PaintEditorIcons {
       rectangle: rectangle ?? this.rectangle,
       circle: circle ?? this.circle,
       dashLine: dashLine ?? this.dashLine,
+      polygon: polygon ?? this.polygon,
       blur: blur ?? this.blur,
       pixelate: pixelate ?? this.pixelate,
       backButton: backButton ?? this.backButton,
