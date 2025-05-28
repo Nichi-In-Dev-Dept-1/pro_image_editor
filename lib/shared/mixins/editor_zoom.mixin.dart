@@ -84,7 +84,9 @@ mixin EditorZoomMixin<T extends StatefulWidget> on State<T> {
     PointerDownEvent details,
     ZoomConfigs configs,
   ) {
-    if (configs.enableDoubleTapZoom && _lastTapDownOffset != null) {
+    if (configs.enableZoom &&
+        configs.enableDoubleTapZoom &&
+        _lastTapDownOffset != null) {
       final renderBox = context.findRenderObject() as RenderBox;
       final localTap = renderBox.globalToLocal(_lastTapDownOffset!);
       interactiveViewer.currentState?.quickZoomTo(
