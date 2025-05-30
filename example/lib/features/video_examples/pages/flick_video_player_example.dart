@@ -39,7 +39,7 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
 
   void _initializePlayer() async {
     generateThumbnails();
-    video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
+    video = EditorVideo.asset(kVideoEditorExampleAssetPath);
 
     _flickManager = FlickManager(
       videoPlayerController:

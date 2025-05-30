@@ -42,7 +42,7 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
 
   void _initializePlayer() async {
     generateThumbnails();
-    video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
+    video = EditorVideo.asset(kVideoEditorExampleAssetPath);
 
     await Future.wait([
       setMetadata(),

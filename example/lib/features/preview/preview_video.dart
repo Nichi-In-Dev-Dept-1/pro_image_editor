@@ -49,8 +49,8 @@ class _PreviewVideoState extends State<PreviewVideo> {
   void initState() {
     super.initState();
 
-    _videoMetadata = VideoUtilsService.instance.getMetadata(EditorVideo(
-      byteArray: widget.bytes,
+    _videoMetadata = ProVideoEditor.instance.getMetadata(EditorVideo.memory(
+      widget.bytes,
     ));
     _initializePlayer();
   }

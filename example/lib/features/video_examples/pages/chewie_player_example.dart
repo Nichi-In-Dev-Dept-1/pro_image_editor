@@ -40,7 +40,7 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
 
   void _initializePlayer() async {
     generateThumbnails();
-    video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
+    video = EditorVideo.asset(kVideoEditorExampleAssetPath);
 
     if (!mounted) return;
 
