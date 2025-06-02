@@ -404,6 +404,7 @@ class PaintEditorState extends State<PaintEditor>
   void openLinWidthBottomSheet() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: paintEditorConfigs.style.lineWidthBottomSheetBackground,
       builder: (BuildContext context) => SliderBottomSheet<PaintEditorState>(
         title: i18n.paintEditor.lineWidth,
         headerTextStyle: paintEditorConfigs.style.lineWidthBottomSheetTitle,
