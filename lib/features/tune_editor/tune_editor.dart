@@ -189,7 +189,7 @@ class TuneEditorState extends State<TuneEditor>
   ///
   /// This index represents the adjustment item that is currently being modified
   /// by the user.
-  int selectedIndex = 0;
+  int selectedIndex = -1;
 
   /// A stack used to keep track of previous states for undo functionality.
   ///
