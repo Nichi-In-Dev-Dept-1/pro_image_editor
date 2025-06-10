@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:flutter/widgets.dart';
 
 import '/shared/extensions/color_extension.dart';
 import '/shared/utils/parser/double_parser.dart';
@@ -52,6 +52,7 @@ class PaintedModel {
   /// - [hit]: A boolean flag indicating whether this unit of drawing has been
   /// hit.
   PaintedModel({
+    GlobalKey? key,
     required this.mode,
     required this.offsets,
     required this.color,
@@ -59,9 +60,15 @@ class PaintedModel {
     required this.opacity,
     this.fill = false,
     this.hit = false,
-  }) {
+  }) : key = key ?? GlobalKey() {
     id = generateUniqueId();
   }
+
+  /// A [GlobalKey] used to uniquely identify and access the widget associated
+  /// with this model.
+  /// This key can be used for retrieving the widget's state, context, or for
+  /// other widget-related operations.
+  final GlobalKey key;
 
   /// Unique id from the paint-model
   late final String id;

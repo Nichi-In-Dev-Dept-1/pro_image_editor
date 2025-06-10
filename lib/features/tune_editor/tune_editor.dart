@@ -11,6 +11,7 @@ import '/core/mixins/converted_configs.dart';
 import '/core/mixins/standalone_editor.dart';
 import '/core/models/transform_helper.dart';
 import '/core/platform/io/io_helper.dart';
+import '/core/utils/size_utils.dart';
 import '/features/tune_editor/widgets/tune_editor_bottombar.dart';
 import '/pro_image_editor.dart';
 import '/shared/services/content_recorder/widgets/content_recorder.dart';
@@ -533,8 +534,10 @@ class TuneEditorState extends State<TuneEditor>
             stream: uiStream.stream,
             builder: (context, snapshot) {
               return FilteredWidget(
-                width: getMinimumSize(mainImageSize, editorBodySize).width,
-                height: getMinimumSize(mainImageSize, editorBodySize).height,
+                width:
+                    getValidSizeOrDefault(mainImageSize, editorBodySize).width,
+                height:
+                    getValidSizeOrDefault(mainImageSize, editorBodySize).height,
                 configs: configs,
                 image: editorImage,
                 videoPlayer: videoController?.videoPlayer,
@@ -550,8 +553,8 @@ class TuneEditorState extends State<TuneEditor>
   Widget _buildLayers() {
     return LayerStack(
       transformHelper: TransformHelper(
-        mainBodySize: getMinimumSize(mainBodySize, editorBodySize),
-        mainImageSize: getMinimumSize(mainImageSize, editorBodySize),
+        mainBodySize: getValidSizeOrDefault(mainBodySize, editorBodySize),
+        mainImageSize: getValidSizeOrDefault(mainImageSize, editorBodySize),
         editorBodySize: editorBodySize,
         transformConfigs: initialTransformConfigs,
       ),

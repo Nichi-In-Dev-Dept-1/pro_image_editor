@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '/features/text_editor/text_editor.dart';
 import '../frosted_glass_effect.dart';
 
 /// A stateless widget that represents an app bar with a frosted glass effect.

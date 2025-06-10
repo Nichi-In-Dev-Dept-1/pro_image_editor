@@ -5,6 +5,7 @@ import '/shared/widgets/video/toolbar/video_editor_trim_info_widget.dart';
 import '/shared/widgets/video/video_editor_state_widget.dart';
 import 'toolbar/video_editor_info_banner.dart';
 import 'toolbar/video_editor_mute_button.dart';
+import 'toolbar/video_editor_play_button.dart';
 import 'trimmer/video_editor_trim_bar.dart';
 import 'video_editor_configurable.dart';
 
@@ -17,11 +18,14 @@ class VideoEditorControlsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var player = VideoEditorConfigurable.of(context);
+    final player = VideoEditorConfigurable.of(context);
+    final style = player.style;
 
     bool isAudioSupported = player.configs.isAudioSupported;
     bool alignTop =
         player.configs.controlsPosition == VideoEditorControlPosition.top;
+    bool enablePlayButton = player.configs.enablePlayButton;
+    final toolbarPadding = player.style.toolbarPadding;
 
     return Stack(
       children: [
@@ -31,48 +35,34 @@ class VideoEditorControlsWidget extends StatelessWidget {
               verticalDirection:
                   alignTop ? VerticalDirection.down : VerticalDirection.up,
               children: [
-                const VideoEditorTrimBar(),
                 Padding(
-                  padding: player.contentPadding,
-                  child: LayoutBuilder(
-                    builder: (_, constraints) {
-                      if (constraints.maxWidth +
-                              player.contentPadding.horizontal >=
-                          330) {
-                        return Row(
-                          children: [
-                            if (isAudioSupported) ...[
-                              const VideoEditorMuteButton(),
-                              const SizedBox(width: 12),
-                            ],
-                            const VideoEditorInfoBanner(),
-                            const Spacer(),
-                            const VideoEditorTrimInfoWidget()
-                          ],
-                        );
-                      } else {
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (isAudioSupported) const VideoEditorMuteButton(),
-                            const Spacer(),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              spacing: 6,
-                              children: [
-                                VideoEditorInfoBanner(),
-                                VideoEditorTrimInfoWidget()
-                              ],
-                            )
-                          ],
-                        );
-                      }
-                    },
+                  padding: EdgeInsets.only(
+                    top: toolbarPadding.top,
+                    left: toolbarPadding.left - style.trimBarHandlerButtonSize,
+                    right:
+                        toolbarPadding.right - style.trimBarHandlerButtonSize,
                   ),
+                  child: const VideoEditorTrimBar(),
+                ),
+                Padding(
+                  padding: toolbarPadding.copyWith(top: 0),
+                  child: LayoutBuilder(builder: (_, constraints) {
+                    return Row(
+                      spacing: constraints.maxWidth < 340 ? 6 : 12,
+                      children: [
+                        if (enablePlayButton) const VideoEditorPlayButton(),
+                        if (isAudioSupported) const VideoEditorMuteButton(),
+                        const Spacer(),
+                        if (constraints.maxWidth >= 300)
+                          const VideoEditorTrimInfoWidget(),
+                        const VideoEditorInfoBanner(),
+                      ],
+                    );
+                  }),
                 ),
               ],
             ),
-        const VideoEditorStateWidget(),
+        if (!enablePlayButton) const VideoEditorStateWidget(),
       ],
     );
   }

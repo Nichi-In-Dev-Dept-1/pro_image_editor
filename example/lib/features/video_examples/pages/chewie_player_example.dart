@@ -1,4 +1,4 @@
-/* import 'package:chewie/chewie.dart';
+import 'package:chewie/chewie.dart';
 import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
@@ -39,16 +39,13 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
   }
 
   void _initializePlayer() async {
-    video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
+    generateThumbnails();
+    video = EditorVideo.asset(kVideoEditorExampleAssetPath);
 
-    await setVideoInformations();
-    await generateThumbnails();
     if (!mounted) return;
 
     _videoPlayerController =
         VideoPlayerController.asset(kVideoEditorExampleAssetPath);
-
-    await _videoPlayerController.initialize();
 
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
@@ -59,13 +56,18 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
       showControlsOnInitialize: false,
       showSubtitles: false,
     );
-    await _chewieController.setVolume(videoConfigs.initialMuted ? 0 : 100);
+    await Future.wait([
+      setMetadata(),
+      _videoPlayerController.initialize(),
+      _chewieController.setVolume(videoConfigs.initialMuted ? 0 : 100),
+    ]);
 
     proVideoController = ProVideoController(
       videoPlayer: _buildVideoPlayer(),
-      initialResolution: videoInformation.resolution,
-      videoDuration: videoInformation.duration,
-      fileSize: videoInformation.fileSize,
+      initialResolution: videoMetadata.resolution,
+      videoDuration: videoMetadata.duration,
+      fileSize: videoMetadata.fileSize,
+      bitrate: videoMetadata.bitrate,
       thumbnails: thumbnails,
     );
 
@@ -75,7 +77,7 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
   }
 
   void _onDurationChange() {
-    var totalVideoDuration = videoInformation.duration;
+    var totalVideoDuration = videoMetadata.duration;
     var duration = _chewieController.videoPlayerController.value.position;
     proVideoController!.setPlayTime(duration);
     if (durationSpan != null && duration > durationSpan!.end) {
@@ -141,7 +143,7 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
                 dialogConfigs: DialogConfigs(
                   widgets: DialogWidgets(
                     loadingDialog: (message, configs) =>
-                        const VideoProgressAlert(),
+                        VideoProgressAlert(taskId: taskId),
                   ),
                 ),
                 mainEditor: MainEditorConfigs(
@@ -174,4 +176,3 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
     );
   }
 }
- */

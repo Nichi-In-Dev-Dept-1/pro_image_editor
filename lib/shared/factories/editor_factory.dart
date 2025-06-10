@@ -1,6 +1,5 @@
-import 'package:pro_image_editor/pro_image_editor.dart';
-
 import '/core/models/editor_callbacks/standalone_editor_callbacks.dart';
+import '/pro_image_editor.dart';
 
 /// A factory class for creating [StandaloneEditorCallbacks] instances
 /// for each supported [EditorMode].

@@ -187,6 +187,57 @@ class DrawPaintItem extends CustomPainter {
         item.hit =
             path.contains(position) && !insideStrokePath.contains(position);
         break;
+      case PaintMode.polygon:
+        final polygonOffsets =
+            offsets.whereType<Offset>().map((o) => o * scale).toList();
+
+        if (polygonOffsets.length < 2) {
+          item.hit = false;
+          break;
+        }
+
+        bool isClosed =
+            (polygonOffsets.first - polygonOffsets.last).distance < 0.5;
+        final pointCount = polygonOffsets.length;
+
+        item.hit = false;
+
+        // Check if inside if it's a filled polygon
+        if (item.fill && polygonOffsets.length >= 3) {
+          final path =
+              PaintElement().drawPolygon(offsets: offsets, scale: scale);
+          if (path != null && path.contains(position)) {
+            item.hit = true;
+            break;
+          }
+        }
+
+        // Otherwise check each edge
+        for (int i = 0; i < pointCount - 1; i++) {
+          if (_hitTestLineWithStroke(
+            start: polygonOffsets[i],
+            end: polygonOffsets[i + 1],
+            strokeHalfWidth: strokeHalfW,
+            position: position,
+          )) {
+            item.hit = true;
+            break;
+          }
+        }
+
+        // Also check closing edge if polygon is closed
+        if (!item.hit && isClosed && polygonOffsets.length >= 3) {
+          if (_hitTestLineWithStroke(
+            start: polygonOffsets.last,
+            end: polygonOffsets.first,
+            strokeHalfWidth: strokeHalfW,
+            position: position,
+          )) {
+            item.hit = true;
+          }
+        }
+        break;
+
       default:
         item.hit = true;
     }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../video_editor_configurable.dart';
@@ -11,42 +12,60 @@ class VideoEditorTrimHandle extends StatelessWidget {
   ///
   /// The [isLeft] parameter determines whether the handle is on the left
   /// or right side.
-  const VideoEditorTrimHandle({super.key, required this.isLeft});
+  const VideoEditorTrimHandle({
+    super.key,
+    required this.isLeft,
+    required this.isSelected,
+  });
 
   /// Determines if this is the left trim handle.
   final bool isLeft;
 
+  /// Indicates if the handler is selected.
+  final bool isSelected;
+
   @override
   Widget build(BuildContext context) {
     var player = VideoEditorConfigurable.of(context);
-
+    var style = player.style;
+    var handlerSize = style.trimBarHandlerButtonSize * (isSelected ? 1.2 : 1);
     return SizedBox(
-      width: player.style.trimBarHandlerWidth,
+      width: style.trimBarHandlerWidth,
       child: Align(
         alignment: isLeft ? Alignment.centerLeft : Alignment.centerRight,
         child: MouseRegion(
           cursor: SystemMouseCursors.resizeLeftRight,
-          child: Container(
-            width: player.style.trimBarHandlerWidth,
-            height: player.style.trimBarHeight,
-            decoration: BoxDecoration(
-              color: player.style.trimBarBackground,
-              borderRadius: BorderRadius.horizontal(
-                left: isLeft
-                    ? Radius.circular(player.style.trimBarHandlerRadius)
-                    : Radius.zero,
-                right: isLeft
-                    ? Radius.zero
-                    : Radius.circular(player.style.trimBarHandlerRadius),
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: style.trimBarBorderWidth,
+                height: style.trimBarHeight,
+                decoration: BoxDecoration(
+                  color: style.trimBarBackground,
+                  borderRadius: BorderRadius.horizontal(
+                    left: isLeft
+                        ? Radius.circular(style.trimBarHandlerRadius)
+                        : Radius.zero,
+                    right: isLeft
+                        ? Radius.zero
+                        : Radius.circular(style.trimBarHandlerRadius),
+                  ),
+                ),
               ),
-            ),
-            child: Center(
-              child: Icon(
-                isLeft ? player.icons.trimLeft : player.icons.trimRight,
-                color: player.style.trimBarColor,
-                size: player.style.trimBarHandlerIconSize,
+              Center(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: style.trimBarColor,
+                  ),
+                  width: handlerSize,
+                  height: handlerSize,
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),

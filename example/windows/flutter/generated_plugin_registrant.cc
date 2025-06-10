@@ -14,6 +14,7 @@
 #include <gal/gal_plugin_c_api.h>
 #include <media_kit_libs_windows_video/media_kit_libs_windows_video_plugin_c_api.h>
 #include <media_kit_video/media_kit_video_plugin_c_api.h>
+#include <pro_video_editor/pro_video_editor_plugin_c_api.h>
 #include <url_launcher_windows/url_launcher_windows.h>
 #include <volume_controller/volume_controller_plugin_c_api.h>
 
@@ -34,6 +35,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("MediaKitLibsWindowsVideoPluginCApi"));
   MediaKitVideoPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("MediaKitVideoPluginCApi"));
+  ProVideoEditorPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("ProVideoEditorPluginCApi"));
   UrlLauncherWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("UrlLauncherWindows"));
   VolumeControllerPluginCApiRegisterWithRegistrar(

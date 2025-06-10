@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:pro_image_editor/shared/extensions/duration_extension.dart';
+import '/shared/extensions/duration_extension.dart';
 
 import '../video_editor_configurable.dart';
 
@@ -14,6 +14,32 @@ class VideoEditorTrimInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var player = VideoEditorConfigurable.of(context);
     return ValueListenableBuilder(
+        valueListenable: player.showTrimTimeSpanNotifier,
+        builder: (_, showTrimTimeSpan, __) {
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            transitionBuilder: (child, animation) {
+              final scaleAnimation =
+                  Tween<double>(begin: 0.7, end: 1.0).animate(animation);
+              return ScaleTransition(
+                scale: scaleAnimation,
+                child: FadeTransition(
+                  opacity: animation,
+                  child: child,
+                ),
+              );
+            },
+            switchInCurve: Curves.easeInOut,
+            switchOutCurve: Curves.easeInOut,
+            child: showTrimTimeSpan
+                ? _buildTimeSpanText(player)
+                : const SizedBox.shrink(),
+          );
+        });
+  }
+
+  Widget _buildTimeSpanText(VideoEditorConfigurable player) {
+    return ValueListenableBuilder(
       valueListenable: player.controller.trimDurationSpanNotifier,
       builder: (_, value, __) {
         if (player.configs.widgets.trimDurationInfo != null) {
@@ -21,20 +47,23 @@ class VideoEditorTrimInfoWidget extends StatelessWidget {
         }
 
         return IgnorePointer(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: player.style.trimDurationBackground,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '${value.start.toTimeString()} - '
-              '${(value.end.toTimeString())}',
-              style: player.style.trimDurationTextStyle ??
-                  TextStyle(
-                    fontSize: 14,
-                    color: player.style.trimDurationTextColor,
-                  ),
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: player.style.trimDurationBackground,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '${value.start.toTimeString()} - '
+                '${(value.end.toTimeString())}',
+                style: player.style.trimDurationTextStyle ??
+                    TextStyle(
+                      fontSize: 14,
+                      height: 1.2,
+                      color: player.style.trimDurationTextColor,
+                    ),
+              ),
             ),
           ),
         );

@@ -11,6 +11,7 @@ import '/core/mixins/converted_configs.dart';
 import '/core/mixins/standalone_editor.dart';
 import '/core/models/transform_helper.dart';
 import '/core/platform/io/io_helper.dart';
+import '/core/utils/size_utils.dart';
 import '/features/filter_editor/widgets/filter_editor_appbar.dart';
 import '/pro_image_editor.dart';
 import '/shared/services/content_recorder/widgets/content_recorder.dart';
@@ -311,9 +312,9 @@ class FilterEditorState extends State<FilterEditor>
                   LayerStack(
                     transformHelper: TransformHelper(
                       mainBodySize:
-                          getMinimumSize(mainBodySize, editorBodySize),
+                          getValidSizeOrDefault(mainBodySize, editorBodySize),
                       mainImageSize:
-                          getMinimumSize(mainImageSize, editorBodySize),
+                          getValidSizeOrDefault(mainImageSize, editorBodySize),
                       editorBodySize: editorBodySize,
                       transformConfigs: initialTransformConfigs,
                     ),
@@ -348,8 +349,10 @@ class FilterEditorState extends State<FilterEditor>
             stream: _uiFilterStream.stream,
             builder: (context, snapshot) {
               return FilteredWidget(
-                width: getMinimumSize(mainImageSize, editorBodySize).width,
-                height: getMinimumSize(mainImageSize, editorBodySize).height,
+                width:
+                    getValidSizeOrDefault(mainImageSize, editorBodySize).width,
+                height:
+                    getValidSizeOrDefault(mainImageSize, editorBodySize).height,
                 configs: configs,
                 image: editorImage,
                 videoPlayer: videoController?.videoPlayer,
@@ -406,13 +409,17 @@ class FilterEditorState extends State<FilterEditor>
             ),
             StatefulBuilder(builder: (context, setStateFilterList) {
               return FilterEditorItemList(
-                mainBodySize: getMinimumSize(mainBodySize, editorBodySize),
-                mainImageSize: getMinimumSize(mainImageSize, editorBodySize),
+                mainBodySize:
+                    getValidSizeOrDefault(mainBodySize, editorBodySize),
+                mainImageSize:
+                    getValidSizeOrDefault(mainImageSize, editorBodySize),
                 editorImage: editorImage,
                 image: editorImage != null
                     ? null
-                    : widget.videoController!.thumbnails.isNotEmpty
-                        ? Image(image: widget.videoController!.thumbnails.first)
+                    : widget.videoController!.thumbnails?.isNotEmpty == true
+                        ? Image(
+                            image: widget.videoController!.thumbnails!.first,
+                          )
                         : Image.memory(kImageEditorTransparentBytes),
                 activeFilters: appliedFilters,
                 blurFactor: appliedBlurFactor,

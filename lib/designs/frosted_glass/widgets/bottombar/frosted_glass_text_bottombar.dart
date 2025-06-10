@@ -1,11 +1,10 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-// Project imports:
-import 'package:pro_image_editor/designs/frosted_glass/frosted_glass.dart';
-import 'package:pro_image_editor/designs/whatsapp/whatsapp_color_picker.dart';
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/features/text_editor/widgets/text_editor_bottom_bar.dart';
+import '../../../whatsapp/whatsapp_color_picker.dart';
+import '../../frosted_glass.dart';
 
 /// A stateful widget that represents a bottom bar with a frosted glass effect.
 ///

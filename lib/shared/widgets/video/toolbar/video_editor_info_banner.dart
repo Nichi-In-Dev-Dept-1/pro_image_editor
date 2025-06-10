@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '/core/models/video/trim_duration_span_model.dart';
 import '/shared/controllers/video_controller.dart';
 import '/shared/extensions/duration_extension.dart';
 import '/shared/extensions/int_extension.dart';
@@ -11,6 +12,16 @@ import '/shared/widgets/video/video_editor_configurable.dart';
 class VideoEditorInfoBanner extends StatelessWidget {
   /// Creates a [VideoEditorInfoBanner] widget.
   const VideoEditorInfoBanner({super.key});
+
+  /// Calculate estimated file size based on trimmed duration and bitrate.
+  int _estimatedFileSize(
+    ProVideoController controller,
+    TrimDurationSpan durationSpan,
+  ) {
+    final bitrate = controller.bitrate;
+    int durationSec = durationSpan.duration.inSeconds;
+    return (bitrate! * durationSec / 8.0).toInt();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +36,6 @@ class VideoEditorInfoBanner extends StatelessWidget {
           return player.configs.widgets.infoBanner!(durationSpan);
         }
 
-        // Calculate estimated file size based on trimmed duration
-        int estimatedFileSize = (controller.fileSize /
-                controller.videoDuration.inSeconds *
-                durationSpan.duration.inSeconds)
-            .round();
-
         return IgnorePointer(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -38,14 +43,39 @@ class VideoEditorInfoBanner extends StatelessWidget {
               color: player.style.infoBannerBackground,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
-              '${durationSpan.duration.toTimeString()} | '
-              '${estimatedFileSize.toBytesString(1)}',
-              style: player.style.infoBannerTextStyle ??
-                  TextStyle(
-                    fontSize: 14,
-                    color: player.style.infoBannerTextColor,
+            child: RichText(
+              text: TextSpan(
+                style: player.style.infoBannerTextStyle ??
+                    TextStyle(
+                      fontSize: 14,
+                      height: 1.2,
+                      color: player.style.infoBannerTextColor,
+                    ),
+                children: [
+                  TextSpan(
+                    text: durationSpan.duration.toTimeString(),
                   ),
+                  if (player.configs.enableEstimatedFileSize &&
+                      controller.bitrate != null) ...[
+                    WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 7),
+                        width: 3,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: player.style.infoBannerTextColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    TextSpan(
+                      text: _estimatedFileSize(controller, durationSpan)
+                          .toBytesString(1),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ),
         );

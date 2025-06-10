@@ -3,6 +3,7 @@ import 'dart:async';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '/core/models/editor_configs/paint_editor/paint_editor_configs.dart';
 import '/shared/widgets/censor/blur_area_item.dart';
@@ -89,18 +90,30 @@ class PaintCanvasState extends State<PaintCanvas> {
   /// It is not meant to be called directly but is an event handler for scaling
   /// gestures.
   void _onScaleStart(ScaleStartDetails details) {
-    if (widget.paintCtrl.mode == PaintMode.moveAndZoom) {
-      return;
-    } else if (widget.paintCtrl.mode == PaintMode.eraser) {
-      setState(() {});
-      return;
-    }
-
     final offset = details.localFocalPoint;
-    _paintCtrl
-      ..setStart(offset)
-      ..addOffsets(offset);
-    _activePaintStreamCtrl.add(null);
+    switch (widget.paintCtrl.mode) {
+      case PaintMode.moveAndZoom:
+        return;
+      case PaintMode.eraser:
+        setState(() {});
+        return;
+      case PaintMode.polygon:
+        if (_paintCtrl.offsets.isEmpty) {
+          _paintCtrl
+            ..setStart(offset)
+            ..setInProgress(true);
+          widget.onStart?.call();
+        }
+        _paintCtrl.addOffsets(offset);
+        _activePaintStreamCtrl.add(null);
+        return;
+      default:
+        _paintCtrl
+          ..setStart(offset)
+          ..addOffsets(offset);
+        _activePaintStreamCtrl.add(null);
+        break;
+    }
   }
 
   /// Fires while the user is interacting with the screen to record paint.
@@ -112,32 +125,66 @@ class PaintCanvasState extends State<PaintCanvas> {
   /// It is not meant to be called directly but is an event handler for scaling
   /// gestures.
   void _onScaleUpdate(ScaleUpdateDetails details) {
-    if (widget.paintCtrl.mode == PaintMode.moveAndZoom) {
-      return;
-    } else if (widget.paintCtrl.mode == PaintMode.eraser) {
-      List<String> removeIds = [];
-      for (var item in _paintCtrl.activePaintItemList) {
-        if (item.hit) removeIds.add(item.id);
-      }
-      if (removeIds.isNotEmpty) widget.onRemoveLayer?.call(removeIds);
-    } else {
-      final offset = details.localFocalPoint;
-      if (!_paintCtrl.busy) {
-        widget.onStart?.call();
-        _paintCtrl.setInProgress(true);
-      }
+    switch (widget.paintCtrl.mode) {
+      case PaintMode.moveAndZoom:
+      case PaintMode.polygon:
+        return;
+      case PaintMode.eraser:
+        List<String> removeIds = [];
+        for (var item in _paintCtrl.activePaintItemList) {
+          if (item.mode == PaintMode.blur || item.mode == PaintMode.pixelate) {
+            List<Offset?> offsets = item.offsets;
+            if (offsets.length != 2) continue;
 
-      if (_paintCtrl.start == null) {
-        _paintCtrl.setStart(offset);
-      }
+            var topLeft = offsets[0];
+            if (topLeft == null) continue;
 
-      if (_paintCtrl.mode == PaintMode.freeStyle) {
-        _paintCtrl.addOffsets(offset);
-      }
+            var bottomRight = offsets[1];
+            if (bottomRight == null) continue;
 
-      _paintCtrl.setEnd(offset);
+            double width = (bottomRight.dx - topLeft.dx);
+            double height = (bottomRight.dy - topLeft.dy);
 
-      _activePaintStreamCtrl.add(null);
+            double left = width >= 0 ? topLeft.dx : topLeft.dx + width;
+            double top = height >= 0 ? topLeft.dy : topLeft.dy + height;
+
+            var dx = details.localFocalPoint.dx;
+            var dy = details.localFocalPoint.dy;
+
+            bool horizontalHit = dx >= left && dx <= left + width.abs();
+            bool verticalHit = dy >= top && dy <= top + height.abs();
+            if (horizontalHit && verticalHit) {
+              removeIds.add(item.id);
+            }
+          } else {
+            final painter = item.key.currentContext?.findRenderObject()
+                as RenderCustomPaint?;
+            final hasHit =
+                painter?.painter?.hitTest(details.localFocalPoint) ?? false;
+
+            if (hasHit || item.hit) removeIds.add(item.id);
+          }
+        }
+        if (removeIds.isNotEmpty) widget.onRemoveLayer?.call(removeIds);
+        break;
+      default:
+        final offset = details.localFocalPoint;
+        if (!_paintCtrl.busy) {
+          widget.onStart?.call();
+          _paintCtrl.setInProgress(true);
+        }
+
+        if (_paintCtrl.start == null) {
+          _paintCtrl.setStart(offset);
+        }
+
+        if (_paintCtrl.mode == PaintMode.freeStyle) {
+          _paintCtrl.addOffsets(offset);
+        }
+
+        _paintCtrl.setEnd(offset);
+
+        _activePaintStreamCtrl.add(null);
     }
   }
 
@@ -154,8 +201,6 @@ class PaintCanvasState extends State<PaintCanvas> {
       return;
     }
 
-    _paintCtrl.setInProgress(false);
-
     List<Offset?>? offsets;
 
     if (_paintCtrl.start != null && _paintCtrl.end != null) {
@@ -164,6 +209,24 @@ class PaintCanvasState extends State<PaintCanvas> {
       } else if (_paintCtrl.start != null && _paintCtrl.end != null) {
         offsets = [_paintCtrl.start, _paintCtrl.end];
       }
+    } else if (_paintCtrl.mode == PaintMode.polygon) {
+      List<Offset?> rawOffsets = [..._paintCtrl.offsets];
+
+      if (rawOffsets.length >= 2 &&
+          rawOffsets.first != null &&
+          rawOffsets.last != null) {
+        final p1 = rawOffsets.first!;
+        final p2 = rawOffsets.last!;
+
+        final threshold = widget.paintEditorConfigs.polygonConnectionThreshold;
+
+        if ((p1 - p2).distance < threshold) {
+          // Connect them by replacing the last point with the first one
+          rawOffsets[rawOffsets.length - 1] = rawOffsets.first;
+          offsets = rawOffsets;
+        }
+      }
+      if (offsets == null || offsets.isEmpty) return;
     }
     if (offsets != null) {
       _paintCtrl.addPaintInfo(
@@ -179,7 +242,9 @@ class PaintCanvasState extends State<PaintCanvas> {
       widget.onCreated?.call();
     }
 
-    _paintCtrl.reset();
+    _paintCtrl
+      ..setInProgress(false)
+      ..reset();
     setState(() {});
   }
 
@@ -203,6 +268,7 @@ class PaintCanvasState extends State<PaintCanvas> {
           Opacity(
             opacity: item.opacity,
             child: CustomPaint(
+              key: item.key,
               willChange: false,
               isComplex: item.mode == PaintMode.freeStyle,
               painter: DrawPaintItem(

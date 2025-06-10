@@ -1,10 +1,12 @@
 import 'dart:math';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/video/trim_duration_span_model.dart';
 import '/shared/widgets/video/trimmer/video_editor_play_time_indicator.dart';
+import '../../../utils/debounce.dart';
 import '../video_editor_configurable.dart';
 import 'video_editor_trim_handle.dart';
 import 'video_editor_trim_thumbnail_bar.dart';
@@ -26,6 +28,7 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
   double _scale = 1.0;
   double _baseScale = 1.0;
   final _scrollCtrl = ScrollController();
+  final _trimTimeDebounce = Debounce(const Duration(milliseconds: 350));
 
   VideoEditorConfigurable get _player => VideoEditorConfigurable.of(context);
 
@@ -35,6 +38,18 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
 
   bool _isUpdatingTrimBar = false;
 
+  final _leftHandlerActiveNotifier = ValueNotifier(false);
+  final _rightHandlerActiveNotifier = ValueNotifier(false);
+
+  @override
+  void dispose() {
+    _scrollCtrl.dispose();
+    _trimTimeDebounce.dispose();
+    _leftHandlerActiveNotifier.dispose();
+    _rightHandlerActiveNotifier.dispose();
+    super.dispose();
+  }
+
   void _updateTrimSpan() {
     _player.controller.setTrimSpan(
       TrimDurationSpan(
@@ -42,6 +57,8 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
         end: Duration(microseconds: (_trimEnd * _videoDuration).toInt()),
       ),
     );
+    _player.showTrimTimeSpanNotifier.value = true;
+
     _isUpdatingTrimBar = true;
     setState(() {});
   }
@@ -112,6 +129,9 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
       ),
     );
     _isUpdatingTrimBar = false;
+    _trimTimeDebounce(() {
+      _player.showTrimTimeSpanNotifier.value = false;
+    });
     setState(() {});
   }
 
@@ -168,10 +188,12 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
   Widget build(BuildContext context) {
     if (_player.widgets.trimBar != null) return _player.widgets.trimBar!;
 
+    var style = _player.style;
+    var handlerButtonSize = style.trimBarHandlerButtonSize;
+
     return RepaintBoundary(
       child: LayoutBuilder(builder: (_, constraints) {
-        double trimBarWidth =
-            constraints.maxWidth - _player.contentPadding.horizontal;
+        double trimBarWidth = constraints.maxWidth - 16;
         double scaledWidth = trimBarWidth * _scale;
         double trimWidth = (_trimEnd - _trimStart) * scaledWidth;
         double offsetLeftHandler = _trimStart * scaledWidth;
@@ -181,14 +203,13 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
         /// Ensure there is always a small gap between the handlers
         if (offsetLeftHandler + _player.style.trimBarHandlerWidth + 4 >=
             offsetRightHandler) {
-          offsetRightHandler =
-              offsetLeftHandler + _player.style.trimBarHandlerWidth + 4;
+          offsetRightHandler = offsetLeftHandler + 4;
         }
 
         return SingleChildScrollView(
-          padding: _player.contentPadding,
           controller: _scrollCtrl,
           scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
           child: Listener(
             onPointerSignal: (ev) => _handleMouseScroll(ev, trimBarWidth),
             child: GestureDetector(
@@ -203,20 +224,27 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
                 setState(() {});
               },
               child: Container(
+                clipBehavior: Clip.none,
                 width: scaledWidth,
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Stack(
+                  clipBehavior: Clip.none,
                   children: [
                     /// Trimmer background
-                    GestureDetector(
-                      onHorizontalDragEnd:
-                          !isDesktop ? null : (_) => _triggerTrimSpanEnd(),
-                      onHorizontalDragUpdate: !isDesktop
-                          ? null
-                          : (details) {
-                              _updateScrollbar(details.delta.dx);
-                            },
-                      child: const VideoEditorTrimThumbnailBar(),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: handlerButtonSize,
+                      ),
+                      child: GestureDetector(
+                        onHorizontalDragEnd:
+                            !isDesktop ? null : (_) => _triggerTrimSpanEnd(),
+                        onHorizontalDragUpdate: !isDesktop
+                            ? null
+                            : (details) {
+                                _updateScrollbar(details.delta.dx);
+                              },
+                        child: const VideoEditorTrimThumbnailBar(),
+                      ),
                     ),
 
                     /// Outside shadows
@@ -228,8 +256,8 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
 
                     /// Trim body area
                     _buildTrimBodyArea(
-                      offsetLeftHandler,
-                      offsetRightHandler,
+                      offsetLeftHandler + handlerButtonSize,
+                      offsetRightHandler - handlerButtonSize,
                       scaledWidth,
                       trimWidth,
                     ),
@@ -254,10 +282,12 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
     double offsetRightHandler,
     double scaledWidth,
   ) {
-    double radiusWidth = _player.style.trimBarHandlerRadius;
+    var style = _player.style;
+    double radiusWidth = style.trimBarHandlerRadius;
+    var handlerButtonSize = style.trimBarHandlerButtonSize;
     return [
       Positioned(
-        left: 0,
+        left: handlerButtonSize,
         width: offsetLeftHandler + radiusWidth,
         height: _player.style.trimBarHeight,
         child: IgnorePointer(
@@ -272,8 +302,8 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
         ),
       ),
       Positioned(
-        left: offsetRightHandler,
-        width: scaledWidth - offsetRightHandler,
+        left: offsetRightHandler + handlerButtonSize,
+        width: scaledWidth - offsetRightHandler - handlerButtonSize * 2,
         height: _player.style.trimBarHeight,
         child: IgnorePointer(
           child: Container(
@@ -334,11 +364,15 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
   }
 
   Widget _buildResizeHandler(bool isLeft, double offset, double scaledWidth) {
+    var notifier =
+        isLeft ? _leftHandlerActiveNotifier : _rightHandlerActiveNotifier;
     return Positioned(
       left: offset,
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onHorizontalDragEnd: (_) => _triggerTrimSpanEnd(),
+        onHorizontalDragStart: (_) {
+          notifier.value = true;
+        },
         onHorizontalDragUpdate: (details) {
           if (isLeft) {
             double newValue = _trimStart + details.primaryDelta! / scaledWidth;
@@ -348,7 +382,18 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
             _updateTrimEnd(min(1, newValue));
           }
         },
-        child: VideoEditorTrimHandle(isLeft: isLeft),
+        onHorizontalDragEnd: (_) {
+          _triggerTrimSpanEnd();
+          notifier.value = false;
+        },
+        child: ValueListenableBuilder(
+            valueListenable: notifier,
+            builder: (_, value, __) {
+              return VideoEditorTrimHandle(
+                isSelected: value,
+                isLeft: isLeft,
+              );
+            }),
       ),
     );
   }

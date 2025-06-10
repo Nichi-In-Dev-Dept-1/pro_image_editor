@@ -1,5 +1,5 @@
-import 'package:pro_image_editor/core/models/init_configs/editor_init_configs.dart';
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '/core/models/init_configs/editor_init_configs.dart';
+import '/pro_image_editor.dart';
 
 /// A utility class that maps [EditorInitConfigs] instances to their
 /// corresponding [EditorMode].

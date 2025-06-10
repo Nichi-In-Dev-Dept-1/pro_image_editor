@@ -40,6 +40,7 @@ class I18nPaintEditor {
     this.rectangle = 'Rectangle',
     this.circle = 'Circle',
     this.dashLine = 'Dash line',
+    this.polygon = 'Polygon',
     this.blur = 'Blur',
     this.pixelate = 'Pixelate',
     this.lineWidth = 'Line width',
@@ -83,6 +84,9 @@ class I18nPaintEditor {
 
   /// Text for the "Dash line" paint mode.
   final String dashLine;
+
+  /// Text for the "Polygon" paint mode.
+  final String polygon;
 
   /// Text for the "Blur" paint mode.
   final String blur;
@@ -132,6 +136,7 @@ class I18nPaintEditor {
     String? rectangle,
     String? circle,
     String? dashLine,
+    String? polygon,
     String? blur,
     String? pixelate,
     String? lineWidth,
@@ -154,6 +159,7 @@ class I18nPaintEditor {
       rectangle: rectangle ?? this.rectangle,
       circle: circle ?? this.circle,
       dashLine: dashLine ?? this.dashLine,
+      polygon: polygon ?? this.polygon,
       blur: blur ?? this.blur,
       pixelate: pixelate ?? this.pixelate,
       lineWidth: lineWidth ?? this.lineWidth,

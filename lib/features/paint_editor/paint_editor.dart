@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pro_image_editor/shared/mixins/editor_zoom.mixin.dart';
 
 import '/core/constants/image_constants.dart';
 import '/core/mixins/converted_callbacks.dart';
@@ -26,6 +25,8 @@ import '/shared/widgets/extended/extended_interactive_viewer.dart';
 import '/shared/widgets/layer/layer_stack.dart';
 import '/shared/widgets/slider_bottom_sheet.dart';
 import '/shared/widgets/transform/transformed_content_generator.dart';
+import '../../core/utils/size_utils.dart';
+import '../../shared/mixins/editor_zoom.mixin.dart';
 import '../filter_editor/widgets/filtered_widget.dart';
 import 'controllers/paint_controller.dart';
 import 'models/painted_model.dart';
@@ -289,6 +290,12 @@ class PaintEditorState extends State<PaintEditor>
             icon: paintEditorConfigs.icons.dashLine,
             label: i18n.paintEditor.dashLine,
           ),
+        if (paintEditorConfigs.enableModePolygon)
+          PaintModeBottomBarItem(
+            mode: PaintMode.polygon,
+            icon: paintEditorConfigs.icons.polygon,
+            label: i18n.paintEditor.polygon,
+          ),
         if (paintEditorConfigs.enableModePixelate &&
             ShaderManager.instance.isShaderFilterSupported)
           PaintModeBottomBarItem(
@@ -398,25 +405,23 @@ class PaintEditorState extends State<PaintEditor>
     showModalBottomSheet(
       context: context,
       backgroundColor: paintEditorConfigs.style.lineWidthBottomSheetBackground,
-      builder: (BuildContext context) {
-        return SliderBottomSheet<PaintEditorState>(
-          title: i18n.paintEditor.lineWidth,
-          headerTextStyle: paintEditorConfigs.style.lineWidthBottomSheetTitle,
-          min: 2,
-          max: 40,
-          divisions: 19,
-          closeButton: paintEditorConfigs.widgets.lineWidthCloseButton,
-          customSlider: paintEditorConfigs.widgets.sliderLineWidth,
-          state: this,
-          value: paintCtrl.strokeWidth,
-          designMode: designMode,
-          theme: theme,
-          rebuildController: rebuildController,
-          onValueChanged: (value) {
-            setStrokeWidth(value);
-          },
-        );
-      },
+      builder: (BuildContext context) => SliderBottomSheet<PaintEditorState>(
+        title: i18n.paintEditor.lineWidth,
+        headerTextStyle: paintEditorConfigs.style.lineWidthBottomSheetTitle,
+        min: 2,
+        max: 40,
+        divisions: 19,
+        closeButton: paintEditorConfigs.widgets.lineWidthCloseButton,
+        customSlider: paintEditorConfigs.widgets.sliderLineWidth,
+        state: this,
+        value: paintCtrl.strokeWidth,
+        designMode: designMode,
+        theme: theme,
+        rebuildController: rebuildController,
+        onValueChanged: (value) {
+          setStrokeWidth(value);
+        },
+      ),
     );
   }
 
@@ -424,26 +429,23 @@ class PaintEditorState extends State<PaintEditor>
   void openOpacityBottomSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: paintEditorConfigs.style.opacityBottomSheetBackground,
-      builder: (BuildContext context) {
-        return SliderBottomSheet<PaintEditorState>(
-          title: i18n.paintEditor.changeOpacity,
-          headerTextStyle: paintEditorConfigs.style.opacityBottomSheetTitle,
-          max: 1,
-          min: 0,
-          divisions: 100,
-          closeButton: paintEditorConfigs.widgets.changeOpacityCloseButton,
-          customSlider: paintEditorConfigs.widgets.sliderChangeOpacity,
-          state: this,
-          value: paintCtrl.opacity,
-          designMode: designMode,
-          theme: theme,
-          rebuildController: rebuildController,
-          onValueChanged: (value) {
-            setOpacity(value);
-          },
-        );
-      },
+      builder: (BuildContext context) => SliderBottomSheet<PaintEditorState>(
+        title: i18n.paintEditor.changeOpacity,
+        headerTextStyle: paintEditorConfigs.style.opacityBottomSheetTitle,
+        max: 1,
+        min: 0,
+        divisions: 100,
+        closeButton: paintEditorConfigs.widgets.changeOpacityCloseButton,
+        customSlider: paintEditorConfigs.widgets.sliderChangeOpacity,
+        state: this,
+        value: paintCtrl.opacity,
+        designMode: designMode,
+        theme: theme,
+        rebuildController: rebuildController,
+        onValueChanged: (value) {
+          setOpacity(value);
+        },
+      ),
     );
   }
 
@@ -593,7 +595,10 @@ class PaintEditorState extends State<PaintEditor>
           e.mode == PaintMode.line ||
           e.mode == PaintMode.dashLine ||
           e.mode == PaintMode.arrow ||
-          ((e.mode == PaintMode.rect || e.mode == PaintMode.circle) && !e.fill);
+          ((e.mode == PaintMode.polygon ||
+                  e.mode == PaintMode.rect ||
+                  e.mode == PaintMode.circle) &&
+              !e.fill);
 
       // Scale and offset the offsets of the paint layer
       double strokeHelperWidth = onlyStrokeMode ? e.strokeWidth : 0;
@@ -719,28 +724,26 @@ class PaintEditorState extends State<PaintEditor>
   /// Builds the main body of the paint editor.
   /// Returns a [Widget] representing the editor's body.
   Widget _buildBody() {
-    return SafeArea(
-      child: LayoutBuilder(builder: (context, constraints) {
-        editorBodySize = constraints.biggest;
-        return Theme(
-          data: theme,
-          child: Material(
-            color:
-                initConfigs.convertToUint8List && initConfigs.convertToUint8List
-                    ? paintEditorConfigs.style.background
-                    : Colors.transparent,
-            textStyle: platformTextStyle(context, designMode),
-            child: Stack(
-              alignment: Alignment.center,
-              fit: StackFit.expand,
-              children: _fakeHeroBytes != null
-                  ? _buildFakeHero()
-                  : _buildInteractiveContent(),
-            ),
+    return LayoutBuilder(builder: (context, constraints) {
+      editorBodySize = constraints.biggest;
+      return Theme(
+        data: theme,
+        child: Material(
+          color:
+              initConfigs.convertToUint8List && initConfigs.convertToUint8List
+                  ? paintEditorConfigs.style.background
+                  : Colors.transparent,
+          textStyle: platformTextStyle(context, designMode),
+          child: Stack(
+            alignment: Alignment.center,
+            fit: StackFit.expand,
+            children: _fakeHeroBytes != null
+                ? _buildFakeHero()
+                : _buildInteractiveContent(),
           ),
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 
   List<Widget> _buildFakeHero() {
@@ -824,10 +827,10 @@ class PaintEditorState extends State<PaintEditor>
                           configs: configs,
                           layers: layers!,
                           transformHelper: TransformHelper(
-                            mainBodySize:
-                                getMinimumSize(mainBodySize, editorBodySize),
-                            mainImageSize:
-                                getMinimumSize(mainImageSize, editorBodySize),
+                            mainBodySize:getValidSizeOrDefault(
+                                mainBodySize, editorBodySize),
+                            mainImageSize:getValidSizeOrDefault(
+                                mainImageSize, editorBodySize),
                             editorBodySize: editorBodySize,
                             transformConfigs: initialTransformConfigs,
                           ),
@@ -864,8 +867,8 @@ class PaintEditorState extends State<PaintEditor>
       configs: configs,
       transformConfigs: initialTransformConfigs ?? TransformConfigs.empty(),
       child: FilteredWidget(
-        width: getMinimumSize(mainImageSize, editorBodySize).width,
-        height: getMinimumSize(mainImageSize, editorBodySize).height,
+        width: getValidSizeOrDefault(mainImageSize, editorBodySize).width,
+        height: getValidSizeOrDefault(mainImageSize, editorBodySize).height,
         configs: configs,
         image: editorImage,
         videoPlayer: videoController?.videoPlayer,

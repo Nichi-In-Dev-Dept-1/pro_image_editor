@@ -2,7 +2,10 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '/core/constants/editor_style_constants.dart';
+import '/features/tune_editor/tune_editor.dart';
+import '/shared/utils/platform_info.dart';
+import '/shared/widgets/flat_icon_text_button.dart';
 import '../frosted_glass_effect.dart';
 
 /// A custom bottom bar widget that creates a frosted glass effect for the

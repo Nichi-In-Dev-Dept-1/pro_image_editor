@@ -149,8 +149,8 @@ class _FrameExampleState extends State<FrameExample>
         constraints: BoxConstraints(
           minWidth: min(MediaQuery.sizeOf(context).width, 360),
         ),
-        builder: (context) {
-          return Material(
+        builder: (context) => SafeArea(
+          child: Material(
             color: Colors.transparent,
             child: SingleChildScrollView(
               child: Padding(
@@ -180,8 +180,8 @@ class _FrameExampleState extends State<FrameExample>
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       );
     }
   }
@@ -377,7 +377,7 @@ class _FrameExampleState extends State<FrameExample>
           stickerEditor: StickerEditorConfigs(
             enabled: false,
             initWidth: _layerInitWidth / _initScale,
-            buildStickers: (setLayer, scrollController) {
+            builder: (setLayer, scrollController) {
               // Optionally your code to pick layers
               return const SizedBox();
             },

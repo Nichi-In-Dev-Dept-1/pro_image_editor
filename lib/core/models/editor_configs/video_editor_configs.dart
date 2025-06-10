@@ -23,6 +23,8 @@ class VideoEditorConfigs {
     this.initialMuted = false,
     this.trimBarInvertMouseScroll = false,
     this.isAudioSupported = true,
+    this.enablePlayButton = false,
+    this.enableEstimatedFileSize = false,
     this.controlsPosition = VideoEditorControlPosition.top,
     this.minTrimDuration = const Duration(seconds: 7),
     this.animatedIndicatorDuration = const Duration(milliseconds: 200),
@@ -53,6 +55,21 @@ class VideoEditorConfigs {
 
   /// Indicates if the output format support audio.
   final bool isAudioSupported;
+
+  /// If `true` a small play/pause button will be displayed next to the
+  /// mute button.
+  /// If `false` tapping on the video will toggle play/pause, and a round
+  /// play button will be shown over the video.
+  final bool enablePlayButton;
+
+  /// Displays an estimated file size based on the trim duration and bitrate.
+  ///
+  /// **IMPORTANT:** The bitrate must be set in the `ProVideoController`.
+  /// Note that not all devices support Constant Bitrate (CBR) mode.
+  /// If unsupported, the encoder may silently fall back to Variable Bitrate
+  /// (VBR), and the actual bitrate may be constrained by device-specific
+  /// limits. That mean the displayed estimated file size could be wrong.
+  final bool enableEstimatedFileSize;
 
   /// Minimum scale factor for the trim bar.
   final double trimBarMinScale;
@@ -90,6 +107,8 @@ class VideoEditorConfigs {
     bool? initialMuted,
     bool? trimBarInvertMouseScroll,
     bool? isAudioSupported,
+    bool? enablePlayButton,
+    bool? enableEstimatedFileSize,
     double? trimBarMinScale,
     double? trimBarMaxScale,
     Duration? playTimeSmoothingDuration,
@@ -105,9 +124,12 @@ class VideoEditorConfigs {
       widgets: widgets ?? this.widgets,
       initialPlay: initialPlay ?? this.initialPlay,
       initialMuted: initialMuted ?? this.initialMuted,
-      isAudioSupported: isAudioSupported ?? this.isAudioSupported,
       trimBarInvertMouseScroll:
           trimBarInvertMouseScroll ?? this.trimBarInvertMouseScroll,
+      isAudioSupported: isAudioSupported ?? this.isAudioSupported,
+      enablePlayButton: enablePlayButton ?? this.enablePlayButton,
+      enableEstimatedFileSize:
+          enableEstimatedFileSize ?? this.enableEstimatedFileSize,
       trimBarMinScale: trimBarMinScale ?? this.trimBarMinScale,
       trimBarMaxScale: trimBarMaxScale ?? this.trimBarMaxScale,
       playTimeSmoothingDuration:
@@ -133,8 +155,10 @@ class VideoEditorConfigs {
         other.widgets == widgets &&
         other.initialPlay == initialPlay &&
         other.initialMuted == initialMuted &&
-        other.isAudioSupported == isAudioSupported &&
         other.trimBarInvertMouseScroll == trimBarInvertMouseScroll &&
+        other.isAudioSupported == isAudioSupported &&
+        other.enablePlayButton == enablePlayButton &&
+        other.enableEstimatedFileSize == enableEstimatedFileSize &&
         other.trimBarMinScale == trimBarMinScale &&
         other.trimBarMaxScale == trimBarMaxScale &&
         other.playTimeSmoothingDuration == playTimeSmoothingDuration &&
@@ -154,8 +178,10 @@ class VideoEditorConfigs {
         widgets.hashCode ^
         initialPlay.hashCode ^
         initialMuted.hashCode ^
-        isAudioSupported.hashCode ^
         trimBarInvertMouseScroll.hashCode ^
+        isAudioSupported.hashCode ^
+        enablePlayButton.hashCode ^
+        enableEstimatedFileSize.hashCode ^
         trimBarMinScale.hashCode ^
         trimBarMaxScale.hashCode ^
         playTimeSmoothingDuration.hashCode ^

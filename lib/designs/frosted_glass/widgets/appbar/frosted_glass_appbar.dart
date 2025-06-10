@@ -1,10 +1,10 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+import '../../../../pro_image_editor.dart';
 // Project imports:
-import 'package:pro_image_editor/designs/frosted_glass/frosted_glass.dart';
-import 'package:pro_image_editor/designs/frosted_glass/widgets/frosted_glass_effect.dart';
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '../../frosted_glass.dart';
+import '../frosted_glass_effect.dart';
 
 /// A custom action bar widget with a frosted glass effect, designed for use
 /// within an image editing application. This widget provides an interface for

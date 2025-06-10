@@ -41,7 +41,9 @@ class _RoundCropperExampleState extends State<RoundCropperExample>
         callbacks: ProImageEditorCallbacks(
           onImageEditingStarted: onImageEditingStarted,
           onImageEditingComplete: onImageEditingComplete,
-          onCloseEditor: (editorMode) => onCloseEditor(editorMode: editorMode),
+          onCloseEditor: (editorMode) => onCloseEditor(
+            editorMode: EditorMode.main,
+          ),
         ),
         configs: ProImageEditorConfigs(
           designMode: platformDesignMode,

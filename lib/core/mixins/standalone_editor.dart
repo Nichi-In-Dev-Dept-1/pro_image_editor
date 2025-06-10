@@ -216,6 +216,8 @@ mixin StandaloneEditorState<T extends StatefulWidget,
             startTime: null,
             endTime: null,
             image: imageBytes,
+            isTransformed: isTransformed,
+            layers: layers ?? [],
           ),
         );
       }
@@ -301,18 +303,6 @@ mixin StandaloneEditorState<T extends StatefulWidget,
     screenshotCtrl.destroy();
     rebuildController.close();
     super.dispose();
-  }
-
-  /// Gets the minimum size between two sizes.
-  ///
-  /// This method returns the smaller of two sizes, ensuring that the resulting
-  /// size is neither null nor empty.
-  Size getMinimumSize(Size? a, Size b) {
-    return a == null || a.isEmpty
-        ? b.isEmpty
-            ? const Size(1, 1)
-            : b
-        : a;
   }
 
   Future<Uint8List> _createTransparentImage() async {

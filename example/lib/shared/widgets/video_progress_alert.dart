@@ -1,4 +1,4 @@
-/* import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:pro_video_editor/pro_video_editor.dart';
@@ -9,7 +9,13 @@ import 'package:pro_video_editor/pro_video_editor.dart';
 /// circular progress indicator with percentage text.
 class VideoProgressAlert extends StatelessWidget {
   /// Creates a [VideoProgressAlert] widget.
-  const VideoProgressAlert({super.key});
+  const VideoProgressAlert({
+    super.key,
+    this.taskId = '',
+  });
+
+  /// Optional taskId of the progress stream.
+  final String taskId;
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +47,10 @@ class VideoProgressAlert extends StatelessWidget {
   }
 
   Widget _buildProgressBody() {
-    return StreamBuilder<double>(
-        stream: VideoUtilsService.instance.exportProgressStream,
+    return StreamBuilder<ProgressModel>(
+        stream: ProVideoEditor.instance.progressStreamById(taskId),
         builder: (context, snapshot) {
-          var progress = snapshot.data ?? 0;
+          var progress = snapshot.data?.progress ?? 0;
           return TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 0, end: progress),
               duration: const Duration(milliseconds: 300),
@@ -72,4 +78,3 @@ class VideoProgressAlert extends StatelessWidget {
         });
   }
 }
- */

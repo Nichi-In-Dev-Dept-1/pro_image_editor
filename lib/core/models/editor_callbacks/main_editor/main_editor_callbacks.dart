@@ -103,19 +103,19 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   ///
   /// The [ScaleStartDetails] parameter provides information about the scaling
   /// gesture.
-  final Function(ScaleStartDetails)? onScaleStart;
+  final Function(ScaleStartDetails value)? onScaleStart;
 
   /// A callback function that is triggered when a scaling gesture is updated.
   ///
   /// The [ScaleUpdateDetails] parameter provides information about the scaling
   /// gesture.
-  final Function(ScaleUpdateDetails)? onScaleUpdate;
+  final Function(ScaleUpdateDetails value)? onScaleUpdate;
 
   /// A callback function that is triggered when a scaling gesture ends.
   ///
   /// The [ScaleEndDetails] parameter provides information about the scaling
   /// gesture.
-  final Function(ScaleEndDetails)? onScaleEnd;
+  final Function(ScaleEndDetails value)? onScaleEnd;
 
   /// Called when the user ends a pan or scale gesture on the widget.
   ///

@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart';
-import 'package:pro_image_editor/core/models/editor_configs/utils/editor_safe_area.dart';
 
 import '/features/crop_rotate_editor/models/transform_factors.dart';
 import '/shared/utils/decode_image.dart';
 import '../custom_widgets/main_editor_widgets.dart';
 import '../icons/main_editor_icons.dart';
 import '../styles/main_editor_style.dart';
+import 'utils/editor_safe_area.dart';
 import 'utils/zoom_configs.dart';
 
 export '../custom_widgets/main_editor_widgets.dart';

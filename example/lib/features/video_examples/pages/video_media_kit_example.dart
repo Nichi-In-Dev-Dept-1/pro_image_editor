@@ -1,4 +1,4 @@
-/* import 'dart:async';
+import 'dart:async';
 
 import 'package:example/shared/widgets/video_progress_alert.dart';
 import 'package:flutter/material.dart';
@@ -41,22 +41,18 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
   }
 
   void _initializePlayer() async {
-    video = EditorVideo(assetPath: kVideoEditorExampleAssetPath);
+    generateThumbnails();
+    video = EditorVideo.asset(kVideoEditorExampleAssetPath);
 
-    await setVideoInformations();
-    await generateThumbnails();
-    if (!mounted) return;
-
-    await _player.open(
-      Media('asset:///$kVideoEditorExampleAssetPath'),
-      play: videoConfigs.initialPlay,
-    );
-    if (!mounted) return;
-
-    await _player.setPlaylistMode(PlaylistMode.none);
-    if (!mounted) return;
-
-    await _player.setVolume(videoConfigs.initialMuted ? 0 : 100);
+    await Future.wait([
+      setMetadata(),
+      _player.open(
+        Media('asset:///$kVideoEditorExampleAssetPath'),
+        play: videoConfigs.initialPlay,
+      ),
+      _player.setPlaylistMode(PlaylistMode.none),
+      _player.setVolume(videoConfigs.initialMuted ? 0 : 100),
+    ]);
 
     /// Listen to play time
     _player.stream.position.listen((position) {
@@ -68,11 +64,11 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
       if (durationSpan != null &&
           position.inSeconds >= durationSpan!.end.inSeconds) {
         _seekToPosition(durationSpan!);
-      } else if (position.inSeconds >= videoInformation.duration.inSeconds) {
+      } else if (position.inSeconds >= videoMetadata.duration.inSeconds) {
         _seekToPosition(
           TrimDurationSpan(
             start: Duration.zero,
-            end: videoInformation.duration,
+            end: videoMetadata.duration,
           ),
         );
       }
@@ -89,9 +85,10 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
 
     proVideoController = ProVideoController(
       videoPlayer: _buildVideoPlayer(),
-      initialResolution: videoInformation.resolution,
-      videoDuration: videoInformation.duration,
-      fileSize: videoInformation.fileSize,
+      initialResolution: videoMetadata.resolution,
+      videoDuration: videoMetadata.duration,
+      fileSize: videoMetadata.fileSize,
+      bitrate: videoMetadata.bitrate,
       thumbnails: thumbnails,
     );
 
@@ -152,7 +149,7 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
                 dialogConfigs: DialogConfigs(
                   widgets: DialogWidgets(
                     loadingDialog: (message, configs) =>
-                        const VideoProgressAlert(),
+                        VideoProgressAlert(taskId: taskId),
                   ),
                 ),
                 mainEditor: MainEditorConfigs(
@@ -184,4 +181,3 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
     );
   }
 }
- */

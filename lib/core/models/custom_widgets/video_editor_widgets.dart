@@ -12,10 +12,12 @@ class VideoEditorWidgets {
     this.playIndicator,
     this.pauseIndicator,
     this.muteButton,
+    this.playButton,
     this.trimDurationInfo,
     this.infoBanner,
     this.trimBar,
     this.headerToolbar,
+    this.trimBarSkeletonLoader,
   });
 
   /// Widget displayed when the video is playing.
@@ -24,10 +26,17 @@ class VideoEditorWidgets {
   /// Widget displayed when the video is paused.
   final Widget? pauseIndicator;
 
-  /// A function that builds the mute button.
+  /// A builder function that builds the mute button.
   ///
   /// The provided callback [setMute] toggles mute state.
   final Widget Function(Function(bool isMuted) setMute)? muteButton;
+
+  /// A builder function for the play button widget. This button is only visible
+  /// if `enablePlayButton` is set to `true`.
+  ///
+  /// The provided [toggleState] callback toggles the playback state,
+  /// where `isPlaying` indicates the new state.
+  final Widget Function(Function(bool isPlaying) toggleState)? playButton;
 
   /// A function that builds the trim duration info display.
   ///
@@ -45,6 +54,10 @@ class VideoEditorWidgets {
   /// Widget for the header toolbar in the video editor.
   final Widget? headerToolbar;
 
+  /// Serves as a skeleton loader for the trim bar, typically displayed while
+  /// video thumbnails are loading or processing.
+  final Widget? trimBarSkeletonLoader;
+
   /// Creates a copy of this instance with the given parameters overridden.
   VideoEditorWidgets copyWith({
     Widget? playIndicator,
@@ -54,6 +67,7 @@ class VideoEditorWidgets {
     Widget Function(TrimDurationSpan durationSpan)? infoBanner,
     Widget? trimBar,
     Widget? headerToolbar,
+    Widget? trimBarSkeletonLoader,
   }) {
     return VideoEditorWidgets(
       playIndicator: playIndicator ?? this.playIndicator,
@@ -63,6 +77,8 @@ class VideoEditorWidgets {
       infoBanner: infoBanner ?? this.infoBanner,
       trimBar: trimBar ?? this.trimBar,
       headerToolbar: headerToolbar ?? this.headerToolbar,
+      trimBarSkeletonLoader:
+          trimBarSkeletonLoader ?? this.trimBarSkeletonLoader,
     );
   }
 }

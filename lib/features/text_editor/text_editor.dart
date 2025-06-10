@@ -267,29 +267,27 @@ class TextEditorState extends State<TextEditor>
     showModalBottomSheet(
       context: context,
       backgroundColor: textEditorConfigs.style.fontScaleBottomSheetBackground,
-      builder: (BuildContext context) {
-        return SliderBottomSheet<TextEditorState>(
-          value: _fontScale,
-          title: i18n.textEditor.fontScale,
-          headerTextStyle: textEditorConfigs.style.fontSizeBottomSheetTitle,
-          resetIcon: textEditorConfigs.icons.resetFontScale,
-          max: textEditorConfigs.maxFontScale,
-          min: textEditorConfigs.minFontScale,
-          divisions: (textEditorConfigs.maxFontScale -
-                  textEditorConfigs.minFontScale) ~/
-              0.1,
-          state: this,
-          showFactorInTitle: true,
-          closeButton: textEditorConfigs.widgets.fontSizeCloseButton,
-          customSlider: textEditorConfigs.widgets.sliderFontSize,
-          designMode: designMode,
-          theme: widget.theme,
-          rebuildController: _rebuildController,
-          onValueChanged: (value) {
-            fontScale = value;
-          },
-        );
-      },
+      builder: (BuildContext context) => SliderBottomSheet<TextEditorState>(
+        value: _fontScale,
+        title: i18n.textEditor.fontScale,
+        headerTextStyle: textEditorConfigs.style.fontSizeBottomSheetTitle,
+        resetIcon: textEditorConfigs.icons.resetFontScale,
+        max: textEditorConfigs.maxFontScale,
+        min: textEditorConfigs.minFontScale,
+        divisions:
+            (textEditorConfigs.maxFontScale - textEditorConfigs.minFontScale) ~/
+                0.1,
+        state: this,
+        showFactorInTitle: true,
+        closeButton: textEditorConfigs.widgets.fontSizeCloseButton,
+        customSlider: textEditorConfigs.widgets.sliderFontSize,
+        designMode: designMode,
+        theme: widget.theme,
+        rebuildController: _rebuildController,
+        onValueChanged: (value) {
+          fontScale = value;
+        },
+      ),
     );
   }
 

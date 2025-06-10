@@ -1,5 +1,44 @@
 # Changelog
 
+## 9.11.2
+- **FIX**(bottom-sheet): Wrap bottom sheets in `SafeArea` to ensure proper display within device safe zones.
+
+## 9.11.1
+- **FIX**(video-editor): Add missing `image` parameter to `GroundedFilterBar`.
+
+## 9.11.0
+- **FEAT**(video-editor): Added new parameters to `CompleteParameters` required for extending the editor with video editing.
+- **FIX**(video-editor): Fixed issue where filter previews were displayed incorrectly.
+- **FIX**(video-editor): Fixed issue where the trim bar lost its state when moving a layer.
+
+## 9.10.1
+- **FIX**(double-tap): Resolve issue where double tapping still zooms even when `enableZoom` is set to `false`. This resolves issue [#484](https://github.com/hm21/pro_image_editor/issues/484).
+
+## 9.10.0
+- **FEAT**(polygon): Added new paint-mode "polygon".
+
+## 9.9.5
+- **FIX**(widget-layer): `copyWith` now correctly includes `exportConfigs`. 
+
+## 9.9.4
+- **FIX**(Main-Editor): Corrected editor name handling in `openPage` to ensure proper behavior of `onOpenSubEditor`, `onStartCloseSubEditor` and `onEndCloseSubEditor`. This resolves issue [#474](https://github.com/hm21/pro_image_editor/issues/474).
+
+## 9.9.3
+- **FIX**(Layers): Corrected size calculation to prevent layer shifting.
+- **FIX**(Main-Editor): Fixed an issue where disabled layers blocked zoom gestures.
+
+## 9.9.2
+ - **FIX**(Crop-Rotate-Editor): Ensure the editor respects the `maxOutputSize` constraint.
+
+## 9.9.1
+ - **FIX**(Crop-Rotate-Editor): Prevent crashes when clamping values with reversed lower and upper limits. This resolves issue [#462](https://github.com/hm21/pro_image_editor/issues/462).
+
+## 9.9.0
+ - **FEAT**(Sticker-Editor): Added `builder` parameter to `StickerEditorConfigs`, which will replace `buildStickers` in the future. The new `builder` supports directly returning a `WidgetLayer` instead of just a `Widget`, enabling more flexibility and control.
+
+## 9.8.2
+ - **FIX**(Paint-Eraser): Resolved an issue where the layer eraser only worked when the user tapped on a layer.
+
 ## 9.8.1
  - **FIX**(Image-Generation): Resolved an issue that the image generation was slowly.
 

@@ -1,10 +1,9 @@
 // Flutter imports:
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pro_image_editor/designs/frosted_glass/frosted_glass.dart';
 
-// Project imports:
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '/pro_image_editor.dart';
+import '../../frosted_glass/frosted_glass.dart';
 
 /// A widget that provides the sticker editor interface in the ProImageEditor.
 ///

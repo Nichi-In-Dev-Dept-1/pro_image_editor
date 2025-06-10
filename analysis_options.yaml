@@ -26,10 +26,10 @@ linter:
     - public_member_api_docs
     - annotate_overrides
     - avoid_empty_else
+    - prefer_relative_imports
     - avoid_function_literals_in_foreach_calls
     - avoid_init_to_null
     - avoid_null_checks_in_equality_operators
-    - avoid_relative_lib_imports
     - avoid_renaming_method_parameters
     - avoid_return_types_on_setters
     - avoid_types_as_parameter_names

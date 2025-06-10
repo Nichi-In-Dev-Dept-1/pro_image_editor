@@ -1,8 +1,7 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:pro_image_editor/pro_image_editor.dart';
 
-// Project imports:
+import '/pro_image_editor.dart';
 import 'frosted_glass_effect.dart';
 
 /// A stateless widget that displays a loading dialog with a frosted glass

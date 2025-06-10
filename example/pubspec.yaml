@@ -25,15 +25,18 @@ dependencies:
   firebase_core: ^3.12.1
   firebase_storage: ^12.4.4
   supabase_flutter: ^2.8.1
+  image_background_remover: ^1.0.0
   image_picker: ^1.1.2
   mime: ^2.0.0
   url_launcher: ^6.3.1
   flutter_colorpicker: ^1.1.0
   vibration: ^3.1.1
 
-  # pro_video_editor: ^0.0.9
-  chewie: ^1.11.0
+  # Video-Editing
+  pro_video_editor: ^0.1.0
+  ### Choose one player below
   video_player: ^2.9.3
+  chewie: ^1.11.0
   flick_video_player: ^0.9.0
   media_kit: ^1.1.11 # Primary package.
   media_kit_video: ^1.2.5 # For video rendering.

@@ -249,7 +249,7 @@ class _FilterEditorItemListState extends State<FilterEditorItemList> {
     TransformConfigs transformConfigs =
         widget.transformConfigs ?? TransformConfigs.empty();
 
-    bool emptyConfigs = transformConfigs.isEmpty;
+    bool emptyConfigs = transformConfigs.isEmpty && widget.editorImage != null;
 
     Size imageSize = emptyConfigs || transformConfigs.cropRect == Rect.largest
         ? widget.mainImageSize

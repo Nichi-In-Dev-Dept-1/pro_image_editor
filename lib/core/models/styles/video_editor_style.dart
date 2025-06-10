@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 /// Defines style configurations for the video editor.
@@ -8,6 +9,7 @@ class VideoEditorStyle {
   /// video editor UI elements such as play indicators, mute buttons,
   /// trim bar, and banners.
   const VideoEditorStyle({
+    this.toolbarPadding = const EdgeInsets.symmetric(horizontal: 16),
     this.playIndicatorColor = const Color(0xFFFFFFFF),
     this.playIndicatorBackground = const Color.fromARGB(128, 0, 0, 0),
     this.muteButtonColor = const Color(0xFFFFFFFF),
@@ -21,15 +23,15 @@ class VideoEditorStyle {
     this.trimBarTextColor = const Color(0xFFFFFFFF),
     this.trimBarTextBackground = const Color.fromARGB(120, 0, 0, 0),
     this.trimBarColor = const Color(0xFFFFFFFF),
-    this.trimBarBackground = const Color(0xFF0f7dff),
+    this.trimBarBackground = const Color(0xFFFFFFFF),
     this.trimBarOutsideAreaBackground = const Color.fromARGB(120, 0, 0, 0),
     this.trimBarPlayTimeIndicatorColor = const Color(0xFFFFFFFF),
     this.trimBarPlayTimeIndicatorWidth = 1,
-    this.trimBarHandlerIconSize = 24,
+    this.trimBarHandlerButtonSize = 12,
     this.trimBarHeight = 50,
-    this.trimBarHandlerWidth = 20,
-    this.trimBarHandlerRadius = 5,
-    this.trimBarBorderWidth = 3,
+    this.trimBarHandlerWidth = 24,
+    this.trimBarHandlerRadius = 0,
+    this.trimBarBorderWidth = 1,
     this.trimBarGradientBackground = const LinearGradient(
       colors: [
         Color(0xFF1E1E1E), // Dark gray
@@ -39,7 +41,15 @@ class VideoEditorStyle {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
+    this.trimBarSkeletonColors = const [
+      Color(0xFF212121),
+      Color(0xFF616161),
+      Color(0xFF212121),
+    ],
   });
+
+  /// The Padding around the toolbar.
+  final EdgeInsets toolbarPadding;
 
   /// Color of the play indicator icon.
   final Color playIndicatorColor;
@@ -88,6 +98,13 @@ class VideoEditorStyle {
   /// thumbnails from different timestamps.
   final Gradient trimBarGradientBackground;
 
+  /// A list of [Color]s used to style the skeleton (background or placeholder)
+  /// appearance of the trim bar in the video editor UI.
+  ///
+  /// This can be used to create gradients or multi-colored effects for the
+  /// trim bar when the actual content is loading or as a decorative element.
+  final List<Color> trimBarSkeletonColors;
+
   /// Background color of the area outside the trim bar.
   final Color trimBarOutsideAreaBackground;
 
@@ -106,14 +123,15 @@ class VideoEditorStyle {
   /// Width of the trim bar handler.
   final double trimBarHandlerWidth;
 
-  /// Icon size of the trim bar handler.
-  final double trimBarHandlerIconSize;
+  /// Button size of the trim bar handler.
+  final double trimBarHandlerButtonSize;
 
   /// Radius of the trim bar handler.
   final double trimBarHandlerRadius;
 
   /// Creates a copy of this instance with the given parameters overridden.
   VideoEditorStyle copyWith({
+    EdgeInsets? toolbarPadding,
     Color? playIndicatorColor,
     Color? playIndicatorBackground,
     Color? muteButtonColor,
@@ -129,16 +147,18 @@ class VideoEditorStyle {
     Color? trimBarColor,
     Color? trimBarBackground,
     Gradient? trimBarGradientBackground,
+    List<Color>? trimBarSkeletonColors,
     Color? trimBarOutsideAreaBackground,
     double? trimBarHeight,
     double? trimBarBorderWidth,
     Color? trimBarPlayTimeIndicatorColor,
     double? trimBarPlayTimeIndicatorWidth,
     double? trimBarHandlerWidth,
-    double? trimBarHandlerIconSize,
+    double? trimBarHandlerButtonSize,
     double? trimBarHandlerRadius,
   }) {
     return VideoEditorStyle(
+      toolbarPadding: toolbarPadding ?? this.toolbarPadding,
       playIndicatorColor: playIndicatorColor ?? this.playIndicatorColor,
       playIndicatorBackground:
           playIndicatorBackground ?? this.playIndicatorBackground,
@@ -160,6 +180,8 @@ class VideoEditorStyle {
       trimBarBackground: trimBarBackground ?? this.trimBarBackground,
       trimBarGradientBackground:
           trimBarGradientBackground ?? this.trimBarGradientBackground,
+      trimBarSkeletonColors:
+          trimBarSkeletonColors ?? this.trimBarSkeletonColors,
       trimBarOutsideAreaBackground:
           trimBarOutsideAreaBackground ?? this.trimBarOutsideAreaBackground,
       trimBarHeight: trimBarHeight ?? this.trimBarHeight,
@@ -169,8 +191,8 @@ class VideoEditorStyle {
       trimBarPlayTimeIndicatorWidth:
           trimBarPlayTimeIndicatorWidth ?? this.trimBarPlayTimeIndicatorWidth,
       trimBarHandlerWidth: trimBarHandlerWidth ?? this.trimBarHandlerWidth,
-      trimBarHandlerIconSize:
-          trimBarHandlerIconSize ?? this.trimBarHandlerIconSize,
+      trimBarHandlerButtonSize:
+          trimBarHandlerButtonSize ?? this.trimBarHandlerButtonSize,
       trimBarHandlerRadius: trimBarHandlerRadius ?? this.trimBarHandlerRadius,
     );
   }

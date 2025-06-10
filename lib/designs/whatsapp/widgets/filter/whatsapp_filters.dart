@@ -4,9 +4,8 @@ import 'dart:math';
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-// Project imports:
-import 'package:pro_image_editor/designs/whatsapp/whatsapp.dart';
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '/pro_image_editor.dart';
+import '../../whatsapp.dart';
 
 /// A stateless widget that represents a collection of filters in the WhatsApp
 /// theme.

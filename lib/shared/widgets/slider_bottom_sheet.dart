@@ -114,20 +114,22 @@ class _SliderBottomSheetState<T> extends State<SliderBottomSheet<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      textStyle: platformTextStyle(context, widget.designMode),
-      child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildHeader(),
-              _buildBody(),
-            ],
+    return SafeArea(
+      child: Material(
+        color: Colors.transparent,
+        textStyle: platformTextStyle(context, widget.designMode),
+        child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildHeader(),
+                _buildBody(),
+              ],
+            ),
           ),
         ),
       ),

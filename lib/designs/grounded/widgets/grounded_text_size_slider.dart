@@ -3,11 +3,10 @@ import 'dart:math';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:pro_image_editor/designs/grounded/constants/grounded_constants.dart';
 
-// Project imports:
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '/pro_image_editor.dart';
 import '/shared/widgets/animated/fade_in_left.dart';
+import '../constants/grounded_constants.dart';
 
 /// A widget that provides a slider for adjusting the text size in the
 /// ProImageEditor.

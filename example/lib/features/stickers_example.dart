@@ -65,80 +65,86 @@ class _StickersExampleState extends State<StickersExample>
         ),
         stickerEditor: StickerEditorConfigs(
           enabled: true,
-          buildStickers: (setLayer, scrollController) {
-            return ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(20)),
-              child: GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 80,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                ),
-                controller: scrollController,
-                itemCount: 21,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () async {
-                      // Important make sure the image is completely loaded
-                      // cuz the editor will directly take a screenshot
-                      // inside of a background isolated thread.
-                      LoadingDialog.instance.show(
-                        context,
-                        configs: const ProImageEditorConfigs(),
-                        theme: Theme.of(context),
-                      );
-                      await precacheImage(
-                        NetworkImage(
-                          'https://picsum.photos/id/${(index + 3) * 3}/2000',
-                        ),
-                        context,
-                      );
-                      LoadingDialog.instance.hide();
-                      setLayer(
-                        Sticker(index: index),
-
-                        /// The `exportConfigs` parameter is optional but
-                        /// useful if you want to import or export history and
-                        /// directly load the same sticker.
-                        ///
-                        /// If `exportConfigs` is not added, the editor will
-                        /// convert the exported state history to a `Uint8List`
-                        /// to restore the layer. However, this may reduce
-                        /// quality and cause a delay during export.
-                        ///
-                        /// If you use the ID parameter, it is important to set
-                        /// up a `widgetLoader` inside the `ImportEditorConfigs`
-                        ///  when importing the state history.
-                        /// Refer to the [import-example](https://github.com/hm21/pro_image_editor/blob/stable/example/lib/features/import_export_example.dart)
-                        /// for details on how this works.
-                        exportConfigs: WidgetLayerExportConfigs(
-                          id: 'sticker-$index',
-
-                          /// Alternatively, you can use one of the parameters
-                          /// listed below instead of the id, which does not
-                          /// require setting up the widgetLoader. However,
-                          /// please note that for complex widgets, this
-                          /// approach may slightly alter their size.
-                          ///
-                          /// networkUrl: '',
-                          /// assetPath: '',
-                          /// fileUrl: '',
-                        ),
-                      );
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Sticker(index: index),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
+          builder: _buildStickers,
         ),
+      ),
+    );
+  }
+
+  Widget _buildStickers(
+    void Function(WidgetLayer widget) setLayer,
+    ScrollController scrollController,
+  ) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      child: GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 80,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+        ),
+        controller: scrollController,
+        itemCount: 21,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () async {
+              // Important make sure the image is completely loaded
+              // cuz the editor will directly take a screenshot
+              // inside of a background isolated thread.
+              LoadingDialog.instance.show(
+                context,
+                configs: const ProImageEditorConfigs(),
+                theme: Theme.of(context),
+              );
+              await precacheImage(
+                NetworkImage(
+                  'https://picsum.photos/id/${(index + 3) * 3}/2000',
+                ),
+                context,
+              );
+              LoadingDialog.instance.hide();
+              setLayer(
+                WidgetLayer(
+                  widget: Sticker(index: index),
+
+                  /// The `exportConfigs` parameter is optional but
+                  /// useful if you want to import or export history and
+                  /// directly load the same sticker.
+                  ///
+                  /// If `exportConfigs` is not added, the editor will
+                  /// convert the exported state history to a `Uint8List`
+                  /// to restore the layer. However, this may reduce
+                  /// quality and cause a delay during export.
+                  ///
+                  /// If you use the ID parameter, it is important to set
+                  /// up a `widgetLoader` inside the `ImportEditorConfigs`
+                  ///  when importing the state history.
+                  /// Refer to the [import-example](https://github.com/hm21/pro_image_editor/blob/stable/example/lib/features/import_export_example.dart)
+                  /// for details on how this works.
+                  exportConfigs: WidgetLayerExportConfigs(
+                    id: 'sticker-$index',
+
+                    /// Alternatively, you can use one of the parameters
+                    /// listed below instead of the id, which does not
+                    /// require setting up the widgetLoader. However,
+                    /// please note that for complex widgets, this
+                    /// approach may slightly alter their size.
+                    ///
+                    /// networkUrl: '',
+                    /// assetPath: '',
+                    /// fileUrl: '',
+                  ),
+                ),
+              );
+            },
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Sticker(index: index),
+            ),
+          );
+        },
       ),
     );
   }

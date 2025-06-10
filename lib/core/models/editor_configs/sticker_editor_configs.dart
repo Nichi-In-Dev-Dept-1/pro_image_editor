@@ -1,4 +1,5 @@
-// Flutter imports:
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated
 import 'package:flutter/widgets.dart';
 
 import '/core/models/layers/layer.dart';
@@ -29,7 +30,8 @@ class StickerEditorConfigs {
   /// By default, the editor is disabled (if not specified), and other
   /// properties are set to reasonable defaults.
   const StickerEditorConfigs({
-    this.buildStickers,
+    this.builder,
+    @Deprecated('Use [builder] instead') this.buildStickers,
     this.initWidth = 100,
     this.minScale = double.negativeInfinity,
     this.maxScale = double.infinity,
@@ -54,12 +56,16 @@ class StickerEditorConfigs {
   final double initWidth;
 
   /// A callback that builds the stickers.
+  @Deprecated('Use [builder] instead')
+  final BuildStickers? buildStickers;
+
+  /// A callback that builds the stickers.
   ///
   /// This typedef is a function that takes a function as a parameter and
   /// returns a Widget. The function parameter `setLayer` is used to set a
   /// layer in the editor. This callback allows for customizing the appearance
   /// and behavior of stickers in the editor.
-  final BuildStickers? buildStickers;
+  final StickerBuilder? builder;
 
   /// The minimum scale factor from the layer.
   final double minScale;
@@ -82,7 +88,8 @@ class StickerEditorConfigs {
   StickerEditorConfigs copyWith({
     bool? enabled,
     double? initWidth,
-    BuildStickers? buildStickers,
+    StickerBuilder? builder,
+    @Deprecated('Use [builder] instead') BuildStickers? buildStickers,
     double? minScale,
     double? maxScale,
     StickerEditorStyle? style,
@@ -91,6 +98,7 @@ class StickerEditorConfigs {
     return StickerEditorConfigs(
       enabled: enabled ?? this.enabled,
       initWidth: initWidth ?? this.initWidth,
+      builder: builder ?? this.builder,
       buildStickers: buildStickers ?? this.buildStickers,
       minScale: minScale ?? this.minScale,
       maxScale: maxScale ?? this.maxScale,
@@ -110,5 +118,15 @@ typedef BuildStickers = Widget Function(
     Widget widget, {
     WidgetLayerExportConfigs? exportConfigs,
   }) setLayer,
+  ScrollController scrollController,
+);
+
+/// A typedef representing a function signature for building sticker widgets.
+///
+/// This typedef defines a function that builds a widget for stickers in an
+/// editor, allowing customization of how stickers are displayed and
+/// manipulated within the user interface.
+typedef StickerBuilder = Widget Function(
+  Function(WidgetLayer widgetLayer) setLayer,
   ScrollController scrollController,
 );

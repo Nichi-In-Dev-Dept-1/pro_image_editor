@@ -15,8 +15,11 @@ class ProVideoController {
     required this.videoDuration,
     required this.initialResolution,
     required this.fileSize,
-    required this.thumbnails,
-  });
+    this.bitrate,
+    List<ImageProvider>? thumbnails,
+  }) {
+    this.thumbnails = thumbnails;
+  }
 
   /// The video player widget.
   final Widget videoPlayer;
@@ -30,8 +33,34 @@ class ProVideoController {
   /// The size of the video file in bytes.
   final int fileSize;
 
-  /// Stores generated thumbnails for the trimmer bar and filter background.
-  final List<ImageProvider> thumbnails;
+  /// The bitrate of the video in bits per second.
+  ///
+  /// This value represents the amount of data processed per unit of time in
+  /// the video stream.
+  /// Higher bitrate generally result in better video quality, but also
+  /// larger file sizes.
+  ///
+  /// **WARNING:** Not all devices support CBR (Constant Bitrate) mode.
+  /// If unsupported, the encoder may silently fall back to VBR
+  /// (Variable Bitrate), and the actual bitrate may be constrained by
+  /// device-specific minimum and maximum limits.
+  final int? bitrate;
+
+  /// A [ValueNotifier] that holds a list of [ImageProvider] objects
+  /// representing video thumbnails.
+  ///
+  /// The [thumbnailsNotifier] notifies its listeners whenever the list of
+  /// thumbnails changes.
+  final thumbnailsNotifier = ValueNotifier<List<ImageProvider>?>(null);
+
+  /// The [thumbnails] getter returns the current list of thumbnails, or `null`
+  /// if not set.
+  List<ImageProvider>? get thumbnails => thumbnailsNotifier.value;
+
+  /// The [thumbnails] setter updates the list of thumbnails and notifies
+  /// listeners.
+  set thumbnails(List<ImageProvider>? value) =>
+      thumbnailsNotifier.value = value;
 
   late VideoEditorCallbacks Function() _callbacksFunction;
   late VideoEditorConfigs Function() _configsFunction;
@@ -55,6 +84,9 @@ class ProVideoController {
   late final trimDurationSpanNotifier = ValueNotifier<TrimDurationSpan>(
     TrimDurationSpan(start: Duration.zero, end: videoDuration),
   );
+
+  /// Notifier that indicates whether the trim time span UI should be shown.
+  final showTrimTimeSpanNotifier = ValueNotifier(false);
 
   /// Indicates whether audio is currently enabled for the video.
   ///
@@ -80,6 +112,16 @@ class ProVideoController {
   }) {
     _callbacksFunction = callbacksFunction;
     _configsFunction = configsFunction;
+  }
+
+  /// Dispose the video controller.
+  void dispose() {
+    thumbnailsNotifier.dispose();
+    playTimeNotifier.dispose();
+    isPlayingNotifier.dispose();
+    isMutedNotifier.dispose();
+    trimDurationSpanNotifier.dispose();
+    showTrimTimeSpanNotifier.dispose();
   }
 
   /// Toggles the play state of the video.

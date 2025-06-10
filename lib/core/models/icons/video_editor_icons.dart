@@ -7,41 +7,35 @@ class VideoEditorIcons {
   /// Provides customizable icons for play, mute, and trim controls.
   const VideoEditorIcons({
     this.playIndicator = Icons.play_arrow_rounded,
+    this.pauseIndicator = Icons.pause_rounded,
     this.muteActive = Icons.volume_off_rounded,
-    this.muteInActive = Icons.volume_up_rounded,
-    this.trimLeft = Icons.chevron_left,
-    this.trimRight = Icons.chevron_right,
+    this.muteInactive = Icons.volume_up_rounded,
   });
 
   /// Icon displayed when the video is playing.
   final IconData playIndicator;
 
+  /// Icon displayed when the video is paused .
+  final IconData pauseIndicator;
+
   /// Icon displayed when the video is muted.
   final IconData muteActive;
 
-  /// Icon displayed when the video is unmuted.
-  final IconData muteInActive;
-
-  /// Icon for trimming on the left side.
-  final IconData trimLeft;
-
-  /// Icon for trimming on the right side.
-  final IconData trimRight;
+  /// Icon displayed when the video is not muted.
+  final IconData muteInactive;
 
   /// Creates a copy of this instance with the given parameters overridden.
   VideoEditorIcons copyWith({
     IconData? playIndicator,
+    IconData? pauseIndicator,
     IconData? muteActive,
-    IconData? muteInActive,
-    IconData? trimLeft,
-    IconData? trimRight,
+    IconData? muteInactive,
   }) {
     return VideoEditorIcons(
       playIndicator: playIndicator ?? this.playIndicator,
       muteActive: muteActive ?? this.muteActive,
-      muteInActive: muteInActive ?? this.muteInActive,
-      trimLeft: trimLeft ?? this.trimLeft,
-      trimRight: trimRight ?? this.trimRight,
+      muteInactive: muteInactive ?? this.muteInactive,
+      pauseIndicator: pauseIndicator ?? this.pauseIndicator,
     );
   }
 }

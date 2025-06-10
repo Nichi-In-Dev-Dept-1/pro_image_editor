@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pro_image_editor/core/models/complete_parameters.dart';
 
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_callbacks_mixin.dart';
@@ -285,7 +284,7 @@ class ProImageEditor extends StatefulWidget
   /// - [byteArray] - Raw image data as a `Uint8List` (highest priority).
   /// - [file] - A `File` instance representing a local image file.
   /// - [networkUrl] - URL pointing to an image on the internet.
-  /// - [assetPath] - Path to an image stored in the app’s assets.
+  /// - [assetPath] - Path to an image stored in the app's assets.
   /// - [editorImage] - An `EditorImage` instance containing one of the above.
   /// - [configs] - Optional configuration settings for the editor.
   /// - [callbacks] - Required callbacks for handling image editor events.
@@ -763,13 +762,13 @@ class ProImageEditorState extends State<ProImageEditor>
     _checkInteractiveViewer();
     _controllers.uiLayerCtrl.add(null);
 
-    /* 
+    /*
     String selectedLayerId = _layerInteractionManager.selectedLayerId;
     _layerInteractionManager.selectedLayerId = '';
     setState(() {});
     takeScreenshot();
     if (selectedLayerId.isNotEmpty) {
-      /// Skip one frame to ensure captured image in separate thread will not 
+      /// Skip one frame to ensure captured image in separate thread will not
       /// capture the border.
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         _layerInteractionManager.selectedLayerId = selectedLayerId;
@@ -1229,17 +1228,19 @@ class ProImageEditorState extends State<ProImageEditor>
 
     SubEditor editorName = SubEditor.unknown;
 
-    if (T is PaintEditor) {
+    if (T is List<PaintLayer> || page is PaintEditor) {
       editorName = SubEditor.paint;
-    } else if (T is TextEditor) {
+    } else if (T is TextLayer || page is TextEditor) {
       editorName = SubEditor.text;
-    } else if (T is CropRotateEditor) {
+    } else if (T is TransformConfigs || page is CropRotateEditor) {
       editorName = SubEditor.cropRotate;
-    } else if (T is FilterEditor) {
+    } else if (T is TuneAdjustmentMatrix || page is TuneEditor) {
+      editorName = SubEditor.tune;
+    } else if (T is FilterMatrix || page is FilterEditor) {
       editorName = SubEditor.filter;
-    } else if (T is BlurEditor) {
+    } else if (T is double || page is BlurEditor) {
       editorName = SubEditor.blur;
-    } else if (T is EmojiEditor) {
+    } else if (page is EmojiEditor) {
       editorName = SubEditor.emoji;
     }
 
@@ -1642,32 +1643,31 @@ class ProImageEditorState extends State<ProImageEditor>
         showDragHandle: emojiEditorConfigs.style.showDragHandle,
         isScrollControlled: true,
         useSafeArea: true,
-        builder: (BuildContext context) {
-          if (!useDraggableSheet) {
-            return ConstrainedBox(
-              constraints: effectiveBoxConstraints ??
-                  BoxConstraints(
-                      maxHeight: 300 + MediaQuery.viewInsetsOf(context).bottom),
-              child: EmojiEditor(configs: configs),
-            );
-          }
-
-          return DraggableScrollableSheet(
-              expand: sheetTheme.expand,
-              initialChildSize: sheetTheme.initialChildSize,
-              maxChildSize: sheetTheme.maxChildSize,
-              minChildSize: sheetTheme.minChildSize,
-              shouldCloseOnMinExtent: sheetTheme.shouldCloseOnMinExtent,
-              snap: sheetTheme.snap,
-              snapAnimationDuration: sheetTheme.snapAnimationDuration,
-              snapSizes: sheetTheme.snapSizes,
-              builder: (_, controller) {
-                return EmojiEditor(
-                  configs: configs,
-                  scrollController: controller,
-                );
-              });
-        });
+        builder: (BuildContext context) => SafeArea(
+              child: !useDraggableSheet
+                  ? ConstrainedBox(
+                      constraints: effectiveBoxConstraints ??
+                          BoxConstraints(
+                              maxHeight: 300 +
+                                  MediaQuery.viewInsetsOf(context).bottom),
+                      child: EmojiEditor(configs: configs),
+                    )
+                  : DraggableScrollableSheet(
+                      expand: sheetTheme.expand,
+                      initialChildSize: sheetTheme.initialChildSize,
+                      maxChildSize: sheetTheme.maxChildSize,
+                      minChildSize: sheetTheme.minChildSize,
+                      shouldCloseOnMinExtent: sheetTheme.shouldCloseOnMinExtent,
+                      snap: sheetTheme.snap,
+                      snapAnimationDuration: sheetTheme.snapAnimationDuration,
+                      snapSizes: sheetTheme.snapSizes,
+                      builder: (_, controller) {
+                        return EmojiEditor(
+                          configs: configs,
+                          scrollController: controller,
+                        );
+                      }),
+            ));
     ServicesBinding.instance.keyboard.addHandler(_onKeyEvent);
     if (layer == null || !mounted) return;
     layer.scale = emojiEditorConfigs.initScale;
@@ -1694,24 +1694,24 @@ class ProImageEditorState extends State<ProImageEditor>
         showDragHandle: stickerEditorConfigs.style.showDragHandle,
         isScrollControlled: true,
         useSafeArea: true,
-        builder: (_) {
-          return DraggableScrollableSheet(
-            expand: sheetTheme.expand,
-            initialChildSize: sheetTheme.initialChildSize,
-            maxChildSize: sheetTheme.maxChildSize,
-            minChildSize: sheetTheme.minChildSize,
-            shouldCloseOnMinExtent: sheetTheme.shouldCloseOnMinExtent,
-            snap: sheetTheme.snap,
-            snapAnimationDuration: sheetTheme.snapAnimationDuration,
-            snapSizes: sheetTheme.snapSizes,
-            builder: (_, controller) {
-              return StickerEditor(
-                configs: configs,
-                scrollController: controller,
-              );
-            },
-          );
-        });
+        builder: (_) => SafeArea(
+              child: DraggableScrollableSheet(
+                expand: sheetTheme.expand,
+                initialChildSize: sheetTheme.initialChildSize,
+                maxChildSize: sheetTheme.maxChildSize,
+                minChildSize: sheetTheme.minChildSize,
+                shouldCloseOnMinExtent: sheetTheme.shouldCloseOnMinExtent,
+                snap: sheetTheme.snap,
+                snapAnimationDuration: sheetTheme.snapAnimationDuration,
+                snapSizes: sheetTheme.snapSizes,
+                builder: (_, controller) {
+                  return StickerEditor(
+                    configs: configs,
+                    scrollController: controller,
+                  );
+                },
+              ),
+            ));
     ServicesBinding.instance.keyboard.addHandler(_onKeyEvent);
     if (layer == null || !mounted) return;
 
@@ -1890,6 +1890,8 @@ class ProImageEditorState extends State<ProImageEditor>
             flipY: transform.is90DegRotated ? transform.flipX : transform.flipY,
             rotateTurns: transform.angleToTurns(),
             image: bytes,
+            isTransformed: isTransformed,
+            layers: activeLayers,
           ),
         );
       }
@@ -2282,7 +2284,9 @@ class ProImageEditorState extends State<ProImageEditor>
                       _checkInteractiveViewer();
                       setState(() {});
                     }
-                    widget.videoController?.togglePlayState();
+                    if (!configs.videoEditor.enablePlayButton) {
+                      widget.videoController?.togglePlayState();
+                    }
                     mainEditorCallbacks?.onTap?.call();
                   },
                   onLongPress: mainEditorCallbacks?.onLongPress,

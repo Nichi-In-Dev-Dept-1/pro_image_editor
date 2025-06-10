@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '/pro_image_editor.dart';
 import '../../styles/whatsapp_appbar_button_style.dart';
 import '../../whatsapp_done_btn.dart';
 

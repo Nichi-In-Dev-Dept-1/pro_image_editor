@@ -221,7 +221,7 @@ void main() {
               ),
               stickerEditor: StickerEditorConfigs(
                 enabled: true,
-                buildStickers: (setLayer, scrollController) =>
+                builder: (setLayer, scrollController) =>
                     Container(key: widgetKey),
                 style: StickerEditorStyle(
                   editorBoxConstraintsBuilder: (context, configs) =>

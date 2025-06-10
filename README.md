@@ -151,10 +151,10 @@ The ProImageEditor is a Flutter widget designed for image editing within your ap
 - ✅ Hit detection for painted layers
 - ✅ Zoomable paint and main editor
 - ✅ Improved layer movement and scaling functionality for desktop devices
+- ✅ Video-Editor 
 
 
 #### Planned features
-- ✨ Video-Editor 
 - ✨ Paint-Editor 
   - Freestyle-Painter with improved performance and hitbox
 - ✨ AI Futures => Perhaps integrating Adobe Firefly
@@ -284,15 +284,13 @@ Check out the web [demo](https://hm21.github.io/pro_image_editor/) to explore al
 
 ## Video-Editor
 
-The video editor is an upcoming feature now included in the example folder. It is planned to support all platforms except web. The image editor already provides all required functionality, but the video processing package is still under development.
+The editor supports full video generation on Android, iOS, and macOS. Support for Windows and Linux is coming soon.
 
-To keep the image editor as lightweight as possible, you’ll need to manually include video player package of your choice.
+To keep the image editor lightweight, you’ll need to manually add the video player package of your choice. For rendering the video, you can use my package [pro_video_editor](https://pub.dev/packages/pro_video_editor), which is also used in the example.
 
-Currently, the editor can be extended using my `pro_video_editor` package, which supports full video generation on Android, iOS, and macOS. However, it relies on the GPL-licensed `ffmpeg` package, which may not be suitable for all companies. I’m actively exploring alternative solutions—feel free to reach out if you’re aware of a similar option with more permissive licensing.
+An example of how to implement the video editor with a specific video player can be found [here](https://github.com/hm21/pro_image_editor/tree/stable/example/lib/features/video_examples), and a simpler example using just the default [video_player](https://pub.dev/packages/video_player) is available [here](https://github.com/hm21/pro_video_editor/blob/stable/example/lib/features/editor/pages/video_editor_basic_example_page.dart).
 
-Alternatively, as shown in the [video examples](https://github.com/hm21/pro_image_editor/tree/stable/example/lib/features/video_examples), the editor returns all the necessary information for processing videos. This allows you to integrate any package or API of your choice. For instance, you could use a cloud-based solution like [Shotstack](https://shotstack.io/) to handle video processing externally.
 
-If you're interested in contributing to this feature, feel free to open a pull request in the [pro_video_editor](https://github.com/hm21/pro_video_editor/pulls) repository. Alternatively, sponsoring the package would enable me to dedicate more time to its development and to this functionality.
 
 
 

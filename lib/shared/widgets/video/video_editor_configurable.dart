@@ -21,9 +21,6 @@ class VideoEditorConfigurable extends InheritedWidget {
   /// The video controller managing playback and trim states.
   final ProVideoController controller;
 
-  /// Default padding for video editor content.
-  final contentPadding = const EdgeInsets.symmetric(horizontal: 16);
-
   /// Returns the current video editor configurations.
   VideoEditorConfigs get configs => controller.configs;
 
@@ -35,6 +32,13 @@ class VideoEditorConfigurable extends InheritedWidget {
 
   /// Notifier for the mute state of the video.
   ValueNotifier<bool> get isMutedNotifier => controller.isMutedNotifier;
+
+  /// Notifier that indicates whether the trim time span UI should be shown.
+  ///
+  /// This is exposed from the underlying [ProVideoController] and can be used
+  /// to toggle or listen for visibility changes in the trim UI.
+  ValueNotifier<bool> get showTrimTimeSpanNotifier =>
+      controller.showTrimTimeSpanNotifier;
 
   /// Returns the configured video editor icons.
   VideoEditorIcons get icons => configs.icons;

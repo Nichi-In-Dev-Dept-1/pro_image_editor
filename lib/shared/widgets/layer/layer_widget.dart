@@ -298,6 +298,8 @@ class _LayerWidgetState extends State<LayerWidget>
       callbacks: callbacks,
       selected: widget.selected,
       onEditLayer: widget.onEditTap,
+      forceIgnoreGestures:
+          !(interaction.enableSelection || interaction.enableEdit),
       isInteractive: widget.isInteractive,
       onScaleRotateDown: (details) {
         widget.onScaleRotateDown?.call(details, context.size ?? Size.zero);

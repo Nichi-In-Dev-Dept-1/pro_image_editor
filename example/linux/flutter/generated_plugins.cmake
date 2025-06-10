@@ -8,10 +8,13 @@ list(APPEND FLUTTER_PLUGIN_LIST
   gtk
   media_kit_libs_linux
   media_kit_video
+  pro_video_editor
   url_launcher_linux
+  volume_controller
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  onnxruntime
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

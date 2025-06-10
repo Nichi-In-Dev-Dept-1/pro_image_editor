@@ -1,4 +1,5 @@
-// Flutter imports:
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove deprecated
 import 'package:flutter/material.dart';
 
 import '/core/mixins/converted_configs.dart';
@@ -51,22 +52,33 @@ class StickerEditorState extends State<StickerEditor>
   @override
   Widget build(BuildContext context) {
     assert(
-      widget.configs.stickerEditor.buildStickers != null,
-      '`buildStickers` is required',
+      stickerEditorConfigs.builder != null ||
+          stickerEditorConfigs.buildStickers != null,
+      '`builder` is required',
     );
 
     return ExtendedPopScope(
-      child: widget.configs.stickerEditor.buildStickers!(
-        setLayer,
-        widget.scrollController,
-      ),
+      child: stickerEditorConfigs.builder?.call(
+            setLayer,
+            widget.scrollController,
+          ) ??
+          stickerEditorConfigs.buildStickers!(
+            setLayerOld,
+            widget.scrollController,
+          ),
     );
+  }
+
+  /// Close the editor with the selected widget-layer.
+  void setLayer(WidgetLayer widgetLayer) {
+    Navigator.of(context).pop(widgetLayer);
   }
 
   /// Sets the current layer with a sticker and closes the navigation.
   ///
   /// [widget] is the widget to be set as the layer.
-  void setLayer(
+  @Deprecated('Use [setLayer] instead')
+  void setLayerOld(
     Widget widget, {
     WidgetLayerExportConfigs? exportConfigs,
   }) {

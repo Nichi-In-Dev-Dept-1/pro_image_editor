@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pro_image_editor/pro_image_editor.dart';
 
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_configs_mixin.dart';
+import '/pro_image_editor.dart';
 import '../../grounded_design.dart';
 
 /// A widget that provides a toolbar for text editing in the ProImageEditor.

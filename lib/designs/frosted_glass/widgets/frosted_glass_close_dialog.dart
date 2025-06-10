@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:pro_image_editor/pro_image_editor.dart';
+import '/pro_image_editor.dart';
 import 'frosted_glass_effect.dart';
 
 /// A stateless widget that represents a dialog with a frosted glass effect,

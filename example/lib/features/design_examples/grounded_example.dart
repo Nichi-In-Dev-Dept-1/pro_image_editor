@@ -357,7 +357,7 @@ class _GroundedDesignExampleState extends State<GroundedDesignExample>
           ),
           stickerEditor: StickerEditorConfigs(
             enabled: true,
-            buildStickers: (setLayer, scrollController) => DemoBuildStickers(
+            builder: (setLayer, scrollController) => DemoBuildStickers(
                 categoryColor: const Color(0xFF161616),
                 setLayer: setLayer,
                 scrollController: scrollController),

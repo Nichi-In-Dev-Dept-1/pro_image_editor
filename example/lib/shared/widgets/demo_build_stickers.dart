@@ -21,7 +21,7 @@ class DemoBuildStickers extends StatelessWidget {
   });
 
   /// Callback function to set the selected sticker in the image editor layer.
-  final Function(Widget) setLayer;
+  final Function(WidgetLayer layer) setLayer;
 
   /// Controls the scroll behavior of the sticker grid.
   final ScrollController scrollController;
@@ -104,7 +104,10 @@ class DemoBuildStickers extends StatelessWidget {
     );
   }
 
-  SliverGrid _buildDemoStickers(int offset, Function(Widget) setLayer) {
+  SliverGrid _buildDemoStickers(
+    int offset,
+    Function(WidgetLayer layer) setLayer,
+  ) {
     return SliverGrid.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 80,
@@ -166,7 +169,7 @@ class DemoBuildStickers extends StatelessWidget {
 
               await precacheImage(NetworkImage(url), context);
               LoadingDialog.instance.hide();
-              setLayer(widget);
+              setLayer(WidgetLayer(widget: widget));
             },
             child: MouseRegion(
               cursor: SystemMouseCursors.click,

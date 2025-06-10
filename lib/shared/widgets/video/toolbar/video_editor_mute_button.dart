@@ -32,7 +32,7 @@ class VideoEditorMuteButton extends StatelessWidget {
                   icon: Icon(
                     isMuted
                         ? player.icons.muteActive
-                        : player.icons.muteInActive,
+                        : player.icons.muteInactive,
                   ),
                 ),
               );

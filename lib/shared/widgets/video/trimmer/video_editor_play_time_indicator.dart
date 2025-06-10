@@ -19,8 +19,8 @@ class VideoEditorPlayTimeIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     var player = VideoEditorConfigurable.of(context);
 
-    double handlerWidth = player.configs.style.trimBarHandlerWidth;
-    double barWidth = areaWidth - 2 * handlerWidth;
+    // double handlerWidth = player.configs.style.trimBarHandlerWidth;
+    double barWidth = areaWidth; // - 2 * handlerWidth;
 
     return ValueListenableBuilder(
         valueListenable: player.controller.trimDurationSpanNotifier,
@@ -37,7 +37,7 @@ class VideoEditorPlayTimeIndicator extends StatelessWidget {
 
                 return AnimatedPositioned(
                   duration: player.configs.playTimeSmoothingDuration,
-                  left: handlerWidth + startX,
+                  left: startX, // handlerWidth +
                   top: player.style.trimBarBorderWidth,
                   bottom: player.style.trimBarBorderWidth,
                   width: player.style.trimBarPlayTimeIndicatorWidth,

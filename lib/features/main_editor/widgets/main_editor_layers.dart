@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
+import '/core/utils/size_utils.dart';
 import '/features/main_editor/controllers/main_editor_controllers.dart';
 import '/features/main_editor/services/layer_interaction_manager.dart';
 import '/features/main_editor/services/sizes_manager.dart';
@@ -103,6 +104,9 @@ class MainEditorLayers extends StatefulWidget {
 class _MainEditorLayersState extends State<MainEditorLayers> {
   final _deferId = ValueNotifier(generateUniqueId());
 
+  /// Represents the dimensions of the body.
+  Size editorBodySize = Size.infinite;
+
   /// Key for managing mouse cursor regions.
   final _mouseCursorsKey = GlobalKey<ExtendedRebuildMouseRegionState>();
 
@@ -198,7 +202,10 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
           // Render an empty container when resetting layers
           if (resetLayerSnapshot.data!) return const SizedBox.shrink();
 
-          return _buildLayerRepaintBoundary();
+          return LayoutBuilder(builder: (context, constraints) {
+            editorBodySize = constraints.biggest;
+            return _buildLayerRepaintBoundary();
+          });
         },
       ),
     );
@@ -236,15 +243,17 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
   /// Builds a single layer widget
   Widget _buildLayerWidget(MapEntry<int, Layer> entry) {
+    var bodySize =
+        getValidSizeOrDefault(widget.sizesManager.bodySize, editorBodySize);
+
     int index = entry.key;
     Layer layer = entry.value;
     return LayerWidget(
       key: layer.key,
       configs: widget.configs,
       callbacks: widget.callbacks,
-      editorCenterX: widget.sizesManager.editorSize.width / 2,
-      editorCenterY:
-          widget.sizesManager.editorCenterY(widget.selectedLayerIndex),
+      editorCenterX: bodySize.width / 2,
+      editorCenterY: bodySize.height / 2,
       layerData: layer,
       enableHitDetection: widget.layerInteractionManager.enabledHitDetection,
       selected: widget.layerInteractionManager.selectedLayerId == layer.id,

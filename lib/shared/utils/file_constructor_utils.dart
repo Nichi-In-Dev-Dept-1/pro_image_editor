@@ -1,4 +1,4 @@
-import 'package:pro_image_editor/core/platform/io/io_helper.dart';
+import '/core/platform/io/io_helper.dart';
 
 /// Converts a given dynamic input into a `File` instance.
 ///
