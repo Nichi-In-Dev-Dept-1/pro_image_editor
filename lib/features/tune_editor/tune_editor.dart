@@ -319,9 +319,11 @@ class TuneEditorState extends State<TuneEditor>
       // var hue = (_autoTuneValues!['hue'] ?? 0) * autoTuneIntensity;
       // var temperature =
       //     (_autoTuneValues!['temperature'] ?? 0) * autoTuneIntensity;
-      // var sharpness = (_autoTuneValues!['sharpness'] ?? 0) * autoTuneIntensity;
+      // var sharpness = (_autoTuneValues!['sharpness'] ?? 0)
+      // * autoTuneIntensity;
       // var fade = (_autoTuneValues!['fade'] ?? 0) * autoTuneIntensity;
-      // var luminance = (_autoTuneValues!['luminance'] ?? 0) * autoTuneIntensity;
+      // var luminance = (_autoTuneValues!['luminance'] ?? 0)
+      // * autoTuneIntensity;
 
       _setAutoValue(brightness, 0);
       _setAutoValue(contrast, 1);
@@ -400,7 +402,7 @@ class TuneEditorState extends State<TuneEditor>
     int index =
         tuneAdjustmentMatrix.indexWhere((item) => item.id == selectedItem.id);
 
-    if(index == 0) {
+    if (index == 0) {
       applyAutoTune(value);
     }
 
@@ -585,6 +587,11 @@ class TuneEditorState extends State<TuneEditor>
       onSelect: (index) {
         setState(() {
           selectedIndex = index;
+          if (selectedIndex == 0) {
+            Future.delayed(const Duration(milliseconds: 2600), () {
+              applyAutoTune(0.8);
+            });
+          }
         });
       },
       selectedIndex: selectedIndex,
