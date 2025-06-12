@@ -145,20 +145,23 @@ class MainEditorStateHistoryService {
   }
 
   void _replaceStateHistory(ImportStateHistory import) {
+    bool enableInitialEmptyState = import.configs.enableInitialEmptyState;
+    bool enableEmptyHistory =
+        import.stateHistory.isEmpty || enableInitialEmptyState;
     stateManager
       ..screenshots = []
       ..stateHistory = [
-        EditorStateHistory(
-          transformConfigs: TransformConfigs.empty(),
-          blur: 0,
-          filters: [],
-          layers: [],
-          tuneAdjustments: [],
-        ),
+        if (enableEmptyHistory)
+          EditorStateHistory(
+            transformConfigs: TransformConfigs.empty(),
+            blur: 0,
+            filters: [],
+            layers: [],
+            tuneAdjustments: [],
+          ),
         ...import.stateHistory,
       ]
-      ..historyPointer =
-          import.editorPosition + (import.stateHistory.isEmpty ? 0 : 1);
+      ..historyPointer = import.editorPosition + (enableEmptyHistory ? 1 : 0);
 
     for (var i = 0; i < import.stateHistory.length; i++) {
       controllers.screenshot

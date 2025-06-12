@@ -10,6 +10,7 @@ class ImportEditorConfigs {
   /// - [mergeMode] is set to [ImportEditorMergeMode.replace]
   const ImportEditorConfigs({
     this.recalculateSizeAndPosition = true,
+    this.enableInitialEmptyState = true,
     this.mergeMode = ImportEditorMergeMode.replace,
     this.widgetLoader,
   });
@@ -20,6 +21,11 @@ class ImportEditorConfigs {
   /// A flag indicating whether to recalculate size and position during import
   /// based on the new image size and device size.
   final bool recalculateSizeAndPosition;
+
+  /// The first history-state will be an empty state.
+  ///
+  /// This only takes effect if [mergeMode] is [ImportEditorMergeMode.replace].
+  final bool enableInitialEmptyState;
 
   /// {@macro widgetLoader}
   final WidgetLoader? widgetLoader;
