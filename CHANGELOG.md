@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.12.0
+- **FEAT**(import): Add `enableInitialEmptyState` to `ImportEditorConfigs` so the editor can replace the existing state history without including an empty first page.
+
 ## 9.11.2
 - **FIX**(bottom-sheet): Wrap bottom sheets in `SafeArea` to ensure proper display within device safe zones.
 

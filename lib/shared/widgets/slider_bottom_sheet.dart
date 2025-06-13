@@ -106,7 +106,7 @@ class _SliderBottomSheetState<T> extends State<SliderBottomSheet<T>> {
   late double _value = widget.value;
   late final double _presetValue = widget.value;
 
-  void updateFontScaleScale(double value) {
+  void updateValue(double value) {
     widget.onValueChanged(value);
     _value = value;
     setState(() {});
@@ -156,7 +156,7 @@ class _SliderBottomSheetState<T> extends State<SliderBottomSheet<T>> {
           widget.state,
           widget.rebuildController.stream,
           _value,
-          updateFontScaleScale,
+          updateValue,
           (onChangedEnd) {},
         ) ??
         Row(
@@ -167,7 +167,7 @@ class _SliderBottomSheetState<T> extends State<SliderBottomSheet<T>> {
                 min: widget.min,
                 divisions: widget.divisions,
                 value: _value,
-                onChanged: updateFontScaleScale,
+                onChanged: updateValue,
               ),
             ),
             if (widget.resetIcon != null) ...[
@@ -186,14 +186,12 @@ class _SliderBottomSheetState<T> extends State<SliderBottomSheet<T>> {
         duration: const Duration(milliseconds: 150),
         child: _value != _presetValue
             ? IconButton(
-                key: const ValueKey('ResetFontScaleButtonActive'),
                 onPressed: () {
-                  updateFontScaleScale(_presetValue);
+                  updateValue(_presetValue);
                 },
                 icon: Icon(widget.resetIcon),
               )
             : IconButton(
-                key: const ValueKey('ResetFontScaleButtonInactive'),
                 color: Colors.transparent,
                 onPressed: null,
                 icon: Icon(widget.resetIcon),
