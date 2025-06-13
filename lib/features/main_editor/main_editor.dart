@@ -1382,16 +1382,16 @@ class ProImageEditorState extends State<ProImageEditor>
       duration: const Duration(milliseconds: 150),
     );
     if (paintItemLayers != null && paintItemLayers.isNotEmpty) {
-      for (var i = 0; i < paintItemLayers.length; i++) {
-        addLayer(
-          paintItemLayers[i],
-          blockSelectLayer: true,
-          blockCaptureScreenshot: i != paintItemLayers.length - 1,
-        );
-      }
+      // Merge existing layers with new paint layers
+      final newLayers = [...activeLayers, ...paintItemLayers];
+
+      // Add a single history entry for all paint changes
+      addHistory(
+        layers: newLayers,
+        blockCaptureScreenshot: false, // or true, depending on performance needs
+      );
 
       _selectLayerAfterHeroIsDone(paintItemLayers.last.id);
-
       setState(() {});
       mainEditorCallbacks?.handleUpdateUI();
     }
