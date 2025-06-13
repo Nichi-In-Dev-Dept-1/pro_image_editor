@@ -25,6 +25,18 @@ class ImportEditorConfigs {
   /// The first history-state will be an empty state.
   ///
   /// This only takes effect if [mergeMode] is [ImportEditorMergeMode.replace].
+  ///
+  /// IMPORTANT: It's important to set `enableUseOriginalBytes` to `false`.
+  /// Without that flag, the editor will in the first history-state only
+  /// capture the background image and leave everything else out.
+  ///
+  /// ```dart
+  /// configs: ProImageEditorConfigs(
+  ///    imageGeneration: const ImageGenerationConfigs(
+  ///      enableUseOriginalBytes: false,
+  ///    ),
+  /// ),
+  /// ```
   final bool enableInitialEmptyState;
 
   /// {@macro widgetLoader}
