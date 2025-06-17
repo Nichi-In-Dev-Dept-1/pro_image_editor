@@ -320,18 +320,23 @@ class TuneEditorState extends State<TuneEditor>
     debugPrint('applyAutoTune $_autoTuneValues');
     if (_autoTuneValues != null) {
       onChangedStart(1.0, 'auto_tune');
-      var brightness = (_autoTuneValues!['brightness'] ?? 0);
-      var contrast = (_autoTuneValues!['contrast'] ?? 0);
-      var saturation = ((_autoTuneValues!['saturation'])! +
-          ((_autoTuneValues!['saturation']! < 0.0) ? 0.4 : 0.1));
-      var exposure = -(_autoTuneValues!['exposure'] ?? 0);
-      var hue = ((_autoTuneValues!['hue']! * 0.1));
-      var temperature = _autoTuneValues!['temperature']! +
-          ((_autoTuneValues!['temperature']! < 0.0) ? 0.2 : -0.2);
-
-      var sharpness = (_autoTuneValues!['sharpness'] ?? 0);
-      var fade = (_autoTuneValues!['fade'] ?? 0);
-      var luminance = (_autoTuneValues!['luminance'] ?? 0);
+      var brightness = _autoTuneValues!['brightness'] ?? 0;
+      var contrast = _autoTuneValues!['contrast'] ?? 0;
+      var saturation = _autoTuneValues!['saturation'] ?? 0.0;
+      var exposure =
+          ((_autoTuneValues!['brightness']! < 0.0)
+              ? (_autoTuneValues!['exposure']! < 0.0)
+                  ? -(_autoTuneValues!['exposure']!)
+                  : (_autoTuneValues!['exposure'])
+              : (_autoTuneValues!['exposure']! > 0.0)
+                  ? -(_autoTuneValues!['exposure']!)
+                  : (_autoTuneValues!['exposure'])) ??
+          0.0;
+      var hue = _autoTuneValues!['hue']! * 0.1;
+      var temperature = _autoTuneValues!['temperature'] ?? 0.0;
+      var sharpness = _autoTuneValues!['sharpness'] ?? 0;
+      var fade = _autoTuneValues!['fade'] ?? 0;
+      var luminance = _autoTuneValues!['luminance'] ?? 0;
 
       _setAutoValue(brightness, 1);
       _setAutoValue(contrast, 2);
