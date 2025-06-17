@@ -1,5 +1,12 @@
 import 'package:flutter/services.dart';
 
+
+///custom Primary Color
+const Color primaryColor = Color(0xFF12BCD4);
+
+/// custom width100
+const double width100 = 100.0;
+
 /// Primary color used in the image editor interface.
 const kImageEditorPrimaryColor = Color(0xFF004C9E);
 

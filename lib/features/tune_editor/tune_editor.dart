@@ -1,9 +1,9 @@
 // Dart imports:
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '/core/mixins/converted_callbacks.dart';
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/standalone_editor.dart';
@@ -217,7 +217,12 @@ class TuneEditorState extends State<TuneEditor>
   /// Determines whether redo can be performed on the current state.
   bool get canRedo => _redoStack.isNotEmpty;
 
+  /// This variable holds the auto-tune values fetched after processing the
+  /// image
   Map<String, double>? _autoTuneValues;
+
+  /// Show loader when auto tune is loading
+  bool showLoader = false;
 
   @override
   void initState() {
@@ -337,6 +342,10 @@ class TuneEditorState extends State<TuneEditor>
       _setAutoValue(sharpness, 7);
       _setAutoValue(fade, 8);
       _setAutoValue(luminance, 9);
+
+      showLoader = false;
+    } else {
+      Future.delayed(const Duration(milliseconds: 600), applyAutoTune);
     }
     onChangedEnd(0.0);
   }
@@ -459,7 +468,7 @@ class TuneEditorState extends State<TuneEditor>
               child: Scaffold(
                 backgroundColor: tuneEditorConfigs.style.background,
                 appBar: _buildAppBar(),
-                body: _buildBody(),
+                body: _loaderStack(),
                 bottomNavigationBar: _buildBottomNavBar(),
               ),
             ),
@@ -484,6 +493,20 @@ class TuneEditorState extends State<TuneEditor>
       onDone: done,
       onRedo: redo,
       onUndo: undo,
+    );
+  }
+
+  Widget _loaderStack() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        _buildBody(),
+        if (showLoader)
+          const SpinKitCircle(
+            color: primaryColor,
+            size: width100,
+          )
+      ],
     );
   }
 
@@ -583,9 +606,10 @@ class TuneEditorState extends State<TuneEditor>
       bottomBarScrollCtrl: bottomBarScrollCtrl,
       onSelect: (index) {
         setState(() {
+          showLoader = true;
           selectedIndex = index;
           if (selectedIndex == 0) {
-            Future.delayed(const Duration(milliseconds: 2600), applyAutoTune);
+            Future.delayed(const Duration(milliseconds: 600), applyAutoTune);
           }
         });
       },
