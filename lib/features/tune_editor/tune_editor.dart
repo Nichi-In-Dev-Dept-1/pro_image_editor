@@ -606,9 +606,9 @@ class TuneEditorState extends State<TuneEditor>
       bottomBarScrollCtrl: bottomBarScrollCtrl,
       onSelect: (index) {
         setState(() {
-          showLoader = true;
           selectedIndex = index;
           if (selectedIndex == 0) {
+            showLoader = true;
             Future.delayed(const Duration(milliseconds: 600), applyAutoTune);
           }
         });
