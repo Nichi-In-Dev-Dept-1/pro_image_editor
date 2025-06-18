@@ -1,7 +1,7 @@
 import 'dart:isolate';
 import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:flutter/foundation.dart';
 
 /// This class is for fetching image and calculating the auto tune value for the
 /// user-selected image
@@ -128,20 +128,34 @@ Future<void> _heuristicIsolateEntry(List<dynamic> args) async {
 
   final avgBrightnessNormalized = avgBrightness / 255.0;
 
-  double brightnessValue = (0.6 - avgBrightnessNormalized).clamp(0.0, 0.3);
+  double brightnessValue = (0.6 - avgBrightnessNormalized).clamp(0.0, 0.2);
   double contrastValue =
       ((contrastStdDev < 60) ? (60 - contrastStdDev) / 128.0 : 0.0)
           .clamp(0.0, 0.4);
-  double saturationValue = (0.6 - avgSaturation).clamp(-0.2, 0.5);
+  double saturationValue = (0.6 - avgSaturation).clamp(-0.1, 0.2);
   double exposureValue = ((avgBrightness - 127.5) / 127.5).clamp(-0.2, 0.2);
   double hueValue = ((avgHue - 120) / 180).clamp(-0.25, 0.25);
-  double temperatureValue = avgTemperature.clamp(-0.2, 0.2);
+  double temperatureValue = avgTemperature.clamp(-0.1, 0.1);
   double sharpnessValue = ((avgSharpness - 20) / 100).clamp(0.0, 0.3);
   double fadeValue = (contrastStdDev > 80)
-      ? ((contrastStdDev - 80) / 200).clamp(0.0, 0.2)
+      ? ((contrastStdDev - 80) / 200).clamp(0.0, 0.1)
       : 0.0;
   double luminanceValue = (avgBrightnessNormalized - 0.5).clamp(-0.2, 0.2);
 
+  if (kDebugMode) {
+    print('validPixelCount: $validPixelCount\n'
+        'avgBrightnessNormalized; $avgBrightnessNormalized, avgbrightnessValue:'
+        ' $avgBrightness, brightnessValue: $brightnessValue \n'
+        'sumSquareDiffs: $sumSquareDiffs, avgConstrastValue: $contrastStdDev, '
+        'contrastValue: $contrastValue \n'
+        'exposureValue: $exposureValue \n'
+        'totalHue: $totalHue, avgHue: $avgHue, hueValue: $hueValue \n'
+        'avgRed: $avgRed, avgRed: $avgBlue, avgTemperature: $avgTemperature,'
+        ' temperatureValue: $temperatureValue \n'
+        'sharpnessScore: $sharpnessScore, avgSharpness: $avgSharpness, '
+        'sharpnessValue: $sharpnessValue \n'
+        'contrastStdDev: $contrastStdDev, fadeValue: $fadeValue \n');
+  }
   sendPort.send({
     'brightness': brightnessValue,
     'contrast': contrastValue,
