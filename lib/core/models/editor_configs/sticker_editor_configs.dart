@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import '/core/models/layers/layer.dart';
 import '../icons/sticker_editor_icons.dart';
 import '../styles/sticker_editor_style.dart';
+import 'utils/base_editor_layer_configs.dart';
 export '../icons/sticker_editor_icons.dart';
 export '../styles/sticker_editor_style.dart';
 
@@ -24,12 +25,13 @@ export '../styles/sticker_editor_style.dart';
 ///   },
 /// );
 /// ```
-class StickerEditorConfigs {
+class StickerEditorConfigs implements BaseEditorLayerConfigs {
   /// Creates an instance of StickerEditorConfigs with optional settings.
   ///
   /// By default, the editor is disabled (if not specified), and other
   /// properties are set to reasonable defaults.
   const StickerEditorConfigs({
+    this.layerFractionalOffset = const Offset(-0.5, -0.5),
     this.builder,
     @Deprecated('Use [builder] instead') this.buildStickers,
     this.initWidth = 100,
@@ -41,6 +43,10 @@ class StickerEditorConfigs {
   })  : assert(initWidth > 0, 'initWidth must be positive'),
         assert(maxScale >= minScale,
             'maxScale must be greater than or equal to minScale');
+
+  /// {@macro layerFractionalOffset}
+  @override
+  final Offset layerFractionalOffset;
 
   /// Indicates whether the sticker editor is enabled.
   ///
@@ -86,6 +92,7 @@ class StickerEditorConfigs {
   /// [StickerEditorConfigs] with some properties updated while keeping the
   /// others unchanged.
   StickerEditorConfigs copyWith({
+    Offset? layerFractionalOffset,
     bool? enabled,
     double? initWidth,
     StickerBuilder? builder,
@@ -96,6 +103,8 @@ class StickerEditorConfigs {
     StickerEditorIcons? icons,
   }) {
     return StickerEditorConfigs(
+      layerFractionalOffset:
+          layerFractionalOffset ?? this.layerFractionalOffset,
       enabled: enabled ?? this.enabled,
       initWidth: initWidth ?? this.initWidth,
       builder: builder ?? this.builder,

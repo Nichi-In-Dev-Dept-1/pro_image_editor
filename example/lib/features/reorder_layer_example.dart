@@ -63,6 +63,13 @@ class _ReorderLayerExampleState extends State<ReorderLayerExample>
       ),
       configs: ProImageEditorConfigs(
         designMode: platformDesignMode,
+        layerInteraction: const LayerInteractionConfigs(
+            // keepSelectionOnInteraction: false,
+            ),
+        textEditor: const TextEditorConfigs(
+          layerFractionalOffset: Offset(0, -.5),
+          inputTextFieldAlign: Alignment.centerLeft,
+        ),
         mainEditor: MainEditorConfigs(
           enableCloseButton: !isDesktopMode(context),
           widgets: MainEditorWidgets(

@@ -4,6 +4,7 @@ import '/features/paint_editor/enums/paint_editor_enum.dart';
 import '../../custom_widgets/paint_editor_widgets.dart';
 import '../../icons/paint_editor_icons.dart';
 import '../../styles/paint_editor_style.dart';
+import '../utils/base_editor_layer_configs.dart';
 import '../utils/editor_safe_area.dart';
 import '../utils/zoom_configs.dart';
 import 'censor_configs.dart';
@@ -36,7 +37,7 @@ export 'censor_configs.dart';
 ///   initialPaintMode: PaintMode.freeStyle,
 /// );
 /// ```
-class PaintEditorConfigs extends ZoomConfigs {
+class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   /// Creates an instance of PaintEditorConfigs with optional settings.
   ///
   /// By default, the editor is enabled, and most drawing tools are enabled.
@@ -51,6 +52,7 @@ class PaintEditorConfigs extends ZoomConfigs {
     super.doubleTapZoomDuration,
     super.doubleTapZoomCurve,
     super.boundaryMargin,
+    this.layerFractionalOffset = const Offset(-0.5, -0.5),
     this.enableModeFreeStyle = true,
     this.enableModeArrow = true,
     this.enableModeLine = true,
@@ -83,6 +85,10 @@ class PaintEditorConfigs extends ZoomConfigs {
             'maxScale must be greater than or equal to minScale'),
         assert(editorMaxScale > editorMinScale,
             'editorMaxScale must be greater than editorMinScale');
+
+  /// {@macro layerFractionalOffset}
+  @override
+  final Offset layerFractionalOffset;
 
   /// Indicates whether the paint editor is enabled.
   final bool enabled;
@@ -204,6 +210,7 @@ class PaintEditorConfigs extends ZoomConfigs {
   /// [PaintEditorConfigs] with some properties updated while keeping the
   /// others unchanged.
   PaintEditorConfigs copyWith({
+    Offset? layerFractionalOffset,
     bool? enabled,
     bool? enableModeFreeStyle,
     bool? enableModeArrow,
@@ -243,6 +250,8 @@ class PaintEditorConfigs extends ZoomConfigs {
     Curve? doubleTapZoomCurve,
   }) {
     return PaintEditorConfigs(
+      layerFractionalOffset:
+          layerFractionalOffset ?? this.layerFractionalOffset,
       enabled: enabled ?? this.enabled,
       enableModeFreeStyle: enableModeFreeStyle ?? this.enableModeFreeStyle,
       enableModeArrow: enableModeArrow ?? this.enableModeArrow,

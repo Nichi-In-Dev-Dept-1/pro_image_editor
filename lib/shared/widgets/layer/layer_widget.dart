@@ -147,18 +147,23 @@ class _LayerWidgetState extends State<LayerWidget>
     onRemoveTap: widget.onRemoveTap,
   );
 
+  late final Offset _fractionalOffset;
+
   @override
   void initState() {
     super.initState();
     switch (widget.layerData.runtimeType) {
       case const (TextLayer):
         _layerType = LayerWidgetType.text;
+        _fractionalOffset = configs.textEditor.layerFractionalOffset;
         break;
       case const (EmojiLayer):
         _layerType = LayerWidgetType.emoji;
+        _fractionalOffset = configs.emojiEditor.layerFractionalOffset;
         break;
       case const (WidgetLayer):
         _layerType = LayerWidgetType.widget;
+        _fractionalOffset = configs.stickerEditor.layerFractionalOffset;
         break;
       case const (PaintLayer):
         var layer = widget.layerData as PaintLayer;
@@ -166,9 +171,11 @@ class _LayerWidgetState extends State<LayerWidget>
                 layer.item.mode == PaintMode.pixelate
             ? LayerWidgetType.censor
             : LayerWidgetType.canvas;
+        _fractionalOffset = configs.paintEditor.layerFractionalOffset;
         break;
       default:
         _layerType = LayerWidgetType.unknown;
+        _fractionalOffset = const Offset(-0.5, -0.5);
         break;
     }
   }
@@ -275,7 +282,7 @@ class _LayerWidgetState extends State<LayerWidget>
       top: offsetY,
       left: offsetX,
       child: FractionalTranslation(
-        translation: const Offset(-0.5, -0.5),
+        translation: _fractionalOffset,
         child: Hero(
           // Important that hero is above transform
           createRectTween: (begin, end) => RectTween(begin: begin, end: end),
@@ -322,11 +329,8 @@ class _LayerWidgetState extends State<LayerWidget>
                   behavior: HitTestBehavior.translucent,
                   onPointerDown: _onPointerDown,
                   onPointerUp: _onPointerUp,
-                  child: Padding(
-                    padding: EdgeInsets.all(widget.selected ? 7.0 : 0),
-                    child: FittedBox(
-                      child: _buildContent(),
-                    ),
+                  child: FittedBox(
+                    child: _buildContent(),
                   ),
                 ),
               );

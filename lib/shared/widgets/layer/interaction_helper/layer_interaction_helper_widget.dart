@@ -188,11 +188,9 @@ class _LayerInteractionHelperWidgetState
     if (!widget.isInteractive ||
         (!widget.selected && deferManager?.selectedLayerId != '')) {
       // Return the child widget directly if the layer is not interactive.
-      return widget.child;
-    } else if (!widget.selected) {
-      // Use a defer pointer if the layer is not selected, preventing
-      // interaction.
+      return IgnorePointer(child: widget.child);
     }
+
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _overlayCtrl,
       overlayChildBuilder: (context, info) {
@@ -220,12 +218,10 @@ class _LayerInteractionHelperWidgetState
           ),
         );
       },
-      child: widget.selected
-          ? widget.child
-          : DeferPointer(
-              key: ValueKey('Defer-${deferManager?.id ?? ''}-$layerId'),
-              child: widget.child,
-            ),
+      child: DeferPointer(
+        key: ValueKey('Defer-${deferManager?.id ?? ''}-$layerId'),
+        child: widget.child,
+      ),
     );
   }
 

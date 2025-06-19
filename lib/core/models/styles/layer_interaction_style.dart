@@ -27,7 +27,7 @@ class LayerInteractionStyle {
     this.strokeWidth = 1.2,
     this.borderElementWidth = 7,
     this.borderElementSpace = 5,
-    this.overlayPadding = const EdgeInsets.all(16),
+    this.overlayPadding = const EdgeInsets.all(24),
     this.borderColor = Colors.blue,
     this.removeCursor = SystemMouseCursors.click,
     this.rotateScaleCursor = SystemMouseCursors.click,

@@ -130,7 +130,7 @@ class LayerInteractionButton extends StatelessWidget {
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: onTap,
-              child: HitTestTransparent(
+              child: _HitTestTransparent(
                 child: Container(
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
@@ -152,8 +152,8 @@ class LayerInteractionButton extends StatelessWidget {
   }
 }
 
-class HitTestTransparent extends SingleChildRenderObjectWidget {
-  const HitTestTransparent({super.key, required super.child});
+class _HitTestTransparent extends SingleChildRenderObjectWidget {
+  const _HitTestTransparent({required super.child});
 
   @override
   RenderObject createRenderObject(BuildContext context) {

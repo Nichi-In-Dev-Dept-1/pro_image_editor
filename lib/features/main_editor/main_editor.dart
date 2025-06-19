@@ -1035,7 +1035,6 @@ class ProImageEditorState extends State<ProImageEditor>
   /// This method is called during a scaling operation and updates the selected
   /// layer's position and properties.
   void _onScaleUpdate(ScaleUpdateDetails details) {
-    print(details);
     mainEditorCallbacks?.handleScaleUpdate(details);
     if (selectedLayerIndex < 0 || blockOnScaleUpdateFunction) return;
 
