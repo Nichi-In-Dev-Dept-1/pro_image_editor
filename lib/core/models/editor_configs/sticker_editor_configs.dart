@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-// TODO: Remove deprecated
 import 'package:flutter/widgets.dart';
 
 import '/core/models/layers/layer.dart';
@@ -33,7 +31,6 @@ class StickerEditorConfigs implements BaseEditorLayerConfigs {
   const StickerEditorConfigs({
     this.layerFractionalOffset = const Offset(-0.5, -0.5),
     this.builder,
-    @Deprecated('Use [builder] instead') this.buildStickers,
     this.initWidth = 100,
     this.minScale = double.negativeInfinity,
     this.maxScale = double.infinity,
@@ -60,10 +57,6 @@ class StickerEditorConfigs implements BaseEditorLayerConfigs {
   /// Specifies the starting width of the stickers when they are first placed
   /// in the editor. This value is in logical pixels.
   final double initWidth;
-
-  /// A callback that builds the stickers.
-  @Deprecated('Use [builder] instead')
-  final BuildStickers? buildStickers;
 
   /// A callback that builds the stickers.
   ///
@@ -96,7 +89,6 @@ class StickerEditorConfigs implements BaseEditorLayerConfigs {
     bool? enabled,
     double? initWidth,
     StickerBuilder? builder,
-    @Deprecated('Use [builder] instead') BuildStickers? buildStickers,
     double? minScale,
     double? maxScale,
     StickerEditorStyle? style,
@@ -108,7 +100,6 @@ class StickerEditorConfigs implements BaseEditorLayerConfigs {
       enabled: enabled ?? this.enabled,
       initWidth: initWidth ?? this.initWidth,
       builder: builder ?? this.builder,
-      buildStickers: buildStickers ?? this.buildStickers,
       minScale: minScale ?? this.minScale,
       maxScale: maxScale ?? this.maxScale,
       style: style ?? this.style,

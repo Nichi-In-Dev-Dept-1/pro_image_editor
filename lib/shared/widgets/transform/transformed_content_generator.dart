@@ -141,7 +141,6 @@ class _TransformedContentGeneratorState
   }
 
   Widget _buildCropPainter({required Widget child}) {
-    // TODO: Add support for web video player
     if (kIsWeb && widget.isVideoPlayer) return child;
 
     CutOutsideArea clipper = CutOutsideArea(configs: widget.transformConfigs);

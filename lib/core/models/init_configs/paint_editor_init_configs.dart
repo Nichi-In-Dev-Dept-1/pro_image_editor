@@ -3,8 +3,6 @@ import 'package:flutter/widgets.dart';
 
 import 'editor_init_configs.dart';
 
-/// TODO: Remove deprecated callbacks
-
 /// Configuration class for initializing the paint editor.
 ///
 /// This class extends [EditorInitConfigs] and adds specific parameters related
@@ -26,11 +24,6 @@ class PaintEditorInitConfigs extends EditorInitConfigs {
     super.appliedFilters,
     super.appliedTuneAdjustments,
     super.appliedBlurFactor,
-    @Deprecated('Use [callbacks.onCloseEditor] instead') super.onCloseEditor,
-    @Deprecated('Use [callbacks.onImageEditingComplete] instead')
-    super.onImageEditingComplete,
-    @Deprecated('Use [callbacks.onImageEditingStarted] instead')
-    super.onImageEditingStarted,
     super.convertToUint8List,
     this.enableFakeHero = false,
     this.initialZoomMatrix,

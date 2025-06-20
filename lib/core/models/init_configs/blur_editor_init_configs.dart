@@ -1,8 +1,6 @@
 // Project imports:
 import 'editor_init_configs.dart';
 
-/// TODO: Remove deprecated callbacks
-
 /// Configuration class for initializing the blur editor.
 ///
 /// This class extends [EditorInitConfigs] and adds parameters for the image
@@ -25,11 +23,6 @@ class BlurEditorInitConfigs extends EditorInitConfigs {
     super.appliedFilters,
     super.appliedTuneAdjustments,
     super.appliedBlurFactor,
-    @Deprecated('Use [callbacks.onCloseEditor] instead') super.onCloseEditor,
-    @Deprecated('Use [callbacks.onImageEditingComplete] instead')
-    super.onImageEditingComplete,
-    @Deprecated('Use [callbacks.onImageEditingStarted] instead')
-    super.onImageEditingStarted,
     super.convertToUint8List,
     required super.theme,
   });

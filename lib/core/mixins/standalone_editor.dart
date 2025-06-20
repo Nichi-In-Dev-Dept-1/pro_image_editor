@@ -1,6 +1,4 @@
 // Dart imports:
-// ignore_for_file: deprecated_member_use_from_same_package
-
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -150,7 +148,6 @@ mixin StandaloneEditorState<T extends StatefulWidget,
     if (isGenerationActive) return;
 
     if (initConfigs.convertToUint8List) {
-      initConfigs.onImageEditingStarted?.call();
       initConfigs.callbacks.onImageEditingStarted?.call();
 
       isGenerationActive = true;
@@ -187,7 +184,6 @@ mixin StandaloneEditorState<T extends StatefulWidget,
 
       /// Return final image that the user can handle it but still with the
       /// active loading dialog
-      await initConfigs.onImageEditingComplete?.call(imageBytes);
       await initConfigs.callbacks.onImageEditingComplete?.call(imageBytes);
 
       /// Return complete parameters if requested
@@ -233,7 +229,6 @@ mixin StandaloneEditorState<T extends StatefulWidget,
       /// Hide the loading dialog
       LoadingDialog.instance.hide();
 
-      initConfigs.onCloseEditor?.call();
       initConfigs.callbacks.onCloseEditor?.call(editorMode);
     } else {
       if (onCloseWithValue == null) {
@@ -246,11 +241,9 @@ mixin StandaloneEditorState<T extends StatefulWidget,
 
   /// Closes the editor without applying changes.
   void close() {
-    if (initConfigs.onCloseEditor == null &&
-        initConfigs.callbacks.onCloseEditor == null) {
+    if (initConfigs.callbacks.onCloseEditor == null) {
       Navigator.pop(context);
     } else {
-      initConfigs.onCloseEditor?.call();
       initConfigs.callbacks.onCloseEditor?.call(editorMode);
     }
 

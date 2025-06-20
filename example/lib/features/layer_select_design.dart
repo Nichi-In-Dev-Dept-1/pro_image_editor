@@ -154,6 +154,7 @@ class _LayerSelectDesignExampleState extends State<LayerSelectDesignExample>
             layerTopY = topMostY;
           }
           return Positioned(
+            // FIXME: ensure overlay is inside the view area.
             top: max(0, layerTopY - 10),
             left: max(0, layerCenterX),
             child: FractionalTranslation(

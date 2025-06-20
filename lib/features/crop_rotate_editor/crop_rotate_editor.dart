@@ -1,6 +1,4 @@
 // Dart imports:
-// ignore_for_file: deprecated_member_use_from_same_package
-
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'dart:ui';
@@ -729,7 +727,6 @@ class CropRotateEditorState extends State<CropRotateEditor>
       return;
     }
     _interactionActive = true;
-    initConfigs.onImageEditingStarted?.call();
     initConfigs.callbacks.onImageEditingStarted?.call();
 
     /// If the user set a custom initAspectRatio we need to enforce add
@@ -821,7 +818,6 @@ class CropRotateEditorState extends State<CropRotateEditor>
 
       var imageBytes = bytes ?? Uint8List.fromList([]);
 
-      await initConfigs.onImageEditingComplete?.call(imageBytes);
       await initConfigs.callbacks.onImageEditingComplete?.call(imageBytes);
 
       if (!mounted) return;
@@ -873,7 +869,6 @@ class CropRotateEditorState extends State<CropRotateEditor>
 
       LoadingDialog.instance.hide();
 
-      initConfigs.onCloseEditor?.call();
       initConfigs.callbacks.onCloseEditor?.call(EditorMode.cropRotate);
     }
     cropRotateEditorCallbacks?.handleDone();
