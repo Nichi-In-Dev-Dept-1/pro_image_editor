@@ -1,5 +1,24 @@
 # Changelog
 
+## 10.0.0
+- **FEAT**(layer): Move the layer selection to the overlay to prevent it from being captured. This change allows layers to remain selected even after an interaction. The behavior can be controlled using the `keepSelectionOnInteraction` variable in the `LayerInteractionConfigs`.
+- **FEAT**(layer-stack): Add `moveLayerForward` and `moveLayerBackward` to move a layer one step forward or backward in the stack.
+- **FEAT**(layer-stack): Add `moveLayerToFront` and `moveLayerToBack` to move a layer to the top or bottom of the stack.
+- **FEAT**(layer-stack): Add `getLayerStackIndex` to retrieve a layer's index in the stack.
+- **FEAT**(layer): Add `duplicateLayer` to the `LayerCopyManager`.
+- **FEAT**(callback): Add `onLayerTapDown` and `onLayerTapUp` to the `MainEditorCallbacks`.
+- **FEAT**(layer): Add layer type identification for emoji, text, paint, and widget layers.
+
+<br/>
+
+- **FIX**(text-layer): Resolve textLayer opening without requiring double-tap.
+- **FIX**(autoSource): Resolve issue where an error is thrown when the 'file' argument in the 'autoSource' constructor is null. This resolves issue [#509](https://github.com/hm21/pro_image_editor/issues/509).
+
+
+#### Breaking Changes
+- Removed all deprecated configuration settings.
+- Changed the layer selection system to use an overlay-based approach. This may lead to different results in certain edge cases. If you have implemented a custom selection behavior, review it to ensure compatibility.
+
 ## 9.13.0
 - **FEAT**(Text-Editor): Add the `inputTextFieldAlign` property to the `TextEditorConfigs` to dynamically align the input field. This was requested in [#502](https://github.com/hm21/pro_image_editor/issues/502).
 
@@ -15,6 +34,10 @@
 
 ## 9.11.0
 - **FEAT**(video-editor): Added new parameters to `CompleteParameters` required for extending the editor with video editing.
+
+<br/>
+
+
 - **FIX**(video-editor): Fixed issue where filter previews were displayed incorrectly.
 - **FIX**(video-editor): Fixed issue where the trim bar lost its state when moving a layer.
 
@@ -86,6 +109,10 @@
 
 ## 9.4.0
 - **FEAT**(jpeg-encoder): Add `jpegBackgroundColor` option to `ImageGenerationConfigs` to allow customization of JPEG background color.
+
+<br/>
+
+
 - **FIX**(crop_editor): Add missing copyWith parameters to ensure proper cloning of configuration states.
 - **FIX**(PaintEditor.drawing): Ensure `cropToImageBounds` is `false` to prevent unintended cropping behavior.
 
@@ -129,6 +156,8 @@
 - **FEAT**(callbacks): Add new callbacks that are triggered when a layer intersects with a helper line.
 - **FEAT**(TextLayer): Improve the text layer hit box for better gesture recognition.
 - **FEAT**(File): The file constructor in the main editor and sub-editors now supports adding just the file path in addition to the File itself.
+
+<br/>
 
 - **FIX**(Layers): Fix incorrect layer selection when drawing lines overlay other layers
 
