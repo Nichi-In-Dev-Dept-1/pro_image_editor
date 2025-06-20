@@ -149,6 +149,10 @@ class _LayerWidgetState extends State<LayerWidget>
 
   late final Offset _fractionalOffset;
 
+  final double _tapSlop = 18.0;
+  Offset? _downPosition;
+  DateTime _tapDownTimestamp = DateTime.now();
+
   @override
   void initState() {
     super.initState();
@@ -200,14 +204,11 @@ class _LayerWidgetState extends State<LayerWidget>
     );
   }
 
-  /// Handles a tap event on the layer.
-  void _onTap() {
-    if (_isOutsideHitBox()) return;
-    widget.onTap?.call(_layer);
-  }
-
   /// Handles a pointer down event on the layer.
   void _onPointerDown(PointerDownEvent event) {
+    _downPosition = event.position;
+    _tapDownTimestamp = DateTime.now();
+
     if (_isOutsideHitBox()) return;
     if (!isDesktop || event.buttons != kSecondaryMouseButton) {
       widget.onTapDown?.call();
@@ -216,7 +217,37 @@ class _LayerWidgetState extends State<LayerWidget>
 
   /// Handles a pointer up event on the layer.
   void _onPointerUp(PointerUpEvent event) {
+    // Notify optional onTapUp callback
     widget.onTapUp?.call();
+
+    if (widget.selected) return;
+
+    /// Important: To avoid gesture conflicts, we need to create our own
+    /// onTap event using the Listener widget instead of GestureDetector.
+    /// Below is a minimal example of how this can work. If anyone has
+    /// issues with this, please open a new issue.
+
+    // Cancel if down position is not set
+    if (_downPosition == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final interaction = widget.layerData.interaction;
+      final offsetDistance = (event.position - _downPosition!).distance;
+      final timeElapsed =
+          DateTime.now().difference(_tapDownTimestamp).inMilliseconds;
+
+      // Ignore if pointer moved too much (exceeds tap slop)
+      if (offsetDistance >= _tapSlop) return;
+
+      // Ignore if tap took too long (not a quick tap)
+      if (timeElapsed > 250) return;
+
+      // Fire onTap only if selection/edit is enabled and pointer is inside hit box
+      if ((interaction.enableSelection || interaction.enableEdit) &&
+          !_isOutsideHitBox()) {
+        widget.onTap?.call(_layer);
+      }
+    });
   }
 
   bool _isOutsideHitBox() {
@@ -320,11 +351,6 @@ class _LayerWidgetState extends State<LayerWidget>
               return GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onSecondaryTapUp: isDesktop ? _onSecondaryTapUp : null,
-                onTap:
-                    (interaction.enableSelection || interaction.enableEdit) &&
-                            !_isOutsideHitBox()
-                        ? _onTap
-                        : null,
                 child: Listener(
                   behavior: HitTestBehavior.translucent,
                   onPointerDown: _onPointerDown,
