@@ -110,6 +110,8 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   /// Key for managing mouse cursor regions.
   final _mouseCursorsKey = GlobalKey<ExtendedRebuildMouseRegionState>();
 
+  bool _isScaleInteractionActive = false;
+
   // Helper methods for handling layer interactions
   void _handleEditTap(int index, Layer layer) {
     if (layer is TextLayer) {
@@ -134,6 +136,7 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   }
 
   void _handleTapUp(Layer layer) {
+    if (_isScaleInteractionActive) return;
     if (widget.layerInteractionManager.hoverRemoveBtn) {
       widget.state.removeLayer(layer);
     }
@@ -149,12 +152,14 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   }
 
   void _handleTapDown(int index, Layer layer) {
+    if (_isScaleInteractionActive) return;
     widget.state.selectedLayerIndex = index;
     widget.setTempLayer(layer);
     widget.checkInteractiveViewer();
   }
 
   void _handleScaleRotateDown(int index, Size layerOriginalSize, Layer layer) {
+    _isScaleInteractionActive = true;
     widget.state.selectedLayerIndex = index;
     widget.layerInteractionManager
       ..rotateScaleLayerSizeHelper = layerOriginalSize
@@ -163,6 +168,7 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   }
 
   void _handleScaleRotateUp() {
+    _isScaleInteractionActive = false;
     widget.layerInteractionManager
       ..rotateScaleLayerSizeHelper = null
       ..rotateScaleLayerScaleHelper = null;

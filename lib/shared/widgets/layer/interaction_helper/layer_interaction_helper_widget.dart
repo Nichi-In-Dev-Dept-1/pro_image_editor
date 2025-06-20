@@ -195,7 +195,7 @@ class _LayerInteractionHelperWidgetState
     if (!widget.isInteractive ||
         (!widget.selected && deferManager?.selectedLayerId != '')) {
       // Return the child widget directly if the layer is not interactive.
-      return IgnorePointer(child: widget.child);
+      return widget.child;
     }
 
     return OverlayPortal.overlayChildLayoutBuilder(
@@ -243,6 +243,14 @@ class _LayerInteractionHelperWidgetState
     );
   }
 
+  void _handleScaleRotateDown(PointerDownEvent event) {
+    widget.onScaleRotateDown?.call(event);
+  }
+
+  void _handleScaleRotateUp(PointerUpEvent event) {
+    widget.onScaleRotateUp?.call(event);
+  }
+
   Widget _buildSelectionOverlay() {
     List<LayerInteractionItem> children =
         layerInteraction.widgets.children ?? _buildDefaultInteractions();
@@ -273,12 +281,8 @@ class _LayerInteractionHelperWidgetState
               LayerItemInteractions(
                 edit: widget.onEditLayer ?? () {},
                 remove: widget.onRemoveLayer ?? () {},
-                scaleRotateDown: (event) {
-                  widget.onScaleRotateDown?.call(event);
-                },
-                scaleRotateUp: (event) {
-                  widget.onScaleRotateUp?.call(event);
-                },
+                scaleRotateDown: _handleScaleRotateDown,
+                scaleRotateUp: _handleScaleRotateUp,
               ),
             ),
           ),
@@ -313,8 +317,8 @@ class _LayerInteractionHelperWidgetState
   Widget _buildRotateScaleButton(LayerItemInteractions interactions) {
     return layerInteraction.widgets.rotateScaleButton?.call(
           _rebuildStream.stream,
-          (value) => widget.onScaleRotateDown?.call(value),
-          (value) => widget.onScaleRotateUp?.call(value),
+          _handleScaleRotateDown,
+          _handleScaleRotateUp,
           _rotation,
         ) ??
         Positioned(
