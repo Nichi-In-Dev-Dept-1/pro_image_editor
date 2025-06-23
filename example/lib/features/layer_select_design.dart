@@ -73,6 +73,7 @@ class _LayerSelectDesignExampleState extends State<LayerSelectDesignExample>
                   const SizedBox.shrink(),
             )),
             layerInteraction: LayerInteractionConfigs(
+              selectable: LayerInteractionSelectable.enabled,
               widgets: LayerInteractionWidgets(
                 overlayChildBuilder: _overlayChildBuilder,
               ),

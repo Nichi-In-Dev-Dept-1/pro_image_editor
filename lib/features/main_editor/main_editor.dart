@@ -999,7 +999,8 @@ class ProImageEditorState extends State<ProImageEditor>
     var layer = activeLayers[selectedLayerIndex];
 
     if (layerInteractionManager.selectedLayerId != layer.id) {
-      layerInteractionManager.selectedLayerId = '';
+      layerInteractionManager.selectedLayerId =
+          layerInteractionManager.layersAreSelectable(configs) ? layer.id : '';
       _checkInteractiveViewer();
     }
 
