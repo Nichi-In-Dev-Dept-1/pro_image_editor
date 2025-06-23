@@ -32,6 +32,7 @@ class _LayerSelectDesignExampleState extends State<LayerSelectDesignExample>
 
   final _overlayCtrl = OverlayPortalController();
   final _transformedLayerKey = GlobalKey();
+  final _stackKey = GlobalKey();
 
   @override
   void initState() {
@@ -119,17 +120,29 @@ class _LayerSelectDesignExampleState extends State<LayerSelectDesignExample>
 
           final renderObject =
               _transformedLayerKey.currentContext?.findRenderObject();
-          if (renderObject is RenderBox && renderObject.hasSize) {
-            final size = renderObject.size;
-            // Get all 4 corners in global (screen) coordinates
-            final topLeft = renderObject.localToGlobal(const Offset(0, 0));
-            final topRight = renderObject.localToGlobal(Offset(size.width, 0));
-            final bottomLeft =
-                renderObject.localToGlobal(Offset(0, size.height));
-            final bottomRight =
-                renderObject.localToGlobal(Offset(size.width, size.height));
+          final renderBox =
+              _transformedLayerKey.currentContext?.findRenderObject();
+          final parentBox = _stackKey.currentContext?.findRenderObject();
 
-            // Collect all X and Y values
+          if (renderBox is RenderBox &&
+              parentBox is RenderBox &&
+              renderBox.hasSize &&
+              parentBox.hasSize) {
+            final size = renderBox.size;
+
+            final topLeftGlobal = renderBox.localToGlobal(Offset.zero);
+            final topRightGlobal =
+                renderBox.localToGlobal(Offset(size.width, 0));
+            final bottomLeftGlobal =
+                renderBox.localToGlobal(Offset(0, size.height));
+            final bottomRightGlobal =
+                renderBox.localToGlobal(Offset(size.width, size.height));
+
+            final topLeft = parentBox.globalToLocal(topLeftGlobal);
+            final topRight = parentBox.globalToLocal(topRightGlobal);
+            final bottomLeft = parentBox.globalToLocal(bottomLeftGlobal);
+            final bottomRight = parentBox.globalToLocal(bottomRightGlobal);
+
             final allX = [
               topLeft.dx,
               topRight.dx,
@@ -143,15 +156,14 @@ class _LayerSelectDesignExampleState extends State<LayerSelectDesignExample>
               bottomRight.dy
             ];
 
-            // Calculate visual center X (horizontal center of rotated bounds)
-            final minX = allX.reduce((a, b) => a < b ? a : b);
-            final maxX = allX.reduce((a, b) => a > b ? a : b);
+            final minX = allX.reduce(min);
+            final maxX = allX.reduce(max);
+            final minY = allY.reduce(min);
+
             final centerX = (minX + maxX) / 2;
 
-            // Calculate topmost Y (highest visible point)
-            final topMostY = allY.reduce((a, b) => a < b ? a : b);
             layerCenterX = centerX;
-            layerTopY = topMostY;
+            layerTopY = minY;
           }
           return Positioned(
             // FIXME: ensure overlay is inside the view area.
@@ -164,6 +176,7 @@ class _LayerSelectDesignExampleState extends State<LayerSelectDesignExample>
           );
         },
         child: Stack(
+          key: _stackKey,
           children: [
             Positioned(
               width: paddedWidth,
