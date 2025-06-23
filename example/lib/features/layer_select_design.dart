@@ -118,8 +118,6 @@ class _LayerSelectDesignExampleState extends State<LayerSelectDesignExample>
           double layerTopY = 0.0;
           double layerCenterX = 0.0;
 
-          final renderObject =
-              _transformedLayerKey.currentContext?.findRenderObject();
           final renderBox =
               _transformedLayerKey.currentContext?.findRenderObject();
           final parentBox = _stackKey.currentContext?.findRenderObject();
