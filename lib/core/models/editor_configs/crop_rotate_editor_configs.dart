@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/features/crop_rotate_editor/enums/crop_mode.enum.dart';
 import '/features/crop_rotate_editor/models/aspect_ratio_item.dart';
 import '/features/crop_rotate_editor/models/rotate_direction.dart';
 import '../custom_widgets/crop_rotate_editor_widgets.dart';
@@ -44,7 +45,7 @@ class CropRotateEditorConfigs {
     this.showResetButton = true,
     this.invertMouseScroll = false,
     this.invertDragDirection = false,
-    this.enableRoundCropper = false,
+    this.initialCropMode = CropMode.rectangular,
     this.enableTransformLayers = true,
     this.enableProvideImageInfos = false,
     this.enableDoubleTap = true,
@@ -80,12 +81,6 @@ class CropRotateEditorConfigs {
   })  : assert(maxScale >= 1, 'maxScale must be greater than or equal to 1'),
         assert(desktopCornerDragArea > 0,
             'desktopCornerDragArea must be positive'),
-        assert(
-            !enableRoundCropper || !showAspectRatioButton,
-            'In enableRoundCropper mode, showAspectRatioButton must be '
-            'disabled.'),
-        assert(!enableRoundCropper || initAspectRatio == 1,
-            'In enableRoundCropper mode, initAspectRatio must be 1.'),
         assert(
             mobileCornerDragArea > 0, 'mobileCornerDragArea must be positive'),
         assert(
@@ -125,11 +120,11 @@ class CropRotateEditorConfigs {
   /// Determines if the drag direction should be inverted.
   final bool invertDragDirection;
 
-  /// The cropper is round and not rectangular, which is optimal for cutting
-  /// profile images.
+  /// The initial crop mode to be used when the crop/rotate editor is opened.
   ///
-  /// The round cropper only supports an aspect ratio of 1.
-  final bool enableRoundCropper;
+  /// This determines the default cropping behavior or aspect ratio that will be
+  /// presented to the user before any manual adjustments are made.
+  final CropMode initialCropMode;
 
   /// A boolean flag that determines whether the `imageInfos` parameter
   /// should be included in the `onDone` callback.
@@ -239,8 +234,8 @@ class CropRotateEditorConfigs {
     bool? enableDoubleTap,
     bool? invertMouseScroll,
     bool? invertDragDirection,
-    bool? enableRoundCropper,
     bool? enableProvideImageInfos,
+    CropMode? initialCropMode,
     double? initAspectRatio,
     double? maxScale,
     double? mouseScaleFactor,
@@ -276,7 +271,7 @@ class CropRotateEditorConfigs {
       enableDoubleTap: enableDoubleTap ?? this.enableDoubleTap,
       invertMouseScroll: invertMouseScroll ?? this.invertMouseScroll,
       invertDragDirection: invertDragDirection ?? this.invertDragDirection,
-      enableRoundCropper: enableRoundCropper ?? this.enableRoundCropper,
+      initialCropMode: initialCropMode ?? this.initialCropMode,
       enableProvideImageInfos:
           enableProvideImageInfos ?? this.enableProvideImageInfos,
       initAspectRatio: initAspectRatio ?? this.initAspectRatio,

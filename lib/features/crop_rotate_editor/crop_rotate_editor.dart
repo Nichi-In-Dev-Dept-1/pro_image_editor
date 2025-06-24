@@ -41,6 +41,7 @@ import 'utils/rotate_angle.dart';
 import 'widgets/crop_corner_painter.dart';
 import 'widgets/outside_gestures/outside_gesture_behavior.dart';
 
+export 'enums/crop_mode.enum.dart';
 export 'widgets/crop_aspect_ratio_options.dart';
 
 /// The `CropRotateEditor` widget allows users to editing images with crop, flip
@@ -364,7 +365,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
             ),
             fadeInOpacity: _painterOpacity,
             style: cropRotateEditorConfigs.style,
-            drawCircle: cropRotateEditorConfigs.enableRoundCropper,
+            drawCircle: cropMode == CropMode.oval,
           )
         : null;
   }
@@ -899,6 +900,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
             flipX: flipX,
             flipY: flipY,
             offset: translate,
+            cropMode: cropMode,
           ),
         );
       }
@@ -1118,14 +1120,37 @@ class CropRotateEditorState extends State<CropRotateEditor>
   /// angle of zero.
   /// 6. Updates all relevant states in the editor.
   void updateAspectRatio(double value) {
-    reset(skipAddHistory: true);
     aspectRatio = value;
     cropRotateEditorCallbacks?.handleRatioSelected(value);
 
     calcCropRect();
     calcFitToScreen();
+    _setOffsetLimits();
     addHistory(scaleRotation: oldScaleFactor, angle: 0);
     _updateAllStates();
+  }
+
+  late CropMode _cropMode = widget.initConfigs.transformConfigs?.cropMode ??
+      cropRotateEditorConfigs.initialCropMode;
+
+  /// Gets the current crop mode.
+  ///
+  /// Returns [CropMode.circular] if the round cropper is enabled,
+  /// otherwise returns [CropMode.rectangular].
+  @override
+  CropMode get cropMode => _cropMode;
+
+  /// Sets the crop mode.
+  ///
+  /// If [value] is [CropMode.circular], it enables the round cropper,
+  /// sets the aspect ratio to 1 (square), and updates the internal state.
+  /// If [value] is [CropMode.rectangular], it disables the round cropper
+  /// and updates the internal state accordingly.
+  @override
+  set cropMode(CropMode value) {
+    _cropMode = value;
+    _updateAllStates();
+    addHistory();
   }
 
   @override
@@ -1175,15 +1200,24 @@ class CropRotateEditorState extends State<CropRotateEditor>
             translate * userScaleFactor;
     double dx = offset.dx;
     double dy = offset.dy;
-
-    if (cropRotateEditorConfigs.enableRoundCropper) {
+    if (cropMode == CropMode.oval) {
       double halfWidth = cropRect.width / 2;
       double halfHeight = cropRect.height / 2;
-
       double halfInteractiveCornerArea = _interactiveCornerArea / 2;
 
-      if (halfWidth + halfInteractiveCornerArea > offset.distance ||
-          halfHeight + halfInteractiveCornerArea > offset.distance) {
+      // Normalize against expanded ellipse for hit area
+      double ellipseHitX = dx / (halfWidth + halfInteractiveCornerArea);
+      double ellipseHitY = dy / (halfHeight + halfInteractiveCornerArea);
+      bool isWithinHitArea =
+          (ellipseHitX * ellipseHitX + ellipseHitY * ellipseHitY) <= 1;
+
+      // Normalize against exact ellipse for inside check
+      double normalizedX = dx / (halfWidth - halfInteractiveCornerArea);
+      double normalizedY = dy / (halfHeight - halfInteractiveCornerArea);
+      bool isInsideEllipse =
+          (normalizedX * normalizedX + normalizedY * normalizedY) <= 1;
+
+      if (isWithinHitArea) {
         double cursorAreaHitWidth = halfWidth * 0.5;
         double cursorAreaHitHeight = halfHeight * 0.5;
 
@@ -1192,7 +1226,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
         bool nearLeftEdge = dx < -cursorAreaHitWidth;
         bool nearRightEdge = dx > cursorAreaHitWidth;
 
-        if (offset.distance < halfWidth - halfInteractiveCornerArea) {
+        if (isInsideEllipse) {
           return CropAreaPart.inside;
         }
         // Bottom Left
@@ -1425,8 +1459,6 @@ class CropRotateEditorState extends State<CropRotateEditor>
             ) +
             _startingTranslate * _startingPinchScale;
 
-        bool roundCropper = cropRotateEditorConfigs.enableRoundCropper;
-
         double imgW = _renderedImgConstraints.maxWidth;
         double imgH = _renderedImgConstraints.maxHeight;
 
@@ -1444,7 +1476,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
         double circleGapX = 0;
         double circleGapY = 0;
 
-        if (roundCropper) {
+        if (cropMode == CropMode.oval) {
           circleGapX = sqrt(pow(halfViewRectW, 2) -
                   pow(min(offset.dy.abs(), halfViewRectW), 2)) -
               halfViewRectW;

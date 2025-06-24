@@ -203,6 +203,10 @@ mixin CropAreaHistory
   @protected
   Size originalSize = Size.zero;
 
+  /// Defines the cropping shape to apply to an image or video.
+  @protected
+  CropMode cropMode = CropMode.rectangular;
+
   /// A list of transformation configurations representing the history.
   ///
   /// This list stores each transformation state applied to the image,
@@ -275,6 +279,7 @@ mixin CropAreaHistory
         flipX: flipX,
         flipY: flipY,
         offset: translate,
+        cropMode: cropMode,
       ),
     );
     screenshotHistoryPosition++;
@@ -331,7 +336,8 @@ mixin CropAreaHistory
     aspectRatio = activeHistory.aspectRatio < 0
         ? cropRect.size.aspectRatio
         : activeHistory.aspectRatio;
-
+    cropMode =
+        activeHistory.cropMode ?? cropRotateEditorConfigs.initialCropMode;
     rotationCount = (activeHistory.angle * 2 / pi).abs().toInt();
     rotateAnimation =
         Tween<double>(begin: rotateAnimation.value, end: activeHistory.angle)
@@ -376,6 +382,7 @@ mixin CropAreaHistory
     flipX = false;
     flipY = false;
     translate = Offset.zero;
+    cropMode = configs.cropRotateEditor.initialCropMode;
 
     int rCount = rotationCount % 4;
     rotateAnimation =

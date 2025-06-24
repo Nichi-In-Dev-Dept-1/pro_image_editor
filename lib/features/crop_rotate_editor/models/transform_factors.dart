@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 
 import '/features/crop_rotate_editor/enums/crop_rotate_angle_side.dart';
 import '/features/crop_rotate_editor/utils/rotate_angle.dart';
+import '../enums/crop_mode.enum.dart';
 
 /// A class representing configuration settings for image transformation.
 ///
@@ -29,6 +30,7 @@ class TransformConfigs {
   ///   flipX: false,
   ///   flipY: false,
   ///   offset: Offset.zero,
+  ///   cropMode: CropMode.rectangular
   /// )
   /// ```
   TransformConfigs({
@@ -42,6 +44,7 @@ class TransformConfigs {
     required this.flipX,
     required this.flipY,
     required this.offset,
+    this.cropMode,
   });
 
   /// Creates a [TransformConfigs] instance from a map.
@@ -49,6 +52,9 @@ class TransformConfigs {
   /// The map should contain keys corresponding to the properties of
   /// `TransformConfigs`, and each key should map to the appropriate value.
   factory TransformConfigs.fromMap(Map<String, dynamic> map) {
+    final cropMode =
+        map['cropMode'] == 'oval' ? CropMode.oval : CropMode.rectangular;
+
     return TransformConfigs(
       angle: map['angle'] ?? 0,
       cropRect: Rect.fromLTRB(
@@ -67,6 +73,7 @@ class TransformConfigs {
       aspectRatio: map['aspectRatio'] ?? -1,
       flipX: map['flipX'] ?? false,
       flipY: map['flipY'] ?? false,
+      cropMode: cropMode,
       offset: Offset(
         map['offset']?['dx'] ?? 0,
         map['offset']?['dy'] ?? 0,
@@ -92,6 +99,25 @@ class TransformConfigs {
       offset: const Offset(0, 0),
     );
   }
+
+  /// The current cropping mode applied to the image.
+  ///
+  /// This determines how the crop operation behaves, such as oval or
+  /// rectangular.
+  final CropMode? cropMode;
+
+  /// Returns `true` if the current crop mode is set to rectangular cropping.
+  ///
+  /// This getter checks whether the [cropMode] is equal to
+  /// [CropMode.rectangular], indicating that the cropper is operating in
+  /// rectangular mode.
+  bool get isRectangularCropper => cropMode == CropMode.rectangular;
+
+  /// Returns `true` if the current crop mode is set to oval cropping.
+  ///
+  /// This getter checks whether the [cropMode] is equal to [CropMode.oval],
+  /// indicating that the cropper is in oval mode.
+  bool get isOvalCropper => cropMode == CropMode.oval;
 
   /// The offset used for transformations.
   ///
@@ -228,6 +254,7 @@ class TransformConfigs {
       'aspectRatio': aspectRatio,
       'flipX': flipX,
       'flipY': flipY,
+      'cropMode': (cropMode ?? CropMode.rectangular).name,
       'offset': {
         'dx': offset.dx,
         'dy': offset.dy,
@@ -304,7 +331,8 @@ class TransformConfigs {
         other.scaleRotation == scaleRotation &&
         other.aspectRatio == aspectRatio &&
         other.flipX == flipX &&
-        other.flipY == flipY;
+        other.flipY == flipY &&
+        other.cropMode == cropMode;
   }
 
   @override
@@ -318,7 +346,8 @@ class TransformConfigs {
         scaleRotation.hashCode ^
         aspectRatio.hashCode ^
         flipX.hashCode ^
-        flipY.hashCode;
+        flipY.hashCode ^
+        cropMode.hashCode;
   }
 }
 

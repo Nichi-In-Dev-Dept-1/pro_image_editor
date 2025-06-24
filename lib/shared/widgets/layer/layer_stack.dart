@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
 import '/core/models/transform_helper.dart';
+import '/features/crop_rotate_editor/enums/crop_mode.enum.dart';
 import '/features/crop_rotate_editor/widgets/crop_layer_painter.dart';
 import 'layer_widget.dart';
 
@@ -129,8 +130,9 @@ class LayerStack extends StatelessWidget {
                         backgroundColor: overlayColor,
                         imgRatio: transformConfigs?.cropRect.size.aspectRatio ??
                             transformHelper.mainImageSize.aspectRatio,
-                        isRoundCropper:
-                            configs.cropRotateEditor.enableRoundCropper,
+                        isRoundCropper: transformConfigs?.isOvalCropper ??
+                            configs.cropRotateEditor.initialCropMode ==
+                                CropMode.oval,
                         is90DegRotated:
                             transformConfigs?.is90DegRotated ?? false,
                       )

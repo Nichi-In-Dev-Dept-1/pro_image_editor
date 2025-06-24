@@ -8,6 +8,9 @@
 - **FEAT**(layer): Add `duplicateLayer` to the `LayerCopyManager`.
 - **FEAT**(callback): Add `onLayerTapDown` and `onLayerTapUp` to the `MainEditorCallbacks`.
 - **FEAT**(layer): Add layer type identification for emoji, text, paint, and widget layers.
+- **FEAT**(cropMode): The `CropMode` can now be dynamically switched inside the `cropRotateEditor` by updating the `cropMode` value.
+- **FEAT**(crop-editor): The `CropEditor` now supports every aspect ratio for the round cropper, not just aspect ratio 1.
+- **FEAT**(crop-editor): Changing the aspect ratio no longer resets other applied changes like flip or rotate.
 
 <br/>
 
@@ -21,6 +24,8 @@
 #### Breaking Changes
 - Removed all deprecated configuration settings.
 - Changed the layer selection system to use an overlay-based approach. This may lead to different results in certain edge cases. If you have implemented a custom selection behavior, review it to ensure compatibility.
+- Remove the configuration `enableRoundCropper` from `CropRotateEditorConfigs` and add the configuration `initialCropMode`.
+
 
 ## 9.13.0
 - **FEAT**(Text-Editor): Add the `inputTextFieldAlign` property to the `TextEditorConfigs` to dynamically align the input field. This was requested in [#502](https://github.com/hm21/pro_image_editor/issues/502).

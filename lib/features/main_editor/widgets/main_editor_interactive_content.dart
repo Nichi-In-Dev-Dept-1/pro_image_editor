@@ -12,6 +12,7 @@ import '/shared/services/content_recorder/widgets/content_recorder.dart';
 import '/shared/widgets/extended/extended_interactive_viewer.dart';
 import '/shared/widgets/video/video_editor_configurable.dart';
 import '/shared/widgets/video/video_editor_controls_widget.dart';
+import '../../crop_rotate_editor/enums/crop_mode.enum.dart';
 import '../main_editor.dart';
 import '../services/sizes_manager.dart';
 import '../services/state_manager.dart';
@@ -240,28 +241,35 @@ class MainEditorInteractiveContent extends StatelessWidget {
         builder: (context, snapshot) {
           return CustomPaint(
             foregroundPainter: configs.imageGeneration.cropToImageBounds
-                ? CropLayerPainter(
-                    opacity:
-                        configs.mainEditor.style.outsideCaptureAreaLayerOpacity,
-                    backgroundColor: configs.mainEditor.style.background,
-                    imgRatio: stateManager.transformConfigs.isNotEmpty
-                        ? stateManager
-                            .transformConfigs.cropRect.size.aspectRatio
-                        : sizesManager.decodedImageSize.aspectRatio,
-                    isRoundCropper: configs.cropRotateEditor.enableRoundCropper,
-                    is90DegRotated:
-                        stateManager.transformConfigs.is90DegRotated,
-                    interactiveViewerScale:
-                        interactiveViewerKey.currentState?.scaleFactor ?? 1.0,
-                    interactiveViewerOffset:
-                        interactiveViewerKey.currentState?.offset ??
-                            Offset.zero,
-                  )
+                ? _buildCropLayerPainter()
                 : null,
             child: const SizedBox.expand(),
           );
         },
       ),
+    );
+  }
+
+  CropLayerPainter _buildCropLayerPainter() {
+    final cropConfigs = configs.cropRotateEditor;
+    final transformConfigs = stateManager.transformConfigs;
+    final hasTransformChanges = transformConfigs.isNotEmpty;
+
+    CropMode cropMode =
+        transformConfigs.cropMode ?? cropConfigs.initialCropMode;
+
+    return CropLayerPainter(
+      opacity: configs.mainEditor.style.outsideCaptureAreaLayerOpacity,
+      backgroundColor: configs.mainEditor.style.background,
+      imgRatio: hasTransformChanges
+          ? transformConfigs.cropRect.size.aspectRatio
+          : sizesManager.decodedImageSize.aspectRatio,
+      isRoundCropper: cropMode == CropMode.oval,
+      is90DegRotated: transformConfigs.is90DegRotated,
+      interactiveViewerScale:
+          interactiveViewerKey.currentState?.scaleFactor ?? 1.0,
+      interactiveViewerOffset:
+          interactiveViewerKey.currentState?.offset ?? Offset.zero,
     );
   }
 }
