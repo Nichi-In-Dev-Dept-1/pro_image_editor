@@ -19,7 +19,7 @@
 
 <br/>
 
-- **DOCS**(example): Introduce a new [example](https://github.com/hm21/pro_image_editor/blob/stable/example/lib/features/layer_select_design.dart) to showcase a more contemporary layer selection design.
+- **DOCS**(example): Introduce a new [example](https://github.com/hm21/pro_image_editor/blob/stable/example/lib/features/layer_select_design_example.dart) to showcase a more contemporary layer selection design.
 
 #### Breaking Changes
 - Removed all deprecated configuration settings.
