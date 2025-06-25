@@ -64,8 +64,6 @@ class MainEditorBackgroundImage extends StatelessWidget {
           ? AutoImage(
               editorImage,
               fit: BoxFit.contain,
-              width: sizesManager.decodedImageSize.width,
-              height: sizesManager.decodedImageSize.height,
               configs: configs,
             )
           : TransformedContentGenerator(
