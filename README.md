@@ -309,6 +309,7 @@ A big thanks to the authors of these amazing packages.
 - Packages created by the Dart team:
   - [http](https://pub.dev/packages/http)
   - [plugin_platform_interface](https://pub.dev/packages/plugin_platform_interface)
+  - [vector_math](https://pub.dev/packages/vector_math)
   - [web](https://pub.dev/packages/web)
 
 
