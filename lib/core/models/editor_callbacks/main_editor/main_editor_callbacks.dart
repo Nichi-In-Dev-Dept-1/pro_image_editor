@@ -1,6 +1,8 @@
 // Flutter imports:
 import 'package:flutter/widgets.dart';
 
+import '/features/main_editor/main_editor.dart';
+import '/shared/services/import_export/import_state_history.dart';
 import '../../../enums/sub_editors_name.dart';
 import '../../layers/layer.dart';
 import '../standalone_editor_callbacks.dart';
@@ -34,6 +36,8 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
     this.onEditorZoomMatrix4Change,
     this.onLayerTapDown,
     this.onLayerTapUp,
+    this.onImportHistoryStart,
+    this.onImportHistoryEnd,
     super.onInit,
     super.onAfterViewInit,
     super.onUpdateUI,
@@ -110,6 +114,30 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   /// This function is called when the ESC key is pressed.
   /// By default it is null, which runs the default "close" behavior.
   final Function()? onEscapeButton;
+
+  /// Callback triggered when the import of the editor's history starts.
+  ///
+  /// [state] provides the current state of the ProImageEditor.
+  /// [import] contains information about the import operation.
+
+  /// Callback triggered when the import of the editor's history ends.
+  ///
+  /// [state] provides the current state of the ProImageEditor.
+  /// [import] contains information about the import operation.
+  final Function(ProImageEditorState state, ImportStateHistory import)?
+      onImportHistoryStart;
+
+  /// Callback triggered when the import of the editor's history is done.
+  ///
+  /// [state] provides the current state of the ProImageEditor.
+  /// [import] contains information about the import operation.
+
+  /// Callback triggered when the import of the editor's history ends.
+  ///
+  /// [state] provides the current state of the ProImageEditor.
+  /// [import] contains information about the import operation.
+  final Function(ProImageEditorState state, ImportStateHistory import)?
+      onImportHistoryEnd;
 
   /// A callback function that is triggered when a scaling gesture starts.
   ///
@@ -348,6 +376,10 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
     Function()? onDone,
     Function()? onRedo,
     Function()? onUndo,
+    Function(ProImageEditorState state, ImportStateHistory import)?
+        onImportHistoryStart,
+    Function(ProImageEditorState state, ImportStateHistory import)?
+        onImportHistoryEnd,
   }) {
     return MainEditorCallbacks(
       onLayerTapDown: onLayerTapDown ?? this.onLayerTapDown,
@@ -383,6 +415,8 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
       onDone: onDone ?? this.onDone,
       onRedo: onRedo ?? this.onRedo,
       onUndo: onUndo ?? this.onUndo,
+      onImportHistoryStart: onImportHistoryStart ?? this.onImportHistoryStart,
+      onImportHistoryEnd: onImportHistoryEnd ?? this.onImportHistoryEnd,
     );
   }
 }

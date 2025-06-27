@@ -2114,8 +2114,12 @@ class ProImageEditorState extends State<ProImageEditor>
   /// After importing, it updates the UI by calling [setState()] and the
   /// optional [onUpdateUI] callback.
   Future<void> importStateHistory(ImportStateHistory import) async {
+    mainEditorCallbacks?.onImportHistoryStart?.call(this, import);
+
     await _stateHistoryService.importStateHistory(import, context);
     await decodeImage();
+
+    mainEditorCallbacks?.onImportHistoryEnd?.call(this, import);
   }
 
   /// Exports the current state history.
