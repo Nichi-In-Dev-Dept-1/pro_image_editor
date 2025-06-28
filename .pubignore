@@ -15,3 +15,5 @@ pub_login.sh
 /lib/web/web_worker.dart.wasm.map
 /devtools_options.yaml
 /example/devtools_options.yaml
+/android/.gradle
+/android/local.properties
