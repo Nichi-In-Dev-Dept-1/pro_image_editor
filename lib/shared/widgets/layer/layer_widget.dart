@@ -10,6 +10,7 @@ import '/core/mixins/editor_configs_mixin.dart';
 import '/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
+import '/core/services/gesture_manager.dart';
 import '/features/paint_editor/enums/paint_editor_enum.dart';
 import '/shared/widgets/layer/enums/layer_widget_type_enum.dart';
 import '/shared/widgets/layer/services/layer_widget_context_menu.dart';
@@ -191,7 +192,7 @@ class _LayerWidgetState extends State<LayerWidget>
 
   /// Handles a secondary tap up event, typically for showing a context menu.
   void _onSecondaryTapUp(TapUpDetails details) {
-    if (_isOutsideHitBox()) return;
+    if (_isOutsideHitBox() || GestureManager.instance.isBlocked) return;
 
     _contextManager.open(
       context: context,
@@ -204,6 +205,8 @@ class _LayerWidgetState extends State<LayerWidget>
 
   /// Handles a pointer down event on the layer.
   void _onPointerDown(PointerDownEvent event) {
+    if (GestureManager.instance.isBlocked) return;
+
     _downPosition = event.position;
     _tapDownTimestamp = DateTime.now();
 
@@ -215,6 +218,7 @@ class _LayerWidgetState extends State<LayerWidget>
 
   /// Handles a pointer up event on the layer.
   void _onPointerUp(PointerUpEvent event) {
+    if (GestureManager.instance.isBlocked) return;
     // Notify optional onTapUp callback
     widget.onTapUp?.call();
 

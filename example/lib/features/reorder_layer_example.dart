@@ -84,27 +84,29 @@ class _ReorderLayerExampleState extends State<ReorderLayerExample>
                                     bottomRight: Radius.circular(100),
                                   ),
                                 ),
-                                child: IconButton(
-                                  onPressed: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      builder: (context) => SafeArea(
-                                        child: ReorderLayerSheet(
-                                          layers: editor.activeLayers,
-                                          onReorder: (oldIndex, newIndex) {
-                                            editor.moveLayerListPosition(
-                                              oldIndex: oldIndex,
-                                              newIndex: newIndex,
-                                            );
-                                            Navigator.pop(context);
-                                          },
+                                child: GestureInterceptor(
+                                  child: IconButton(
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) => SafeArea(
+                                          child: ReorderLayerSheet(
+                                            layers: editor.activeLayers,
+                                            onReorder: (oldIndex, newIndex) {
+                                              editor.moveLayerListPosition(
+                                                oldIndex: oldIndex,
+                                                newIndex: newIndex,
+                                              );
+                                              Navigator.pop(context);
+                                            },
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                  icon: const Icon(
-                                    Icons.reorder,
-                                    color: Colors.white,
+                                      );
+                                    },
+                                    icon: const Icon(
+                                      Icons.reorder,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),

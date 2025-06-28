@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.1
+- **FIX**(gestures): Add new widget `GestureInterceptor` to prevent unnecessary gesture bubbling up the widget tree.
+
 ## 10.1.0
 - **FEAT**(callbacks): Add new `onKeyboardEvent` callback to `MainEditorCallbacks`.
 

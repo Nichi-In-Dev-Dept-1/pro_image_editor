@@ -145,11 +145,13 @@ class _BackgroundRemoverExampleState extends State<BackgroundRemoverExample>
                               bottomRight: Radius.circular(100),
                             ),
                           ),
-                          child: IconButton(
-                            onPressed: _removeBackground,
-                            icon: const Icon(
-                              Icons.content_cut,
-                              color: Colors.white,
+                          child: GestureInterceptor(
+                            child: IconButton(
+                              onPressed: _removeBackground,
+                              icon: const Icon(
+                                Icons.content_cut,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -171,11 +173,13 @@ class _BackgroundRemoverExampleState extends State<BackgroundRemoverExample>
                               bottomLeft: Radius.circular(100),
                             ),
                           ),
-                          child: IconButton(
-                            onPressed: _openPicker,
-                            icon: const Icon(
-                              Icons.image,
-                              color: Colors.white,
+                          child: GestureInterceptor(
+                            child: IconButton(
+                              onPressed: _openPicker,
+                              icon: const Icon(
+                                Icons.image,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),

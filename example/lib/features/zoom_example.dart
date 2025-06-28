@@ -84,11 +84,13 @@ class _ZoomExampleState extends State<ZoomExample>
                                       bottomRight: Radius.circular(100),
                                     ),
                                   ),
-                                  child: IconButton(
-                                    onPressed: editor.resetZoom,
-                                    icon: const Icon(
-                                      Icons.zoom_out_map_rounded,
-                                      color: Colors.white,
+                                  child: GestureInterceptor(
+                                    child: IconButton(
+                                      onPressed: editor.resetZoom,
+                                      icon: const Icon(
+                                        Icons.zoom_out_map_rounded,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),

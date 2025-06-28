@@ -340,11 +340,13 @@ class _MovableBackgroundImageExampleState
                                     bottomRight: Radius.circular(100),
                                   ),
                                 ),
-                                child: IconButton(
-                                  onPressed: () => _openReorderSheet(editor),
-                                  icon: const Icon(
-                                    Icons.reorder,
-                                    color: Colors.white,
+                                child: GestureInterceptor(
+                                  child: IconButton(
+                                    onPressed: () => _openReorderSheet(editor),
+                                    icon: const Icon(
+                                      Icons.reorder,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
