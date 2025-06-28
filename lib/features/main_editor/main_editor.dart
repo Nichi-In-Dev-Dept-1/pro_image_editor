@@ -11,6 +11,7 @@ import '/core/mixins/editor_callbacks_mixin.dart';
 import '/core/mixins/editor_configs_mixin.dart';
 import '/core/models/history/last_layer_interaction_position.dart';
 import '/core/models/styles/draggable_sheet_style.dart';
+import '/core/services/gesture_manager.dart';
 import '/features/main_editor/widgets/main_editor_appbar.dart';
 import '/features/main_editor/widgets/main_editor_background_image.dart';
 import '/features/main_editor/widgets/main_editor_background_video.dart';
@@ -1085,7 +1086,6 @@ class ProImageEditorState extends State<ProImageEditor>
     }
 
     if (_activeLayer == null) return;
-
     if (layerInteractionManager.rotateScaleLayerSizeHelper != null) {
       layerInteractionManager
         ..freeStyleHighPerformanceScaling =
@@ -1826,6 +1826,7 @@ class ProImageEditorState extends State<ProImageEditor>
   /// It decreases the edit position, and the image is decoded to reflect
   /// the previous state.
   void undoAction() {
+    GestureManager.instance.stopPropagation();
     if (stateManager.canUndo) {
       setState(() {
         layerInteractionManager.selectedLayerId = '';
@@ -2341,7 +2342,8 @@ class ProImageEditorState extends State<ProImageEditor>
               child: Listener(
                 behavior: HitTestBehavior.translucent,
                 onPointerDown: (details) {
-                  if (layerInteractionManager.selectedLayerId.isNotEmpty) {
+                  if (layerInteractionManager.selectedLayerId.isNotEmpty ||
+                      GestureManager.instance.isBlocked) {
                     return;
                   }
                   bool isDoubleTap = detectDoubleTap(details);

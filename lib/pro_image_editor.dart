@@ -65,5 +65,6 @@ export 'core/utils/image_converter.dart';
 /// Widgets
 export 'shared/widgets/animated/fade_in_up.dart';
 export 'shared/widgets/flat_icon_text_button.dart';
+export 'shared/widgets/gesture/gesture_interceptor_widget.dart';
 export 'shared/widgets/overlays/loading_dialog/loading_dialog.dart';
 export 'shared/widgets/platform/platform_circular_progress_indicator.dart';
