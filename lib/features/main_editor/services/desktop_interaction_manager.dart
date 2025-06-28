@@ -86,59 +86,65 @@ class DesktopInteractionManager {
     required Function onEscape,
     required Function(bool) onUndoRedo,
   }) {
-    final key = event.logicalKey.keyLabel;
-    if (context.mounted) {
-      if (event is KeyDownEvent) {
-        switch (key) {
-          case 'Escape':
-            if (callbacks.mainEditorCallbacks?.onEscapeButton != null) {
-              callbacks.mainEditorCallbacks!.onEscapeButton!();
-            } else if (configs.mainEditor.enableEscapeButton) {
-              onEscape();
-            }
-            break;
+    if (!context.mounted) return false;
 
-          case 'Subtract':
-          case 'Numpad Subtract':
-          case 'Page Down':
-          case 'Arrow Down':
-            _keyboardZoom(zoomIn: true, activeLayer: activeLayer);
-            break;
-          case 'Add':
-          case 'Numpad Add':
-          case 'Page Up':
-          case 'Arrow Up':
-            _keyboardZoom(zoomIn: false, activeLayer: activeLayer);
-            break;
-          case 'Arrow Left':
-            _keyboardRotate(left: true, activeLayer: activeLayer);
-            break;
-          case 'Arrow Right':
-            _keyboardRotate(left: false, activeLayer: activeLayer);
-            break;
-          case 'Control Left':
-          case 'Control Right':
-            _ctrlDown = true;
-            break;
-          case 'Shift Left':
-          case 'Shift Right':
-            _shiftDown = true;
-            break;
-          case 'Z':
-            if (_ctrlDown) onUndoRedo(!_shiftDown);
-            break;
-        }
-      } else if (event is KeyUpEvent) {
-        switch (key) {
-          case 'Control Left':
-          case 'Control Right':
-            _ctrlDown = false;
-            break;
-          case 'Shift Left':
-          case 'Shift Right':
-            _shiftDown = false;
-            break;
-        }
+    final key = event.logicalKey.keyLabel;
+
+    bool? stopPropagate =
+        callbacks.mainEditorCallbacks?.onKeyboardEvent?.call(event);
+
+    if (stopPropagate == true) return true;
+
+    if (event is KeyDownEvent) {
+      switch (key) {
+        case 'Escape':
+          if (callbacks.mainEditorCallbacks?.onEscapeButton != null) {
+            callbacks.mainEditorCallbacks!.onEscapeButton!();
+          } else if (configs.mainEditor.enableEscapeButton) {
+            onEscape();
+          }
+          break;
+
+        case 'Subtract':
+        case 'Numpad Subtract':
+        case 'Page Down':
+        case 'Arrow Down':
+          _keyboardZoom(zoomIn: true, activeLayer: activeLayer);
+          break;
+        case 'Add':
+        case 'Numpad Add':
+        case 'Page Up':
+        case 'Arrow Up':
+          _keyboardZoom(zoomIn: false, activeLayer: activeLayer);
+          break;
+        case 'Arrow Left':
+          _keyboardRotate(left: true, activeLayer: activeLayer);
+          break;
+        case 'Arrow Right':
+          _keyboardRotate(left: false, activeLayer: activeLayer);
+          break;
+        case 'Control Left':
+        case 'Control Right':
+          _ctrlDown = true;
+          break;
+        case 'Shift Left':
+        case 'Shift Right':
+          _shiftDown = true;
+          break;
+        case 'Z':
+          if (_ctrlDown) onUndoRedo(!_shiftDown);
+          break;
+      }
+    } else if (event is KeyUpEvent) {
+      switch (key) {
+        case 'Control Left':
+        case 'Control Right':
+          _ctrlDown = false;
+          break;
+        case 'Shift Left':
+        case 'Shift Right':
+          _shiftDown = false;
+          break;
       }
     }
 

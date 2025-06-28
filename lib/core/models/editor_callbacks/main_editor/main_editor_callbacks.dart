@@ -31,6 +31,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
     this.onEditorZoomScaleUpdate,
     this.onEditorZoomScaleEnd,
     this.onEscapeButton,
+    this.onKeyboardEvent,
     this.helperLines = const HelperLinesCallbacks(),
     this.onSelectedLayerChanged,
     this.onEditorZoomMatrix4Change,
@@ -114,6 +115,24 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   /// This function is called when the ESC key is pressed.
   /// By default it is null, which runs the default "close" behavior.
   final Function()? onEscapeButton;
+
+  /// Callback invoked when a keyboard event occurs.
+  ///
+  /// If this function returns `true`, the keyboard event will be consumed and
+  /// not propagated further. Returning `false` or `null` allows the event to
+  /// continue propagating.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// onKeyboardEvent: (event) {
+  ///   if (event.logicalKey == LogicalKeyboardKey.escape) {
+  ///     // Handle Escape key and consume the event.
+  ///     return true;
+  ///   }
+  ///   return false; // Let other keys propagate.
+  /// },
+  /// ```
+  final bool Function(KeyEvent event)? onKeyboardEvent;
 
   /// Callback triggered when the import of the editor's history starts.
   ///
@@ -360,6 +379,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
     Function()? onDoubleTap,
     Function()? onLongPress,
     Function()? onEscapeButton,
+    bool Function(KeyEvent event)? onKeyboardEvent,
     Function(ScaleStartDetails)? onScaleStart,
     Function(ScaleUpdateDetails)? onScaleUpdate,
     Function(ScaleEndDetails)? onScaleEnd,
@@ -395,6 +415,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
       onDoubleTap: onDoubleTap ?? this.onDoubleTap,
       onLongPress: onLongPress ?? this.onLongPress,
       onEscapeButton: onEscapeButton ?? this.onEscapeButton,
+      onKeyboardEvent: onKeyboardEvent ?? this.onKeyboardEvent,
       onScaleStart: onScaleStart ?? this.onScaleStart,
       onScaleUpdate: onScaleUpdate ?? this.onScaleUpdate,
       onScaleEnd: onScaleEnd ?? this.onScaleEnd,

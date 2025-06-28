@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.0
+- **FEAT**(callbacks): Add new `onKeyboardEvent` callback to `MainEditorCallbacks`.
+
 ## 10.0.0
 - **FEAT**(layer): Move the layer selection to the overlay to prevent it from being captured. This change allows layers to remain selected even after an interaction. The behavior can be controlled using the `keepSelectionOnInteraction` variable in the `LayerInteractionConfigs`.
 - **FEAT**(layer-stack): Add `moveLayerForward` and `moveLayerBackward` to move a layer one step forward or backward in the stack.
