@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.2
+- **FIX**(compat): Increased minimum Flutter SDK version to 3.32.0 to ensure compatibility with updated OverlayPortal APIs.
+
 ## 10.1.1
 - **FIX**(gestures): Add new widget `GestureInterceptor` to prevent unnecessary gesture bubbling up the widget tree.
 
