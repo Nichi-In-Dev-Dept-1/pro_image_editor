@@ -1,7 +1,8 @@
 import 'tune_adjustment_matrix.dart';
 
 /// This will hold the list of tune changes as well as single tune changes
-class TuneEditBatch { // Optional: to label auto-tune edits etc.
+class TuneEditBatch {
+  // Optional: to label auto-tune edits etc.
 
   /// Constructor for TuneBatch class
   TuneEditBatch(this.state, {this.label});

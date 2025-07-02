@@ -100,7 +100,6 @@ class I18nTuneEditor {
     String? fade,
     String? luminance,
     String? auto,
-
   }) {
     return I18nTuneEditor(
       bottomNavigationBarText:

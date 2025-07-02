@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 
-
 ///custom Primary Color
 const Color primaryColor = Color(0xFF12BCD4);
 

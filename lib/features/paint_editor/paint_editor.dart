@@ -807,11 +807,11 @@ class PaintEditorState extends State<PaintEditor>
             zoomConfigs: paintEditorConfigs,
             enableInteraction: paintMode == PaintMode.moveAndZoom,
             onInteractionStart: (details) {
-              _freeStyleHighPerformance =
-                  (paintEditorConfigs.enableFreeStyleHighPerformanceMoving ??
-                          !isDesktop) ||
-                      (paintEditorConfigs.enableFreeStyleHighPerformanceScaling ??
-                          !isDesktop);
+              _freeStyleHighPerformance = (paintEditorConfigs
+                          .enableFreeStyleHighPerformanceMoving ??
+                      !isDesktop) ||
+                  (paintEditorConfigs.enableFreeStyleHighPerformanceScaling ??
+                      !isDesktop);
 
               callbacks.paintEditorCallbacks?.onEditorZoomScaleStart
                   ?.call(details);
@@ -821,7 +821,8 @@ class PaintEditorState extends State<PaintEditor>
                 callbacks.paintEditorCallbacks?.onEditorZoomScaleUpdate,
             onInteractionEnd: (details) {
               _freeStyleHighPerformance = false;
-              callbacks.paintEditorCallbacks?.onEditorZoomScaleEnd?.call(details);
+              callbacks.paintEditorCallbacks?.onEditorZoomScaleEnd
+                  ?.call(details);
               setState(() {});
             },
             onMatrix4Change:
@@ -845,7 +846,8 @@ class PaintEditorState extends State<PaintEditor>
                         else
                           SizedBox(
                             width: configs.imageGeneration.maxOutputSize.width,
-                            height: configs.imageGeneration.maxOutputSize.height,
+                            height:
+                                configs.imageGeneration.maxOutputSize.height,
                           ),
 
                       /// Build layers
@@ -854,9 +856,9 @@ class PaintEditorState extends State<PaintEditor>
                           configs: configs,
                           layers: layers!,
                           transformHelper: TransformHelper(
-                            mainBodySize:getValidSizeOrDefault(
+                            mainBodySize: getValidSizeOrDefault(
                                 mainBodySize, editorBodySize),
-                            mainImageSize:getValidSizeOrDefault(
+                            mainImageSize: getValidSizeOrDefault(
                                 mainImageSize, editorBodySize),
                             editorBodySize: editorBodySize,
                             transformConfigs: initialTransformConfigs,

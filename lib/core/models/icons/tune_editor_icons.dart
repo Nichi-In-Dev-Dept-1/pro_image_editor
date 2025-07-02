@@ -34,6 +34,7 @@ class TuneEditorIcons {
 
   /// Icon for the "Brightness" adjustment control.
   final IconData brightness;
+
   /// Icon for the "Brightness" adjustment control.
   final IconData auto;
 
