@@ -46,7 +46,7 @@ class MainEditorHelperLines extends StatelessWidget {
   /// Configuration settings for the editor.
   final ProImageEditorConfigs configs;
 
-  final double _lineHeight = 1.25;
+  final double _strokeWidth = 1.25;
   final int _duration = 100;
 
   double get _screenHeight => sizesManager.screen.height;
@@ -70,6 +70,8 @@ class MainEditorHelperLines extends StatelessWidget {
                 if (helperLines.showVerticalLine) _buildVerticalLine(),
                 if (helperLines.showHorizontalLine) _buildHorizontalLine(),
                 if (helperLines.showRotateLine) _buildRotateLine(),
+                if (helperLines.showLayerAlignLine)
+                  ..._buildLayerAlignLine(context),
               ],
             );
           }),
@@ -81,7 +83,8 @@ class MainEditorHelperLines extends StatelessWidget {
       alignment: Alignment.center,
       child: AnimatedContainer(
         duration: Duration(milliseconds: _duration),
-        width: layerInteractionManager.showVerticalHelperLine ? _lineHeight : 0,
+        width:
+            layerInteractionManager.showVerticalHelperLine ? _strokeWidth : 0,
         height: _screenHeight,
         color: helperLines.style.verticalColor,
       ),
@@ -101,7 +104,7 @@ class MainEditorHelperLines extends StatelessWidget {
         duration: Duration(milliseconds: _duration),
         width: _screenWidth,
         height:
-            layerInteractionManager.showHorizontalHelperLine ? _lineHeight : 0,
+            layerInteractionManager.showHorizontalHelperLine ? _strokeWidth : 0,
         color: helperLines.style.horizontalColor,
       ),
     );
@@ -118,7 +121,7 @@ class MainEditorHelperLines extends StatelessWidget {
           child: AnimatedContainer(
             duration: Duration(milliseconds: _duration),
             width: layerInteractionManager.showRotationHelperLine
-                ? _lineHeight
+                ? _strokeWidth
                 : 0,
             height: _screenHeight * 2,
             color: helperLines.style.rotateColor,
@@ -126,5 +129,45 @@ class MainEditorHelperLines extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildLayerAlignLine(BuildContext context) {
+    final editorSize = sizesManager.bodySize;
+    final editorCenter = editorSize / 2;
+    final halfStroke = _strokeWidth / 2;
+
+    final horizontalOffset = editorCenter.height +
+        layerInteractionManager.horizontalGuideOffset.dy -
+        halfStroke;
+
+    final verticalOffset = editorCenter.width +
+        layerInteractionManager.verticalGuideOffset.dx -
+        halfStroke;
+
+    final showHorizontal = layerInteractionManager.isHorizontalGuideVisible;
+    final showVertical = layerInteractionManager.isVerticalGuideVisible;
+
+    return [
+      Positioned(
+        top: horizontalOffset,
+        left: 0,
+        right: 0,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: _duration),
+          height: showHorizontal ? _strokeWidth : 0,
+          color: helperLines.style.layerAlignColor,
+        ),
+      ),
+      Positioned(
+        top: 0,
+        bottom: 0,
+        left: verticalOffset,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: _duration),
+          width: showVertical ? _strokeWidth : 0,
+          color: helperLines.style.layerAlignColor,
+        ),
+      ),
+    ];
   }
 }

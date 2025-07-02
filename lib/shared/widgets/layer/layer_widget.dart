@@ -253,7 +253,8 @@ class _LayerWidgetState extends State<LayerWidget>
   }
 
   bool _isOutsideHitBox() {
-    return (_isHitOutsideInCanvas() || _isHitOutsideInText()) &&
+    return ((_isHitOutsideInCanvas() || _isHitOutsideInText()) &&
+            _layerType != LayerWidgetType.censor) &&
         !widget.selected;
   }
 

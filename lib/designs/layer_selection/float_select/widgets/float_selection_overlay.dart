@@ -21,6 +21,7 @@ class FloatSelectionOverlay extends StatefulWidget {
     required this.interactions,
     required this.editorKey,
     this.configs = const FloatSelectConfigs(),
+    this.safeArea = EdgeInsets.zero,
   });
 
   /// Layout info from the editor's layer overlay
@@ -37,6 +38,11 @@ class FloatSelectionOverlay extends StatefulWidget {
 
   /// UI configs including style, i18n, and widgets
   final FloatSelectConfigs configs;
+
+  /// The padding values that define the safe area insets for the overlay,
+  /// typically used to avoid system UI intrusions such as notches, status bars,
+  /// or navigation bars.
+  final EdgeInsets safeArea;
 
   @override
   State<FloatSelectionOverlay> createState() => _FloatSelectionOverlayState();
@@ -128,12 +134,12 @@ class _FloatSelectionOverlayState extends State<FloatSelectionOverlay> {
 
     // Final clamped position
     final dx = (centerX + _style.offset.dx).clamp(
-      toolboxWidth / 2,
-      parentSize.width - toolboxWidth / 2,
+      toolboxWidth / 2 + widget.safeArea.left,
+      parentSize.width - toolboxWidth / 2 - widget.safeArea.right,
     );
     final dy = (minY + _style.offset.dy).clamp(
-      toolboxHeight,
-      parentSize.height,
+      toolboxHeight + widget.safeArea.top,
+      parentSize.height - widget.safeArea.bottom,
     );
 
     return Offset(dx, dy);
