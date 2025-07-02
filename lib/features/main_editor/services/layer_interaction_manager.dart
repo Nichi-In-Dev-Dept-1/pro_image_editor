@@ -1,4 +1,5 @@
 // Dart imports:
+import 'dart:async';
 import 'dart:math';
 
 // Flutter imports:
@@ -74,6 +75,18 @@ class LayerInteractionManager {
   /// Flag indicating if rotation helper lines should be displayed.
   bool showRotationHelperLine = false;
 
+  /// Whether to show the vertical alignment line for the active layer.
+  bool isVerticalGuideVisible = false;
+
+  /// Whether to show the horizontal alignment line for the active layer.
+  bool isHorizontalGuideVisible = false;
+
+  /// Offset of the horizontal alignment line relative to the editor center.
+  Offset horizontalGuideOffset = Offset.zero;
+
+  /// Offset of the vertical alignment line relative to the editor center.
+  Offset verticalGuideOffset = Offset.zero;
+
   /// Flag indicating if rotation helper lines have started.
   bool _rotationStartedHelper = false;
 
@@ -141,6 +154,9 @@ class LayerInteractionManager {
   LayerLastPosition lastPositionY = LayerLastPosition.center;
 
   Offset? _rotateScaleButtonStartPosition;
+
+  double? _helperFocalX;
+  double? _helperFocalY;
 
   /// Resets the state of the layer interaction manager by:
   ///
@@ -271,8 +287,10 @@ class LayerInteractionManager {
     required BuildContext context,
     required ScaleUpdateDetails detail,
     required Layer activeLayer,
+    required List<Layer> layerList,
     required GlobalKey removeAreaKey,
     required Function(bool) onHoveredRemoveChanged,
+    required StreamController<void> helperLineCtrl,
   }) {
     if (_activeScale || !activeLayer.interaction.enableMove) return;
 
@@ -350,6 +368,13 @@ class LayerInteractionManager {
       lastPositionY =
           posY <= 0 ? LayerLastPosition.top : LayerLastPosition.bottom;
     }
+
+    _updateAlignmentGuides(
+      detail: detail,
+      layerList: layerList,
+      activeLayer: activeLayer,
+      helperLineCtrl: helperLineCtrl,
+    );
 
     if (hasLineHit) {
       if (showHorizontalHelperLine) {
@@ -434,6 +459,31 @@ class LayerInteractionManager {
     }
   }
 
+  /// Handles the initialization logic when a scaling gesture starts on a layer.
+  onScaleStart({
+    required Layer selectedLayer,
+  }) {
+    baseScaleFactor = selectedLayer.scale;
+    baseAngleFactor = selectedLayer.rotation;
+    snapStartRotation = selectedLayer.rotation * 180 / pi;
+    snapLastRotation = snapStartRotation;
+    reset();
+
+    double posX = selectedLayer.offset.dx;
+    double posY = selectedLayer.offset.dy;
+
+    lastPositionY = posY <= -hitSpan
+        ? LayerLastPosition.top
+        : posY >= hitSpan
+            ? LayerLastPosition.bottom
+            : LayerLastPosition.center;
+    lastPositionX = posX <= -hitSpan
+        ? LayerLastPosition.left
+        : posX >= hitSpan
+            ? LayerLastPosition.right
+            : LayerLastPosition.center;
+  }
+
   /// Handles cleanup and resets various flags and states after scaling
   /// interaction ends.
   onScaleEnd() {
@@ -443,6 +493,8 @@ class LayerInteractionManager {
     showHorizontalHelperLine = false;
     showVerticalHelperLine = false;
     showRotationHelperLine = false;
+    isVerticalGuideVisible = false;
+    isHorizontalGuideVisible = false;
     showHelperLines = false;
     hoverRemoveBtn = false;
   }
@@ -587,6 +639,87 @@ class LayerInteractionManager {
         configs.stickerEditor.minScale,
         configs.stickerEditor.maxScale,
       );
+    }
+  }
+
+  void _updateAlignmentGuides({
+    required List<Layer> layerList,
+    required Layer activeLayer,
+    required ScaleUpdateDetails detail,
+    required StreamController<void> helperLineCtrl,
+  }) {
+    const snapThreshold = 2.0;
+    const releaseThreshold = 20.0;
+
+    final wasHorizontalGuideVisible = isHorizontalGuideVisible;
+    final wasVerticalGuideVisible = isVerticalGuideVisible;
+
+    // Reset guide visibility
+    isHorizontalGuideVisible = false;
+    isVerticalGuideVisible = false;
+
+    Offset? horizontalOffset;
+    Offset? verticalOffset;
+
+    for (final layer in layerList) {
+      if (verticalOffset != null && horizontalOffset != null) break;
+      if (layer == activeLayer) continue;
+
+      final dx = (layer.offset.dx - activeLayer.offset.dx).abs();
+      final dy = (layer.offset.dy - activeLayer.offset.dy).abs();
+
+      // Vertical snapping (dx axis)
+      if (dx <= snapThreshold) {
+        if (_helperFocalX == null ||
+            (_helperFocalX! - detail.focalPoint.dx).abs() < releaseThreshold) {
+          verticalOffset = layer.offset;
+          _helperFocalX ??= detail.focalPoint.dx;
+        } else if ((_helperFocalX! - detail.focalPoint.dx).abs() >
+            releaseThreshold) {
+          _helperFocalX = null;
+        }
+      }
+
+      // Horizontal snapping (dy axis)
+      if (dy <= snapThreshold) {
+        if (_helperFocalY == null ||
+            (_helperFocalY! - detail.focalPoint.dy).abs() < releaseThreshold) {
+          horizontalOffset = layer.offset;
+          _helperFocalY ??= detail.focalPoint.dy;
+        } else if ((_helperFocalY! - detail.focalPoint.dy).abs() >
+            releaseThreshold) {
+          _helperFocalY = null;
+        }
+      }
+    }
+
+    // Handle vertical snapping
+    if (verticalOffset != null) {
+      verticalGuideOffset = verticalOffset;
+      isVerticalGuideVisible = true;
+
+      activeLayer.offset = Offset(verticalOffset.dx, activeLayer.offset.dy);
+    }
+
+    // Handle horizontal snapping
+    if (horizontalOffset != null) {
+      horizontalGuideOffset = horizontalOffset;
+      isHorizontalGuideVisible = true;
+
+      activeLayer.offset = Offset(activeLayer.offset.dx, horizontalOffset.dy);
+    }
+
+    // Notify UI only if something changed
+    final hasChanged = isHorizontalGuideVisible != wasHorizontalGuideVisible ||
+        isVerticalGuideVisible != wasVerticalGuideVisible;
+
+    if (hasChanged) {
+      helperLineCtrl.add(null);
+
+      if ((isHorizontalGuideVisible && !wasHorizontalGuideVisible) ||
+          (isVerticalGuideVisible && !wasVerticalGuideVisible)) {
+        helperLinesCallbacks?.handleLayerAlignLineHit();
+      }
     }
   }
 }

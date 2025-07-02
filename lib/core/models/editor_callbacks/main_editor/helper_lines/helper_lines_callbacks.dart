@@ -14,6 +14,7 @@ class HelperLinesCallbacks {
     this.onHitVerticalLine,
     this.onHitHorizontalLine,
     this.onHitRotateLine,
+    this.onHitLayerAlignLine,
   });
 
   /// A callback that is triggered when any helper line is hit.
@@ -27,6 +28,9 @@ class HelperLinesCallbacks {
 
   /// A callback that is triggered when a rotate line is hit.
   final Function()? onHitRotateLine;
+
+  /// Called when the active layer aligns with another layer (within tolerance).
+  final Function()? onHitLayerAlignLine;
 
   /// Handles the event when a vertical line is hit.
   ///
@@ -52,18 +56,28 @@ class HelperLinesCallbacks {
     onHitRotateLine?.call();
   }
 
+  /// Handles the event when a rotate line is hit.
+  ///
+  /// Calls [onLineHit] if set, followed by [onHitLayerAlignLine].
+  void handleLayerAlignLineHit() {
+    onLineHit?.call();
+    onHitLayerAlignLine?.call();
+  }
+
   /// Creates a copy with modified editor callbacks.
   HelperLinesCallbacks copyWith({
     Function()? onLineHit,
     Function()? onHitVerticalLine,
     Function()? onHitHorizontalLine,
     Function()? onHitRotateLine,
+    Function()? onHitLayerAlignLine,
   }) {
     return HelperLinesCallbacks(
       onLineHit: onLineHit ?? this.onLineHit,
       onHitVerticalLine: onHitVerticalLine ?? this.onHitVerticalLine,
       onHitHorizontalLine: onHitHorizontalLine ?? this.onHitHorizontalLine,
       onHitRotateLine: onHitRotateLine ?? this.onHitRotateLine,
+      onHitLayerAlignLine: onHitLayerAlignLine ?? this.onHitLayerAlignLine,
     );
   }
 }

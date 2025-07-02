@@ -39,6 +39,9 @@ class FloatSelectionOverlay extends StatefulWidget {
   /// UI configs including style, i18n, and widgets
   final FloatSelectConfigs configs;
 
+  /// The padding values that define the safe area insets for the overlay,
+  /// typically used to avoid system UI intrusions such as notches, status bars,
+  /// or navigation bars.
   final EdgeInsets safeArea;
 
   @override

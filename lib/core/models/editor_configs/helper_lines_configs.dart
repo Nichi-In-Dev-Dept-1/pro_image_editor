@@ -45,6 +45,7 @@ class HelperLineConfigs {
     this.showVerticalLine = true,
     this.showHorizontalLine = true,
     this.showRotateLine = true,
+    this.showLayerAlignLine = true,
     this.style = const HelperLineStyle(),
   });
 
@@ -56,6 +57,9 @@ class HelperLineConfigs {
 
   /// Specifies whether to show the rotate helper line.
   final bool showRotateLine;
+
+  /// Specifies whether to show the layer align helper line.
+  final bool showLayerAlignLine;
 
   /// Style configuration for helper lines.
   final HelperLineStyle style;
@@ -70,12 +74,14 @@ class HelperLineConfigs {
     bool? showVerticalLine,
     bool? showHorizontalLine,
     bool? showRotateLine,
+    bool? showLayerAlignLine,
     HelperLineStyle? style,
   }) {
     return HelperLineConfigs(
       showVerticalLine: showVerticalLine ?? this.showVerticalLine,
       showHorizontalLine: showHorizontalLine ?? this.showHorizontalLine,
       showRotateLine: showRotateLine ?? this.showRotateLine,
+      showLayerAlignLine: showLayerAlignLine ?? this.showLayerAlignLine,
       style: style ?? this.style,
     );
   }

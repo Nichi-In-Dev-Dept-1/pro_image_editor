@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/services.dart';
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_callbacks_mixin.dart';
 import '/core/mixins/editor_configs_mixin.dart';
-import '/core/models/history/last_layer_interaction_position.dart';
 import '/core/models/styles/draggable_sheet_style.dart';
 import '/core/services/gesture_manager.dart';
 import '/features/main_editor/widgets/main_editor_appbar.dart';
@@ -1030,27 +1028,11 @@ class ProImageEditorState extends State<ProImageEditor>
     }
 
     _setTempLayer(layer);
-    layerInteractionManager
-      ..baseScaleFactor = layer.scale
-      ..baseAngleFactor = layer.rotation
-      ..snapStartRotation = layer.rotation * 180 / pi
-      ..snapLastRotation = layerInteractionManager.snapStartRotation
-      ..reset();
 
-    double posX = layer.offset.dx;
-    double posY = layer.offset.dy;
+    layerInteractionManager.onScaleStart(
+      selectedLayer: layer,
+    );
 
-    layerInteractionManager
-      ..lastPositionY = posY <= -layerInteractionManager.hitSpan
-          ? LayerLastPosition.top
-          : posY >= layerInteractionManager.hitSpan
-              ? LayerLastPosition.bottom
-              : LayerLastPosition.center
-      ..lastPositionX = posX <= -layerInteractionManager.hitSpan
-          ? LayerLastPosition.left
-          : posX >= layerInteractionManager.hitSpan
-              ? LayerLastPosition.right
-              : LayerLastPosition.center;
     setState(() {});
     mainEditorCallbacks?.handleScaleStart(details);
   }
@@ -1119,9 +1101,11 @@ class ProImageEditorState extends State<ProImageEditor>
           editorScaleFactor: editorScaleFactor,
           removeAreaKey: _removeAreaKey,
           activeLayer: _activeLayer!,
+          layerList: activeLayers,
           context: context,
           detail: details,
           onHoveredRemoveChanged: _controllers.removeBtnCtrl.add,
+          helperLineCtrl: _controllers.helperLineCtrl,
         );
     } else if (details.pointerCount == 2) {
       layerInteractionManager
