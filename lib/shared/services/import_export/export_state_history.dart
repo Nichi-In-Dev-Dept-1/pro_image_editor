@@ -279,11 +279,11 @@ class ExportStateHistory {
     }
 
     for (var layer in element.layers) {
-      if ((_configs.exportPaint && layer.runtimeType == PaintLayer) ||
-          (_configs.exportText && layer.runtimeType == TextLayer) ||
-          (_configs.exportEmoji && layer.runtimeType == EmojiLayer)) {
+      if ((_configs.exportPaint && layer.isPaintLayer) ||
+          (_configs.exportText && layer.isTextLayer) ||
+          (_configs.exportEmoji && layer.isEmojiLayer)) {
         updateReference(layer);
-      } else if (_configs.exportWidgets && layer.runtimeType == WidgetLayer) {
+      } else if (_configs.exportWidgets && layer.isWidgetLayer) {
         WidgetLayer widgetLayer = layer as WidgetLayer;
 
         if (widgetLayer.exportConfigs.hasParameter) {
