@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.2.2
+- **FIX**(export): Resolved an issue where exporting multiple layers could overwrite existing ones. This resolves issue [#527](https://github.com/hm21/pro_image_editor/issues/527).
+
 ## 10.2.1
 - **FIX**(layer): Resolved an issue where importing a layer didn’t restore the `boxConstraints`.
 
