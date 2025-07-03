@@ -74,6 +74,7 @@ class PaintLayer extends Layer {
         map[keyConverter('item')] ?? {},
         keyConverter: minifier?.convertPaintKey,
       ),
+      boxConstraints: layer.boxConstraints,
     );
   }
 

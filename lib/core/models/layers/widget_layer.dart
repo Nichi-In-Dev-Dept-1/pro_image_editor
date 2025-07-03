@@ -124,6 +124,7 @@ class WidgetLayer extends Layer {
       meta: layer.meta,
       widget: widget,
       exportConfigs: exportConfigs,
+      boxConstraints: layer.boxConstraints,
     );
   }
 

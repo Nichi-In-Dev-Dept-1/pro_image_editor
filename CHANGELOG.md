@@ -1,8 +1,10 @@
 # Changelog
 
+## 10.2.1
+- **FIX**(layer): Resolved an issue where importing a layer didn’t restore the `boxConstraints`.
+
 ## 10.2.0
 - **FEAT**(layer): Show alignment guides when layers share the same x or y position.
-
 
 ## 10.1.2
 - **FIX**(compat): Increased minimum Flutter SDK version to 3.32.0 to ensure compatibility with updated OverlayPortal APIs.

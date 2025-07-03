@@ -56,6 +56,7 @@ class EmojiLayer extends Layer {
       isDeleted: layer.isDeleted,
       meta: layer.meta,
       emoji: map[keyConverter('emoji')],
+      boxConstraints: layer.boxConstraints,
     );
   }
 

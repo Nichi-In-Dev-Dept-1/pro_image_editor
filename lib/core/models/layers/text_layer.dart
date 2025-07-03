@@ -124,6 +124,7 @@ class TextLayer extends Layer {
       scale: layer.scale,
       isDeleted: layer.isDeleted,
       meta: layer.meta,
+      boxConstraints: layer.boxConstraints,
       text: map[keyConverter('text')] ?? '-',
       fontScale: fontScale,
       textStyle: fontFamily != null ||
