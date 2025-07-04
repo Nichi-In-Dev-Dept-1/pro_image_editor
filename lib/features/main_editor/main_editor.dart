@@ -1104,7 +1104,10 @@ class ProImageEditorState extends State<ProImageEditor>
           layerList: activeLayers,
           context: context,
           detail: details,
-          onHoveredRemoveChanged: _controllers.removeBtnCtrl.add,
+          onHoveredRemoveChanged: (value) {
+            _controllers.removeBtnCtrl.add(null);
+            mainEditorCallbacks?.onHoverRemoveAreaChange?.call(value);
+          },
           helperLineCtrl: _controllers.helperLineCtrl,
         );
     } else if (details.pointerCount == 2) {

@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.2.3
+- **FIX**(widget-layer): Resolved an issue where the edit button on editable `WidgetLayer` was visible even when interaction was disabled. This resolves issue [#532](https://github.com/hm21/pro_image_editor/issues/532).
+- **FEAT**(callback): Add `onHoverRemoveAreaChange` to detect hover on remove area. This was requested in [#531](https://github.com/hm21/pro_image_editor/issues/531).
+
 ## 10.2.2
 - **FIX**(export): Resolved an issue where exporting multiple layers could overwrite existing ones. This resolves issue [#527](https://github.com/hm21/pro_image_editor/issues/527).
 

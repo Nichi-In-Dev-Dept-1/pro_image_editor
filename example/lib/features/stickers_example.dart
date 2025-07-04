@@ -56,6 +56,12 @@ class _StickersExampleState extends State<StickersExample>
         mainEditorCallbacks: MainEditorCallbacks(
           helperLines: HelperLinesCallbacks(onLineHit: vibrateLineHit),
         ),
+
+        /// stickerEditorCallbacks: StickerEditorCallbacks(
+        ///   onTapEditSticker: (editorState, sticker, index) {
+        ///
+        ///   },
+        /// ),
       ),
       configs: ProImageEditorConfigs(
         designMode: platformDesignMode,
