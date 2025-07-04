@@ -289,7 +289,7 @@ class LayerInteractionManager {
     required Layer activeLayer,
     required List<Layer> layerList,
     required GlobalKey removeAreaKey,
-    required Function(bool) onHoveredRemoveChanged,
+    required Function(bool value) onHoveredRemoveChanged,
     required StreamController<void> helperLineCtrl,
   }) {
     if (_activeScale || !activeLayer.interaction.enableMove) return;

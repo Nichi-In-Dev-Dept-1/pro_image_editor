@@ -39,6 +39,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
     this.onLayerTapUp,
     this.onImportHistoryStart,
     this.onImportHistoryEnd,
+    this.onHoverRemoveAreaChange,
     super.onInit,
     super.onAfterViewInit,
     super.onUpdateUI,
@@ -276,6 +277,8 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
   /// This callback is not called when [LayerInteractionSelectable] is disabled.
   final ValueChanged<String>? onSelectedLayerChanged;
 
+  final Function(bool isPointerInside)? onHoverRemoveAreaChange;
+
   /// Handles the addition of a layer.
   ///
   /// This method calls the [onAddLayer] callback with the provided [layer]
@@ -400,6 +403,7 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
         onImportHistoryStart,
     Function(ProImageEditorState state, ImportStateHistory import)?
         onImportHistoryEnd,
+    Function(bool isPointerInside)? onHoverRemoveAreaChange,
   }) {
     return MainEditorCallbacks(
       onLayerTapDown: onLayerTapDown ?? this.onLayerTapDown,
@@ -438,6 +442,8 @@ class MainEditorCallbacks extends StandaloneEditorCallbacks {
       onUndo: onUndo ?? this.onUndo,
       onImportHistoryStart: onImportHistoryStart ?? this.onImportHistoryStart,
       onImportHistoryEnd: onImportHistoryEnd ?? this.onImportHistoryEnd,
+      onHoverRemoveAreaChange:
+          onHoverRemoveAreaChange ?? this.onHoverRemoveAreaChange,
     );
   }
 }
