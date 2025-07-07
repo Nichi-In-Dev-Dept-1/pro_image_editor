@@ -44,6 +44,7 @@ export 'features/emoji_editor/emoji_editor.dart';
 export 'features/filter_editor/filter_editor.dart';
 export 'features/tune_editor/tune_editor.dart';
 export '/shared/utils/debounce.dart';
+export '/features/main_editor/services/state_manager.dart';
 
 /// Editors
 export 'features/main_editor/main_editor.dart';

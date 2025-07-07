@@ -7,6 +7,14 @@ import '/features/tune_editor/models/tune_adjustment_matrix.dart';
 
 /// A class for managing the state and history of image editing changes.
 class StateManager {
+  /// Creates an instance of [StateManager].
+  StateManager({
+    required this.onStateHistoryChange,
+  });
+
+  /// Optional callbacks for additional editor actions.
+  final Function()? onStateHistoryChange;
+
   /// Position in the state history.
   int _historyPointer = 0;
 
@@ -101,6 +109,8 @@ class StateManager {
                 orElse: EditorStateHistory.new)
             .blur ??
         0.0;
+
+    onStateHistoryChange?.call();
   }
 
   /// A list of active filters applied to the image.
