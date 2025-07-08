@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.2.6
+- **FIX**(paint-editor): Resolved an issue where the `opacityBottomSheetBackground` was not applying any effect. This resolves issue [#540](https://github.com/hm21/pro_image_editor/issues/540).
+
 ## 10.2.5
 - **FEAT**(callbacks): Add `onStateHistoryChange` callback to `MainEditorCallbacks`.
 - **FEAT**(callbacks): Add `onImageDecoded` callback to `MainEditorCallbacks`.

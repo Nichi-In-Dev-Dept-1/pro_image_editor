@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // Package imports:
 import 'package:flutter_test/flutter_test.dart';
 import 'package:network_image_mock/network_image_mock.dart';
+import 'package:pro_image_editor/core/models/editor_configs/pro_image_editor_configs.dart';
 import 'package:pro_image_editor/core/models/init_configs/paint_editor_init_configs.dart';
 import 'package:pro_image_editor/features/paint_editor/paint_editor.dart';
 import 'package:pro_image_editor/features/paint_editor/widgets/paint_canvas.dart';
@@ -14,8 +15,27 @@ import 'package:pro_image_editor/shared/widgets/slider_bottom_sheet.dart';
 import '../../mock/mock_image.dart';
 
 void main() {
+  const opacityBottomSheetBackground = Colors.red;
+  const lineWidthBottomSheetBackground = Colors.green;
+  const opacityBottomSheetTitle = 'Test-Opacity-Title';
+  const lineWidthBottomSheetTitle = 'Test-Line-Width-Title';
+
   final initConfigs = PaintEditorInitConfigs(
     theme: ThemeData(),
+    configs: const ProImageEditorConfigs(
+      i18n: I18n(
+        paintEditor: I18nPaintEditor(
+          changeOpacity: opacityBottomSheetTitle,
+          lineWidth: lineWidthBottomSheetTitle,
+        ),
+      ),
+      paintEditor: PaintEditorConfigs(
+        style: PaintEditorStyle(
+          opacityBottomSheetBackground: opacityBottomSheetBackground,
+          lineWidthBottomSheetBackground: lineWidthBottomSheetBackground,
+        ),
+      ),
+    ),
   );
   var key = GlobalKey<PaintEditorState>();
   Future<void> pumpEditor(WidgetTester tester) async {
@@ -144,6 +164,61 @@ void main() {
       await tester.pump();
 
       expect(find.byType(SliderBottomSheet<PaintEditorState>), findsOneWidget);
+    });
+
+    testWidgets('Line width bottom sheet has correct background color',
+        (WidgetTester tester) async {
+      await pumpEditor(tester);
+
+      key.currentState!.openLinWidthBottomSheet();
+
+      await tester.pumpAndSettle(); // Wait for bottom sheet to appear
+
+      final modalMaterial = tester.widget<Material>(
+        find.byWidgetPredicate((widget) =>
+            widget is Material &&
+            widget.color == lineWidthBottomSheetBackground),
+      );
+
+      expect(modalMaterial.color, lineWidthBottomSheetBackground);
+    });
+
+    testWidgets('Opacity bottom sheet has correct background color',
+        (WidgetTester tester) async {
+      await pumpEditor(tester);
+
+      key.currentState!.openOpacityBottomSheet();
+
+      await tester.pumpAndSettle(); // Wait for bottom sheet to appear
+
+      final modalMaterial = tester.widget<Material>(
+        find.byWidgetPredicate((widget) =>
+            widget is Material && widget.color == opacityBottomSheetBackground),
+      );
+
+      expect(modalMaterial.color, opacityBottomSheetBackground);
+    });
+
+    testWidgets('Line width bottom sheet has correct title',
+        (WidgetTester tester) async {
+      await pumpEditor(tester);
+
+      key.currentState!.openLinWidthBottomSheet();
+
+      await tester.pumpAndSettle(); // Wait for bottom sheet to appear
+
+      expect(find.text(lineWidthBottomSheetTitle), findsOneWidget);
+    });
+
+    testWidgets('Opacity bottom sheet has correct title',
+        (WidgetTester tester) async {
+      await pumpEditor(tester);
+
+      key.currentState!.openOpacityBottomSheet();
+
+      await tester.pumpAndSettle(); // Wait for bottom sheet to appear
+
+      expect(find.text(opacityBottomSheetTitle), findsOneWidget);
     });
   });
 

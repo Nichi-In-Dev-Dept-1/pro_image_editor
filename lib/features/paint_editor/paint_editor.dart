@@ -428,6 +428,7 @@ class PaintEditorState extends State<PaintEditor>
   void openOpacityBottomSheet() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: paintEditorConfigs.style.opacityBottomSheetBackground,
       builder: (BuildContext context) => SliderBottomSheet<PaintEditorState>(
         title: i18n.paintEditor.changeOpacity,
         headerTextStyle: paintEditorConfigs.style.opacityBottomSheetTitle,
