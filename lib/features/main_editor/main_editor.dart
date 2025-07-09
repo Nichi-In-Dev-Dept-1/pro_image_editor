@@ -28,7 +28,6 @@ import '/shared/widgets/extended/interactive_viewer/extended_interactive_viewer.
 import '/shared/widgets/screen_resize_detector.dart';
 import '../filter_editor/types/filter_matrix.dart';
 import '../filter_editor/widgets/filter_generator.dart';
-import '../tune_editor/models/tune_adjustment_matrix.dart';
 import 'controllers/main_editor_controllers.dart';
 import 'mixins/main_editor_global_keys.dart';
 import 'providers/image_infos_provider.dart';
@@ -654,6 +653,7 @@ class ProImageEditorState extends State<ProImageEditor>
       _controllers.screenshot
           .addEmptyScreenshot(screenshots: stateManager.screenshots);
     }
+    setState(() {});
   }
 
   /// Replaces a layer at the specified index with a new layer.

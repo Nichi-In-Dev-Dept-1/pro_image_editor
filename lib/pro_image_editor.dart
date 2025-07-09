@@ -45,6 +45,7 @@ export 'features/filter_editor/filter_editor.dart';
 export 'features/tune_editor/tune_editor.dart';
 export '/shared/utils/debounce.dart';
 export '/features/main_editor/services/state_manager.dart';
+export '/features/tune_editor/models/tune_adjustment_matrix.dart';
 
 /// Editors
 export 'features/main_editor/main_editor.dart';
@@ -62,6 +63,9 @@ export 'shared/widgets/reactive_widgets/reactive_custom_widget.dart';
 export 'shared/widgets/extended/extended_pop_scope.dart';
 export 'core/constants/editor_style_constants.dart';
 export 'core/utils/image_converter.dart';
+export '/shared/utils/parser/int_parser.dart';
+export '/shared/utils/parser/double_parser.dart';
+export '/shared/utils/parser/size_parser.dart';
 
 /// Widgets
 export 'shared/widgets/animated/fade_in_up.dart';

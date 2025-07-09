@@ -63,6 +63,28 @@ The ProImageEditor is a Flutter widget designed for image editing within your ap
 <table>
   <thead>
     <tr>
+      <th align="center">Ai-Commands</th>
+      <th align="center">Ai-Remove-Background</th>
+      <th align="center">Ai-Replace-Background</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center" width="33.3%">
+        <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/preview/ai-command.gif?raw=true" alt="Ai-Commands" />
+      </td>
+      <td align="center" width="33.3%">
+        <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/preview/ai-remove-background.gif?raw=true" alt="Ai-Remove-Background" />
+      </td>
+      <td align="center" width="33.3%">
+        <img src="https://github.com/hm21/pro_image_editor/blob/stable/assets/preview/ai-replace-background.gif?raw=true" alt="Ai-Replace-Background" />
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
       <th align="center">Paint-Editor</th>
       <th align="center">Text-Editor</th>
       <th align="center">Crop-Rotate-Editor</th>
@@ -107,57 +129,51 @@ The ProImageEditor is a Flutter widget designed for image editing within your ap
 
 
 ## Features
+ 
+### 🧩 Editor Modules
 
-- ✅ Multiple-Editors
-  - ✅ Paint-Editor
-    - ✅ Color picker
-    - ✅ Multiple forms like arrow, rectangle, circle and freestyle
-    - ✅ Censor areas with blur or pixelation
-  - ✅ Text-Editor
-    - ✅ Color picker
-    - ✅ Align-Text => left, right and center
-    - ✅ Change Text Scale
-    - ✅ Multiple background modes like in whatsapp
-  - ✅ Crop-Rotate-Editor
-    - ✅ Rotate
-    - ✅ Flip
-    - ✅ Multiple aspect ratios
-    - ✅ Reset
-    - ✅ Double-Tap
-    - ✅ Round cropper
-  - ✅ Tune-Adjustments-Editor
-  - ✅ Filter-Editor
-  - ✅ Blur-Editor
-  - ✅ Emoji-Picker
-  - ✅ Sticker-Editor
-- ✅ Multi-Threading
-  - ✅ Use isolates for background tasks on Dart native devices
-  - ✅ Use web-workers for background tasks on Dart web devices
-  - ✅ Automatically or manually set the number of active background processors based on the device
-- ✅ Undo and redo function
-- ✅ Use your image directly from memory, asset, file or network
-- ✅ Each icon, style or widget can be changed
-- ✅ Any text can be translated "i18n"
-- ✅ Many custom configurations for each subeditor
-- ✅ Selectable design mode between Material and Cupertino
-- ✅ Reorder layer level
-- ✅ Movable background image
-- ✅ Multiple prebuilt themes
-  - ✅ Grounded-Theme
-  - ✅ WhatsApp Theme
-  - ✅ Frosted-Glass Theme
-- ✅ Interactive layers
-- ✅ Helper lines for better positioning
-- ✅ Hit detection for painted layers
-- ✅ Zoomable paint and main editor
-- ✅ Improved layer movement and scaling functionality for desktop devices
-- ✅ Video-Editor 
+- 🎨 **Paint Editor**: Draw freehand with various brushes, shapes (like circles and arrows), and apply blur or pixelation for censoring.
+- 🅰️ **Text Editor**: Add and style text with full customization.  
+- ✂️ **Crop & Rotate Editor**: Crop, flip, and rotate images with ease.  
+- 🎛️ **Tune Adjustments**: Adjust brightness, contrast, saturation, and more.  
+- 📸 **Filter Editor**: Apply custom or predefined image filters.  
+- 💧 **Blur Editor**: Add blur to any part of the image.  
+- 😀 **Emoji Picker**: Quickly insert emojis into your design.  
+- 🖼️ **Sticker Editor**: Add and manage custom image stickers.  
 
 
-#### Planned features
-- ✨ AI Futures => Perhaps integrating Adobe Firefly
-- ✨ Advanced eraser function
-- ✨ Different horizontal/vertical layer scale factor
+### 🚀 Performance & Architecture
+
+- 🧵 **Multi-Threading**  
+  - Use isolates for background tasks on native platforms.  
+  - Use web workers for background tasks in web environments.  
+  - Auto- or manually configure the number of active background processors based on device capabilities.  
+
+### 🛠️ Core Features
+
+- 🖼️ **Flexible Image Input**: Load images from memory, assets, files, or network.  
+- 🌍 **i18n Support**: Translate every string in the UI.  
+- 🎚️ **Per-Editor Configuration**: Each module offers extensive customization options.  
+- 🧱 **Fully Customizable**: Swap icons, styles, and widgets for any subeditor.  
+- 📐 **Helper Lines**: Snap and align objects more accurately.  
+- ↩️ **Undo/Redo** support for non-destructive editing.  
+- 🔁 **Movable Background Image**: Position the base image as needed.  
+- 🔀 **Reorder Layers**: Change layer stacking order dynamically.  
+- 🎯 **Interactive Layers**: Select and manipulate each element with precision.  
+- 🖌️ **Hit Detection**: Paint layers support interactive selection.  
+- 🔍 **Zoom Support**: Zoom in/out in both paint and main editor views.  
+- 🖱️ **Enhanced Desktop UX**: Fine-tuned movement and scaling on desktop platforms.  
+
+### 🎨 Themes
+
+- 🪵 **Grounded Theme**  
+- 🧊 **Frosted Glass Theme**  
+- 💬 **WhatsApp Theme** 
+
+### 🔗 Integration
+
+- 🤖 **AI Assistant**: Integrate ChatGPT, Gemini, or other AI models to assist with image editing via smart suggestions or direct commands.
+- 🎥 **Video Editor**: Seamlessly combine image and video editing workflows.
 
 
 
