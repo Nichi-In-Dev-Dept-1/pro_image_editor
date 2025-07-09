@@ -43,36 +43,37 @@ class _AiSetupWidgetState extends State<AiSetupWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(16),
-      elevation: 4,
-      child: Padding(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('AI Setup'),
+      ),
+      body: ListView(
         padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
+        children: [
+          const Text(
+            'This example uses the API key for testing purposes only. '
+            'Never expose your real API key in production applications.',
+            style: TextStyle(fontSize: 14, color: Colors.redAccent),
+          ),
+          const SizedBox(height: 24),
+          _buildProviderSelector(),
+          if (_selectedProvider == AiProvider.gemini) ...[
+            const SizedBox(height: 4),
             const Text(
-              'AI Setup',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              '⚠️ This key is only for testing. Never expose your real API '
-              'key in production apps.',
-              style: TextStyle(fontSize: 14, color: Colors.redAccent),
-            ),
-            const SizedBox(height: 24),
-            _buildProviderSelector(),
-            const SizedBox(height: 20),
-            _buildApiKeyInput(),
-            const SizedBox(height: 24),
-            Center(
-              child: FilledButton(
-                onPressed: _startTest,
-                child: const Text('Start Test'),
-              ),
+              'When you use Gemini in this example, '
+              'you can’t generate new images.',
             ),
           ],
-        ),
+          const SizedBox(height: 20),
+          _buildApiKeyInput(),
+          const SizedBox(height: 24),
+          Center(
+            child: FilledButton(
+              onPressed: _startTest,
+              child: const Text('Start Test'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -80,6 +81,10 @@ class _AiSetupWidgetState extends State<AiSetupWidget> {
   Widget _buildApiKeyInput() {
     return TextField(
       controller: _apiKeyController,
+      onEditingComplete: _startTest,
+      keyboardType: TextInputType.visiblePassword,
+      textInputAction: TextInputAction.send,
+      textCapitalization: TextCapitalization.none,
       decoration: InputDecoration(
         labelText: 'API Key',
         border: const OutlineInputBorder(),

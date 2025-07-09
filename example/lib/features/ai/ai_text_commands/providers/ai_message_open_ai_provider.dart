@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:example/features/ai/ai_text_commands/providers/ai_message_base_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pro_image_editor/pro_image_editor.dart';
 
 import '../enum/ai_provider_enum.dart';
+import '../providers/ai_message_base_provider.dart';
 
 /// Sends image editing commands using OpenAI's chat completions API.
 class AiMessageOpenAiProvider extends AiMessageBaseProvider {
@@ -17,17 +17,20 @@ class AiMessageOpenAiProvider extends AiMessageBaseProvider {
 
   @override
   final AiProvider provider = AiProvider.openAi;
-  @override
-  final String endpoint = 'https://api.openai.com/v1/chat/completions';
 
   @override
-  Future<void> sendCommand(
-    ProImageEditorState editor,
-    String systemConfig,
-    String command,
-  ) async {
+  final bool isImageGenerationSupported = true;
+
+  @override
+  final String endpointCommand = 'https://api.openai.com/v1/chat/completions';
+  @override
+  final String endpointImageGeneration =
+      'https://api.openai.com/v1/images/generations';
+
+  @override
+  Future<void> sendCommand(ProImageEditorState editor, String command) async {
     final response = await http.post(
-      Uri.parse(endpoint),
+      Uri.parse(endpointCommand),
       headers: {
         'Authorization': 'Bearer $apiKey',
         'Content-Type': 'application/json',
@@ -35,7 +38,7 @@ class AiMessageOpenAiProvider extends AiMessageBaseProvider {
       body: jsonEncode({
         'model': 'gpt-4o',
         'messages': [
-          {'role': 'system', 'content': systemConfig},
+          {'role': 'system', 'content': buildSystemMessage(editor)},
           {'role': 'user', 'content': command},
         ],
       }),
@@ -47,11 +50,47 @@ class AiMessageOpenAiProvider extends AiMessageBaseProvider {
       if (result != null) await handleAiResponse(editor, result);
     } else {
       debugPrint('❌ OpenAI error: ${response.statusCode} ${response.body}');
-      if (response.statusCode == 401 && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid API key')),
+      if (response.statusCode == 401) showInvalidApiKeyWarning();
+    }
+  }
+
+  @override
+  Future<void> sendImageGenerationRequest(
+    ProImageEditorState editor,
+    String prompt,
+  ) async {
+    final response = await http.post(
+      Uri.parse(endpointImageGeneration),
+      headers: {
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'model': 'dall-e-3',
+        'prompt': prompt,
+        'n': 1,
+        'size': '1024x1024',
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final imageUrl = data['data']?[0]?['url'];
+      if (imageUrl != null && imageUrl is String && context.mounted) {
+        await precacheImage(NetworkImage(imageUrl), context);
+        WidgetLayer layer = WidgetLayer(
+          widget: ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 1, minHeight: 1),
+            child: Image.network(imageUrl),
+          ),
         );
+        editor.addLayer(layer);
       }
+    } else {
+      debugPrint(
+        '❌ Image generation failed: ${response.statusCode} ${response.body}',
+      );
+      if (response.statusCode == 401) showInvalidApiKeyWarning();
     }
   }
 }

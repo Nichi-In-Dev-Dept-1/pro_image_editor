@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 
 import '../enum/ai_provider_enum.dart';
+import '../utils/build_ai_system_config.dart';
 
 /// Base class for AI message providers for image editing commands.
 abstract class AiMessageBaseProvider {
@@ -21,19 +22,63 @@ abstract class AiMessageBaseProvider {
   /// I just use it like that so you can easily test it.
   final String apiKey;
 
+  /// Whether the provider supports image generation.
+  abstract final bool isImageGenerationSupported;
+
   /// The AI provider type.
   abstract final AiProvider provider;
 
-  /// The API endpoint for the specific provider.
+  /// The base endpoint used for sending general commands to the API.
   @protected
-  abstract final String endpoint;
+  abstract final String endpointCommand;
+
+  /// The endpoint specifically used for image generation requests.
+  @protected
+  abstract final String endpointImageGeneration;
 
   /// Sends a command to the AI and applies the result to the editor.
-  Future<void> sendCommand(
+  Future<void> sendCommand(ProImageEditorState editor, String command);
+
+  /// Sends a request to generate an image using the AI provider.
+  Future<void> sendImageGenerationRequest(
     ProImageEditorState editor,
-    String systemConfig,
-    String command,
+    String prompt,
   );
+
+  /// Builds a system message describing the current editor state for the AI.
+  ///
+  /// Includes layers, blur, transforms, filters, and tune adjustments.
+  @protected
+  String buildSystemMessage(ProImageEditorState editor) {
+    final state = editor.stateManager;
+    final sizesManager = editor.sizesManager;
+
+    final history = {
+      'layers': state.activeLayers.map((layer) => layer.toMap()).toList(),
+      'blur': state.activeBlur,
+      'transform': state.transformConfigs.isNotEmpty
+          ? state.transformConfigs.toMap()
+          : null,
+      'filters': state.activeFilters,
+      'tune': state.activeTuneAdjustments.map((tune) => tune.toMap()).toList(),
+    };
+    final systemConfig = buildAiSystemConfig(
+      configs: editor.configs,
+      imageSize: sizesManager.decodedImageSize,
+      editorBodySize: sizesManager.bodySize,
+      activeHistory: json.encode(history),
+      safeArea: const EdgeInsets.all(24),
+      enablePaint: true,
+      enableText: true,
+      enableEmoji: true,
+      enableTransform: true,
+      enableTune: true,
+      enableFilters: true,
+      enableBlur: true,
+    );
+
+    return systemConfig;
+  }
 
   /// Parses and applies the AI response to the image editor state.
   @protected
@@ -92,5 +137,16 @@ abstract class AiMessageBaseProvider {
     } catch (e) {
       debugPrint('❌ Failed to parse AI response: $e');
     }
+  }
+
+  /// Displays a SnackBar warning if the API key for image generation is
+  /// invalid.
+  ///
+  /// Ensures the context is still mounted before showing the message.
+  void showInvalidApiKeyWarning() {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Invalid API key for image generation')),
+    );
   }
 }

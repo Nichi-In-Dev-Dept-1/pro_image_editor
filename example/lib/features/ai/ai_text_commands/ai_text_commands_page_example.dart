@@ -1,11 +1,11 @@
-import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 
 import '/core/constants/example_constants.dart';
 import '/core/mixin/example_helper.dart';
-import '/features/ai/ai_text_commands/utils/build_ai_system_config.dart';
+import 'enum/ai_generation_mode_enum.dart';
 import 'providers/ai_message_base_provider.dart';
 import 'utils/ai_message_provider_factory.dart';
 import 'widgets/ai_command_toolbar_widget.dart';
@@ -25,6 +25,7 @@ class _AiTextCommandsExampleState extends State<AiTextCommandsExample>
     with ExampleHelperState<AiTextCommandsExample> {
   final _alignTopNotifier = ValueNotifier(false);
   final _isProcessingNotifier = ValueNotifier(false);
+  final _generationModeNotifier = ValueNotifier(AiGenerationMode.text);
 
   final _inputCtrl = TextEditingController();
   final _inputFocus = FocusNode();
@@ -60,53 +61,31 @@ class _AiTextCommandsExampleState extends State<AiTextCommandsExample>
   void dispose() {
     _alignTopNotifier.dispose();
     _isProcessingNotifier.dispose();
+    _generationModeNotifier.dispose();
     _inputCtrl.dispose();
     _inputFocus.dispose();
     super.dispose();
   }
 
   void _sendCommand() async {
+    /// Validate input
     final command = _inputCtrl.value.text.trim();
     if (command.isEmpty) return;
 
+    /// Prepare state
     FocusManager.instance.primaryFocus?.unfocus();
     _isProcessingNotifier.value = true;
-
     final editor = editorKey.currentState!;
 
-    final state = editor.stateManager;
-    final sizesManager = editor.sizesManager;
+    /// Send command or generate image
+    if (_generationModeNotifier.value == AiGenerationMode.image) {
+      await _aiProvider!.sendImageGenerationRequest(editor, command);
+    } else {
+      await _aiProvider!.sendCommand(editor, command);
+    }
 
-    final history = {
-      'layers': state.activeLayers.map((layer) => layer.toMap()).toList(),
-      'blur': state.activeBlur,
-      'transform': state.transformConfigs.isNotEmpty
-          ? state.transformConfigs.toMap()
-          : null,
-      'filters': state.activeFilters,
-      'tune': state.activeTuneAdjustments.map((tune) => tune.toMap()).toList(),
-    };
-    final systemConfig = buildAiSystemConfig(
-      configs: _editorConfigs,
-      imageSize: sizesManager.decodedImageSize,
-      editorBodySize: sizesManager.bodySize,
-      activeHistory: json.encode(history),
-      safeArea: const EdgeInsets.all(24),
-      enablePaint: true,
-      enableText: true,
-      enableEmoji: true,
-      enableTransform: true,
-      enableTune: true,
-      enableFilters: true,
-      enableBlur: true,
-      // TODO:
-      enableImageGeneration: false, // _provider == AiProvider.chatGpt
-    );
-
-    await _aiProvider!.sendCommand(editor, systemConfig, command);
+    /// Reset state
     if (!mounted) return;
-
-    /// Reset
     _inputCtrl.value = TextEditingValue.empty;
     _isProcessingNotifier.value = false;
     if (isDesktop) _inputFocus.requestFocus();
@@ -156,12 +135,22 @@ class _AiTextCommandsExampleState extends State<AiTextCommandsExample>
   }
 
   Widget _buildCommandLine() {
-    return AiCommandToolbarWidget(
-      isProcessingNotifier: _isProcessingNotifier,
-      alignTopNotifier: _alignTopNotifier,
-      inputCtrl: _inputCtrl,
-      inputFocus: _inputFocus,
-      onSend: _sendCommand,
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: max(
+          0,
+          MediaQuery.viewInsetsOf(context).bottom - kBottomNavigationBarHeight,
+        ),
+      ),
+      child: AiCommandToolbarWidget(
+        isProcessingNotifier: _isProcessingNotifier,
+        alignTopNotifier: _alignTopNotifier,
+        generationModeNotifier: _generationModeNotifier,
+        isImageGenerationSupported: _aiProvider!.isImageGenerationSupported,
+        inputCtrl: _inputCtrl,
+        inputFocus: _inputFocus,
+        onSend: _sendCommand,
+      ),
     );
   }
 }

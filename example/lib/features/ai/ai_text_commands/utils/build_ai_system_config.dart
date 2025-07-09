@@ -14,7 +14,6 @@ String buildAiSystemConfig({
   bool enableTune = true,
   bool enableFilters = true,
   bool enableBlur = true,
-  bool enableImageGeneration = true,
   EdgeInsets? safeArea,
 }) {
   String halfImageWidth = (imageSize.width / 2).toStringAsFixed(3);
@@ -264,30 +263,6 @@ Example-Blur: 0.5
 Note:
 - "blur" must be a single float.
 - Only include this field if the user requests a blur effect.
-''';
-  }
-
-  if (enableImageGeneration) {
-    command += '''
-Widget Layer:
-{
-  "x": 0.0,
-  "y": 0.0,
-  "rotation": 0.0,
-  "scale": 1.0,
-  "flipX": false,
-  "flipY": false,
-  "type": "widget",
-  "exportConfigs": {
-      "networkUrl": "url"
-    }
-  }
-  Note:
-  - The "networkUrl" must be the direct link to the image that should be shown in the widget layer.
-  - Only use valid image URLs (e.g. ending with .png, .jpg, .jpeg).
-}
-
-
 ''';
   }
 

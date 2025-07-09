@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
+import '../enum/ai_generation_mode_enum.dart';
+
 /// A stateless widget for inputting and sending AI text commands.
 class AiCommandInputWidget extends StatelessWidget {
   /// Creates the AI command input widget.
   const AiCommandInputWidget({
     super.key,
-    required this.isProcessingNotifier,
+    required this.isProcessing,
     required this.inputCtrl,
     required this.inputFocus,
     required this.onSend,
+    required this.mode,
   });
 
   /// Indicates whether a command is currently being processed.
-  final ValueNotifier<bool> isProcessingNotifier;
+  final bool isProcessing;
 
   /// Controller for the text input field.
   final TextEditingController inputCtrl;
@@ -23,28 +26,36 @@ class AiCommandInputWidget extends StatelessWidget {
   /// Callback triggered when the send button is pressed.
   final Function() onSend;
 
+  /// The selected AI generation mode (text or image).
+  final AiGenerationMode mode;
+
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: isProcessingNotifier,
-      builder: (_, isProcessing, __) {
-        return TextField(
-          readOnly: isProcessing,
-          onEditingComplete: onSend,
-          controller: inputCtrl,
-          focusNode: inputFocus,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: const Color(0xFF28282C),
-            border: const OutlineInputBorder(),
-            hint: const Text(
-              'Enter your command for what the AI should add or change...',
-              style: TextStyle(color: Colors.white54),
-            ),
-            suffixIcon: _buildSuffixIcon(isProcessing),
+    return DecoratedBox(
+      decoration: BoxDecoration(boxShadow: kElevationToShadow[6]),
+      child: TextField(
+        readOnly: isProcessing,
+        onEditingComplete: onSend,
+        controller: inputCtrl,
+        focusNode: inputFocus,
+        keyboardType: TextInputType.text,
+        textInputAction: TextInputAction.send,
+        textCapitalization: TextCapitalization.sentences,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: const Color(0xFF28282C),
+          border: const OutlineInputBorder(),
+          hint: Text(
+            mode == AiGenerationMode.text
+                ? 'Enter a command for what the AI should add or change...'
+                : 'Describe the kind of image that should be added...',
+            style: const TextStyle(color: Colors.white54),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-        );
-      },
+          suffixIcon: _buildSuffixIcon(isProcessing),
+        ),
+      ),
     );
   }
 
@@ -52,11 +63,16 @@ class AiCommandInputWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 7.0),
       child: isProcessing
-          ? const SizedBox.square(
-              dimension: 24,
-              child: FittedBox(
-                child: CircularProgressIndicator(),
-              ),
+          ? const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox.square(
+                  dimension: 24,
+                  child: FittedBox(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ],
             )
           : IconButton(
               tooltip: 'Send to AI',
