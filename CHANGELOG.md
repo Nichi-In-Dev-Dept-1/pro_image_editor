@@ -1,5 +1,11 @@
 # Changelog
 
+## 10.2.7
+- **DOCS**(example): Add AI example demonstrating how the image editor can be controlled directly through AI text commands.
+- **DOCS**(example): Add AI example showing how to add AI-generated images as stickers.
+- **DOCS**(example): Add AI example illustrating how to replace the background with a newly generated image.
+- **DOCS**(readme): Update the readme with previews of the new AI-generated content.
+
 ## 10.2.6
 - **FIX**(paint-editor): Resolved an issue where the `opacityBottomSheetBackground` was not applying any effect. This resolves issue [#540](https://github.com/hm21/pro_image_editor/issues/540).
 
