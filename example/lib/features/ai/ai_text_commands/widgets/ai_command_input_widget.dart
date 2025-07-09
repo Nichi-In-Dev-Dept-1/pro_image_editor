@@ -65,6 +65,7 @@ class AiCommandInputWidget extends StatelessWidget {
       child: isProcessing
           ? const Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox.square(
                   dimension: 24,

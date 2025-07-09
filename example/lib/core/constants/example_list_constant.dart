@@ -45,6 +45,14 @@ List<Example> kImageEditorExamples = const [
     page: DefaultExample(),
   ),
   Example(
+    path: '/ai',
+    name: 'AI-Integration',
+    icon: Icons.hub_outlined,
+    page: AiGroupPage(),
+    disabled: kIsWeb,
+    disabledMessage: 'That function is not supported on the web.',
+  ),
+  Example(
     path: '/designs',
     name: 'Designs',
     icon: Icons.palette_outlined,
@@ -61,14 +69,6 @@ List<Example> kImageEditorExamples = const [
     name: 'Video-Editor',
     icon: Icons.video_camera_back_outlined,
     page: VideoExample(),
-  ),
-  Example(
-    path: '/ai',
-    name: 'AI-Integration',
-    icon: Icons.hub_outlined,
-    page: AiGroupPage(),
-    disabled: kIsWeb,
-    disabledMessage: 'That function is not supported on the web.',
   ),
   Example(
     path: '/init-crop-editor',

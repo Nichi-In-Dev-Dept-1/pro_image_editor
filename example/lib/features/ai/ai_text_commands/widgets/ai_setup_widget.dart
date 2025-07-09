@@ -9,7 +9,15 @@ class AiSetupWidget extends StatefulWidget {
   const AiSetupWidget({
     super.key,
     required this.onChanged,
+    this.enableChatGpt = true,
+    this.enableGemini = true,
   });
+
+  /// Whether the Gemini AI integration is enabled.
+  final bool enableGemini;
+
+  /// Whether the ChatGPT integration is enabled.
+  final bool enableChatGpt;
 
   /// Called when the user changes the AI provider or API key.
   final Function(String apiKey, AiProvider provider) onChanged;
@@ -110,15 +118,17 @@ class _AiSetupWidgetState extends State<AiSetupWidget> {
         labelText: 'Provider',
         border: OutlineInputBorder(),
       ),
-      items: const [
-        DropdownMenuItem(
-          value: AiProvider.openAi,
-          child: Text('ChatGPT (OpenAI)'),
-        ),
-        DropdownMenuItem(
-          value: AiProvider.gemini,
-          child: Text('Gemini (Google)'),
-        ),
+      items: [
+        if (widget.enableChatGpt)
+          const DropdownMenuItem(
+            value: AiProvider.openAi,
+            child: Text('ChatGPT (OpenAI)'),
+          ),
+        if (widget.enableGemini)
+          const DropdownMenuItem(
+            value: AiProvider.gemini,
+            child: Text('Gemini (Google)'),
+          ),
       ],
       onChanged: (value) {
         if (value != null) {

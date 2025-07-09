@@ -1,3 +1,4 @@
+import 'package:example/features/ai/ai_replace_background/ai_replace_background_page_example.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -27,13 +28,19 @@ class _AiGroupPageState extends State<AiGroupPage> {
         children: <Widget>[
           ListTile(
             leading: const Icon(Icons.chat_outlined),
-            title: const Text('AI-Text-Commands'),
+            title: const Text('Text Commands'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _openExample(const AiTextCommandsExample()),
           ),
           ListTile(
+            leading: const Icon(Icons.image_outlined),
+            title: const Text('Replace background image'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _openExample(const AiReplaceBackgroundExample()),
+          ),
+          ListTile(
             leading: const Icon(Icons.content_cut_outlined),
-            title: const Text('AI-Background-Remover'),
+            title: const Text('Remove background'),
             trailing: const Icon(Icons.chevron_right),
             subtitle: kIsWeb
                 ? const Text('That function is not supported on the web.')
