@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.2.8
+- **FIX**(helper-lines): Resolve issue where layers wouldn't release when sharing the same axis.
+- **FIX**(helper-lines): Resolve issue where helperLine configs had no effect.
+
 ## 10.2.7
 - **DOCS**(example): Add AI example demonstrating how the image editor can be controlled directly through AI text commands.
 - **DOCS**(example): Add AI example showing how to add AI-generated images as stickers.

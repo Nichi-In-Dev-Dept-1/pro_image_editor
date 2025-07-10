@@ -276,6 +276,7 @@ class LayerInteractionManager {
       checkRotationLine(
         activeLayer: activeLayer,
         editorSize: editorSize,
+        editorScaleFactor: editorScaleFactor,
       );
     }
   }
@@ -315,6 +316,8 @@ class LayerInteractionManager {
       activeLayer.offset.dy + detail.focalPointDelta.dy / editorScaleFactor,
     );
 
+    if (editorScaleFactor > 1 && helperLineConfigs.isDisabledAtZoom) return;
+
     final releaseThreshold = helperLineConfigs.releaseThreshold;
     bool hasLineHit = false;
     double posX = activeLayer.offset.dx;
@@ -335,37 +338,41 @@ class LayerInteractionManager {
         posY <= 0 && lastPositionY == LayerLastPosition.bottom;
 
     /// Calc vertical helper line
-    if ((!showVerticalHelperLine &&
-            (helperGoNearLineLeft || helperGoNearLineRight)) ||
-        (showVerticalHelperLine && hitAreaX)) {
-      if (!showVerticalHelperLine) {
-        hasLineHit = true;
-        snapStartPosX = detail.focalPoint.dx;
+    if (helperLineConfigs.showVerticalLine) {
+      if ((!showVerticalHelperLine &&
+              (helperGoNearLineLeft || helperGoNearLineRight)) ||
+          (showVerticalHelperLine && hitAreaX)) {
+        if (!showVerticalHelperLine) {
+          hasLineHit = true;
+          snapStartPosX = detail.focalPoint.dx;
+        }
+        showVerticalHelperLine = true;
+        activeLayer.offset = Offset(0, activeLayer.offset.dy);
+        lastPositionX = LayerLastPosition.center;
+      } else {
+        showVerticalHelperLine = false;
+        lastPositionX =
+            posX <= 0 ? LayerLastPosition.left : LayerLastPosition.right;
       }
-      showVerticalHelperLine = true;
-      activeLayer.offset = Offset(0, activeLayer.offset.dy);
-      lastPositionX = LayerLastPosition.center;
-    } else {
-      showVerticalHelperLine = false;
-      lastPositionX =
-          posX <= 0 ? LayerLastPosition.left : LayerLastPosition.right;
     }
 
-    /// Calc horizontal helper line
-    if ((!showHorizontalHelperLine &&
-            (helperGoNearLineTop || helperGoNearLineBottom)) ||
-        (showHorizontalHelperLine && hitAreaY)) {
-      if (!showHorizontalHelperLine) {
-        hasLineHit = true;
-        snapStartPosY = detail.focalPoint.dy;
+    if (helperLineConfigs.showHorizontalLine) {
+      /// Calc horizontal helper line
+      if ((!showHorizontalHelperLine &&
+              (helperGoNearLineTop || helperGoNearLineBottom)) ||
+          (showHorizontalHelperLine && hitAreaY)) {
+        if (!showHorizontalHelperLine) {
+          hasLineHit = true;
+          snapStartPosY = detail.focalPoint.dy;
+        }
+        showHorizontalHelperLine = true;
+        activeLayer.offset = Offset(activeLayer.offset.dx, 0);
+        lastPositionY = LayerLastPosition.center;
+      } else {
+        showHorizontalHelperLine = false;
+        lastPositionY =
+            posY <= 0 ? LayerLastPosition.top : LayerLastPosition.bottom;
       }
-      showHorizontalHelperLine = true;
-      activeLayer.offset = Offset(activeLayer.offset.dx, 0);
-      lastPositionY = LayerLastPosition.center;
-    } else {
-      showHorizontalHelperLine = false;
-      lastPositionY =
-          posY <= 0 ? LayerLastPosition.top : LayerLastPosition.bottom;
     }
 
     _updateAlignmentGuides(
@@ -392,6 +399,7 @@ class LayerInteractionManager {
     required ScaleUpdateDetails detail,
     required Layer activeLayer,
     required Size editorSize,
+    required double editorScaleFactor,
     required EdgeInsets screenPaddingHelper,
   }) {
     _activeScale = true;
@@ -406,6 +414,7 @@ class LayerInteractionManager {
       checkRotationLine(
         activeLayer: activeLayer,
         editorSize: editorSize,
+        editorScaleFactor: editorScaleFactor,
       );
     }
 
@@ -417,7 +426,13 @@ class LayerInteractionManager {
   checkRotationLine({
     required Layer activeLayer,
     required Size editorSize,
+    required double editorScaleFactor,
   }) {
+    if (!helperLineConfigs.showRotateLine ||
+        (editorScaleFactor > 1 && helperLineConfigs.isDisabledAtZoom)) {
+      return;
+    }
+
     double rotation = activeLayer.rotation - baseAngleFactor;
     double hitSpanX = helperLineConfigs.releaseThreshold / 2;
     double deg = activeLayer.rotation * 180 / pi;
@@ -648,6 +663,8 @@ class LayerInteractionManager {
     required StreamController<void> helperLineCtrl,
     required double editorScaleFactor,
   }) {
+    if (!helperLineConfigs.showLayerAlignLine) return;
+
     final snapThreshold = 3.0 / editorScaleFactor;
     final releaseThreshold = helperLineConfigs.releaseThreshold;
 
@@ -661,39 +678,56 @@ class LayerInteractionManager {
     Offset? horizontalOffset;
     Offset? verticalOffset;
 
-    for (final layer in layerList) {
-      if (verticalOffset != null && horizontalOffset != null) break;
-      if (layer == activeLayer) continue;
+    List<Offset> uniqueDxOffsets = [];
+    List<Offset> uniqueDyOffsets = [];
+    final seenDx = <double>{};
 
-      final dx = (layer.offset.dx - activeLayer.offset.dx).abs();
-      final dy = (layer.offset.dy - activeLayer.offset.dy).abs();
+    for (final layer in layerList) {
+      if (layer == activeLayer) continue;
+      final dx = layer.offset.dx;
+      if (seenDx.add(dx)) uniqueDxOffsets.add(layer.offset);
+
+      final dy = layer.offset.dy;
+      if (seenDx.add(dy)) uniqueDyOffsets.add(layer.offset);
+    }
+
+    for (final layerOffset in uniqueDxOffsets) {
+      if (verticalOffset != null) break;
+
+      final dx = (layerOffset.dx - activeLayer.offset.dx).abs();
 
       // Vertical snapping (dx axis)
       if (dx <= snapThreshold &&
           _verticalSnapHelper.maybeSnap(
             focal: detail.focalPoint.dx,
             focalDelta: detail.focalPointDelta.dx,
-            offset: layer.offset,
+            offset: layerOffset,
             threshold: snapThreshold,
             releaseThreshold: releaseThreshold,
             positiveDirection: LayerLastPosition.left,
             negativeDirection: LayerLastPosition.right,
           )) {
-        verticalOffset = layer.offset;
+        verticalOffset = layerOffset;
       }
+    }
+
+    for (final layerOffset in uniqueDyOffsets) {
+      if (horizontalOffset != null) break;
+
+      final dy = (layerOffset.dy - activeLayer.offset.dy).abs();
 
       // Horizontal snapping (dy axis)
       if (dy <= snapThreshold &&
           _horizontalSnapHelper.maybeSnap(
             focal: detail.focalPoint.dy,
             focalDelta: detail.focalPointDelta.dy,
-            offset: layer.offset,
+            offset: layerOffset,
             threshold: snapThreshold,
             releaseThreshold: releaseThreshold,
             positiveDirection: LayerLastPosition.top,
             negativeDirection: LayerLastPosition.bottom,
           )) {
-        horizontalOffset = layer.offset;
+        horizontalOffset = layerOffset;
       }
     }
 

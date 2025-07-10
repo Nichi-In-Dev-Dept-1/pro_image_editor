@@ -1149,6 +1149,7 @@ class ProImageEditorState extends State<ProImageEditor>
           detail: details,
           editorSize: sizesManager.bodySize,
           screenPaddingHelper: sizesManager.imageMargin,
+          editorScaleFactor: editorScaleFactor,
         );
     }
     mainEditorCallbacks?.handleUpdateLayer(_activeLayer!);
