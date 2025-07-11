@@ -288,7 +288,9 @@ class _LayerWidgetState extends State<LayerWidget>
   double get offsetY => _layer.offset.dy + widget.editorCenterY;
 
   void _onHoverEnter() {
-    if ((!_layer.isPaintLayer && !_layer.isTextLayer) || widget.selected) {
+    if (((!_layer.isPaintLayer || _layerType == LayerWidgetType.censor) &&
+            !_layer.isTextLayer) ||
+        widget.selected) {
       _showMoveCursor.value = true;
     }
   }

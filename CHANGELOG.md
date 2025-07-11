@@ -1,7 +1,10 @@
 # Changelog
 
-## 10.2.9
+## 10.3.0
 - **FIX**(screen-resize): Resolve issue causing layers with custom `FractionalTranslation` to be misplaced.
+- **FIX**(paint-editor): Resolve issue where layers didn't resize with the screen.
+- **FIX**(paint-mode): Resolve issue where creating polygons didn't recognize tap events.
+- **FEAT**(paint-editor): Eraser can now also remove existing paintings from other histories.
 
 ## 10.2.8
 - **FIX**(helper-lines): Resolve issue where layers wouldn't release when sharing the same axis.

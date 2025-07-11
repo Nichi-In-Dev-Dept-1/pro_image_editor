@@ -38,6 +38,7 @@ class LayerStack extends StatelessWidget {
     required this.overlayColor,
     this.cutOutsideImageArea,
     this.freeStyleHighPerformance = false,
+    this.enableLayerKey = false,
     this.transformHelper = const TransformHelper(
       editorBodySize: Size.zero,
       mainBodySize: Size.zero,
@@ -86,6 +87,11 @@ class LayerStack extends StatelessWidget {
   /// elements on the canvas, at the potential cost of rendering quality.
   final bool freeStyleHighPerformance;
 
+  /// A flag that determines whether the layer key functionality is enabled.
+  /// When set to `true`, the layer key feature is active; otherwise, it is
+  /// disabled.
+  final bool enableLayerKey;
+
   bool get _cutOutsideImageArea =>
       cutOutsideImageArea ?? configs.imageGeneration.cropToImageBounds;
 
@@ -106,6 +112,7 @@ class LayerStack extends StatelessWidget {
                 clipBehavior: clipBehavior,
                 children: layers.map((layerItem) {
                   return LayerWidget(
+                    key: enableLayerKey ? layerItem.key : null,
                     configs: configs,
                     highPerformanceMode: freeStyleHighPerformance,
                     editorCenterX: transformHelper.editorBodySize.width / 2,

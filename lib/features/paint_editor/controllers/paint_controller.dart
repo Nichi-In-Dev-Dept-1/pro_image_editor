@@ -49,12 +49,6 @@ class PaintController extends ChangeNotifier {
   /// List of offsets representing points on the canvas during paint.
   final List<Offset?> _offsets = [];
 
-  /// History of painted models representing previous paint operations.
-  final List<List<PaintedModel>> paintHistory = [];
-
-  /// The current position in the paint history.
-  int historyPosition = 0;
-
   /// The starting point of the current paint operation.
   Offset? _start;
 
@@ -101,12 +95,6 @@ class PaintController extends ChangeNotifier {
   /// Returns the current color used for paint.
   Color get color => _color;
 
-  /// Returns the list of painted models representing the paint history.
-  List<PaintedModel> get activePaintItemList =>
-      historyPosition <= 0 || paintHistory.length < historyPosition
-          ? []
-          : paintHistory[historyPosition - 1];
-
   /// Returns the list of recorded paint offsets.
   List<Offset?> get offsets => _offsets;
 
@@ -115,69 +103,6 @@ class PaintController extends ChangeNotifier {
 
   /// Returns the ending point of a paint action.
   Offset? get end => _end;
-
-  /// Determines whether undo actions can be performed on the current state.
-  bool get canUndo => historyPosition > 0;
-
-  /// Determines whether redo actions can be performed on the current state.
-  bool get canRedo => historyPosition < paintHistory.length;
-
-  /// Adds a painted model to the paint history and notifies listeners of
-  /// the change.
-  void addPaintInfo(PaintedModel paintInfo) {
-    _cleanForwardChanges();
-    paintHistory.add([...activePaintItemList, paintInfo]);
-    historyPosition++;
-  }
-
-  /// Adds a painted model to the paint history and notifies listeners of
-  /// the change.
-  void removeLayers(List<String> idList) {
-    _cleanForwardChanges();
-    paintHistory.add([...activePaintItemList]);
-    historyPosition++;
-    activePaintItemList.removeWhere((el) => idList.contains(el.id));
-  }
-
-  /// Clean forward changes in the history.
-  ///
-  /// This method removes any changes made after the current edit position in
-  /// the history.
-  /// It ensures that the state history and screenshots are consistent with the
-  /// current position. This is useful when performing an undo operation, and
-  /// new edits are made, effectively discarding the "redo" history.
-  void _cleanForwardChanges() {
-    if (paintHistory.isNotEmpty) {
-      while (paintHistory.length > historyPosition) {
-        paintHistory.removeLast();
-      }
-    }
-    historyPosition = paintHistory.length;
-  }
-
-  /// Undoes the last paint action by moving it from the history to the
-  /// redo history and notifies listeners.
-  void undo() {
-    if (historyPosition > 0) {
-      historyPosition--;
-      _resetHitState();
-    }
-  }
-
-  /// Redoes the last undone paint action by moving it from the redo history
-  /// to the history and notifies listeners.
-  void redo() {
-    if (historyPosition < paintHistory.length) {
-      historyPosition++;
-      _resetHitState();
-    }
-  }
-
-  void _resetHitState() {
-    for (var item in activePaintItemList) {
-      item.hit = false;
-    }
-  }
 
   /// Sets the stroke width to the specified value and notifies listeners.
   void setStrokeWidth(double val) {

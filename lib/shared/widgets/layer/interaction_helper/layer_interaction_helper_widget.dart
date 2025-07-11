@@ -219,12 +219,17 @@ class _LayerInteractionHelperWidgetState
       controller: _overlayCtrl,
       overlayChildBuilder: (context, info) {
         if (layerInteraction.widgets.overlayChildBuilder != null) {
-          return layerInteraction.widgets.overlayChildBuilder!(
-            _rebuildStream.stream,
-            info,
-            widget.layerData,
-            _layerInteractions,
-          );
+          return ValueListenableBuilder(
+              valueListenable: _isOverlayVisibleNotifier,
+              builder: (_, isVisible, __) {
+                if (!isVisible) return const SizedBox.shrink();
+                return layerInteraction.widgets.overlayChildBuilder!(
+                  _rebuildStream.stream,
+                  info,
+                  widget.layerData,
+                  _layerInteractions,
+                );
+              });
         }
 
         final Matrix4 transform = info.childPaintTransform.clone();
@@ -242,8 +247,8 @@ class _LayerInteractionHelperWidgetState
           height: paddedHeight,
           child: ValueListenableBuilder(
               valueListenable: _isOverlayVisibleNotifier,
-              builder: (context, value, child) {
-                if (!value) return const SizedBox.shrink();
+              builder: (_, isVisible, __) {
+                if (!isVisible) return const SizedBox.shrink();
 
                 return Transform(
                   transform: transform,
