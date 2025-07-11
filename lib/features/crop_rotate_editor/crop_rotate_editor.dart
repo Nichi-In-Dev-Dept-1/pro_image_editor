@@ -340,6 +340,9 @@ class CropRotateEditorState extends State<CropRotateEditor>
 
   bool _hasToolbar = true;
 
+  /// A flag indicating whether the screen has been resized.
+  bool _isScreenResized = false;
+
   /// Sets the current mouse cursor and updates the widget that manages the
   /// cursor.
   set _cursor(MouseCursor cursor) {
@@ -2195,6 +2198,11 @@ class CropRotateEditorState extends State<CropRotateEditor>
       child: ScreenResizeDetector(
         ignoreSafeArea: false,
         onResizeUpdate: (event) {
+          if (event.oldContentSize != event.newContentSize &&
+              !event.oldContentSize.isEmpty) {
+            _isScreenResized = true;
+          }
+
           if (editorBodySize != event.newContentSize) {
             editorBodySize = event.newContentSize;
             cropPainterKey.currentState?.setForegroundPainter(cropPainter);
@@ -2206,7 +2214,6 @@ class CropRotateEditorState extends State<CropRotateEditor>
         },
         onResizeEnd: (event) {
           if (_imageNeedDecode) _decodeImage();
-
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             _setCropRectBounding();
             _updateAllStates();
@@ -2420,7 +2427,8 @@ class CropRotateEditorState extends State<CropRotateEditor>
               ),
               if (cropRotateEditorConfigs.showLayers &&
                   cropRotateEditorConfigs.enableTransformLayers &&
-                  layers != null)
+                  layers != null &&
+                  !_isScreenResized)
                 ClipRRect(
                   clipBehavior: Clip.hardEdge,
                   child: LayerStack(

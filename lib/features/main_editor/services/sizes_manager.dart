@@ -145,10 +145,7 @@ class SizesManager {
         for (var layer in el.layers) {
           layer
             ..scale /= scaleFactor
-            ..offset = Offset(
-              layer.offset.dx / scaleFactor,
-              layer.offset.dy / scaleFactor,
-            );
+            ..offset /= scaleFactor;
         }
       }
     }

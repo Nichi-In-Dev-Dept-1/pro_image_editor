@@ -28,6 +28,7 @@ import '/shared/widgets/extended/interactive_viewer/extended_interactive_viewer.
 import '/shared/widgets/screen_resize_detector.dart';
 import '../filter_editor/types/filter_matrix.dart';
 import '../filter_editor/widgets/filter_generator.dart';
+import '../paint_editor/models/paint_editor_response_model.dart';
 import 'controllers/main_editor_controllers.dart';
 import 'mixins/main_editor_global_keys.dart';
 import 'providers/image_infos_provider.dart';
@@ -375,9 +376,9 @@ class ProImageEditorState extends State<ProImageEditor>
   /// Helper class for managing interactions with layers in the editor.
   late final LayerInteractionManager layerInteractionManager =
       LayerInteractionManager(
-    helperLinesCallbacks: mainEditorCallbacks?.helperLines,
-    helperLineConfigs: configs.helperLines,
     onSelectedLayerChanged: mainEditorCallbacks?.onSelectedLayerChanged,
+    helperLinesCallbacks: mainEditorCallbacks?.helperLines,
+    configs: configs,
   );
 
   /// Manager class for managing the state of the editor.
@@ -786,7 +787,10 @@ class ProImageEditorState extends State<ProImageEditor>
   /// Remove a layer from the editor.
   ///
   /// This method removes a layer from the editor and updates the editing state.
-  void removeLayer(Layer? layer) {
+  void removeLayer(
+    Layer? layer, {
+    bool blockCaptureScreenshot = false,
+  }) {
     int layerPos = activeLayers
         .indexWhere((element) => element.id == (layer?.id ?? _tempLayer!.id));
     if (layerPos >= 0) {
@@ -798,7 +802,8 @@ class ProImageEditorState extends State<ProImageEditor>
 
       var layers = _layerCopyManager.copyLayerList(activeLayers)
         ..removeAt(layerPos);
-      addHistory(layers: layers);
+      addHistory(
+          layers: layers, blockCaptureScreenshot: blockCaptureScreenshot);
       setState(() {});
     }
   }
@@ -1408,7 +1413,7 @@ class ProImageEditorState extends State<ProImageEditor>
       },
     );
 
-    List<PaintLayer>? paintItemLayers = await openPage<List<PaintLayer>>(
+    PaintEditorResponse? result = await openPage<PaintEditorResponse>(
       PaintEditor.autoSource(
         key: paintEditor,
         editorImage: editorImage,
@@ -1417,7 +1422,11 @@ class ProImageEditorState extends State<ProImageEditor>
           configs: configs,
           callbacks:
               callbacks.copyWith(paintEditorCallbacks: overridenPaintCallbacks),
-          layers: activeLayers,
+          layers: _layerCopyManager.duplicateLayerList(
+            activeLayers,
+            offset: Offset.zero,
+            enableCopyId: true,
+          ),
           theme: _theme,
           mainImageSize: sizesManager.decodedImageSize,
           mainBodySize: sizesManager.bodySize,
@@ -1430,22 +1439,30 @@ class ProImageEditorState extends State<ProImageEditor>
       ),
       duration: const Duration(milliseconds: 150),
     );
-    if (paintItemLayers != null && paintItemLayers.isNotEmpty) {
-      for (var i = 0; i < paintItemLayers.length; i++) {
-        addLayer(
-          paintItemLayers[i],
-          blockSelectLayer: true,
-          blockCaptureScreenshot: i != paintItemLayers.length - 1,
-          autoCorrectZoomOffset: false,
-          autoCorrectZoomScale: false,
-        );
-      }
 
-      _selectLayerAfterHeroIsDone(paintItemLayers.last.id);
+    if (result == null) return;
 
-      setState(() {});
-      mainEditorCallbacks?.handleUpdateUI();
+    for (var i = 0; i < result.layers.length; i++) {
+      final layer = result.layers[i];
+      addLayer(
+        _layerCopyManager.duplicateLayer(layer, offset: Offset.zero),
+        blockSelectLayer: true,
+        blockCaptureScreenshot: true,
+        autoCorrectZoomOffset: false,
+        autoCorrectZoomScale: false,
+      );
     }
+    for (Layer layer in result.removedLayers) {
+      removeLayer(layer, blockCaptureScreenshot: true);
+    }
+
+    if (result.layers.isNotEmpty) {
+      _selectLayerAfterHeroIsDone(result.layers.last.id);
+      _takeScreenshot();
+    }
+
+    setState(() {});
+    mainEditorCallbacks?.handleUpdateUI();
   }
 
   /// Opens the text editor.
@@ -1494,7 +1511,7 @@ class ProImageEditorState extends State<ProImageEditor>
           configs: configs,
           callbacks: callbacks,
           theme: _theme,
-          layers: stateManager.activeLayers,
+          layers: _layerCopyManager.copyLayerList(activeLayers),
           transformConfigs: stateManager.transformConfigs,
           mainImageSize: sizesManager.decodedImageSize,
           mainBodySize: sizesManager.bodySize,
@@ -1563,7 +1580,7 @@ class ProImageEditorState extends State<ProImageEditor>
             configs: configs,
             callbacks: callbacks,
             transformConfigs: stateManager.transformConfigs,
-            layers: activeLayers,
+            layers: _layerCopyManager.copyLayerList(activeLayers),
             mainImageSize: sizesManager.decodedImageSize,
             mainBodySize: sizesManager.bodySize,
             convertToUint8List: false,
@@ -1608,7 +1625,7 @@ class ProImageEditorState extends State<ProImageEditor>
           configs: configs,
           callbacks: callbacks,
           transformConfigs: stateManager.transformConfigs,
-          layers: activeLayers,
+          layers: _layerCopyManager.copyLayerList(activeLayers),
           mainImageSize: sizesManager.decodedImageSize,
           mainBodySize: sizesManager.bodySize,
           convertToUint8List: false,
@@ -1642,7 +1659,7 @@ class ProImageEditorState extends State<ProImageEditor>
           theme: _theme,
           mainImageSize: sizesManager.decodedImageSize,
           mainBodySize: sizesManager.bodySize,
-          layers: activeLayers,
+          layers: _layerCopyManager.copyLayerList(activeLayers),
           configs: configs,
           callbacks: callbacks,
           transformConfigs: stateManager.transformConfigs,

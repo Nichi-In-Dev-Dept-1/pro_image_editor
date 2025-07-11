@@ -3,14 +3,15 @@ import 'dart:async';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import '/core/models/editor_configs/paint_editor/paint_editor_configs.dart';
+import '/core/models/layers/layer.dart';
 import '/shared/widgets/censor/blur_area_item.dart';
 import '/shared/widgets/censor/pixelate_area_item.dart';
 import '../controllers/paint_controller.dart';
 import '../enums/paint_editor_enum.dart';
 import '../models/painted_model.dart';
+import '../services/paint_item_hit_test_manager.dart';
 import 'draw_paint_item.dart';
 
 /// A widget for creating a canvas for paint on images.
@@ -29,12 +30,15 @@ class PaintCanvas extends StatefulWidget {
     this.onTap,
     this.freeStyleHighPerformance = false,
     required this.drawAreaSize,
+    required this.editorBodySize,
     required this.paintCtrl,
     required this.paintEditorConfigs,
+    required this.layers,
+    required this.layerStackScaleFactor,
   });
 
   /// Callback function when the active paint is done.
-  final VoidCallback? onCreated;
+  final Function(PaintedModel item)? onCreated;
 
   /// Callback invoked when layers are removed.
   ///
@@ -55,6 +59,13 @@ class PaintCanvas extends StatefulWidget {
   /// Size of the image.
   final Size drawAreaSize;
 
+  /// Size of the paint editor body.
+  final Size editorBodySize;
+
+  /// The scale factor applied to the layer stack, used to adjust the size
+  /// of the canvas layers relative to their original dimensions.
+  final double layerStackScaleFactor;
+
   /// The `PaintController` class is responsible for managing and controlling
   /// the paint state.
   final PaintController paintCtrl;
@@ -67,6 +78,9 @@ class PaintCanvas extends StatefulWidget {
   /// various settings and options used to customize the behavior and
   /// appearance of the paint editor.
   final PaintEditorConfigs paintEditorConfigs;
+
+  /// A list of layers that make up the paint canvas.
+  final List<Layer> layers;
 
   @override
   PaintCanvasState createState() => PaintCanvasState();
@@ -81,6 +95,7 @@ class PaintCanvasState extends State<PaintCanvas> {
   /// Stream controller for updating paint events.
   late final StreamController<void> _activePaintStreamCtrl;
   TapDownDetails? _tapDownDetails;
+  final _hitTestManager = PaintItemHitTestManager();
 
   @override
   void initState() {
@@ -108,14 +123,7 @@ class PaintCanvasState extends State<PaintCanvas> {
         setState(() {});
         return;
       case PaintMode.polygon:
-        if (_paintCtrl.offsets.isEmpty) {
-          _paintCtrl
-            ..setStart(offset)
-            ..setInProgress(true);
-          widget.onStart?.call();
-        }
-        _paintCtrl.addOffsets(offset);
-        _activePaintStreamCtrl.add(null);
+        _addPolygonPoint(offset);
         return;
       default:
         _paintCtrl
@@ -140,42 +148,7 @@ class PaintCanvasState extends State<PaintCanvas> {
       case PaintMode.polygon:
         return;
       case PaintMode.eraser:
-        List<String> removeIds = [];
-        for (var item in _paintCtrl.activePaintItemList) {
-          if (item.mode == PaintMode.blur || item.mode == PaintMode.pixelate) {
-            List<Offset?> offsets = item.offsets;
-            if (offsets.length != 2) continue;
-
-            var topLeft = offsets[0];
-            if (topLeft == null) continue;
-
-            var bottomRight = offsets[1];
-            if (bottomRight == null) continue;
-
-            double width = (bottomRight.dx - topLeft.dx);
-            double height = (bottomRight.dy - topLeft.dy);
-
-            double left = width >= 0 ? topLeft.dx : topLeft.dx + width;
-            double top = height >= 0 ? topLeft.dy : topLeft.dy + height;
-
-            var dx = details.localFocalPoint.dx;
-            var dy = details.localFocalPoint.dy;
-
-            bool horizontalHit = dx >= left && dx <= left + width.abs();
-            bool verticalHit = dy >= top && dy <= top + height.abs();
-            if (horizontalHit && verticalHit) {
-              removeIds.add(item.id);
-            }
-          } else {
-            final painter = item.key.currentContext?.findRenderObject()
-                as RenderCustomPaint?;
-            final hasHit =
-                painter?.painter?.hitTest(details.localFocalPoint) ?? false;
-
-            if (hasHit || item.hit) removeIds.add(item.id);
-          }
-        }
-        if (removeIds.isNotEmpty) widget.onRemoveLayer?.call(removeIds);
+        _processEraserInput(details);
         break;
       default:
         final offset = details.localFocalPoint;
@@ -220,36 +193,92 @@ class PaintCanvasState extends State<PaintCanvas> {
         offsets = [_paintCtrl.start, _paintCtrl.end];
       }
     } else if (_paintCtrl.mode == PaintMode.polygon) {
-      List<Offset?> rawOffsets = [..._paintCtrl.offsets];
+      _checkPolygonIsComplete();
+    }
+    _createPainting(offsets);
+  }
 
-      if (rawOffsets.length >= 2 &&
-          rawOffsets.first != null &&
-          rawOffsets.last != null) {
-        final p1 = rawOffsets.first!;
-        final p2 = rawOffsets.last!;
+  void _processEraserInput(ScaleUpdateDetails details) {
+    List<String> removeIds = [];
+    final Offset focalPoint = details.localFocalPoint;
+    final double stackScale = widget.layerStackScaleFactor;
+    final Offset editorHalfSize = Offset(
+          widget.editorBodySize.width,
+          widget.editorBodySize.height,
+        ) /
+        2;
 
-        final threshold = widget.paintEditorConfigs.polygonConnectionThreshold;
+    final bool useRoundCensor =
+        widget.paintEditorConfigs.censorConfigs.enableRoundArea;
 
-        if ((p1 - p2).distance < threshold) {
-          // Connect them by replacing the last point with the first one
-          rawOffsets[rawOffsets.length - 1] = rawOffsets.first;
-          offsets = rawOffsets;
+    for (var layer in widget.layers) {
+      if (layer.isPaintLayer) {
+        final paintLayer = layer as PaintLayer;
+        final layerScale = paintLayer.scale;
+
+        Offset position = focalPoint - editorHalfSize;
+
+        final Size scaledRawSize = paintLayer.rawSize * stackScale * layerScale;
+
+        position += Offset(scaledRawSize.width, scaledRawSize.height) / 2;
+        position -= paintLayer.offset * stackScale;
+
+        bool hasHit = _hitTestManager.hitTest(
+          item: paintLayer.item,
+          position: position,
+          scaleFactor: stackScale * layerScale,
+          isRoundCensorArea: useRoundCensor,
+        );
+        if (hasHit) {
+          removeIds.add(layer.id);
         }
       }
-      if (offsets == null || offsets.isEmpty) return;
     }
+    if (removeIds.isNotEmpty) widget.onRemoveLayer?.call(removeIds);
+  }
+
+  void _addPolygonPoint(Offset offset) {
+    if (_paintCtrl.offsets.isEmpty) {
+      _paintCtrl
+        ..setStart(offset)
+        ..setInProgress(true);
+      widget.onStart?.call();
+    }
+    _paintCtrl.addOffsets(offset);
+    _activePaintStreamCtrl.add(null);
+  }
+
+  void _checkPolygonIsComplete() {
+    List<Offset?> rawOffsets = [..._paintCtrl.offsets];
+
+    if (rawOffsets.length >= 2 &&
+        rawOffsets.first != null &&
+        rawOffsets.last != null) {
+      final p1 = rawOffsets.first!;
+      final p2 = rawOffsets.last!;
+
+      final threshold = widget.paintEditorConfigs.polygonConnectionThreshold;
+
+      if ((p1 - p2).distance < threshold) {
+        // Connect them by replacing the last point with the first one
+        rawOffsets[rawOffsets.length - 1] = rawOffsets.first;
+
+        if (rawOffsets.isNotEmpty) _createPainting(rawOffsets);
+      }
+    }
+  }
+
+  void _createPainting(List<Offset?>? offsets) {
     if (offsets != null) {
-      _paintCtrl.addPaintInfo(
-        PaintedModel(
-          offsets: offsets,
-          mode: _paintCtrl.mode,
-          color: _paintCtrl.color,
-          strokeWidth: _paintCtrl.scaledStrokeWidth,
-          fill: _paintCtrl.fill,
-          opacity: _paintCtrl.opacity,
-        ),
+      final rawLayer = PaintedModel(
+        offsets: offsets,
+        mode: _paintCtrl.mode,
+        color: _paintCtrl.color,
+        strokeWidth: _paintCtrl.scaledStrokeWidth,
+        fill: _paintCtrl.fill,
+        opacity: _paintCtrl.opacity,
       );
-      widget.onCreated?.call();
+      widget.onCreated?.call(rawLayer);
     }
 
     _paintCtrl
@@ -264,31 +293,9 @@ class PaintCanvasState extends State<PaintCanvas> {
       absorbing: _paintCtrl.mode == PaintMode.moveAndZoom,
       child: Stack(
         fit: StackFit.expand,
-        children: [..._buildPaintings(), _buildActiveItem()],
+        children: [_buildActiveItem()],
       ),
     );
-  }
-
-  List<Widget> _buildPaintings() {
-    return [
-      for (final item in _paintCtrl.activePaintItemList)
-        if (item.mode == PaintMode.blur || item.mode == PaintMode.pixelate)
-          _buildCensorItem(item)
-        else
-          Opacity(
-            opacity: item.opacity,
-            child: CustomPaint(
-              key: item.key,
-              willChange: false,
-              isComplex: item.mode == PaintMode.freeStyle,
-              painter: DrawPaintItem(
-                item: item,
-                freeStyleHighPerformance: widget.freeStyleHighPerformance,
-                enabledHitDetection: _paintCtrl.mode == PaintMode.eraser,
-              ),
-            ),
-          )
-    ];
   }
 
   Widget _buildActiveItem() {
@@ -302,6 +309,10 @@ class PaintCanvasState extends State<PaintCanvas> {
           onScaleEnd: _onScaleEnd,
           onTapDown: (details) {
             _tapDownDetails = details;
+            if (_paintCtrl.mode == PaintMode.polygon) {
+              _addPolygonPoint(details.localPosition);
+              _checkPolygonIsComplete();
+            }
           },
           onTap: () {
             if (_tapDownDetails != null) {
