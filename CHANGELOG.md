@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.3.2
+- **FIX**(helper-lines): Resolve issue where layers wouldn't release when positioned very close (1–3 pixels) on the same axis.
+
 ## 10.3.1
 - **FIX**(crop-rotate-editor): Resolve rotation reset issue after changing aspect ratio.
 
@@ -163,7 +166,7 @@
 - **FIX**(hit-detection): Prevent layer hit detection errors by clamping inner dimensions. Resolves [#440](https://github.com/hm21/pro_image_editor/issues/440).
 
 ## 9.6.0
-- **FEAT**(double-tap):  Support double-tap to zoom in/out when zoom is enabled. More details in Feature-Request [#429](https://github.com/hm21/pro_image_editor/pull/429).
+- **FEAT**(double-tap): Support double-tap to zoom in/out when zoom is enabled. More details in Feature-Request [#429](https://github.com/hm21/pro_image_editor/pull/429).
 
 ## 9.5.2
 - **FIX**(zoom): Fixed issue where config `enableMainEditorZoomFactor` had no effect when creating a new text-layer. Resolves [#426](https://github.com/hm21/pro_image_editor/issues/426).
@@ -640,7 +643,7 @@ Introduced a new loading dialog as a singleton class.
 
 ## 4.1.1
 
-- **FIX**(vibration):  The `Vibration.hasVibrator` check will now only happen if the user has enabled hitVibration in the helper-line configs. This resolves issue [#139](https://github.com/hm21/pro_image_editor/issue/139).
+- **FIX**(vibration): The `Vibration.hasVibrator` check will now only happen if the user has enabled hitVibration in the helper-line configs. This resolves issue [#139](https://github.com/hm21/pro_image_editor/issue/139).
 
 
 ## 4.1.0

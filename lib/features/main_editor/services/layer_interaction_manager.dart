@@ -729,6 +729,10 @@ class LayerInteractionManager {
     final seenDx = <double>{};
     final seenDy = <double>{};
 
+    bool isSimilar(Set<double> seen, double value, double threshold) {
+      return seen.any((v) => (v - value).abs() < threshold);
+    }
+
     for (final layer in layerList) {
       if (layer == activeLayer) continue;
       final centerOffset = layer.computeOffsetFromCenterFraction(
@@ -738,8 +742,15 @@ class LayerInteractionManager {
       final dx = centerOffset.dx;
       final dy = centerOffset.dy;
 
-      if (seenDx.add(dx)) uniqueDxOffsets.add(centerOffset);
-      if (seenDy.add(dy)) uniqueDyOffsets.add(centerOffset);
+      if (!isSimilar(seenDx, dx, snapThreshold)) {
+        seenDx.add(dx);
+        uniqueDxOffsets.add(centerOffset);
+      }
+
+      if (!isSimilar(seenDy, dy, snapThreshold)) {
+        seenDy.add(dy);
+        uniqueDyOffsets.add(centerOffset);
+      }
     }
 
     for (final layerOffset in uniqueDxOffsets) {
