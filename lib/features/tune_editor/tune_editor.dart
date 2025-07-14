@@ -17,7 +17,7 @@ import '/shared/widgets/layer/layer_stack.dart';
 import '/shared/widgets/transform/transformed_content_generator.dart';
 import '../filter_editor/widgets/filtered_widget.dart';
 import 'models/tune_edit_batch.dart';
-import 'utils/heuristic_request.dart';
+// import 'utils/heuristic_request.dart';
 import 'utils/tune_presets.dart';
 import 'widgets/tune_editor_appbar.dart';
 
@@ -215,9 +215,9 @@ class TuneEditorState extends State<TuneEditor>
   /// Determines whether redo can be performed on the current state.
   bool get canRedo => _redoStack.isNotEmpty;
 
-  /// This variable holds the auto-tune values fetched after processing the
-  /// image
-  Map<String, double>? _autoTuneValues;
+  // /// This variable holds the auto-tune values fetched after processing the
+  // /// image
+  // Map<String, double>? _autoTuneValues;
 
   /// Show loader when auto tune is loading
   bool showLoader = false;
@@ -227,7 +227,7 @@ class TuneEditorState extends State<TuneEditor>
     super.initState();
     uiStream = StreamController.broadcast();
     uiStream.stream.listen((_) => rebuildController.add(null));
-    _prepareAutoTuneHeuristics(context);
+    // _prepareAutoTuneHeuristics(context);
     var items = tuneEditorConfigs.tuneAdjustmentOptions ??
         tunePresets(
           icons: tuneEditorConfigs.icons,
@@ -313,45 +313,45 @@ class TuneEditorState extends State<TuneEditor>
   }
 
   /// apply autoTune
-  void applyAutoTune() {
-    debugPrint('applyAutoTune tapped');
-    debugPrint('applyAutoTune $_autoTuneValues');
-    if (_autoTuneValues != null) {
-      onChangedStart(1.0, 'auto_tune');
-      var brightness = _autoTuneValues!['brightness'] ?? 0;
-      var contrast = _autoTuneValues!['contrast'] ?? 0;
-      var saturation = _autoTuneValues!['saturation'] ?? 0.0;
-      var exposure =
-          ((_autoTuneValues!['brightness']! < 0.0)
-              ? (_autoTuneValues!['exposure']! < 0.0)
-                  ? -(_autoTuneValues!['exposure']!)
-                  : (_autoTuneValues!['exposure'])
-              : (_autoTuneValues!['exposure']! > 0.0)
-                  ? -(_autoTuneValues!['exposure']!)
-                  : (_autoTuneValues!['exposure'])) ??
-          0.0;
-      var hue = _autoTuneValues!['hue']! * 0.1;
-      var temperature = _autoTuneValues!['temperature'] ?? 0.0;
-      var sharpness = _autoTuneValues!['sharpness'] ?? 0;
-      var fade = _autoTuneValues!['fade'] ?? 0;
-      var luminance = _autoTuneValues!['luminance'] ?? 0;
-
-      _setAutoValue(brightness, 1);
-      _setAutoValue(contrast, 2);
-      _setAutoValue(saturation, 3);
-      _setAutoValue(exposure, 4);
-      _setAutoValue(hue, 5);
-      _setAutoValue(temperature, 6);
-      _setAutoValue(sharpness, 7);
-      _setAutoValue(fade, 8);
-      _setAutoValue(luminance, 9);
-
-      showLoader = false;
-    } else {
-      Future.delayed(const Duration(milliseconds: 600), applyAutoTune);
-    }
-    onChangedEnd(0.0);
-  }
+  // void applyAutoTune() {
+  //   debugPrint('applyAutoTune tapped');
+  //   debugPrint('applyAutoTune $_autoTuneValues');
+  //   if (_autoTuneValues != null) {
+  //     onChangedStart(1.0, 'auto_tune');
+  //     var brightness = _autoTuneValues!['brightness'] ?? 0;
+  //     var contrast = _autoTuneValues!['contrast'] ?? 0;
+  //     var saturation = _autoTuneValues!['saturation'] ?? 0.0;
+  //     var exposure =
+  //         ((_autoTuneValues!['brightness']! < 0.0)
+  //             ? (_autoTuneValues!['exposure']! < 0.0)
+  //                 ? -(_autoTuneValues!['exposure']!)
+  //                 : (_autoTuneValues!['exposure'])
+  //             : (_autoTuneValues!['exposure']! > 0.0)
+  //                 ? -(_autoTuneValues!['exposure']!)
+  //                 : (_autoTuneValues!['exposure'])) ??
+  //         0.0;
+  //     var hue = _autoTuneValues!['hue']! * 0.1;
+  //     var temperature = _autoTuneValues!['temperature'] ?? 0.0;
+  //     var sharpness = _autoTuneValues!['sharpness'] ?? 0;
+  //     var fade = _autoTuneValues!['fade'] ?? 0;
+  //     var luminance = _autoTuneValues!['luminance'] ?? 0;
+  //
+  //     _setAutoValue(brightness, 1);
+  //     _setAutoValue(contrast, 2);
+  //     _setAutoValue(saturation, 3);
+  //     _setAutoValue(exposure, 4);
+  //     _setAutoValue(hue, 5);
+  //     _setAutoValue(temperature, 6);
+  //     _setAutoValue(sharpness, 7);
+  //     _setAutoValue(fade, 8);
+  //     _setAutoValue(luminance, 9);
+  //
+  //     showLoader = false;
+  //   } else {
+  //     Future.delayed(const Duration(milliseconds: 600), applyAutoTune);
+  //   }
+  //   onChangedEnd(0.0);
+  // }
 
   /// Undoes the last action.
   ///
@@ -381,29 +381,30 @@ class TuneEditorState extends State<TuneEditor>
         .toList();
   }
 
-  void _setAutoValue(double value, int selectedIndex) {
-    var selectedItem = tuneAdjustmentList[selectedIndex];
-
-    int index =
-        tuneAdjustmentMatrix.indexWhere((item) => item.id == selectedItem.id);
-
-    var item = TuneAdjustmentMatrix(
-      id: selectedItem.id,
-      value: value,
-      matrix: selectedItem.toMatrix(value),
-    );
-    if (index >= 0) {
-      tuneAdjustmentMatrix[index] = item;
-    } else {
-      tuneAdjustmentMatrix.add(item);
-    }
-
-    /// Important that the hash-code update
-    tuneAdjustmentMatrix = [...tuneAdjustmentMatrix];
-
-    uiStream.add(null);
-    tuneEditorCallbacks?.handleTuneFactorChange(tuneAdjustmentMatrix);
-  }
+  // void _setAutoValue(double value, int selectedIndex) {
+  //   var selectedItem = tuneAdjustmentList[selectedIndex];
+  //
+  //   int index =
+  //       tuneAdjustmentMatrix.indexWhere((item) =>
+  //       item.id == selectedItem.id);
+  //
+  //   var item = TuneAdjustmentMatrix(
+  //     id: selectedItem.id,
+  //     value: value,
+  //     matrix: selectedItem.toMatrix(value),
+  //   );
+  //   if (index >= 0) {
+  //     tuneAdjustmentMatrix[index] = item;
+  //   } else {
+  //     tuneAdjustmentMatrix.add(item);
+  //   }
+  //
+  //   /// Important that the hash-code update
+  //   tuneAdjustmentMatrix = [...tuneAdjustmentMatrix];
+  //
+  //   uiStream.add(null);
+  //   tuneEditorCallbacks?.handleTuneFactorChange(tuneAdjustmentMatrix);
+  // }
 
   /// Handles changes in the tune factor value.
   void onChanged(double value) {
@@ -610,20 +611,20 @@ class TuneEditorState extends State<TuneEditor>
       onSelect: (index) {
         setState(() {
           selectedIndex = index;
-          if (selectedIndex == 0) {
-            showLoader = true;
-            Future.delayed(const Duration(milliseconds: 600), applyAutoTune);
-          }
+          // if (selectedIndex == 0) {
+          //   showLoader = true;
+          //   Future.delayed(const Duration(milliseconds: 600), applyAutoTune);
+          // }
         });
       },
       selectedIndex: selectedIndex,
     );
   }
 
-  Future<void> _prepareAutoTuneHeuristics(BuildContext context) async {
-    var data = await widget.editorImage?.safeByteArray(context);
-    if (data != null) {
-      _autoTuneValues = await computeHeuristicAdjustmentsIsolate(data);
-    }
-  }
+  // Future<void> _prepareAutoTuneHeuristics(BuildContext context) async {
+  //   var data = await widget.editorImage?.safeByteArray(context);
+  //   if (data != null) {
+  //     _autoTuneValues = await computeHeuristicAdjustmentsIsolate(data);
+  //   }
+  // }
 }
