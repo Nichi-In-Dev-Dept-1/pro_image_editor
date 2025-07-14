@@ -916,7 +916,7 @@ class PaintEditorState extends State<PaintEditor>
                           return const SizedBox.shrink();
                         }
 
-                        returnLayerStack(
+                        return LayerStack(
                           configs: configs,
                           layers: activeHistory.layers,
                           transformHelper: _layerStackTransformHelper,

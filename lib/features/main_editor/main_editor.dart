@@ -1456,20 +1456,20 @@ class ProImageEditorState extends State<ProImageEditor>
       removeLayer(layer, blockCaptureScreenshot: true);
     }
 
-    if (paintItemLayers != null && paintItemLayers.isNotEmpty) {
-      // Merge existing layers with new paint layers
-      final newLayers = [...activeLayers, ...paintItemLayers];
-
-      // Add a single history entry for all paint changes
-      addHistory(
-        layers: newLayers,
-        blockCaptureScreenshot: false,
-      );
-
-      _selectLayerAfterHeroIsDone(paintItemLayers.last.id);
-      setState(() {});
-      mainEditorCallbacks?.handleUpdateUI();
-    }
+    // if (paintItemLayers != null && paintItemLayers.isNotEmpty) {
+    //   // Merge existing layers with new paint layers
+    //   final newLayers = [...activeLayers, ...paintItemLayers];
+    //
+    //   // Add a single history entry for all paint changes
+    //   addHistory(
+    //     layers: newLayers,
+    //     blockCaptureScreenshot: false,
+    //   );
+    //
+    //   _selectLayerAfterHeroIsDone(paintItemLayers.last.id);
+    //   setState(() {});
+    //   mainEditorCallbacks?.handleUpdateUI();
+    // }
 
     if (result.layers.isNotEmpty) {
       _selectLayerAfterHeroIsDone(result.layers.last.id);
