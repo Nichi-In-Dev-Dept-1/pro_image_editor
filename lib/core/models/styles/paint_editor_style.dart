@@ -76,6 +76,8 @@ class PaintEditorStyle {
     this.initialOpacity = 1.0,
     this.uiOverlayStyle = kImageEditorUiOverlayStyle,
     this.initialColor = const Color(0xffff0000),
+    this.editSheetShowDragHandle = true,
+    this.editSheetBackgroundColor = const Color(0xFF121B22),
   })  : assert(initialStrokeWidth > 0, 'initialStrokeWidth must be positive'),
         assert(initialOpacity >= 0 && initialOpacity <= 1,
             'initialOpacity must be between 0 and 1');
@@ -119,6 +121,12 @@ class PaintEditorStyle {
   /// Indicates the initial drawing color.
   final Color initialColor;
 
+  /// Indicates if the drag handler is visible.
+  final bool editSheetShowDragHandle;
+
+  /// The background color of the edit sheet.
+  final Color editSheetBackgroundColor;
+
   /// UI overlay style, defining the appearance of system status bars.
   final SystemUiOverlayStyle uiOverlayStyle;
 
@@ -129,10 +137,10 @@ class PaintEditorStyle {
   /// [PaintEditorStyle] with some properties updated while keeping the
   /// others unchanged.
   PaintEditorStyle copyWith({
+    Color? background,
     Color? bottomBarBackground,
     Color? appBarColor,
     Color? appBarBackground,
-    Color? background,
     Color? bottomBarActiveItemColor,
     Color? bottomBarInactiveItemColor,
     Color? lineWidthBottomSheetBackground,
@@ -142,6 +150,8 @@ class PaintEditorStyle {
     double? initialStrokeWidth,
     double? initialOpacity,
     Color? initialColor,
+    bool? editSheetShowDragHandle,
+    Color? editSheetBackgroundColor,
     SystemUiOverlayStyle? uiOverlayStyle,
   }) {
     return PaintEditorStyle(
@@ -164,6 +174,10 @@ class PaintEditorStyle {
       initialStrokeWidth: initialStrokeWidth ?? this.initialStrokeWidth,
       initialOpacity: initialOpacity ?? this.initialOpacity,
       initialColor: initialColor ?? this.initialColor,
+      editSheetShowDragHandle:
+          editSheetShowDragHandle ?? this.editSheetShowDragHandle,
+      editSheetBackgroundColor:
+          editSheetBackgroundColor ?? this.editSheetBackgroundColor,
       uiOverlayStyle: uiOverlayStyle ?? this.uiOverlayStyle,
     );
   }

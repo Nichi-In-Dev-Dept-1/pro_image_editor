@@ -12,11 +12,12 @@ class LayerWidgetPaintItem extends StatelessWidget {
   const LayerWidgetPaintItem({
     super.key,
     required this.layer,
-    required this.scale,
-    required this.isSelected,
-    required this.enableHitDetection,
-    required this.isHighPerformanceMode,
-    required this.onHitChanged,
+    this.scale = 1.0,
+    this.isSelected = false,
+    this.enableHitDetection = false,
+    this.isHighPerformanceMode = false,
+    this.willChange = false,
+    this.onHitChanged,
   });
 
   /// The paint layer represented by this widget.
@@ -28,6 +29,11 @@ class LayerWidgetPaintItem extends StatelessWidget {
   /// Whether the paint layer is currently selected.
   final bool isSelected;
 
+  /// Indicates whether the widget will change frequently, which can be used
+  /// to optimize rendering performance by enabling or disabling certain
+  /// optimizations in the rendering pipeline.
+  final bool willChange;
+
   /// Whether hit detection is enabled for this layer.
   final bool enableHitDetection;
 
@@ -38,7 +44,7 @@ class LayerWidgetPaintItem extends StatelessWidget {
   ///
   /// The [onHitChanged] function takes a boolean parameter [hasHit] which
   /// indicates whether a hit has occurred (true) or not (false).
-  final Function(bool hasHit) onHitChanged;
+  final Function(bool hasHit)? onHitChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +56,7 @@ class LayerWidgetPaintItem extends StatelessWidget {
           opacity: layer.opacity,
           child: CustomPaint(
             size: layer.size,
-            willChange: false,
+            willChange: willChange,
             isComplex: layer.item.mode == PaintMode.freeStyle,
             painter: DrawPaintItem(
               item: layer.item,

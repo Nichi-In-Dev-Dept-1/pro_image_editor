@@ -77,13 +77,13 @@ class PaintedModel {
   final PaintMode mode;
 
   /// The color used for drawing or filling the shape.
-  final Color color;
+  Color color;
 
   /// The width of the stroke used for drawing.
-  final double strokeWidth;
+  double strokeWidth;
 
   /// The opacity for the drawing.
-  final double opacity;
+  double opacity;
 
   /// A list of offsets representing the points of the shape or drawing.
   /// For shapes like circles and rectangles, it contains two points.
@@ -105,11 +105,25 @@ class PaintedModel {
 
   /// Determines whether the shape should be filled based on the paint mode.
   bool get shouldFill {
-    if (mode == PaintMode.circle || mode == PaintMode.rect) {
+    if (canBeFilled) {
       return fill;
     } else {
       return false;
     }
+  }
+
+  /// Determines whether the current paint mode supports being filled.
+  ///
+  /// This getter returns `true` if the [mode] is one of the following:
+  /// - [PaintMode.circle]: A circular shape that can be filled.
+  /// - [PaintMode.rect]: A rectangular shape that can be filled.
+  /// - [PaintMode.polygon]: A polygonal shape that can be filled.
+  ///
+  /// Returns `false` for other paint modes that do not support filling.
+  bool get canBeFilled {
+    return mode == PaintMode.circle ||
+        mode == PaintMode.rect ||
+        mode == PaintMode.polygon;
   }
 
   /// Creates a copy of this PaintedModel instance.
@@ -174,8 +188,6 @@ class PaintedModel {
       return true;
     }
 
-    if (identical(this, other)) return true;
-
     return other is PaintedModel &&
         other.mode == mode &&
         other.color == color &&
@@ -183,5 +195,29 @@ class PaintedModel {
         other.opacity == opacity &&
         other.fill == fill &&
         areOffsetsEqual(other.offsets, offsets);
+  }
+
+  /// Creates a copy of this `PaintedModel` with the given fields replaced by
+  /// new values.
+  PaintedModel copyWith({
+    GlobalKey? key,
+    PaintMode? mode,
+    Color? color,
+    double? strokeWidth,
+    double? opacity,
+    List<Offset?>? offsets,
+    bool? fill,
+    bool? hit,
+  }) {
+    return PaintedModel(
+      key: key ?? this.key,
+      mode: mode ?? this.mode,
+      color: color ?? this.color,
+      offsets: offsets ?? this.offsets,
+      opacity: opacity ?? this.opacity,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
+      fill: fill ?? this.fill,
+      hit: hit ?? this.hit,
+    );
   }
 }

@@ -37,6 +37,7 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
     this.layerFractionalOffset = const Offset(-0.5, -0.5),
     this.enableSuggestions = true,
     this.enabled = true,
+    this.enableEdit = true,
     this.enableAutocorrect = true,
     this.showSelectFontStyleBottomBar = false,
     this.showTextAlignButton = true,
@@ -68,6 +69,9 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
 
   /// Indicates whether the text editor is enabled.
   final bool enabled;
+
+  /// Indicating whether created layers can be edited.
+  final bool enableEdit;
 
   /// Whether to show the toggle button to change the text align.
   final bool showTextAlignButton;
@@ -161,6 +165,7 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
   TextEditorConfigs copyWith({
     Offset? layerFractionalOffset,
     bool? enabled,
+    bool? enableEdit,
     bool? showSelectFontStyleBottomBar,
     bool? enableMainEditorZoomFactor,
     double? initFontSize,
@@ -186,6 +191,7 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
           layerFractionalOffset ?? this.layerFractionalOffset,
       safeArea: safeArea ?? this.safeArea,
       enabled: enabled ?? this.enabled,
+      enableEdit: enableEdit ?? this.enableEdit,
       showSelectFontStyleBottomBar:
           showSelectFontStyleBottomBar ?? this.showSelectFontStyleBottomBar,
       enableMainEditorZoomFactor:

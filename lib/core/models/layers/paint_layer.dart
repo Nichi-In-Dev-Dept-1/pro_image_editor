@@ -79,13 +79,13 @@ class PaintLayer extends Layer {
   }
 
   /// The custom-painted item to display on the layer.
-  final PaintedModel item;
+  PaintedModel item;
 
   /// The raw size of the painted item before applying scaling.
   final Size rawSize;
 
   /// The opacity level of the drawing.
-  final double opacity;
+  double opacity;
 
   /// Returns the size of the layer after applying the scaling factor.
   Size get size => Size(rawSize.width * scale, rawSize.height * scale);

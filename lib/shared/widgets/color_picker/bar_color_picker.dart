@@ -45,6 +45,8 @@ class BarColorPicker extends StatefulWidget {
     this.thumbColor = Colors.black,
     this.onPositionChange,
     this.initPosition,
+    this.padding = const EdgeInsets.only(left: 10, right: 5),
+    this.animationDuration = const Duration(milliseconds: 200),
     required this.colorListener,
     required this.configs,
   });
@@ -89,6 +91,13 @@ class BarColorPicker extends StatefulWidget {
   /// The border width around the slider.
   final double borderWidth;
 
+  /// The padding to be applied around the color picker bar.
+  final EdgeInsets padding;
+
+  /// The duration of the animation used in the color picker.
+  /// This determines how long the animation takes to complete.
+  final Duration animationDuration;
+
   @override
   createState() => _BarColorPickerState();
 }
@@ -117,7 +126,7 @@ class _BarColorPickerState extends State<BarColorPicker>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: widget.animationDuration,
     );
 
     _scaleAnimation = Tween<double>(
@@ -308,7 +317,7 @@ class _BarColorPickerState extends State<BarColorPicker>
         onPanUpdate: (details) =>
             handleTouch(details.globalPosition, context, gradient),
         child: Padding(
-          padding: const EdgeInsets.only(left: 10, right: 5),
+          padding: widget.padding,
           child: Stack(
             children: [
               _buildFrame(

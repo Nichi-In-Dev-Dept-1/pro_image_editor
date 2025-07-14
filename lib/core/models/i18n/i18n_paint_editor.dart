@@ -7,30 +7,6 @@ class I18nPaintEditor {
   /// Paint Editor in the Image Editor. Customize the text for paint
   /// modes, buttons, and messages to suit your application's language and
   /// style.
-  ///
-  /// Example:
-  ///
-  /// ```dart
-  /// I18nPaintEditor(
-  ///   bottomNavigationBarText: 'Paint',
-  ///   freestyle: 'Freestyle',
-  ///   arrow: 'Arrow',
-  ///   line: 'Line',
-  ///   rectangle: 'Rectangle',
-  ///   circle: 'Circle',
-  ///   dashLine: 'Dash Line',
-  ///   blur: 'Blur',
-  ///   pixelate: 'pixelate',
-  ///   lineWidth: 'Line Width',
-  ///   toggleFill: 'Toggle fill',
-  ///   changeOpacity = 'Change opacity',
-  ///   eraser: 'Eraser',
-  ///   undo: 'Undo',
-  ///   redo: 'Redo',
-  ///   done: 'Done',
-  ///   back: 'Back',
-  /// )
-  /// ```
   const I18nPaintEditor({
     this.moveAndZoom = 'Zoom',
     this.bottomNavigationBarText = 'Paint',
@@ -52,6 +28,11 @@ class I18nPaintEditor {
     this.done = 'Done',
     this.back = 'Back',
     this.smallScreenMoreTooltip = 'More',
+    this.opacity = 'Opacity',
+    this.color = 'Color',
+    this.strokeWidth = 'Stroke Width',
+    this.fill = 'Fill',
+    this.cancel = 'Cancel',
   });
 
   /// Text for the bottom navigation bar item that opens the Paint Editor.
@@ -106,6 +87,21 @@ class I18nPaintEditor {
   /// Text for the "Change opacity" tooltip.
   final String changeOpacity;
 
+  /// Label for the opacity slider.
+  final String opacity;
+
+  /// Label for the color slider.
+  final String color;
+
+  /// Label for the stroke width control.
+  final String strokeWidth;
+
+  /// Label for the fill mode.
+  final String fill;
+
+  /// Label for the cancel button.
+  final String cancel;
+
   /// Text for the "Undo" button.
   final String undo;
 
@@ -127,9 +123,10 @@ class I18nPaintEditor {
   /// The [copyWith] method allows you to create a new instance of
   /// [I18nPaintEditor] with some properties updated while keeping the
   /// others unchanged.
+
   I18nPaintEditor copyWith({
-    String? moveAndZoom,
     String? bottomNavigationBarText,
+    String? moveAndZoom,
     String? freestyle,
     String? arrow,
     String? line,
@@ -139,10 +136,15 @@ class I18nPaintEditor {
     String? polygon,
     String? blur,
     String? pixelate,
-    String? lineWidth,
     String? eraser,
+    String? lineWidth,
     String? toggleFill,
     String? changeOpacity,
+    String? opacity,
+    String? color,
+    String? strokeWidth,
+    String? fill,
+    String? cancel,
     String? undo,
     String? redo,
     String? done,
@@ -150,9 +152,9 @@ class I18nPaintEditor {
     String? smallScreenMoreTooltip,
   }) {
     return I18nPaintEditor(
-      moveAndZoom: moveAndZoom ?? this.moveAndZoom,
       bottomNavigationBarText:
           bottomNavigationBarText ?? this.bottomNavigationBarText,
+      moveAndZoom: moveAndZoom ?? this.moveAndZoom,
       freestyle: freestyle ?? this.freestyle,
       arrow: arrow ?? this.arrow,
       line: line ?? this.line,
@@ -162,10 +164,15 @@ class I18nPaintEditor {
       polygon: polygon ?? this.polygon,
       blur: blur ?? this.blur,
       pixelate: pixelate ?? this.pixelate,
-      lineWidth: lineWidth ?? this.lineWidth,
       eraser: eraser ?? this.eraser,
+      lineWidth: lineWidth ?? this.lineWidth,
       toggleFill: toggleFill ?? this.toggleFill,
       changeOpacity: changeOpacity ?? this.changeOpacity,
+      opacity: opacity ?? this.opacity,
+      color: color ?? this.color,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
+      fill: fill ?? this.fill,
+      cancel: cancel ?? this.cancel,
       undo: undo ?? this.undo,
       redo: redo ?? this.redo,
       done: done ?? this.done,

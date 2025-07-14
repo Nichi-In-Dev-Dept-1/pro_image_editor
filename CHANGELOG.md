@@ -1,6 +1,7 @@
 # Changelog
 
-## 10.3.3
+## 10.4.0
+- **FEAT**(paint-layer): PaintLayers can now be edited in the main-editor. This adds various new configurations to `I18nPaintEditor`, `PaintEditorConfigs`, `PaintEditorStyle`, and `PaintEditorWidgets`.
 - **FIX**(paint-editor): Resolve issue where setting a color programmatically didn't update the color bar. This resolves issue [#552](https://github.com/hm21/pro_image_editor/issues/552).
 
 ## 10.3.2
