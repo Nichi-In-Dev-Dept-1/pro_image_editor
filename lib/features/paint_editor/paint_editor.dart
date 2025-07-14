@@ -732,10 +732,24 @@ class PaintEditorState extends State<PaintEditor>
   }
 
   /// Handles changes in the selected color.
+  @Deprecated('Use [setColor] instead')
   void colorChanged(Color color) {
+    setColor(color);
+  }
+
+  /// Sets the current color for the paint editor.
+  ///
+  /// This method updates the color in the paint controller, triggers the
+  /// UI picker stream to notify listeners, and invokes the callback
+  /// for handling color changes if it is defined.
+  ///
+  /// - Parameters:
+  ///   - color: The new color to be set.
+  void setColor(Color color) {
     paintCtrl.setColor(color);
     uiPickerStream.add(null);
     paintEditorCallbacks?.handleColorChanged();
+    setState(() {});
   }
 
   @override

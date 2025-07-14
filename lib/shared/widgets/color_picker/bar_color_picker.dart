@@ -41,7 +41,7 @@ class BarColorPicker extends StatefulWidget {
     this.borderWidth = 0.0,
     this.cornerRadius = 0.0,
     this.thumbRadius = 6,
-    this.initialColor = const Color(0xffff0000),
+    this.color = const Color(0xffff0000),
     this.thumbColor = Colors.black,
     this.onPositionChange,
     this.initPosition,
@@ -70,8 +70,8 @@ class BarColorPicker extends StatefulWidget {
   /// The radius of the thumb.
   final double thumbRadius;
 
-  /// The initial color to be displayed.
-  final Color initialColor;
+  /// The color to be displayed.
+  final Color color;
 
   /// Callback function that is called when the thumb position changes.
   final ValueChanged<double>? onPositionChange;
@@ -113,7 +113,41 @@ class _BarColorPickerState extends State<BarColorPicker>
   @override
   void initState() {
     super.initState();
-    // Initialize the 'colors' list and 'percent' based on 'pickMode'.
+    _updateColorPosition();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+
+    _scaleAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ));
+
+    _controller.forward();
+  }
+
+  @override
+  void didUpdateWidget(covariant BarColorPicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.color != widget.color) {
+      _updateColorPosition();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _updateColorPosition() {
+// Initialize the 'colors' list and 'percent' based on 'pickMode'.
     switch (widget.pickMode) {
       case PickMode.color:
         colors = const [
@@ -135,28 +169,7 @@ class _BarColorPickerState extends State<BarColorPicker>
 
     // Initialize 'percent' based on 'initPosition' or target 'initialColor'.
     percent = widget.initPosition ??
-        _estimateColorPositionInGradient(colors, widget.initialColor);
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
-
-    _scaleAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    ));
-
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+        _estimateColorPositionInGradient(colors, widget.color);
   }
 
   /// Estimates the position of a color within the gradient.

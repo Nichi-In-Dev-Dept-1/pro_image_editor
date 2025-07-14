@@ -62,9 +62,9 @@ class WhatsappPaintColorpicker extends StatelessWidget {
         thumbColor: Colors.white,
         cornerRadius: 10,
         pickMode: PickMode.color,
-        initialColor: paintEditor.configs.paintEditor.style.initialColor,
+        color: paintEditor.configs.paintEditor.style.initialColor,
         colorListener: (int value) {
-          paintEditor.colorChanged(Color(value));
+          paintEditor.setColor(Color(value));
         },
       ),
     );

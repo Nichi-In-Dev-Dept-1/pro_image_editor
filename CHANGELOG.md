@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.3.3
+- **FIX**(paint-editor): Resolve issue where setting a color programmatically didn't update the color bar. This resolves issue [#552](https://github.com/hm21/pro_image_editor/issues/552).
+
 ## 10.3.2
 - **FIX**(helper-lines): Resolve issue where layers wouldn't release when positioned very close (1–3 pixels) on the same axis.
 - **FIX**(screen-resize): Resolve issue where layers resize incorrectly after image transformation. This resolves issue [#547](https://github.com/hm21/pro_image_editor/issues/547).

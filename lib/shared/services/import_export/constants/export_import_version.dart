@@ -32,3 +32,24 @@ class ExportImportVersion {
   /// editor version >= `10.0.0`.
   static const version_6_1_0 = '6.1.0';
 }
+
+/// An extension on the `String` class that provides functionality
+/// related to export and import version numbers.
+extension ExportImportVersionNumber on String {
+  /// Converts a version string in the format "major.minor.patch" into a single
+  /// integer representation.
+  int toVersionNumber() {
+    try {
+      final parts = split('.');
+      assert(parts.length == 3, 'Version string must have 3 parts');
+
+      final major = int.tryParse(parts[0]) ?? 0;
+      final minor = int.tryParse(parts[1]) ?? 0;
+      final patch = int.tryParse(parts[2]) ?? 0;
+
+      return major * 1000000 + minor * 1000 + patch;
+    } catch (_) {
+      return 0;
+    }
+  }
+}

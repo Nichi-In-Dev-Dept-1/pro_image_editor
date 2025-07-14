@@ -89,7 +89,7 @@ class TextEditorColorPicker extends StatelessWidget {
           ),
           onPositionChange: onPositionChange,
           initPosition: colorPosition,
-          initialColor: primaryColor,
+          color: primaryColor,
           horizontal: false,
           thumbColor: Colors.white,
           cornerRadius: 10,

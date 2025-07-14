@@ -42,7 +42,7 @@ class PaintEditorColorPicker extends StatelessWidget {
             state,
             rebuildController.stream,
             state.paintCtrl.color,
-            state.colorChanged,
+            state.setColor,
           ) ??
           const SizedBox.shrink();
     }
@@ -68,9 +68,9 @@ class PaintEditorColorPicker extends StatelessWidget {
             thumbColor: Colors.white,
             cornerRadius: 10,
             pickMode: PickMode.color,
-            initialColor: configs.paintEditor.style.initialColor,
+            color: state.activeColor,
             colorListener: (int value) {
-              state.colorChanged(Color(value));
+              state.setColor(Color(value));
             },
           );
         },

@@ -128,11 +128,11 @@ class _GroundedDesignExampleState extends State<GroundedDesignExample>
                               ),
                               actions: <Widget>[
                                 ElevatedButton(
-                                  child: const Text('Got it'),
+                                  child: const Text('Okay'),
                                   onPressed: () {
                                     if (newColor != null) {
                                       setState(() =>
-                                          editorState.colorChanged(newColor!));
+                                          editorState.setColor(newColor!));
                                     }
                                     Navigator.of(context).pop();
                                   },
@@ -191,7 +191,7 @@ class _GroundedDesignExampleState extends State<GroundedDesignExample>
                               ),
                               actions: <Widget>[
                                 ElevatedButton(
-                                  child: const Text('Got it'),
+                                  child: const Text('Okay'),
                                   onPressed: () {
                                     if (newColor != null) {
                                       setState(() =>
