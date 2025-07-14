@@ -152,10 +152,12 @@ class _LayerInteractionHelperWidgetState
     with ImageEditorConvertedConfigs, SimpleConfigsAccessState {
   final _rebuildStream = StreamController.broadcast();
   final _overlayCtrl = OverlayPortalController();
+  final _isOverlayVisibleNotifier = ValueNotifier(false);
 
   @override
   void didUpdateWidget(covariant LayerInteractionHelperWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _isOverlayVisibleNotifier.value = widget.selected;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (widget.selected) {
@@ -170,6 +172,7 @@ class _LayerInteractionHelperWidgetState
   void dispose() {
     if (_overlayCtrl.isShowing) _overlayCtrl.hide();
     _rebuildStream.close();
+    _isOverlayVisibleNotifier.dispose();
     super.dispose();
   }
 
@@ -216,12 +219,17 @@ class _LayerInteractionHelperWidgetState
       controller: _overlayCtrl,
       overlayChildBuilder: (context, info) {
         if (layerInteraction.widgets.overlayChildBuilder != null) {
-          return layerInteraction.widgets.overlayChildBuilder!(
-            _rebuildStream.stream,
-            info,
-            widget.layerData,
-            _layerInteractions,
-          );
+          return ValueListenableBuilder(
+              valueListenable: _isOverlayVisibleNotifier,
+              builder: (_, isVisible, __) {
+                if (!isVisible) return const SizedBox.shrink();
+                return layerInteraction.widgets.overlayChildBuilder!(
+                  _rebuildStream.stream,
+                  info,
+                  widget.layerData,
+                  _layerInteractions,
+                );
+              });
         }
 
         final Matrix4 transform = info.childPaintTransform.clone();
@@ -237,15 +245,21 @@ class _LayerInteractionHelperWidgetState
         return Positioned(
           width: paddedWidth,
           height: paddedHeight,
-          child: Transform(
-            transform: transform,
-            alignment: Alignment.topLeft,
-            child: Transform.flip(
-              flipX: widget.layerData.flipX,
-              flipY: widget.layerData.flipY,
-              child: _buildSelectionOverlay(),
-            ),
-          ),
+          child: ValueListenableBuilder(
+              valueListenable: _isOverlayVisibleNotifier,
+              builder: (_, isVisible, __) {
+                if (!isVisible) return const SizedBox.shrink();
+
+                return Transform(
+                  transform: transform,
+                  alignment: Alignment.topLeft,
+                  child: Transform.flip(
+                    flipX: widget.layerData.flipX,
+                    flipY: widget.layerData.flipY,
+                    child: _buildSelectionOverlay(),
+                  ),
+                );
+              }),
         );
       },
       child: DeferPointer(

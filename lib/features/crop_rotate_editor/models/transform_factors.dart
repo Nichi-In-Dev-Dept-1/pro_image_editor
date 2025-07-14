@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 
 import '/features/crop_rotate_editor/enums/crop_rotate_angle_side.dart';
 import '/features/crop_rotate_editor/utils/rotate_angle.dart';
-import '../enums/crop_mode.enum.dart';
+import '/pro_image_editor.dart';
 
 /// A class representing configuration settings for image transformation.
 ///
@@ -56,27 +56,28 @@ class TransformConfigs {
         map['cropMode'] == 'oval' ? CropMode.oval : CropMode.rectangular;
 
     return TransformConfigs(
-      angle: map['angle'] ?? 0,
+      angle: safeParseDouble(map['angle']),
       cropRect: Rect.fromLTRB(
-        map['cropRect']?['left'] ?? 0,
-        map['cropRect']?['top'] ?? 0,
-        map['cropRect']?['right'] ?? 0,
-        map['cropRect']?['bottom'] ?? 0,
+        safeParseDouble(map['cropRect']?['left']),
+        safeParseDouble(map['cropRect']?['top']),
+        safeParseDouble(map['cropRect']?['right']),
+        safeParseDouble(map['cropRect']?['bottom']),
       ),
       originalSize: Size(
-        map['originalSize']?['width'] ?? 0,
-        map['originalSize']?['height'] ?? 0,
+        safeParseDouble(map['originalSize']?['width']),
+        safeParseDouble(map['originalSize']?['height']),
       ),
-      cropEditorScreenRatio: map['cropEditorScreenRatio'] ?? 0,
-      scaleUser: map['scaleUser'] ?? 1,
-      scaleRotation: map['scaleRotation'] ?? 1,
-      aspectRatio: map['aspectRatio'] ?? -1,
+      cropEditorScreenRatio:
+          safeParseDouble(map['cropEditorScreenRatio'], fallback: 0),
+      scaleUser: safeParseDouble(map['scaleUser'], fallback: 1),
+      scaleRotation: safeParseDouble(map['scaleRotation'], fallback: 1),
+      aspectRatio: safeParseDouble(map['aspectRatio'], fallback: -1),
       flipX: map['flipX'] ?? false,
       flipY: map['flipY'] ?? false,
       cropMode: cropMode,
       offset: Offset(
-        map['offset']?['dx'] ?? 0,
-        map['offset']?['dy'] ?? 0,
+        safeParseDouble(map['offset']?['dx']),
+        safeParseDouble(map['offset']?['dy']),
       ),
     );
   }

@@ -160,38 +160,14 @@ class _GenerationConfigState extends State<GenerationConfig>
         subtitle: 'Specifies the output format for the generated image.',
         selected: _outputFormat,
         textOptions: const [
-          TextItem<OutputFormat>(
-            text: 'jpg',
-            value: OutputFormat.jpg,
-          ),
-          TextItem<OutputFormat>(
-            text: 'png',
-            value: OutputFormat.png,
-          ),
-          TextItem<OutputFormat>(
-            text: 'bmp',
-            value: OutputFormat.bmp,
-          ),
-          TextItem<OutputFormat>(
-            text: 'tiff',
-            value: OutputFormat.tiff,
-          ),
-          TextItem<OutputFormat>(
-            text: 'cur',
-            value: OutputFormat.cur,
-          ),
-          TextItem<OutputFormat>(
-            text: 'ico',
-            value: OutputFormat.ico,
-          ),
-          TextItem<OutputFormat>(
-            text: 'pvr',
-            value: OutputFormat.pvr,
-          ),
-          TextItem<OutputFormat>(
-            text: 'tga',
-            value: OutputFormat.tga,
-          ),
+          TextItem<OutputFormat>(text: 'jpg', value: OutputFormat.jpg),
+          TextItem<OutputFormat>(text: 'png', value: OutputFormat.png),
+          TextItem<OutputFormat>(text: 'bmp', value: OutputFormat.bmp),
+          TextItem<OutputFormat>(text: 'tiff', value: OutputFormat.tiff),
+          TextItem<OutputFormat>(text: 'cur', value: OutputFormat.cur),
+          TextItem<OutputFormat>(text: 'ico', value: OutputFormat.ico),
+          TextItem<OutputFormat>(text: 'pvr', value: OutputFormat.pvr),
+          TextItem<OutputFormat>(text: 'tga', value: OutputFormat.tga),
         ],
         onUpdate: (val) => _outputFormat = val,
       ),
@@ -286,34 +262,13 @@ class _GenerationConfigState extends State<GenerationConfig>
             'constraints, similar to BoxFit.contain.',
         selected: _maxOutputSize,
         textOptions: const [
-          TextItem<Size>(
-            text: '100x100',
-            value: Size(100, 100),
-          ),
-          TextItem<Size>(
-            text: '500x500',
-            value: Size(500, 500),
-          ),
-          TextItem<Size>(
-            text: '500x700',
-            value: Size(500, 700),
-          ),
-          TextItem<Size>(
-            text: '1000x1000',
-            value: Size(1000, 1000),
-          ),
-          TextItem<Size>(
-            text: '2000x2000',
-            value: Size(2000, 2000),
-          ),
-          TextItem<Size>(
-            text: '5000x5000',
-            value: Size(5000, 5000),
-          ),
-          TextItem<Size>(
-            text: 'infinite',
-            value: Size.infinite,
-          ),
+          TextItem<Size>(text: '100x100', value: Size(100, 100)),
+          TextItem<Size>(text: '500x500', value: Size(500, 500)),
+          TextItem<Size>(text: '500x700', value: Size(500, 700)),
+          TextItem<Size>(text: '1000x1000', value: Size(1000, 1000)),
+          TextItem<Size>(text: '2000x2000', value: Size(2000, 2000)),
+          TextItem<Size>(text: '5000x5000', value: Size(5000, 5000)),
+          TextItem<Size>(text: 'infinite', value: Size.infinite),
         ],
         onUpdate: (val) => _maxOutputSize = val,
       ),
@@ -325,30 +280,12 @@ class _GenerationConfigState extends State<GenerationConfig>
             'constraints, similar to BoxFit.contain.',
         selected: _maxThumbSize,
         textOptions: const [
-          TextItem<Size>(
-            text: '50x50',
-            value: Size(50, 50),
-          ),
-          TextItem<Size>(
-            text: '50x70',
-            value: Size(50, 70),
-          ),
-          TextItem<Size>(
-            text: '80x80',
-            value: Size(80, 80),
-          ),
-          TextItem<Size>(
-            text: '100x100',
-            value: Size(100, 100),
-          ),
-          TextItem<Size>(
-            text: '200x200',
-            value: Size(200, 200),
-          ),
-          TextItem<Size>(
-            text: '500x500',
-            value: Size(500, 500),
-          ),
+          TextItem<Size>(text: '50x50', value: Size(50, 50)),
+          TextItem<Size>(text: '50x70', value: Size(50, 70)),
+          TextItem<Size>(text: '80x80', value: Size(80, 80)),
+          TextItem<Size>(text: '100x100', value: Size(100, 100)),
+          TextItem<Size>(text: '200x200', value: Size(200, 200)),
+          TextItem<Size>(text: '500x500', value: Size(500, 500)),
         ],
         onUpdate: (val) => _maxThumbSize = val,
       ),
@@ -365,26 +302,11 @@ class _GenerationConfigState extends State<GenerationConfig>
             'determines how scanline filtering is applied.',
         selected: _pngFilter,
         textOptions: const [
-          TextItem<PngFilter>(
-            text: 'none',
-            value: PngFilter.none,
-          ),
-          TextItem<PngFilter>(
-            text: 'sub',
-            value: PngFilter.sub,
-          ),
-          TextItem<PngFilter>(
-            text: 'up',
-            value: PngFilter.up,
-          ),
-          TextItem<PngFilter>(
-            text: 'average',
-            value: PngFilter.average,
-          ),
-          TextItem<PngFilter>(
-            text: 'paeth',
-            value: PngFilter.paeth,
-          ),
+          TextItem<PngFilter>(text: 'none', value: PngFilter.none),
+          TextItem<PngFilter>(text: 'sub', value: PngFilter.sub),
+          TextItem<PngFilter>(text: 'up', value: PngFilter.up),
+          TextItem<PngFilter>(text: 'average', value: PngFilter.average),
+          TextItem<PngFilter>(text: 'paeth', value: PngFilter.paeth),
         ],
         onUpdate: (val) => _pngFilter = val,
       ),
@@ -430,14 +352,8 @@ class _GenerationConfigState extends State<GenerationConfig>
             'defines the compression ratio for chrominance components.',
         selected: _jpegChroma,
         textOptions: const [
-          TextItem<JpegChroma>(
-            text: 'yuv444',
-            value: JpegChroma.yuv444,
-          ),
-          TextItem<JpegChroma>(
-            text: 'yuv420',
-            value: JpegChroma.yuv420,
-          ),
+          TextItem<JpegChroma>(text: 'yuv444', value: JpegChroma.yuv444),
+          TextItem<JpegChroma>(text: 'yuv420', value: JpegChroma.yuv420),
         ],
         onUpdate: (val) => _jpegChroma = val,
       ),
@@ -471,6 +387,12 @@ class _GenerationConfigState extends State<GenerationConfig>
   Widget _buildEditor() {
     Size outputSize = _maxOutputSize.value;
     OutputFormat outputFormat = _outputFormat.value;
+    late int imageDimension;
+    if (_generateThumbnail || outputSize.width.isInfinite) {
+      imageDimension = 5000;
+    } else {
+      imageDimension = outputSize.width.toInt();
+    }
 
     if (outputFormat == OutputFormat.ico || outputFormat == OutputFormat.cur) {
       outputSize = const Size(256, 256);
@@ -503,7 +425,7 @@ class _GenerationConfigState extends State<GenerationConfig>
       jpegChroma: _jpegChroma.value,
     );
     return ProImageEditor.network(
-      'https://picsum.photos/id/110/${_generateThumbnail ? '5000' : '2000'}',
+      'https://picsum.photos/id/110/$imageDimension',
       callbacks: ProImageEditorCallbacks(
         onImageEditingStarted: onImageEditingStarted,
         onImageEditingComplete: onImageEditingComplete,

@@ -28,6 +28,7 @@ import '/shared/widgets/slider_bottom_sheet.dart';
 import '/shared/widgets/transform/transformed_content_generator.dart';
 import '../filter_editor/widgets/filtered_widget.dart';
 import 'controllers/paint_controller.dart';
+import 'models/paint_editor_response_model.dart';
 import 'services/paint_desktop_interaction_manager.dart';
 import 'widgets/paint_canvas.dart';
 
@@ -214,6 +215,9 @@ class PaintEditorState extends State<PaintEditor>
   /// Update the appbar icons.
   late final StreamController<void> _uiAppbarStream;
 
+  /// Update the layer stack.
+  late final StreamController<void> _layerStackStream;
+
   /// A ScrollController for controlling the scrolling behavior of the bottom
   /// navigation bar.
   late ScrollController _bottomBarScrollCtrl;
@@ -226,12 +230,6 @@ class PaintEditorState extends State<PaintEditor>
 
   /// Get the fillBackground status.
   bool get fillBackground => _isFillMode;
-
-  /// Determines whether undo actions can be performed on the current state.
-  bool get canUndo => paintCtrl.canUndo;
-
-  /// Determines whether redo actions can be performed on the current state.
-  bool get canRedo => paintCtrl.canRedo;
 
   /// Determines whether the user draw something.
   bool get isActive => paintCtrl.busy;
@@ -323,6 +321,37 @@ class PaintEditorState extends State<PaintEditor>
   /// Indicates whether the editor supports zoom functionality.
   bool get _enableZoom => paintEditorConfigs.enableZoom;
 
+  /// A pointer to track the current position in the history stack.
+  /// This is used to manage undo and redo operations in the paint editor.
+  int historyPointer = 0;
+
+  /// A list that maintains the history of layer states in the paint editor.
+  ///
+  /// This list is initialized with the current layers if
+  /// `paintEditorConfigs.showLayers` is true; otherwise, it starts as an
+  ///  empty list. Each entry in the list represents a snapshot of the layer
+  /// states at a specific point in time.
+  late final List<PaintEditorResponse> stateHistory = [
+    PaintEditorResponse(
+      layers: paintEditorConfigs.showLayers ? [...(layers ?? [])] : [],
+      removedLayers: [],
+    ),
+  ];
+
+  /// A getter that retrieves the list of active layers from the current state
+  /// in the history stack, based on the current `historyPointer`.
+  ///
+  /// The `_stateHistory` is a list of states, where each state contains a list
+  /// of `Layer` objects. The `historyPointer` determines which state in the
+  /// history is currently active.
+  PaintEditorResponse get activeHistory => stateHistory[historyPointer];
+
+  /// Determines whether undo can be performed on the current state.
+  bool get canUndo => historyPointer > 0;
+
+  /// Determines whether redo can be performed on the current state.
+  bool get canRedo => historyPointer + 1 < stateHistory.length;
+
   @override
   void initState() {
     super.initState();
@@ -365,6 +394,7 @@ class PaintEditorState extends State<PaintEditor>
     _bottomBarScrollCtrl.dispose();
     uiPickerStream.close();
     _uiAppbarStream.close();
+    _layerStackStream.close();
     screenshotCtrl.destroy();
     ServicesBinding.instance.keyboard.removeHandler(_onKeyEvent);
     super.dispose();
@@ -380,9 +410,11 @@ class PaintEditorState extends State<PaintEditor>
   void initStreamControllers() {
     uiPickerStream = StreamController.broadcast();
     _uiAppbarStream = StreamController.broadcast();
+    _layerStackStream = StreamController.broadcast();
 
     uiPickerStream.stream.listen((_) => rebuildController.add(null));
     _uiAppbarStream.stream.listen((_) => rebuildController.add(null));
+    _layerStackStream.stream.listen((_) => rebuildController.add(null));
   }
 
   /// Handle keyboard events
@@ -497,8 +529,10 @@ class PaintEditorState extends State<PaintEditor>
 
   /// Undoes the last action performed in the paint editor.
   void undoAction() {
-    if (canUndo) screenshotHistoryPosition--;
-    paintCtrl.undo();
+    if (canUndo) {
+      screenshotHistoryPosition--;
+      historyPointer--;
+    }
     _uiAppbarStream.add(null);
     setState(() {});
     paintEditorCallbacks?.handleUndo();
@@ -506,8 +540,10 @@ class PaintEditorState extends State<PaintEditor>
 
   /// Redoes the previously undone action in the paint editor.
   void redoAction() {
-    if (canRedo) screenshotHistoryPosition++;
-    paintCtrl.redo();
+    if (canRedo) {
+      screenshotHistoryPosition++;
+      historyPointer++;
+    }
     _uiAppbarStream.add(null);
     setState(() {});
     paintEditorCallbacks?.handleRedo();
@@ -529,9 +565,21 @@ class PaintEditorState extends State<PaintEditor>
       },
       onCloseWithValue: () {
         if (!canUndo) return Navigator.pop(context);
-        Navigator.of(context).pop(
-          _exportPaintedItems(editorBodySize),
-        );
+
+        final scale = _layerStackTransformHelper.scale;
+
+        final originalLayers = widget.initConfigs.layers ?? [];
+        final newLayers = activeHistory.layers.where((layer) =>
+            originalLayers.indexWhere((el) => el.id == layer.id) < 0);
+        final transformedLayers = newLayers.map((layer) {
+          return layer
+            ..offset *= scale
+            ..scale *= scale;
+        }).toList();
+        Navigator.of(context).pop(PaintEditorResponse(
+          layers: transformedLayers,
+          removedLayers: activeHistory.removedLayers,
+        ));
       },
       blur: appliedBlurFactor,
       colorFilters: [
@@ -543,28 +591,42 @@ class PaintEditorState extends State<PaintEditor>
     paintEditorCallbacks?.handleDone();
   }
 
-  /// Adds a new [PaintedModel] item to the paint controller and updates the UI.
+  /// Adds a painted model as a new layer to the editor.
   ///
-  /// This method calls [paintCtrl.addPaintInfo] to add the provided [item] to
-  /// the list of painted models, and then triggers a UI rebuild by calling
-  /// [setState].
-  ///
-  /// [item] - The [PaintedModel] instance to be added.
+  /// Transforms the given [item] into a layer and adds it to the editor.
   void addPainting(PaintedModel item) {
-    paintCtrl.addPaintInfo(item);
-    setState(() {});
+    addLayer(_transformPaintedModelToLayer(item));
   }
 
-  /// Exports the painted items as a list of [PaintLayer].
+  /// Adds a new layer to the active layers and updates the state history.
+  /// Clears any redo history before adding the new layer.
   ///
-  /// This method converts the paint history into a list of
-  /// [PaintLayer] representing the painted items.
-  ///
-  /// Example:
-  /// ```dart
-  /// List<PaintLayer> layers = exportPaintedItems();
-  /// ```
-  List<PaintLayer> _exportPaintedItems(Size editorSize) {
+  /// [layer] The layer to be added.
+  void addLayer(Layer layer) {
+    while (canRedo) {
+      stateHistory.removeLast();
+    }
+
+    stateHistory.add(
+      PaintEditorResponse(
+        layers: [...activeHistory.layers, layer],
+        removedLayers: [...activeHistory.removedLayers],
+      ),
+    );
+    historyPointer++;
+    _layerStackStream.add(null);
+  }
+
+  TransformHelper get _layerStackTransformHelper {
+    return TransformHelper(
+      mainBodySize: getValidSizeOrDefault(mainBodySize, editorBodySize),
+      mainImageSize: getValidSizeOrDefault(mainImageSize, editorBodySize),
+      editorBodySize: editorBodySize,
+      transformConfigs: initialTransformConfigs,
+    );
+  }
+
+  PaintLayer _transformPaintedModelToLayer(PaintedModel rawLayer) {
     Rect findRenderedLayerRect(List<Offset?> points) {
       if (points.isEmpty) return Rect.zero;
 
@@ -596,75 +658,69 @@ class PaintEditorState extends State<PaintEditor>
       );
     }
 
-    final mainEditorSize = widget.initConfigs.mainBodySize ?? editorBodySize;
-    final mainEditorSizeFactor = max(
-      mainEditorSize.width / editorBodySize.width,
-      mainEditorSize.height / editorBodySize.height,
+    final mainEditorSizeFactor = 1 / _layerStackTransformHelper.scale;
+
+    PaintedModel layer = PaintedModel(
+      mode: rawLayer.mode,
+      offsets: [...rawLayer.offsets],
+      color: rawLayer.color,
+      strokeWidth: rawLayer.strokeWidth,
+      fill: rawLayer.fill,
+      opacity: rawLayer.opacity,
     );
 
-    // Convert to free positions
-    return paintCtrl.activePaintItemList.map((e) {
-      PaintedModel layer = PaintedModel(
-        mode: e.mode,
-        offsets: [...e.offsets],
-        color: e.color,
-        strokeWidth: e.strokeWidth,
-        fill: e.fill,
-        opacity: e.opacity,
-      );
+    // Find extreme points of the paint layer
+    Rect? layerRect = findRenderedLayerRect(rawLayer.offsets);
 
-      // Find extreme points of the paint layer
-      Rect? layerRect = findRenderedLayerRect(e.offsets);
+    Size size = layerRect.size;
 
-      Size size = layerRect.size;
+    bool onlyStrokeMode = rawLayer.mode == PaintMode.freeStyle ||
+        rawLayer.mode == PaintMode.line ||
+        rawLayer.mode == PaintMode.dashLine ||
+        rawLayer.mode == PaintMode.arrow ||
+        ((rawLayer.mode == PaintMode.polygon ||
+                rawLayer.mode == PaintMode.rect ||
+                rawLayer.mode == PaintMode.circle) &&
+            !rawLayer.fill);
 
-      bool onlyStrokeMode = e.mode == PaintMode.freeStyle ||
-          e.mode == PaintMode.line ||
-          e.mode == PaintMode.dashLine ||
-          e.mode == PaintMode.arrow ||
-          ((e.mode == PaintMode.polygon ||
-                  e.mode == PaintMode.rect ||
-                  e.mode == PaintMode.circle) &&
-              !e.fill);
+    // Scale and offset the offsets of the paint layer
+    double strokeHelperWidth = onlyStrokeMode ? rawLayer.strokeWidth : 0;
 
-      // Scale and offset the offsets of the paint layer
-      double strokeHelperWidth = onlyStrokeMode ? e.strokeWidth : 0;
-
-      for (int i = 0; i < layer.offsets.length; i++) {
-        Offset? point = layer.offsets[i];
-        if (point != null) {
-          layer.offsets[i] = Offset(
-            point.dx - layerRect.left + strokeHelperWidth / 2,
-            point.dy - layerRect.top + strokeHelperWidth / 2,
-          );
-        }
-      }
-
-      // Calculate the final offset of the paint layer
-      Offset finalOffset = Offset(
-        layerRect.center.dx - editorSize.width / 2,
-        layerRect.center.dy - editorSize.height / 2,
-      );
-
-      if (onlyStrokeMode) {
-        size = Size(
-          size.width + strokeHelperWidth,
-          size.height + strokeHelperWidth,
+    for (int i = 0; i < layer.offsets.length; i++) {
+      Offset? point = layer.offsets[i];
+      if (point != null) {
+        layer.offsets[i] = Offset(
+          point.dx - layerRect.left + strokeHelperWidth / 2,
+          point.dy - layerRect.top + strokeHelperWidth / 2,
         );
       }
+    }
 
-      // Create and return a PaintLayer instance for the exported layer
-      return PaintLayer(
-        item: layer.copy(),
-        rawSize: Size(
-          max(size.width, layer.strokeWidth),
-          max(size.height, layer.strokeWidth),
-        ),
-        opacity: layer.opacity,
-        offset: finalOffset * mainEditorSizeFactor,
-        scale: mainEditorSizeFactor,
+    // Calculate the final offset of the paint layer
+    Offset finalOffset = Offset(
+      layerRect.center.dx - editorBodySize.width / 2,
+      layerRect.center.dy - editorBodySize.height / 2,
+    );
+
+    if (onlyStrokeMode) {
+      size = Size(
+        size.width + strokeHelperWidth,
+        size.height + strokeHelperWidth,
       );
-    }).toList();
+    }
+
+    // Create and return a PaintLayer instance for the exported layer
+    return PaintLayer(
+      id: layer.id,
+      item: layer.copy(),
+      rawSize: Size(
+        max(size.width, layer.strokeWidth),
+        max(size.height, layer.strokeWidth),
+      ),
+      opacity: layer.opacity,
+      offset: finalOffset * mainEditorSizeFactor,
+      scale: mainEditorSizeFactor,
+    );
   }
 
   /// Set the stroke width.
@@ -852,19 +908,23 @@ class PaintEditorState extends State<PaintEditor>
                           ),
 
                       /// Build layers
-                      if (paintEditorConfigs.showLayers && layers != null)
-                        LayerStack(
+  StreamBuilder(
+                      stream: _layerStackStream.stream,
+                      builder: (context, asyncSnapshot) {
+                        if (!paintEditorConfigs.showLayers ||
+                            activeHistory.layers.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+
+                        return LayerStack(
                           configs: configs,
-                          layers: layers!,
-                          transformHelper: TransformHelper(
-                            mainBodySize: getValidSizeOrDefault(
-                                mainBodySize, editorBodySize),
-                            mainImageSize: getValidSizeOrDefault(
-                                mainImageSize, editorBodySize),
-                            editorBodySize: editorBodySize,
-                            transformConfigs: initialTransformConfigs,
-                          ),
-                          overlayColor: paintEditorConfigs.style.background,
+                          layers: activeHistory.layers,
+                          transformHelper: _layerStackTransformHelper,
+                            overlayColor: paintEditorConfigs.style.background,
+                                clipBehavior: Clip.none,
+                            enableLayerKey: true,
+                                );
+                            },
                         ),
                       _buildPainter(),
                       if (paintEditorConfigs.widgets.bodyItemsRecorded != null)
@@ -939,12 +999,38 @@ class PaintEditorState extends State<PaintEditor>
       paintCtrl: paintCtrl,
       paintEditorConfigs: paintEditorConfigs,
       drawAreaSize: mainBodySize ?? editorBodySize,
+      editorBodySize: editorBodySize,
+      layerStackScaleFactor: _layerStackTransformHelper.scale,
       freeStyleHighPerformance: _freeStyleHighPerformance,
+      layers: activeHistory.layers,
       onTap: (details) =>
           callbacks.paintEditorCallbacks?.onTap?.call(this, details),
-      onRemoveLayer: (idList) {
-        paintCtrl.removeLayers(idList);
+      onRemoveLayer: (removeIdList) {
+        final removeIdSet = removeIdList.toSet();
+        final updatedList = <Layer>[];
+        final removedLayers = <Layer>[];
+
+        for (final layer in activeHistory.layers) {
+          if (removeIdSet.contains(layer.id)) {
+            removedLayers.add(layer);
+          } else {
+            updatedList.add(layer);
+          }
+        }
+
+        if (updatedList.length == activeHistory.layers.length) return;
+
+        while (canRedo) {
+          stateHistory.removeLast();
+        }
+
+        stateHistory.add(PaintEditorResponse(
+          layers: [...updatedList],
+          removedLayers: [...activeHistory.removedLayers, ...removedLayers],
+        ));
+        historyPointer++;
         setState(() {});
+
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           takeScreenshot();
         });
@@ -952,10 +1038,14 @@ class PaintEditorState extends State<PaintEditor>
       onStart: () {
         rebuildController.add(null);
       },
-      onCreated: () {
+      onCreated: (rawLayer) {
         _uiAppbarStream.add(null);
         uiPickerStream.add(null);
         paintEditorCallbacks?.handleDrawingDone();
+
+        final layer = _transformPaintedModelToLayer(rawLayer);
+        addLayer(layer);
+
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           takeScreenshot();
         });

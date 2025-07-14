@@ -11,13 +11,13 @@ import '../enums/crop_rotate_angle_side.dart';
 /// Returns a [RotateAngleSide] enum value representing the rotation angle side.
 RotateAngleSide getRotateAngleSide(double angleFactor) {
   double pi2 = pi * 2;
-  String factor = (angleFactor % pi2).toStringAsFixed(3);
+  String factor = (angleFactor % pi2).toStringAsFixed(2);
 
-  if (factor == (pi * 1.5).toStringAsFixed(3)) {
+  if (factor == (pi * 1.5).toStringAsFixed(2)) {
     return RotateAngleSide.left;
-  } else if (factor == pi.toStringAsFixed(3)) {
+  } else if (factor == pi.toStringAsFixed(2)) {
     return RotateAngleSide.bottom;
-  } else if (factor == (pi / 2).toStringAsFixed(3)) {
+  } else if (factor == (pi / 2).toStringAsFixed(2)) {
     return RotateAngleSide.right;
   } else {
     return RotateAngleSide.top;

@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 // Package imports:
 import 'package:flutter_test/flutter_test.dart';
 import 'package:network_image_mock/network_image_mock.dart';
-import 'package:pro_image_editor/core/models/editor_configs/pro_image_editor_configs.dart';
-import 'package:pro_image_editor/core/models/init_configs/paint_editor_init_configs.dart';
-import 'package:pro_image_editor/features/paint_editor/paint_editor.dart';
 import 'package:pro_image_editor/features/paint_editor/widgets/paint_canvas.dart';
-import 'package:pro_image_editor/shared/widgets/color_picker/bar_color_picker.dart';
+import 'package:pro_image_editor/pro_image_editor.dart';
+import 'package:pro_image_editor/shared/widgets/layer/layer_widget.dart';
 import 'package:pro_image_editor/shared/widgets/slider_bottom_sheet.dart';
 
 // Project imports:
@@ -282,7 +280,8 @@ void main() {
 
       final editor = key.currentState!;
 
-      expect(editor.paintCtrl.paintHistory.length, 0);
+      /// The first history are the initial layers
+      expect(editor.stateHistory.length, 1);
 
       editor.addPainting(
         PaintedModel(
@@ -296,8 +295,112 @@ void main() {
 
       await tester.pump();
 
-      expect(editor.paintCtrl.paintHistory.length, 1);
-      expect(find.byType(CustomPaint), findsAtLeast(1));
+      expect(editor.stateHistory.length, 2);
+      expect(find.byType(LayerWidget), findsAtLeast(1));
+    });
+
+    testWidgets('should undo the last action', (WidgetTester tester) async {
+      await pumpEditor(tester);
+
+      final editor = key.currentState!
+
+        // Add a painting
+        ..addPainting(
+          PaintedModel(
+            mode: PaintMode.rect,
+            offsets: [const Offset(0, 0), const Offset(100, 100)],
+            color: Colors.red,
+            strokeWidth: 5,
+            opacity: 1,
+          ),
+        );
+
+      await tester.pump();
+
+      // Verify the painting was added
+      expect(editor.stateHistory.length, 2);
+      expect(editor.canUndo, isTrue);
+
+      // Perform undo
+      editor.undoAction();
+      await tester.pump();
+
+      // Verify the painting was undone
+      expect(editor.stateHistory.length, 2);
+      expect(editor.historyPointer, 0);
+      expect(editor.canUndo, isFalse);
+    });
+
+    testWidgets('should redo the last undone action',
+        (WidgetTester tester) async {
+      await pumpEditor(tester);
+
+      final editor = key.currentState!
+
+        // Add a painting
+        ..addPainting(
+          PaintedModel(
+            mode: PaintMode.rect,
+            offsets: [const Offset(0, 0), const Offset(100, 100)],
+            color: Colors.red,
+            strokeWidth: 5,
+            opacity: 1,
+          ),
+        );
+
+      await tester.pump();
+
+      // Perform undo
+      editor.undoAction();
+      await tester.pump();
+
+      // Verify the painting was undone
+      expect(editor.historyPointer, 0);
+      expect(editor.canRedo, isTrue);
+
+      // Perform redo
+      editor.redoAction();
+      await tester.pump();
+
+      // Verify the painting was redone
+      expect(editor.historyPointer, 1);
+      expect(editor.canRedo, isFalse);
+    });
+
+    testWidgets('should not redo if no actions were undone',
+        (WidgetTester tester) async {
+      await pumpEditor(tester);
+
+      final editor = key.currentState!;
+
+      // Verify initial state
+      expect(editor.canRedo, isFalse);
+
+      // Attempt redo
+      editor.redoAction();
+      await tester.pump();
+
+      // Verify no changes occurred
+      expect(editor.historyPointer, 0);
+      expect(editor.canRedo, isFalse);
+    });
+
+    testWidgets('should not undo if no actions were performed',
+        (WidgetTester tester) async {
+      await pumpEditor(tester);
+
+      final editor = key.currentState!;
+
+      // Verify initial state
+      expect(editor.canUndo, isFalse);
+
+      // Attempt undo
+      editor.undoAction();
+      await tester.pump();
+
+      // Verify no changes occurred
+      expect(editor.historyPointer, 0);
+      expect(editor.canUndo, isFalse);
     });
   });
 }

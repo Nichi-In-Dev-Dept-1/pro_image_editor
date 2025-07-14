@@ -266,8 +266,10 @@ class LayerTransformGenerator {
     double scale =
         newTransformConfigs.scaleUser / activeTransformConfigs.scaleUser;
 
+    double zoom = scale * transformHelperScale;
+
     layer
-      ..offset *= scale * transformHelperScale
-      ..scale *= scale * transformHelperScale;
+      ..offset *= zoom
+      ..scale *= zoom;
   }
 }

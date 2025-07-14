@@ -16,7 +16,6 @@ import '/shared/utils/file_constructor_utils.dart';
 import '/shared/widgets/layer/layer_stack.dart';
 import '/shared/widgets/transform/transformed_content_generator.dart';
 import '../filter_editor/widgets/filtered_widget.dart';
-import 'models/tune_adjustment_matrix.dart';
 import 'models/tune_edit_batch.dart';
 import 'utils/heuristic_request.dart';
 import 'utils/tune_presets.dart';
