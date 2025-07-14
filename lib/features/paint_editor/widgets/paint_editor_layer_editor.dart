@@ -74,7 +74,7 @@ class _PaintEditorLayerEditorState extends State<PaintEditorLayerEditor> {
 
   Widget _buildPainting() {
     if (_customWidgets.editPreview != null) {
-      _customWidgets.editPreview!(_layer);
+      return _customWidgets.editPreview!(_layer);
     }
 
     return Container(
@@ -96,7 +96,7 @@ class _PaintEditorLayerEditorState extends State<PaintEditorLayerEditor> {
 
   Widget _buildBarColorPicker() {
     if (_customWidgets.editColorSlider != null) {
-      _customWidgets.editColorSlider!(_layer, _setColor);
+      return _customWidgets.editColorSlider!(_layer, _setColor);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -132,7 +132,7 @@ class _PaintEditorLayerEditorState extends State<PaintEditorLayerEditor> {
 
   Widget _buildOpacity() {
     if (_customWidgets.editOpacitySlider != null) {
-      _customWidgets.editOpacitySlider!(_layer, _setOpacity);
+      return _customWidgets.editOpacitySlider!(_layer, _setOpacity);
     }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -156,7 +156,7 @@ class _PaintEditorLayerEditorState extends State<PaintEditorLayerEditor> {
 
   Widget _buildStrokeWidthSlider() {
     if (_customWidgets.editStrokeWidthSlider != null) {
-      _customWidgets.editStrokeWidthSlider!(_layer, _setStrokeWidth);
+      return _customWidgets.editStrokeWidthSlider!(_layer, _setStrokeWidth);
     }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -182,7 +182,7 @@ class _PaintEditorLayerEditorState extends State<PaintEditorLayerEditor> {
 
   Widget _buildFillItem() {
     if (_customWidgets.editFillSwitch != null) {
-      _customWidgets.editFillSwitch!(_layer, _setFillState);
+      return _customWidgets.editFillSwitch!(_layer, _setFillState);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -198,7 +198,7 @@ class _PaintEditorLayerEditorState extends State<PaintEditorLayerEditor> {
 
   Widget _buildAction() {
     if (_customWidgets.editActionButtons != null) {
-      _customWidgets.editActionButtons!(_layer);
+      return _customWidgets.editActionButtons!(_layer);
     }
     return Padding(
       padding: const EdgeInsetsGeometry.fromLTRB(16, 16, 16, 0),
