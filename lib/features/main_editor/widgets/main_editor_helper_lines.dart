@@ -78,6 +78,7 @@ class MainEditorHelperLines extends StatelessWidget {
               children: [
                 if (helperLines.showVerticalLine)
                   _buildLine(
+                    key: const ValueKey('Screen-Vertical-Guide-Line'),
                     width: layerInteractionManager.showVerticalHelperLine
                         ? _strokeWidth
                         : 0,
@@ -88,6 +89,7 @@ class MainEditorHelperLines extends StatelessWidget {
                   ),
                 if (helperLines.showHorizontalLine)
                   _buildLine(
+                    key: const ValueKey('Screen-Horizontal-Guide-Line'),
                     width: screenSize.width * scale,
                     height: layerInteractionManager.showHorizontalHelperLine
                         ? _strokeWidth
@@ -120,9 +122,11 @@ class MainEditorHelperLines extends StatelessWidget {
     required double left,
     required double top,
     required Color color,
+    Key? key,
     EdgeInsets? margin,
   }) {
     return Positioned(
+      key: key,
       left: left,
       top: top,
       child: AnimatedContainer(
@@ -144,6 +148,7 @@ class MainEditorHelperLines extends StatelessWidget {
         child: Transform.rotate(
           angle: layerInteractionManager.rotationHelperLineDeg,
           child: AnimatedContainer(
+            key: const ValueKey('Rotation-Guide-Line'),
             duration: const Duration(milliseconds: _duration),
             width: layerInteractionManager.showRotationHelperLine
                 ? _strokeWidth
@@ -176,6 +181,7 @@ class MainEditorHelperLines extends StatelessWidget {
     return [
       if (showHorizontal)
         _buildLine(
+          key: const ValueKey('Horizontal-Guide-Line'),
           width: screenSize.width * scale,
           height: _strokeWidth,
           top: horizontalOffset,
@@ -184,6 +190,7 @@ class MainEditorHelperLines extends StatelessWidget {
         ),
       if (showVertical)
         _buildLine(
+          key: const ValueKey('Vertical-Guide-Line'),
           width: _strokeWidth,
           height: screenSize.height * scale,
           top: 0,

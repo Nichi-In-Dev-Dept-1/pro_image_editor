@@ -128,13 +128,26 @@ class SizesManager {
       }
     }
 
-    for (var el in history) {
+    for (int i = 0; i < history.length; i++) {
+      var el = history[i];
+
+      var transform = el.transformConfigs ?? TransformConfigs.empty();
+
+      if (transform.isEmpty) {
+        int pointer = i;
+        while (pointer > 0 && transform.isEmpty) {
+          pointer--;
+          final oldConfigs = history[pointer].transformConfigs;
+          if (oldConfigs != null) transform = oldConfigs;
+        }
+      }
+
       Size oldSize = getCropImageSize(
-        transformConfigs: el.transformConfigs ?? TransformConfigs.empty(),
+        transformConfigs: transform,
         drawSize: resizeEvent.oldContentSize,
       );
       Size newSize = getCropImageSize(
-        transformConfigs: el.transformConfigs ?? TransformConfigs.empty(),
+        transformConfigs: transform,
         drawSize: resizeEvent.newContentSize,
       );
       double scaleFactor = min(
@@ -145,10 +158,7 @@ class SizesManager {
         for (var layer in el.layers) {
           layer
             ..scale /= scaleFactor
-            ..offset = Offset(
-              layer.offset.dx / scaleFactor,
-              layer.offset.dy / scaleFactor,
-            );
+            ..offset /= scaleFactor;
         }
       }
     }

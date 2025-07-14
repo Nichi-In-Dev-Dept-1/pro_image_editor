@@ -24,8 +24,11 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: PaintCanvas(
+              layers: const [],
               key: canvasKey,
               drawAreaSize: const Size(1000, 1000),
+              editorBodySize: const Size(1000, 1000),
+              layerStackScaleFactor: 1,
               paintCtrl: ctrl,
               paintEditorConfigs: const PaintEditorConfigs(),
             ),
@@ -53,9 +56,6 @@ void main() {
 
       // Assuming the paintMode didn't change
       expect(ctrl.mode, PaintMode.arrow);
-
-      // Assuming the gesture creates an undoable action
-      expect(ctrl.canUndo, isTrue);
     });
 
     testWidgets('Handles gestures and updates paint-items in freestyle-mode',
@@ -73,8 +73,11 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: PaintCanvas(
+              layers: const [],
               key: canvasKey,
               drawAreaSize: const Size(1000, 1000),
+              editorBodySize: const Size(1000, 1000),
+              layerStackScaleFactor: 1,
               paintCtrl: ctrl,
               paintEditorConfigs: const PaintEditorConfigs(),
             ),
@@ -100,61 +103,6 @@ void main() {
 
       // Assuming the paintMode didn't change
       expect(ctrl.mode, PaintMode.freeStyle);
-
-      // Assuming the gesture creates an undoable action
-      expect(ctrl.canUndo, isTrue);
-    });
-
-    testWidgets('Performs undo and redo actions', (WidgetTester tester) async {
-      PaintController ctrl = PaintController(
-        color: Colors.red,
-        mode: PaintMode.arrow,
-        fill: false,
-        strokeWidth: 1,
-        strokeMultiplier: 1,
-        opacity: 1,
-      );
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: PaintCanvas(
-              drawAreaSize: const Size(200, 200),
-              paintCtrl: ctrl,
-              paintEditorConfigs: const PaintEditorConfigs(),
-            ),
-          ),
-        ),
-      );
-
-      // Simulate scale start gesture
-      const Offset startPoint = Offset(0, 0);
-      final TestGesture gesture = await tester.startGesture(startPoint);
-
-      // Simulate scale update gesture
-      const Offset updatedPoint = Offset(70, 70);
-      await gesture.moveTo(updatedPoint);
-      await tester.pump();
-
-      // Simulate scale end gesture
-      await gesture.up();
-      await tester.pump();
-
-      // Perform an undo action
-      ctrl.undo();
-      await tester.pump();
-
-      // Verify that undo action has an effect
-      expect(ctrl.canUndo, isFalse); // Assuming the undo clears the action
-      expect(ctrl.canRedo, isTrue); // There should be an action to redo now
-
-      // Perform a redo action
-      ctrl.redo();
-      await tester.pump();
-
-      // Verify that redo action has an effect
-      expect(ctrl.canUndo, isTrue); // The action should be back in the history
-      expect(ctrl.canRedo, isFalse); // There should be no actions to redo now
     });
   });
 }

@@ -1,9 +1,7 @@
+import 'package:example/features/ai/ai_group.dart';
 import 'package:example/features/layer_select_design_example.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '/features/background_remover/background_remover_stub_example.dart'
-    if (dart.library.io) '/features/background_remover/background_remover_example.dart';
 import '/features/crop_to_main_editor.dart';
 import '/features/custom_widgets_example.dart';
 import '/features/default_example.dart';
@@ -46,6 +44,13 @@ List<Example> kImageEditorExamples = const [
     page: DefaultExample(),
   ),
   Example(
+    path: '/ai',
+    name: 'AI-Integration',
+    icon: Icons.hub_outlined,
+    page: AiGroupPage(),
+    disabledMessage: 'That function is not supported on the web.',
+  ),
+  Example(
     path: '/designs',
     name: 'Designs',
     icon: Icons.palette_outlined,
@@ -62,14 +67,6 @@ List<Example> kImageEditorExamples = const [
     name: 'Video-Editor',
     icon: Icons.video_camera_back_outlined,
     page: VideoExample(),
-  ),
-  Example(
-    path: '/background-remover',
-    name: 'AI-Background-Remover',
-    icon: Icons.content_cut,
-    page: BackgroundRemoverExample(),
-    disabled: kIsWeb,
-    disabledMessage: 'That function is not supported on the web.',
   ),
   Example(
     path: '/init-crop-editor',

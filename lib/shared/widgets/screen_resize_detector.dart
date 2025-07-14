@@ -34,10 +34,10 @@ class ScreenResizeDetector extends StatefulWidget {
   final Widget child;
 
   /// Callback to be invoked when the screen is resized and update is detected.
-  final Function(ResizeEvent)? onResizeUpdate;
+  final Function(ResizeEvent event)? onResizeUpdate;
 
   /// Callback to be invoked when the screen resize ends.
-  final Function(ResizeEvent)? onResizeEnd;
+  final Function(ResizeEvent event)? onResizeEnd;
 
   /// Whether to ignore the safe area padding when detecting screen size
   /// changes.

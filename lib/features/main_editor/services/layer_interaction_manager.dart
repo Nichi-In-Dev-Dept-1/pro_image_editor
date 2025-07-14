@@ -26,7 +26,7 @@ class LayerInteractionManager {
   ///   to handle helper line hit events.
   LayerInteractionManager({
     required this.helperLinesCallbacks,
-    required this.helperLineConfigs,
+    required this.configs,
     this.onSelectedLayerChanged,
   });
 
@@ -34,9 +34,11 @@ class LayerInteractionManager {
   ///  functions for handling helper line interactions.
   final HelperLinesCallbacks? helperLinesCallbacks;
 
-  /// Configuration settings for displaying and managing helper lines within
-  /// the editor.
-  final HelperLineConfigs helperLineConfigs;
+  /// The configuration settings for the Pro Image Editor.
+  ///
+  /// This object contains various customizable options and parameters
+  /// that define the behavior and appearance of the image editor.
+  final ProImageEditorConfigs configs;
 
   /// Callback function to be called when the selected layer changes.
   final ValueChanged<String>? onSelectedLayerChanged;
@@ -159,6 +161,10 @@ class LayerInteractionManager {
   final _horizontalSnapHelper = _LayerAlignGuideHelper();
   final _verticalSnapHelper = _LayerAlignGuideHelper();
 
+  /// Configuration settings for displaying and managing helper lines within
+  /// the editor.
+  HelperLineConfigs get helperLineConfigs => configs.helperLines;
+
   /// Resets the state of the layer interaction manager by:
   ///
   /// - Setting `_rotateScaleButtonStartPosition` to `null`.
@@ -169,6 +175,19 @@ class LayerInteractionManager {
     _rotateScaleButtonStartPosition = null;
     _rotationStartedHelper = false;
     showHelperLines = true;
+  }
+
+  Offset _getFractionalLayerOffset(Layer layer) {
+    if (layer.isTextLayer) {
+      return configs.textEditor.layerFractionalOffset;
+    } else if (layer.isEmojiLayer) {
+      return configs.emojiEditor.layerFractionalOffset;
+    } else if (layer.isWidgetLayer) {
+      return configs.stickerEditor.layerFractionalOffset;
+    } else if (layer.isPaintLayer) {
+      return configs.paintEditor.layerFractionalOffset;
+    }
+    return const Offset(-0.5, -0.5);
   }
 
   /// Determines if layers are selectable based on the configuration and device
@@ -276,6 +295,7 @@ class LayerInteractionManager {
       checkRotationLine(
         activeLayer: activeLayer,
         editorSize: editorSize,
+        editorScaleFactor: editorScaleFactor,
       );
     }
   }
@@ -293,6 +313,7 @@ class LayerInteractionManager {
     required StreamController<void> helperLineCtrl,
   }) {
     if (_activeScale || !activeLayer.interaction.enableMove) return;
+    Offset fractionalOffset = _getFractionalLayerOffset(activeLayer);
 
     RenderBox? box =
         removeAreaKey.currentContext?.findRenderObject() as RenderBox?;
@@ -315,10 +336,17 @@ class LayerInteractionManager {
       activeLayer.offset.dy + detail.focalPointDelta.dy / editorScaleFactor,
     );
 
+    if (editorScaleFactor > 1 && helperLineConfigs.isDisabledAtZoom) return;
+
+    final Offset localPointFromCenter =
+        activeLayer.computeLocalCenterOffset(fractionalOffset);
+    final Offset layerCenterOffset =
+        activeLayer.computeOffsetFromCenterFraction(fractionalOffset);
+
     final releaseThreshold = helperLineConfigs.releaseThreshold;
     bool hasLineHit = false;
-    double posX = activeLayer.offset.dx;
-    double posY = activeLayer.offset.dy;
+    double posX = layerCenterOffset.dx;
+    double posY = layerCenterOffset.dy;
 
     bool hitAreaX = detail.focalPoint.dx >= snapStartPosX - releaseThreshold &&
         detail.focalPoint.dx <= snapStartPosX + releaseThreshold;
@@ -335,37 +363,47 @@ class LayerInteractionManager {
         posY <= 0 && lastPositionY == LayerLastPosition.bottom;
 
     /// Calc vertical helper line
-    if ((!showVerticalHelperLine &&
-            (helperGoNearLineLeft || helperGoNearLineRight)) ||
-        (showVerticalHelperLine && hitAreaX)) {
-      if (!showVerticalHelperLine) {
-        hasLineHit = true;
-        snapStartPosX = detail.focalPoint.dx;
+    if (helperLineConfigs.showVerticalLine) {
+      if ((!showVerticalHelperLine &&
+              (helperGoNearLineLeft || helperGoNearLineRight)) ||
+          (showVerticalHelperLine && hitAreaX)) {
+        if (!showVerticalHelperLine) {
+          hasLineHit = true;
+          snapStartPosX = detail.focalPoint.dx;
+        }
+        showVerticalHelperLine = true;
+        activeLayer.offset = Offset(
+          -localPointFromCenter.dx,
+          activeLayer.offset.dy,
+        );
+        lastPositionX = LayerLastPosition.center;
+      } else {
+        showVerticalHelperLine = false;
+        lastPositionX =
+            posX <= 0 ? LayerLastPosition.left : LayerLastPosition.right;
       }
-      showVerticalHelperLine = true;
-      activeLayer.offset = Offset(0, activeLayer.offset.dy);
-      lastPositionX = LayerLastPosition.center;
-    } else {
-      showVerticalHelperLine = false;
-      lastPositionX =
-          posX <= 0 ? LayerLastPosition.left : LayerLastPosition.right;
     }
 
-    /// Calc horizontal helper line
-    if ((!showHorizontalHelperLine &&
-            (helperGoNearLineTop || helperGoNearLineBottom)) ||
-        (showHorizontalHelperLine && hitAreaY)) {
-      if (!showHorizontalHelperLine) {
-        hasLineHit = true;
-        snapStartPosY = detail.focalPoint.dy;
+    if (helperLineConfigs.showHorizontalLine) {
+      /// Calc horizontal helper line
+      if ((!showHorizontalHelperLine &&
+              (helperGoNearLineTop || helperGoNearLineBottom)) ||
+          (showHorizontalHelperLine && hitAreaY)) {
+        if (!showHorizontalHelperLine) {
+          hasLineHit = true;
+          snapStartPosY = detail.focalPoint.dy;
+        }
+        showHorizontalHelperLine = true;
+        activeLayer.offset = Offset(
+          activeLayer.offset.dx,
+          -localPointFromCenter.dy,
+        );
+        lastPositionY = LayerLastPosition.center;
+      } else {
+        showHorizontalHelperLine = false;
+        lastPositionY =
+            posY <= 0 ? LayerLastPosition.top : LayerLastPosition.bottom;
       }
-      showHorizontalHelperLine = true;
-      activeLayer.offset = Offset(activeLayer.offset.dx, 0);
-      lastPositionY = LayerLastPosition.center;
-    } else {
-      showHorizontalHelperLine = false;
-      lastPositionY =
-          posY <= 0 ? LayerLastPosition.top : LayerLastPosition.bottom;
     }
 
     _updateAlignmentGuides(
@@ -374,6 +412,7 @@ class LayerInteractionManager {
       activeLayer: activeLayer,
       helperLineCtrl: helperLineCtrl,
       editorScaleFactor: editorScaleFactor,
+      fractionalOffset: fractionalOffset,
     );
 
     if (hasLineHit) {
@@ -392,6 +431,7 @@ class LayerInteractionManager {
     required ScaleUpdateDetails detail,
     required Layer activeLayer,
     required Size editorSize,
+    required double editorScaleFactor,
     required EdgeInsets screenPaddingHelper,
   }) {
     _activeScale = true;
@@ -406,6 +446,7 @@ class LayerInteractionManager {
       checkRotationLine(
         activeLayer: activeLayer,
         editorSize: editorSize,
+        editorScaleFactor: editorScaleFactor,
       );
     }
 
@@ -417,7 +458,13 @@ class LayerInteractionManager {
   checkRotationLine({
     required Layer activeLayer,
     required Size editorSize,
+    required double editorScaleFactor,
   }) {
+    if (!helperLineConfigs.showRotateLine ||
+        (editorScaleFactor > 1 && helperLineConfigs.isDisabledAtZoom)) {
+      return;
+    }
+
     double rotation = activeLayer.rotation - baseAngleFactor;
     double hitSpanX = helperLineConfigs.releaseThreshold / 2;
     double deg = activeLayer.rotation * 180 / pi;
@@ -439,8 +486,13 @@ class LayerInteractionManager {
             (deg - (degHit > 45 - hitSpanX ? degHit - 45 : degHit)) / 180 * pi;
         rotationHelperLineDeg = activeLayer.rotation;
 
-        double posY = activeLayer.offset.dy;
-        double posX = activeLayer.offset.dx;
+        final Offset fractionalOffset = _getFractionalLayerOffset(activeLayer);
+        activeLayer.computeLocalCenterOffset(fractionalOffset);
+        final Offset layerCenterOffset =
+            activeLayer.computeOffsetFromCenterFraction(fractionalOffset);
+
+        double posY = layerCenterOffset.dy;
+        double posX = layerCenterOffset.dx;
 
         rotationHelperLineX = posX + editorSize.width / 2;
         rotationHelperLineY = posY + editorSize.height / 2;
@@ -466,8 +518,11 @@ class LayerInteractionManager {
     snapLastRotation = snapStartRotation;
     reset();
 
-    double posX = selectedLayer.offset.dx;
-    double posY = selectedLayer.offset.dy;
+    final fractionOffset = _getFractionalLayerOffset(selectedLayer);
+    final centerOffset =
+        selectedLayer.computeOffsetFromCenterFraction(fractionOffset);
+    double posX = centerOffset.dx;
+    double posY = centerOffset.dy;
 
     final releaseThreshold = helperLineConfigs.releaseThreshold;
 
@@ -647,7 +702,10 @@ class LayerInteractionManager {
     required ScaleUpdateDetails detail,
     required StreamController<void> helperLineCtrl,
     required double editorScaleFactor,
+    required Offset fractionalOffset,
   }) {
+    if (!helperLineConfigs.showLayerAlignLine) return;
+
     final snapThreshold = 3.0 / editorScaleFactor;
     final releaseThreshold = helperLineConfigs.releaseThreshold;
 
@@ -661,39 +719,77 @@ class LayerInteractionManager {
     Offset? horizontalOffset;
     Offset? verticalOffset;
 
-    for (final layer in layerList) {
-      if (verticalOffset != null && horizontalOffset != null) break;
-      if (layer == activeLayer) continue;
+    final Offset localPointFromCenter =
+        activeLayer.computeLocalCenterOffset(fractionalOffset);
+    final Offset layerCenterOffset =
+        activeLayer.computeOffsetFromCenterFraction(fractionalOffset);
 
-      final dx = (layer.offset.dx - activeLayer.offset.dx).abs();
-      final dy = (layer.offset.dy - activeLayer.offset.dy).abs();
+    List<Offset> uniqueDxOffsets = [];
+    List<Offset> uniqueDyOffsets = [];
+    final seenDx = <double>{};
+    final seenDy = <double>{};
+
+    bool isSimilar(Set<double> seen, double value, double threshold) {
+      return seen.any((v) => (v - value).abs() < threshold);
+    }
+
+    for (final layer in layerList) {
+      if (layer == activeLayer) continue;
+      final centerOffset = layer.computeOffsetFromCenterFraction(
+        _getFractionalLayerOffset(layer),
+      );
+
+      final dx = centerOffset.dx;
+      final dy = centerOffset.dy;
+
+      if (!isSimilar(seenDx, dx, snapThreshold)) {
+        seenDx.add(dx);
+        uniqueDxOffsets.add(centerOffset);
+      }
+
+      if (!isSimilar(seenDy, dy, snapThreshold)) {
+        seenDy.add(dy);
+        uniqueDyOffsets.add(centerOffset);
+      }
+    }
+
+    for (final layerOffset in uniqueDxOffsets) {
+      if (verticalOffset != null) break;
+
+      final dx = (layerOffset.dx - layerCenterOffset.dx).abs();
 
       // Vertical snapping (dx axis)
       if (dx <= snapThreshold &&
           _verticalSnapHelper.maybeSnap(
             focal: detail.focalPoint.dx,
             focalDelta: detail.focalPointDelta.dx,
-            offset: layer.offset,
+            offset: layerOffset,
             threshold: snapThreshold,
             releaseThreshold: releaseThreshold,
             positiveDirection: LayerLastPosition.left,
             negativeDirection: LayerLastPosition.right,
           )) {
-        verticalOffset = layer.offset;
+        verticalOffset = layerOffset;
       }
+    }
+
+    for (final layerOffset in uniqueDyOffsets) {
+      if (horizontalOffset != null) break;
+
+      final dy = (layerOffset.dy - layerCenterOffset.dy).abs();
 
       // Horizontal snapping (dy axis)
       if (dy <= snapThreshold &&
           _horizontalSnapHelper.maybeSnap(
             focal: detail.focalPoint.dy,
             focalDelta: detail.focalPointDelta.dy,
-            offset: layer.offset,
+            offset: layerOffset,
             threshold: snapThreshold,
             releaseThreshold: releaseThreshold,
             positiveDirection: LayerLastPosition.top,
             negativeDirection: LayerLastPosition.bottom,
           )) {
-        horizontalOffset = layer.offset;
+        horizontalOffset = layerOffset;
       }
     }
 
@@ -702,7 +798,8 @@ class LayerInteractionManager {
       verticalGuideOffset = verticalOffset;
       isVerticalGuideVisible = true;
 
-      activeLayer.offset = Offset(verticalOffset.dx, activeLayer.offset.dy);
+      activeLayer.offset = Offset(
+          verticalOffset.dx - localPointFromCenter.dx, activeLayer.offset.dy);
     }
 
     // Handle horizontal snapping
@@ -710,7 +807,8 @@ class LayerInteractionManager {
       horizontalGuideOffset = horizontalOffset;
       isHorizontalGuideVisible = true;
 
-      activeLayer.offset = Offset(activeLayer.offset.dx, horizontalOffset.dy);
+      activeLayer.offset = Offset(
+          activeLayer.offset.dx, horizontalOffset.dy - localPointFromCenter.dy);
     }
 
     // Notify UI only if something changed
