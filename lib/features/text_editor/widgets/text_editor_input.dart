@@ -38,6 +38,7 @@ class TextEditorInput extends StatefulWidget {
     required this.backgroundColor,
     required this.layer,
     required this.textCtrl,
+    required this.maxWidth,
   });
 
   /// Optional callbacks for text editor interactions.
@@ -60,6 +61,9 @@ class TextEditorInput extends StatefulWidget {
 
   /// The font size of the input text.
   final double textFontSize;
+
+  /// The maximum width available for the text before the text will overflow.
+  final double maxWidth;
 
   /// The scale factor to transform the textfield
   final double scaleFactor;
@@ -112,7 +116,10 @@ class _TextEditorInputState extends State<TextEditorInput> {
             clipBehavior: Clip.none,
             scrollDirection: Axis.horizontal,
             child: IntrinsicWidth(
-              child: toHero.child,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: widget.maxWidth),
+                child: toHero.child,
+              ),
             ),
           )
         : toHero.child;
@@ -127,8 +134,13 @@ class _TextEditorInputState extends State<TextEditorInput> {
         padding: widget.configs.style.textFieldMargin,
         child: IntrinsicWidth(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: _buildInputField(),
+            padding: widget.configs.enableAutoOverflow
+                ? null
+                : const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: widget.maxWidth),
+              child: _buildInputField(),
+            ),
           ),
         ),
       ),

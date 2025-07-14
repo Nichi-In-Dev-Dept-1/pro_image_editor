@@ -1227,6 +1227,7 @@ class ProImageEditorState extends State<ProImageEditor>
         ..offset = layerData.offset
         ..scale = layerData.scale
         ..customSecondaryColor = layer.customSecondaryColor
+        ..maxTextWidth = layer.maxTextWidth
         ..rotation = layerData.rotation;
 
       _updateTempLayer();

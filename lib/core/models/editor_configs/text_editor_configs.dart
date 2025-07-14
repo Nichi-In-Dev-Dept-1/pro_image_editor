@@ -44,6 +44,7 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
     this.showFontScaleButton = true,
     this.showBackgroundModeButton = true,
     this.enableMainEditorZoomFactor = false,
+    this.enableAutoOverflow = false,
     this.initFontSize = 24.0,
     this.initialTextAlign = TextAlign.center,
     this.inputTextFieldAlign = Alignment.center,
@@ -123,6 +124,14 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
   /// This style will be applied to the text if no other style is specified.
   final TextStyle defaultTextStyle;
 
+  /// Whether the text should automatically wrap when it reaches the end of
+  /// the screen.
+  ///
+  /// If set to `true`, the text will wrap to the next line instead of
+  /// overflowing, ensuring it stays within the visible area
+  /// (e.g., the screen width).
+  final bool enableAutoOverflow;
+
   /// The minimum scale factor from the layer.
   final double minScale;
 
@@ -168,6 +177,7 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
     bool? enableEdit,
     bool? showSelectFontStyleBottomBar,
     bool? enableMainEditorZoomFactor,
+    bool? enableAutoOverflow,
     double? initFontSize,
     TextAlign? initialTextAlign,
     Alignment? inputTextFieldAlign,
@@ -196,6 +206,7 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
           showSelectFontStyleBottomBar ?? this.showSelectFontStyleBottomBar,
       enableMainEditorZoomFactor:
           enableMainEditorZoomFactor ?? this.enableMainEditorZoomFactor,
+      enableAutoOverflow: enableAutoOverflow ?? this.enableAutoOverflow,
       initFontSize: initFontSize ?? this.initFontSize,
       initialTextAlign: initialTextAlign ?? this.initialTextAlign,
       inputTextFieldAlign: inputTextFieldAlign ?? this.inputTextFieldAlign,
