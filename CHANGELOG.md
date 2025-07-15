@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.5.0
+- **FEAT**(text-editor): Add `enableAutoOverflow` property to `TextEditorConfigs` to automatically wrap text when it exceeds the editor's visible area.
+
 ## 10.4.1
 - **FIX**(paint-editor): Resolve issue where custom widgets weren't working in the new paint-layer editor.
 
