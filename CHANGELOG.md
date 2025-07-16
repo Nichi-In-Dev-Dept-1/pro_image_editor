@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.5.2
+- **FIX**(helper-lines): Resolve issue where helper lines are visible when hovering over the layer remove zone. This resolves issue [#561](https://github.com/hm21/pro_image_editor/issues/561).
+
 ## 10.5.1
 - **FIX**(import-export): Resolve issue where importing from text layers throws an error and fails.
 
