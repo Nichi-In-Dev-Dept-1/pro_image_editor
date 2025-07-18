@@ -1,10 +1,10 @@
 // Flutter imports:
 import 'package:flutter/widgets.dart';
 
-// Project imports:
 import '/features/paint_editor/paint_editor.dart';
 import '/shared/widgets/reactive_widgets/reactive_custom_appbar.dart';
 import '/shared/widgets/reactive_widgets/reactive_custom_widget.dart';
+import '../layers/paint_layer.dart';
 import 'utils/custom_widgets_standalone_editor.dart';
 import 'utils/custom_widgets_typedef.dart';
 
@@ -30,6 +30,13 @@ class PaintEditorWidgets
     this.sliderLineWidth,
     this.sliderChangeOpacity,
     this.colorPicker,
+    this.editPreview,
+    this.editColorSlider,
+    this.editOpacitySlider,
+    this.editStrokeWidthSlider,
+    this.editFillSwitch,
+    this.editActionButtons,
+    this.editBottomSheet,
   });
 
   /// Custom close button in the paint-editor to close the line-width bottom
@@ -81,6 +88,36 @@ class PaintEditorWidgets
   /// {@macro colorPickerWidget}
   final CustomColorPicker<PaintEditorState>? colorPicker;
 
+  /// Builds a preview widget for the [PaintLayer] during editing.
+  final Widget Function(PaintLayer layer)? editPreview;
+
+  /// Builds a custom color slider widget for the [PaintLayer].
+  /// The [setValue] callback should update the layer's color.
+  final Widget Function(PaintLayer layer, Function(Color value) setValue)?
+      editColorSlider;
+
+  /// Builds a custom opacity slider widget for the [PaintLayer].
+  /// The [setValue] callback should update the layer's opacity.
+  final Widget Function(PaintLayer layer, Function(double value) setValue)?
+      editOpacitySlider;
+
+  /// Builds a custom stroke width slider widget for the [PaintLayer].
+  /// The [setValue] callback should update the layer's stroke width.
+  final Widget Function(PaintLayer layer, Function(double value) setValue)?
+      editStrokeWidthSlider;
+
+  /// Builds a custom switch widget to toggle the fill mode of the [PaintLayer].
+  /// The [setValue] callback should update the fill state.
+  final Widget Function(PaintLayer layer, Function(bool value) setValue)?
+      editFillSwitch;
+
+  /// Builds custom action buttons (e.g., apply/cancel) for editing the
+  /// [PaintLayer].
+  final Widget Function(PaintLayer layer)? editActionButtons;
+
+  /// A callback function that returns a widget for editing a [PaintLayer].
+  final Widget Function(PaintLayer layer)? editBottomSheet;
+
   @override
   PaintEditorWidgets copyWith({
     ReactiveAppbar? Function(
@@ -98,6 +135,17 @@ class PaintEditorWidgets
     CustomSlider<PaintEditorState>? sliderLineWidth,
     CustomSlider<PaintEditorState>? sliderChangeOpacity,
     CustomColorPicker<PaintEditorState>? colorPicker,
+    Widget Function(PaintLayer layer)? editPreview,
+    Widget Function(PaintLayer layer, Function(Color value) setValue)?
+        editColorSlider,
+    Widget Function(PaintLayer layer, Function(double value) setValue)?
+        editOpacitySlider,
+    Widget Function(PaintLayer layer, Function(double value) setValue)?
+        editStrokeWidthSlider,
+    Widget Function(PaintLayer layer, Function(bool value) setValue)?
+        editFillSwitch,
+    Widget Function(PaintLayer layer)? editActionButtons,
+    Widget Function(PaintLayer layer)? editBottomSheet,
   }) {
     return PaintEditorWidgets(
       appBar: appBar ?? this.appBar,
@@ -110,6 +158,14 @@ class PaintEditorWidgets
       sliderLineWidth: sliderLineWidth ?? this.sliderLineWidth,
       sliderChangeOpacity: sliderChangeOpacity ?? this.sliderChangeOpacity,
       colorPicker: colorPicker ?? this.colorPicker,
+      editPreview: editPreview ?? this.editPreview,
+      editColorSlider: editColorSlider ?? this.editColorSlider,
+      editOpacitySlider: editOpacitySlider ?? this.editOpacitySlider,
+      editStrokeWidthSlider:
+          editStrokeWidthSlider ?? this.editStrokeWidthSlider,
+      editFillSwitch: editFillSwitch ?? this.editFillSwitch,
+      editActionButtons: editActionButtons ?? this.editActionButtons,
+      editBottomSheet: editBottomSheet ?? this.editBottomSheet,
     );
   }
 }

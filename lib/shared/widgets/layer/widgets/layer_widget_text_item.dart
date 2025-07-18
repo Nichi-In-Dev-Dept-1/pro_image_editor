@@ -40,9 +40,12 @@ class LayerWidgetTextItem extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
     );
 
+    final maxTextWidth = layer.maxTextWidth;
     return HeroMode(
       enabled: false,
       child: RoundedBackgroundText(
+        maxTextWidth:
+            maxTextWidth == null ? double.infinity : maxTextWidth * layer.scale,
         onHitTestResult: (hasHit) {
           // Update hit detection and cursor visibility state.
           if (layer.hit != hasHit || showMoveCursor.value != hasHit) {

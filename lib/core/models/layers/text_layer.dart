@@ -34,6 +34,7 @@ class TextLayer extends Layer {
     this.background = const Color(0x00000000),
     this.align = TextAlign.left,
     this.fontScale = 1.0,
+    this.maxTextWidth,
     super.offset,
     super.rotation,
     super.scale,
@@ -127,6 +128,7 @@ class TextLayer extends Layer {
       boxConstraints: layer.boxConstraints,
       text: map[keyConverter('text')] ?? '-',
       fontScale: fontScale,
+      maxTextWidth: tryParseDouble(map[keyConverter('maxTextWidth')]),
       textStyle: fontFamily != null ||
               wordSpacing != null ||
               height != null ||
@@ -188,6 +190,12 @@ class TextLayer extends Layer {
   /// The font scale for text, to make text bigger or smaller.
   double fontScale;
 
+  /// The maximum width that the text can occupy.
+  ///
+  /// If set, the text will be constrained to this width, and will wrap. If
+  /// null, the text will not have a width constraint.
+  double? maxTextWidth;
+
   /// A custom text style for the text. Be careful the editor allow not to
   /// import and export this style.
   TextStyle? textStyle;
@@ -207,6 +215,7 @@ class TextLayer extends Layer {
       'align': align.name,
       'fontScale': fontScale,
       'type': 'text',
+      if (maxTextWidth != null) 'maxTextWidth': maxTextWidth,
       if (customSecondaryColor) 'customSecondaryColor': customSecondaryColor,
       if (textStyle?.fontFamily != null) 'fontFamily': textStyle?.fontFamily,
       if (textStyle?.fontStyle != null) 'fontStyle': textStyle?.fontStyle!.name,
@@ -250,6 +259,7 @@ class TextLayer extends Layer {
         'wordSpacing': textStyle?.wordSpacing,
       if (paintLayer.textStyle?.decoration != textStyle?.decoration)
         'decoration': textStyle?.decoration.toString(),
+      if (paintLayer.maxTextWidth != maxTextWidth) 'maxTextWidth': maxTextWidth,
     };
   }
 }

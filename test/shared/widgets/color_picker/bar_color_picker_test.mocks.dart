@@ -164,7 +164,7 @@ class MockBarColorPicker extends _i1.Mock implements _i6.BarColorPicker {
       ) as double);
 
   @override
-  _i2.Color get initialColor => (super.noSuchMethod(
+  _i2.Color get color => (super.noSuchMethod(
         Invocation.getter(#initialColor),
         returnValue: _FakeColor_0(
           this,

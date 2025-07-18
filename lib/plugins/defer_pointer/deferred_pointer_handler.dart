@@ -38,7 +38,7 @@ class DeferredPointerHandler extends StatefulWidget {
 /// one.
 class DeferredPointerHandlerState extends State<DeferredPointerHandler> {
   final DeferredPointerHandlerLink _link = DeferredPointerHandlerLink();
-  get link => _link;
+  DeferredPointerHandlerLink get link => _link;
 
   late String _id;
 

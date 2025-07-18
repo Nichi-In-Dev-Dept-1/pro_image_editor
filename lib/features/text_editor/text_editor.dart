@@ -87,6 +87,9 @@ class TextEditorState extends State<TextEditor>
 
   late double _fontScale;
 
+  double? get _maxTextWidth =>
+      textEditorConfigs.enableAutoOverflow ? editorBodySize.width - 32 : null;
+
   Color _primaryColor = Colors.black;
 
   /// Gets the primary color.
@@ -308,19 +311,21 @@ class TextEditorState extends State<TextEditor>
   /// editor.
   void done() {
     if (textCtrl.text.trim().isNotEmpty) {
-      Navigator.of(context).pop(
-        TextLayer(
-          text: textCtrl.text.trim(),
-          background: _backgroundColor,
-          color: _textColor,
-          align: align,
-          fontScale: _fontScale,
-          colorMode: backgroundColorMode,
-          colorPickerPosition: colorPosition,
-          textStyle: selectedTextStyle,
-          customSecondaryColor: _secondaryColor != null,
-        ),
+      TextLayer layer = TextLayer(
+        text: textCtrl.text.trim(),
+        background: _backgroundColor,
+        color: _textColor,
+        align: align,
+        fontScale: _fontScale,
+        colorMode: backgroundColorMode,
+        colorPickerPosition: colorPosition,
+        textStyle: selectedTextStyle,
+        customSecondaryColor: _secondaryColor != null,
+        maxTextWidth:
+            textEditorConfigs.enableAutoOverflow ? _maxTextWidth : null,
       );
+
+      Navigator.of(context).pop(layer);
     } else {
       Navigator.of(context).pop();
     }
@@ -458,6 +463,7 @@ class TextEditorState extends State<TextEditor>
       selectedTextStyle: selectedTextStyle,
       textColor: _textColor,
       textFontSize: _textFontSize,
+      maxWidth: _maxTextWidth ?? double.infinity,
     );
   }
 }

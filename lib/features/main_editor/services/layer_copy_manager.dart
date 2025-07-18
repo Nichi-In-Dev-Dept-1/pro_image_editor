@@ -135,9 +135,10 @@ class LayerCopyManager {
       flipY: layer.flipY,
       isDeleted: layer.isDeleted,
       meta: layer.meta,
+      maxTextWidth: layer.maxTextWidth,
       customSecondaryColor: layer.customSecondaryColor,
       interaction: layer.interaction.copyWith(),
-      boxConstraints: layer.boxConstraints,
+      boxConstraints: layer.boxConstraints?.copyWith(),
     );
   }
 
@@ -163,7 +164,7 @@ class LayerCopyManager {
       isDeleted: layer.isDeleted,
       meta: layer.meta,
       interaction: layer.interaction.copyWith(),
-      boxConstraints: layer.boxConstraints,
+      boxConstraints: layer.boxConstraints?.copyWith(),
     );
   }
 
@@ -189,7 +190,7 @@ class LayerCopyManager {
       isDeleted: layer.isDeleted,
       meta: layer.meta,
       interaction: layer.interaction.copyWith(),
-      boxConstraints: layer.boxConstraints,
+      boxConstraints: layer.boxConstraints?.copyWith(),
       exportConfigs: layer.exportConfigs.copyWith(),
     );
   }
@@ -218,7 +219,7 @@ class LayerCopyManager {
       rawSize: layer.rawSize,
       opacity: layer.opacity,
       interaction: layer.interaction.copyWith(),
-      boxConstraints: layer.boxConstraints,
+      boxConstraints: layer.boxConstraints?.copyWith(),
     );
   }
 }

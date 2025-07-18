@@ -80,11 +80,11 @@ class MainEditorStateHistoryService {
   }
 
   /// Exports the current state history.
-  Future<ExportStateHistory> exportStateHistory({
+  ExportStateHistory exportStateHistory({
     ExportEditorConfigs configs = const ExportEditorConfigs(),
     required BuildContext context,
     required ImageInfos imageInfos,
-  }) async {
+  }) {
     return ExportStateHistory(
       editorConfigs: this.configs,
       stateHistory: stateManager.stateHistory,

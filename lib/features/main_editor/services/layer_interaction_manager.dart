@@ -171,7 +171,7 @@ class LayerInteractionManager {
   /// - Setting `_rotationStartedHelper` to `false`.
   /// - Enabling the display of helper lines by setting `showHelperLines` to
   /// `true`.
-  reset() {
+  void reset() {
     _rotateScaleButtonStartPosition = null;
     _rotationStartedHelper = false;
     showHelperLines = true;
@@ -202,7 +202,7 @@ class LayerInteractionManager {
   }
 
   /// Calculates scaling and rotation based on user interactions.
-  calculateInteractiveButtonScaleRotate({
+  void calculateInteractiveButtonScaleRotate({
     required double editorScaleFactor,
     required Offset editorScaleOffset,
     required ProImageEditorConfigs configs,
@@ -302,7 +302,7 @@ class LayerInteractionManager {
 
   /// Calculates movement of a layer based on user interactions, considering
   /// various conditions such as hit areas and screen boundaries.
-  calculateMovement({
+  void calculateMovement({
     required double editorScaleFactor,
     required BuildContext context,
     required ScaleUpdateDetails detail,
@@ -426,7 +426,7 @@ class LayerInteractionManager {
   }
 
   /// Calculates scaling and rotation of a layer based on user interactions.
-  calculateScaleRotate({
+  void calculateScaleRotate({
     required ProImageEditorConfigs configs,
     required ScaleUpdateDetails detail,
     required Layer activeLayer,
@@ -455,7 +455,7 @@ class LayerInteractionManager {
 
   /// Checks the rotation line based on user interactions, adjusting rotation
   /// accordingly.
-  checkRotationLine({
+  void checkRotationLine({
     required Layer activeLayer,
     required Size editorSize,
     required double editorScaleFactor,
@@ -509,7 +509,7 @@ class LayerInteractionManager {
   }
 
   /// Handles the initialization logic when a scaling gesture starts on a layer.
-  onScaleStart({
+  void onScaleStart({
     required Layer selectedLayer,
   }) {
     baseScaleFactor = selectedLayer.scale;
@@ -540,7 +540,7 @@ class LayerInteractionManager {
 
   /// Handles cleanup and resets various flags and states after scaling
   /// interaction ends.
-  onScaleEnd() {
+  void onScaleEnd() {
     enabledHitDetection = true;
     freeStyleHighPerformanceScaling = false;
     freeStyleHighPerformanceMoving = false;

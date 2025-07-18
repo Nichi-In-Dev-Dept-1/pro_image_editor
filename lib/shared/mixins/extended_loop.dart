@@ -38,7 +38,7 @@ mixin ExtendedLoop {
   ///   },
   /// );
   /// ```
-  loopWithTransitionTiming(
+  Future<void> loopWithTransitionTiming(
     void Function(double curveT) function, {
     required Duration duration,
     required bool mounted,

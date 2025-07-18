@@ -41,6 +41,7 @@ class RoundedBackgroundText extends StatelessWidget {
     this.innerRadius = kDefaultInnerRadius,
     this.outerRadius = kDefaultOuterRadius,
     this.onHitTestResult,
+    this.maxTextWidth,
     this.enableHorizontalHitBox = true,
   }) : text = TextSpan(text: text, style: style);
 
@@ -62,6 +63,7 @@ class RoundedBackgroundText extends StatelessWidget {
     this.innerRadius = kDefaultInnerRadius,
     this.outerRadius = kDefaultOuterRadius,
     this.onHitTestResult,
+    this.maxTextWidth,
     this.enableHorizontalHitBox = true,
   })  : assert(innerRadius >= 0.0 && innerRadius <= 20.0),
         assert(outerRadius >= 0.0 && outerRadius <= 20.0);
@@ -100,6 +102,8 @@ class RoundedBackgroundText extends StatelessWidget {
 
   /// The string used to ellipsize overflowing text.
   final String? ellipsis;
+
+  final double? maxTextWidth;
 
   /// Used to select a font when the same Unicode character can
   /// be rendered differently, depending on the locale.
@@ -149,21 +153,23 @@ class RoundedBackgroundText extends StatelessWidget {
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     )..layout();
-    return painter.preferredLineHeight;
+
+    final metrics = painter.computeLineMetrics();
+    final actualHeight = metrics.first.ascent + metrics.first.descent;
+
+    return actualHeight;
   }
 
   @override
   Widget build(BuildContext context) {
     final defaultTextStyle = DefaultTextStyle.of(context);
     final style = text.style ?? defaultTextStyle.style;
-
     final painter = TextPainter(
       text: TextSpan(
         children: [text],
         style: TextStyle(
           color: foregroundColor(backgroundColor),
           leadingDistribution: TextLeadingDistribution.proportional,
-          fontSize: style.fontSize,
         ).merge(style),
       ),
       textDirection:
@@ -187,7 +193,9 @@ class RoundedBackgroundText extends StatelessWidget {
 
     return LayoutBuilder(builder: (context, constraints) {
       painter.layout(
-        maxWidth: constraints.maxWidth,
+        maxWidth: maxTextWidth != null
+            ? maxTextWidth! - horizontalSpace
+            : constraints.maxWidth,
         minWidth: constraints.minWidth,
       );
       return CustomPaint(

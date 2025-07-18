@@ -1,5 +1,24 @@
 # Changelog
 
+## 10.5.3
+- **FIX**(helper-lines): Resolve lint issues after upgrading to `flutter_lints: ^6.0.0`.
+
+## 10.5.2
+- **FIX**(helper-lines): Resolve issue where helper lines are visible when hovering over the layer remove zone. This resolves issue [#561](https://github.com/hm21/pro_image_editor/issues/561).
+
+## 10.5.1
+- **FIX**(import-export): Resolve issue where importing from text layers throws an error and fails.
+
+## 10.5.0
+- **FEAT**(text-editor): Add `enableAutoOverflow` property to `TextEditorConfigs` to automatically wrap text when it exceeds the editor's visible area.
+
+## 10.4.1
+- **FIX**(paint-editor): Resolve issue where custom widgets weren't working in the new paint-layer editor.
+
+## 10.4.0
+- **FEAT**(paint-layer): PaintLayers can now be edited in the main-editor. This adds various new configurations to `I18nPaintEditor`, `PaintEditorConfigs`, `PaintEditorStyle`, and `PaintEditorWidgets`.
+- **FIX**(paint-editor): Resolve issue where setting a color programmatically didn't update the color bar. This resolves issue [#552](https://github.com/hm21/pro_image_editor/issues/552).
+
 ## 10.3.2
 - **FIX**(helper-lines): Resolve issue where layers wouldn't release when positioned very close (1–3 pixels) on the same axis.
 - **FIX**(screen-resize): Resolve issue where layers resize incorrectly after image transformation. This resolves issue [#547](https://github.com/hm21/pro_image_editor/issues/547).

@@ -50,6 +50,7 @@ class MainEditorLayers extends StatefulWidget {
     required this.isSubEditorOpen,
     required this.checkInteractiveViewer,
     required this.onTextLayerTap,
+    required this.onEditPaintLayer,
     required this.state,
     required this.setTempLayer,
     required this.onContextMenuToggled,
@@ -92,6 +93,9 @@ class MainEditorLayers extends StatefulWidget {
   /// Callback triggered when a text layer is tapped.
   final Function(TextLayer layer) onTextLayerTap;
 
+  /// A callback function that is triggered when a paint layer is edited.
+  final Function(PaintLayer layer) onEditPaintLayer;
+
   /// Callback to temporarily set a layer for interaction.
   final Function(Layer layer) setTempLayer;
 
@@ -118,11 +122,13 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
   // Helper methods for handling layer interactions
   void _handleEditTap(int index, Layer layer) {
-    if (layer is TextLayer) {
-      widget.onTextLayerTap(layer);
-    } else if (layer is WidgetLayer) {
+    if (layer.isTextLayer) {
+      widget.onTextLayerTap(layer as TextLayer);
+    } else if (layer.isPaintLayer) {
+      widget.onEditPaintLayer(layer as PaintLayer);
+    } else if (layer.isWidgetLayer) {
       widget.callbacks.stickerEditorCallbacks?.onTapEditSticker
-          ?.call(widget.state, layer, index);
+          ?.call(widget.state, layer as WidgetLayer, index);
     }
   }
 
@@ -134,8 +140,12 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
               ? ''
               : layer.id;
       widget.checkInteractiveViewer();
-    } else if (layer is TextLayer && layer.interaction.enableEdit) {
-      widget.onTextLayerTap(layer);
+    } else if (layer.interaction.enableEdit) {
+      if (layer.isTextLayer && widget.configs.textEditor.enableEdit) {
+        widget.onTextLayerTap(layer as TextLayer);
+      } else if (layer.isPaintLayer && widget.configs.paintEditor.enableEdit) {
+        widget.onEditPaintLayer(layer as PaintLayer);
+      }
     }
   }
 

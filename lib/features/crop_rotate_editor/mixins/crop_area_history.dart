@@ -434,5 +434,5 @@ mixin CropAreaHistory
   /// it fits within the screen dimensions appropriately. It should be
   /// overridden to implement specific fitting logic.
   @protected
-  calcFitToScreen() {}
+  void calcFitToScreen() {}
 }

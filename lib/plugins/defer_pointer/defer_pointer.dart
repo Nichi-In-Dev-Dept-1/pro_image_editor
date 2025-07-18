@@ -34,7 +34,7 @@ class DeferPointer extends StatelessWidget {
   Widget build(BuildContext context) {
     final link = this.link ?? DeferredPointerHandler.of(context).link;
     return _DeferPointerRenderObjectWidget(
-      link: link as DeferredPointerHandlerLink,
+      link: link,
       deferPaint: paintOnTop,
       child: child,
     );

@@ -56,13 +56,13 @@ class Debounce {
   ///   // Your function logic here.
   /// });
   /// ```
-  call(void Function() callback) {
+  void call(void Function() callback) {
     _timer?.cancel();
     _timer = Timer(delay, callback);
   }
 
   /// Cancels the timer.
-  cancel() {
+  void cancel() {
     _timer?.cancel();
   }
 
@@ -76,7 +76,7 @@ class Debounce {
   /// // Dispose of the debounce timer when no longer needed.
   /// debounce.dispose();
   /// ```
-  dispose() {
+  void dispose() {
     _timer?.cancel();
   }
 }

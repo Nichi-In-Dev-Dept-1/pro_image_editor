@@ -37,12 +37,14 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
     this.layerFractionalOffset = const Offset(-0.5, -0.5),
     this.enableSuggestions = true,
     this.enabled = true,
+    this.enableEdit = true,
     this.enableAutocorrect = true,
     this.showSelectFontStyleBottomBar = false,
     this.showTextAlignButton = true,
     this.showFontScaleButton = true,
     this.showBackgroundModeButton = true,
     this.enableMainEditorZoomFactor = false,
+    this.enableAutoOverflow = false,
     this.initFontSize = 24.0,
     this.initialTextAlign = TextAlign.center,
     this.inputTextFieldAlign = Alignment.center,
@@ -68,6 +70,9 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
 
   /// Indicates whether the text editor is enabled.
   final bool enabled;
+
+  /// Indicating whether created layers can be edited.
+  final bool enableEdit;
 
   /// Whether to show the toggle button to change the text align.
   final bool showTextAlignButton;
@@ -119,6 +124,14 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
   /// This style will be applied to the text if no other style is specified.
   final TextStyle defaultTextStyle;
 
+  /// Whether the text should automatically wrap when it reaches the end of
+  /// the screen.
+  ///
+  /// If set to `true`, the text will wrap to the next line instead of
+  /// overflowing, ensuring it stays within the visible area
+  /// (e.g., the screen width).
+  final bool enableAutoOverflow;
+
   /// The minimum scale factor from the layer.
   final double minScale;
 
@@ -161,8 +174,10 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
   TextEditorConfigs copyWith({
     Offset? layerFractionalOffset,
     bool? enabled,
+    bool? enableEdit,
     bool? showSelectFontStyleBottomBar,
     bool? enableMainEditorZoomFactor,
+    bool? enableAutoOverflow,
     double? initFontSize,
     TextAlign? initialTextAlign,
     Alignment? inputTextFieldAlign,
@@ -186,10 +201,12 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
           layerFractionalOffset ?? this.layerFractionalOffset,
       safeArea: safeArea ?? this.safeArea,
       enabled: enabled ?? this.enabled,
+      enableEdit: enableEdit ?? this.enableEdit,
       showSelectFontStyleBottomBar:
           showSelectFontStyleBottomBar ?? this.showSelectFontStyleBottomBar,
       enableMainEditorZoomFactor:
           enableMainEditorZoomFactor ?? this.enableMainEditorZoomFactor,
+      enableAutoOverflow: enableAutoOverflow ?? this.enableAutoOverflow,
       initFontSize: initFontSize ?? this.initFontSize,
       initialTextAlign: initialTextAlign ?? this.initialTextAlign,
       inputTextFieldAlign: inputTextFieldAlign ?? this.inputTextFieldAlign,

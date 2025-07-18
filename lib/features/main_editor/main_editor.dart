@@ -29,6 +29,7 @@ import '/shared/widgets/screen_resize_detector.dart';
 import '../filter_editor/types/filter_matrix.dart';
 import '../filter_editor/widgets/filter_generator.dart';
 import '../paint_editor/models/paint_editor_response_model.dart';
+import '../paint_editor/widgets/paint_editor_layer_editor.dart';
 import 'controllers/main_editor_controllers.dart';
 import 'mixins/main_editor_global_keys.dart';
 import 'providers/image_infos_provider.dart';
@@ -1228,6 +1229,7 @@ class ProImageEditorState extends State<ProImageEditor>
         ..offset = layerData.offset
         ..scale = layerData.scale
         ..customSecondaryColor = layer.customSecondaryColor
+        ..maxTextWidth = layer.maxTextWidth
         ..rotation = layerData.rotation;
 
       _updateTempLayer();
@@ -1235,6 +1237,31 @@ class ProImageEditorState extends State<ProImageEditor>
 
     setState(() {});
     mainEditorCallbacks?.handleUpdateUI();
+  }
+
+  void _editPaintLayer(PaintLayer layer) async {
+    PaintLayer? result = await showModalBottomSheet<PaintLayer>(
+      context: context,
+      backgroundColor: paintEditorConfigs.style.editSheetBackgroundColor,
+      showDragHandle: paintEditorConfigs.style.editSheetShowDragHandle,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) =>
+          paintEditorConfigs.widgets.editBottomSheet?.call(layer) ??
+          SafeArea(
+            child: PaintEditorLayerEditor(
+              layer: _layerCopyManager.duplicateLayer(
+                layer,
+                offset: Offset.zero,
+              ) as PaintLayer,
+              configs: configs,
+            ),
+          ),
+    );
+
+    if (result == null) return;
+
+    replaceLayer(index: getLayerStackIndex(layer), layer: result);
   }
 
   /// Initializes the key event listener by adding a handler to the keyboard
@@ -2236,7 +2263,7 @@ class ProImageEditorState extends State<ProImageEditor>
     if (_imageInfos == null) throw ArgumentError('Failed to decode the image');
     if (!mounted) throw ArgumentError('Context unmounted');
 
-    return await _stateHistoryService.exportStateHistory(
+    return _stateHistoryService.exportStateHistory(
       imageInfos: _imageInfos!,
       configs: configs,
       context: context,
@@ -2552,6 +2579,7 @@ class ProImageEditorState extends State<ProImageEditor>
       isSubEditorOpen: isSubEditorOpen,
       checkInteractiveViewer: _checkInteractiveViewer,
       onTextLayerTap: _onTextLayerTap,
+      onEditPaintLayer: _editPaintLayer,
       state: this,
       setTempLayer: _setTempLayer,
       onContextMenuToggled: (isOpen) {

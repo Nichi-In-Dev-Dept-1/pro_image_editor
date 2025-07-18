@@ -129,7 +129,7 @@ class ImportStateHistory {
             ));
 
             lastLayerStateHelper[id] =
-                Map<String, Object>.from(convertedLayerMap);
+                Map<String, dynamic>.from(convertedLayerMap);
           }
       }
 
