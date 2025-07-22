@@ -72,46 +72,28 @@ class _VideoExampleState extends State<VideoExample>
         children: <Widget>[
           const ParagraphInfoWidget(
             margin: EdgeInsets.fromLTRB(16, 4, 16, 16),
-            color: Colors.red,
-            child: Text(
-              'The package "pro_video_editor" used to process edited videos is '
-              'still under development.',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          const ParagraphInfoWidget(
-            margin: EdgeInsets.fromLTRB(16, 4, 16, 16),
             child: Text(
               'For a reduced bundle size and fewer dependencies, no video '
               'player package is included. However, the image editor supports '
               'easy integration with an external video player, allowing video '
               'editing to be set up in just a few lines of code. Additional '
               'required native code implementations are provided by my new '
-              'package, pro_video_editor.'
-              /*  '\n\n'
-              'Choose one of the packages below that best suits your needs. '
-              'Be sure to review which platforms each package supports, as '
-              'well as their pros and cons, before making a decision.' */
-              ,
+              'package, pro_video_editor.',
             ),
           ),
-          const ParagraphInfoWidget(
-            margin: EdgeInsets.fromLTRB(16, 16, 16, 4),
-            color: Colors.red,
-            child: Text(
-              'Video editing is currently in beta mode on Android. Support for '
-              'other platforms will follow soon.',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
+          if (kIsWeb || Platform.isWindows || Platform.isLinux)
+            const ParagraphInfoWidget(
+              margin: EdgeInsets.fromLTRB(16, 16, 16, 4),
+              color: Colors.red,
+              child: Text(
+                'Video editing is currently only supported on Android, iOS and '
+                'macOS. Support for other platforms will follow soon.',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
           if (kDebugMode || (!kIsWeb && Platform.isAndroid))
             ..._videoPackages.map((pkg) {
               return ListTile(

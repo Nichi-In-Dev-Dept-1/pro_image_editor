@@ -155,7 +155,7 @@ class TextEditorState extends State<TextEditor>
       textCtrl.text = widget.layer!.text;
       align = widget.layer!.align;
       _fontScale = widget.layer!.fontScale;
-      backgroundColorMode = widget.layer!.colorMode!;
+      backgroundColorMode = widget.layer!.colorMode;
       if (widget.layer!.customSecondaryColor) {
         _primaryColor = widget.layer!.color;
         _secondaryColor = widget.layer!.background;
