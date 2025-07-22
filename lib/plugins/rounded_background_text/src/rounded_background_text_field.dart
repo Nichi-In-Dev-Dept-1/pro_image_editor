@@ -535,11 +535,6 @@ class _RoundedBackgroundTextFieldState
             right: 0,
             child: IgnorePointer(
               child: Container(
-                padding: const EdgeInsets.only(
-                  right: 2.0,
-                  left: 1.0,
-                  bottom: 3.0,
-                ),
                 margin: padding,
                 child: RoundedBackgroundText.rich(
                   text: textController.buildTextSpan(

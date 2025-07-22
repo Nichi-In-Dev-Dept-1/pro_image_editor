@@ -275,7 +275,7 @@ class RoundedBackgroundTextPainter extends CustomPainter {
       paintBackground(canvas, lineInfo);
     }
 
-    text.paint(canvas, Offset(horizontalPadding, 0));
+    text.paint(canvas, Offset(horizontalPadding, 2.0));
   }
 
   RRect _getRRect(LineMetricsHelper info) {
@@ -474,33 +474,44 @@ class RoundedBackgroundTextPainter extends CustomPainter {
 
       final fullWidth = info.fullWidth + horizontalPadding;
       final previousFullWidth = previous.fullWidth + horizontalPadding;
-      if (next != null) {
-        if (info == previous) {
+      if (text.textAlign == TextAlign.right) {
+        if (next != null) {
           // if it's the last line
-          drawBottomRightCorner(info);
-        } else if (fullWidth < previousFullWidth) {
-          // if the current one is less than the previous one
-          drawTopRightCorner(previous);
-          drawInnerCorner(info, false);
-          // drawInnerCorner(info);
-        } else if (fullWidth > previousFullWidth) {
-          // if the current one is bigger than the previous one
-          drawInnerCorner(previous, true);
-          drawBottomRightCorner(info);
+          if (info == previous) {
+            drawBottomRightCorner(info);
+          }
         } else {
-          // if the current one is equal to the previous one, ignore it
+          // if it's the first line
+          drawTopRightCorner(info);
         }
       } else {
-        // if it's the first line
-        if (previousFullWidth < fullWidth) {
-          // if the current one is bigger than the previous one
-          drawInnerCorner(previous);
-          drawBottomRightCorner(info);
-        } else if (previousFullWidth > fullWidth) {
-          drawTopRightCorner(previous);
-          drawInnerCorner(info, false);
+        if (next != null) {
+          if (info == previous) {
+            // if it's the last line
+            drawBottomRightCorner(info);
+          } else if (fullWidth < previousFullWidth) {
+            // if the current one is less than the previous one
+            drawTopRightCorner(previous);
+            drawInnerCorner(info, false);
+          } else if (fullWidth > previousFullWidth) {
+            // if the current one is bigger than the previous one
+            drawInnerCorner(previous, true);
+            drawBottomRightCorner(info);
+          } else {
+            // if the current one is equal to the previous one, ignore it
+          }
+        } else {
+          // if it's the first line
+          if (previousFullWidth < fullWidth) {
+            // if the current one is bigger than the previous one
+            drawInnerCorner(previous);
+            drawBottomRightCorner(info);
+          } else if (previousFullWidth > fullWidth) {
+            drawTopRightCorner(previous);
+            drawInnerCorner(info, false);
+          }
+          drawTopRightCorner(info);
         }
-        drawTopRightCorner(info);
       }
 
       previous = info;

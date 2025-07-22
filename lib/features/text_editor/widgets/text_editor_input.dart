@@ -88,6 +88,8 @@ class TextEditorInput extends StatefulWidget {
 }
 
 class _TextEditorInputState extends State<TextEditorInput> {
+  bool _isTextSelected = false;
+
   Widget _flightShuttleBuilder(
     BuildContext flightContext,
     Animation<double> animation,
@@ -190,6 +192,8 @@ class _TextEditorInputState extends State<TextEditorInput> {
             decoration: TextDecoration.none,
             shadows: [],
           ),
+          showSelectionHandles: _isTextSelected,
+          onSelectionChanged: _handleSelectionChanged,
 
           /// If we edit an layer we focus to the textfield after the
           /// hero animation is done
@@ -197,5 +201,16 @@ class _TextEditorInputState extends State<TextEditorInput> {
         ),
       ),
     );
+  }
+
+  /// Handles the toggling off or on of the selection Handles based
+  /// On whether the text is selected or not.
+  void _handleSelectionChanged(
+    TextSelection selection,
+    SelectionChangedCause? cause,
+  ) {
+    setState(() {
+      _isTextSelected = selection.isValid && selection.start != selection.end;
+    });
   }
 }
