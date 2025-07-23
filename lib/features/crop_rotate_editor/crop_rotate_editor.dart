@@ -2113,23 +2113,26 @@ class CropRotateEditorState extends State<CropRotateEditor>
           _updateAllStates();
         },
         child: LayoutBuilder(builder: (context, constraints) {
-          return Theme(
-            data: theme.copyWith(
-                tooltipTheme:
-                    theme.tooltipTheme.copyWith(preferBelow: true)),
-            child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              backgroundColor: cropRotateEditorConfigs.style.background,
-              appBar: _buildAppBar(constraints),
-              body: Center(
-                child: SizedBox(
-                  width: constraints.maxWidth *
-                      (cropRotateEditorConfigs.maxWidthFactor ??
-                          (!kIsWeb && Platform.isAndroid ? 0.9 : 1)),
-                  child: _buildBody(),
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: cropRotateEditorConfigs.style.uiOverlayStyle,
+            child: Theme(
+              data: theme.copyWith(
+                  tooltipTheme:
+                      theme.tooltipTheme.copyWith(preferBelow: true)),
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                backgroundColor: cropRotateEditorConfigs.style.background,
+                appBar: _buildAppBar(constraints),
+                body: Center(
+                  child: SizedBox(
+                    width: constraints.maxWidth *
+                        (cropRotateEditorConfigs.maxWidthFactor ??
+                            (!kIsWeb && Platform.isAndroid ? 0.9 : 1)),
+                    child: _buildBody(),
+                  ),
                 ),
+                bottomNavigationBar: _buildBottomAppBar(),
               ),
-              bottomNavigationBar: _buildBottomAppBar(),
             ),
           );
         }),
@@ -2140,13 +2143,6 @@ class CropRotateEditorState extends State<CropRotateEditor>
   /// Builds the app bar for the editor, including buttons for actions such as
   /// back, rotate, aspect ratio, and done.
   PreferredSizeWidget? _buildAppBar(BoxConstraints constraints) {
-    SystemChrome.setSystemUIOverlayStyle( SystemUiOverlayStyle(
-      statusBarColor: cropRotateEditorConfigs.style.appBarColor,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
-
     if (cropRotateEditorConfigs.widgets.appBar != null) {
       var customToolbar = cropRotateEditorConfigs.widgets.appBar!
           .call(this, rebuildController.stream);
