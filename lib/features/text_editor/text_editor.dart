@@ -155,7 +155,7 @@ class TextEditorState extends State<TextEditor>
       textCtrl.text = widget.layer!.text;
       align = widget.layer!.align;
       _fontScale = widget.layer!.fontScale;
-      backgroundColorMode = widget.layer!.colorMode!;
+      backgroundColorMode = widget.layer!.colorMode;
       if (widget.layer!.customSecondaryColor) {
         _primaryColor = widget.layer!.color;
         _secondaryColor = widget.layer!.background;
@@ -310,7 +310,7 @@ class TextEditorState extends State<TextEditor>
   /// Handles the "Done" action, either by applying changes or closing the
   /// editor.
   void done() {
-    if (textCtrl.text.trim().isNotEmpty) {
+    if (textCtrl.text.trim().isNotEmpty || widget.layer != null) {
       TextLayer layer = TextLayer(
         text: textCtrl.text.trim(),
         background: _backgroundColor,

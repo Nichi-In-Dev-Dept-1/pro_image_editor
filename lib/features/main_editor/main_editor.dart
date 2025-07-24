@@ -1209,6 +1209,11 @@ class ProImageEditorState extends State<ProImageEditor>
 
     if (layer == null || !mounted) return;
 
+    if (layer.text.isEmpty) {
+      removeLayer(layerData);
+      return;
+    }
+
     int i = activeLayers.indexWhere((element) => element.id == layerData.id);
     if (i >= 0) {
       _setTempLayer(layerData);
