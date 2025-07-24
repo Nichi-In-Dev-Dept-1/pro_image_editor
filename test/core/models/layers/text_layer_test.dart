@@ -10,14 +10,15 @@ void main() {
       final textLayer = TextLayer(text: 'Sample Text');
 
       expect(textLayer.text, 'Sample Text');
-      expect(textLayer.color, const Color(0xFFFFFFFF));
-      expect(textLayer.background, const Color(0x00000000));
+      expect(textLayer.color, const Color(0xFF000000));
+      expect(textLayer.background, const Color(0xFFFFFFFF));
       expect(textLayer.align, TextAlign.left);
       expect(textLayer.fontScale, 1.0);
       expect(textLayer.maxTextWidth, isNull);
       expect(textLayer.textStyle, isNull);
-      expect(textLayer.colorMode, isNull);
+      expect(textLayer.colorMode, LayerBackgroundMode.backgroundAndColor);
       expect(textLayer.customSecondaryColor, false);
+      expect(textLayer.align, TextAlign.left);
       expect(textLayer.hit, false);
     });
 

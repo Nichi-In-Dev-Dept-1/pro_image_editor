@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.5.4
+- **FEAT**(text-layers): Delete the edited 'TextLayers' if the new text is empty.
+
 ## 10.5.3
 - **FIX**(helper-lines): Resolve lint issues after upgrading to `flutter_lints: ^6.0.0`.
 
