@@ -46,10 +46,14 @@ class Layer {
     this.isDeleted = false,
     this.meta,
     this.boxConstraints,
+    this.groupId,
   })  : key = key ??= GlobalKey(),
         keyInternalSize = GlobalKey(),
         id = id ?? generateUniqueId(),
         interaction = interaction ?? LayerInteraction();
+
+  /// Optional group identifier for grouping layers.
+  String? groupId;
 
   /// Factory constructor for creating a Layer instance from a map and a list
   /// of stickers.
@@ -80,6 +84,15 @@ class Layer {
     }
 
     /// Creates a base Layer instance with default or map-provided properties.
+    String? groupId;
+    try {
+      final groupIdKey = keyConverter('groupId');
+      if (map.containsKey(groupIdKey)) {
+        groupId = map[groupIdKey];
+      }
+    } catch (e) {
+      // If keyConverter throws (e.g. assertion error), ignore and leave groupId as null
+    }
     Layer layer = Layer(
       id: id,
       flipX: map[keyConverter('flipX')] ?? false,
@@ -94,6 +107,7 @@ class Layer {
       rotation: safeParseDouble(map[keyConverter('rotation')]),
       scale: safeParseDouble(map[keyConverter('scale')], fallback: 1),
       boxConstraints: boxConstraints,
+      groupId: groupId,
     );
 
     /// Determines the layer type from the map and returns the appropriate
@@ -205,7 +219,8 @@ class Layer {
       'interaction': interaction.toMap(),
       if (meta != null) 'meta': meta,
       'type': 'default',
-      if (boxConstraints != null) 'boxConstraints': boxConstraints!.toMap()
+      if (boxConstraints != null) 'boxConstraints': boxConstraints!.toMap(),
+      if (this.groupId != null) 'groupId': this.groupId,
     };
   }
 

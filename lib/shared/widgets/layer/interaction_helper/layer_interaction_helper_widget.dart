@@ -209,8 +209,7 @@ class _LayerInteractionHelperWidgetState
     String layerId = widget.layerData.id;
     var deferManager = DeferManager.maybeOf(context);
 
-    if (!widget.isInteractive ||
-        (!widget.selected && deferManager?.selectedLayerId != '')) {
+    if (!widget.isInteractive) {
       // Return the child widget directly if the layer is not interactive.
       return widget.child;
     }

@@ -17,6 +17,8 @@ import '../main_editor.dart';
 /// A widget that manages and displays layers in the main editor, handling
 /// interactions, configurations, and callbacks for user actions.
 class MainEditorLayers extends StatefulWidget {
+  /// If true, always allow multi-select (even without CTRL/SHIFT)
+  final bool enableMultiSelectMode;
   /// Creates a `MainEditorLayers` widget with the necessary configurations,
   /// managers, and callbacks.
   ///
@@ -55,6 +57,7 @@ class MainEditorLayers extends StatefulWidget {
     required this.setTempLayer,
     required this.onContextMenuToggled,
     required this.onDuplicateLayer,
+    this.enableMultiSelectMode = false,
   });
 
   /// Represents the current state of the editor.
@@ -133,12 +136,58 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   }
 
   void _handleLayerTap(Layer layer) {
+    // Only handle selection if selectable
     if (widget.layerInteractionManager.layersAreSelectable(widget.configs) &&
         layer.interaction.enableSelection) {
-      widget.layerInteractionManager.selectedLayerId =
-          layer.id == widget.layerInteractionManager.selectedLayerId
-              ? ''
-              : layer.id;
+      final isCtrlPressed = RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlLeft) ||
+          RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlRight) ||
+          RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.meta);
+      final isShiftPressed = RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
+          RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftRight);
+      final allowMultiSelect = widget.enableMultiSelectMode || isCtrlPressed || isShiftPressed;
+
+      final selectedIds = widget.layerInteractionManager.selectedLayerIds;
+      final alreadySelected = selectedIds.contains(layer.id);
+
+      // If not multi-selecting, clear selection first
+      if (!allowMultiSelect) {
+        widget.layerInteractionManager.clearSelectedLayers();
+      }
+
+      // If the layer has a groupId, select all layers with that groupId
+      Set<String> groupIds = {};
+      if (layer.groupId != null) {
+        groupIds = widget.activeLayers
+            .where((l) => l.groupId == layer.groupId)
+            .map((l) => l.id)
+            .toSet();
+      }
+
+      if (groupIds.isNotEmpty) {
+        // Toggle group selection
+        if (groupIds.every((id) => selectedIds.contains(id))) {
+          for (final id in groupIds) {
+            widget.layerInteractionManager.removeSelectedLayer(id);
+          }
+        } else {
+          for (final id in groupIds) {
+            widget.layerInteractionManager.addSelectedLayer(id);
+          }
+        }
+      } else {
+        // Toggle single layer
+        if (alreadySelected && allowMultiSelect) {
+          widget.layerInteractionManager.removeSelectedLayer(layer.id);
+        } else {
+          widget.layerInteractionManager.addSelectedLayer(layer.id);
+        }
+      }
+      // After selection, update selectedLayerIndex to last selected (if any)
+      if (widget.layerInteractionManager.selectedLayerIds.isNotEmpty) {
+        final lastId = widget.layerInteractionManager.selectedLayerIds.last;
+        final idx = widget.activeLayers.indexWhere((l) => l.id == lastId);
+        if (idx != -1) widget.state.selectedLayerIndex = idx;
+      }
       widget.checkInteractiveViewer();
     } else if (layer.interaction.enableEdit) {
       if (layer.isTextLayer && widget.configs.textEditor.enableEdit) {
@@ -168,8 +217,16 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
   void _handleTapDown(int index, Layer layer) {
     if (_isScaleInteractionActive) return;
-    widget.state.selectedLayerIndex = index;
-    widget.setTempLayer(layer);
+    // Only update selectedLayerIndex and tempLayer if not multi-selecting
+    final isCtrlPressed = RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlLeft) ||
+        RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlRight) ||
+        RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.meta);
+    final isShiftPressed = RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
+        RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftRight);
+    if (!(isCtrlPressed || isShiftPressed)) {
+      widget.state.selectedLayerIndex = index;
+      widget.setTempLayer(layer);
+    }
     widget.checkInteractiveViewer();
     widget.callbacks.mainEditorCallbacks?.onLayerTapDown?.call(layer);
   }
@@ -248,12 +305,22 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
                 child: StreamBuilder(
                   stream: widget.controllers.uiLayerCtrl.stream,
                   builder: (context, snapshot) {
-                    return Stack(
-                      children: widget.activeLayers
-                          .asMap()
-                          .entries
-                          .map(_buildLayerWidget)
-                          .toList(),
+                    return GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        setState(() {
+                          widget.layerInteractionManager.clearSelectedLayers();
+                          widget.state.selectedLayerIndex = -1;
+                        });
+                        widget.checkInteractiveViewer();
+                      },
+                      child: Stack(
+                        children: widget.activeLayers
+                            .asMap()
+                            .entries
+                            .map(_buildLayerWidget)
+                            .toList(),
+                      ),
                     );
                   },
                 ),
@@ -270,6 +337,7 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
     int index = entry.key;
     Layer layer = entry.value;
+    final selected = widget.layerInteractionManager.selectedLayerIds.contains(layer.id);
     return LayerWidget(
       key: layer.key,
       configs: widget.configs,
@@ -278,7 +346,7 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
       editorCenterY: bodySize.height / 2,
       layerData: layer,
       enableHitDetection: widget.layerInteractionManager.enabledHitDetection,
-      selected: widget.layerInteractionManager.selectedLayerId == layer.id,
+      selected: selected,
       isInteractive: !widget.isSubEditorOpen,
       highPerformanceMode:
           widget.layerInteractionManager.freeStyleHighPerformance,

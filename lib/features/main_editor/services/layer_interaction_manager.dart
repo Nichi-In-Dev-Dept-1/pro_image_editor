@@ -132,16 +132,46 @@ class LayerInteractionManager {
   /// Flag indicating if the scaling tool is active.
   bool _activeScale = false;
 
-  /// The ID of the currently selected layer.
-  String _selectedLayerId = '';
+  /// The set of currently selected layer IDs (for multi-select support).
+  final Set<String> selectedLayerIds = <String>{};
 
-  /// Returns the ID of the currently selected layer.
-  String get selectedLayerId => _selectedLayerId;
-
-  /// Sets the ID of the currently selected layer.
+  /// Deprecated: The ID of the currently selected layer (for legacy code).
+  String get selectedLayerId => selectedLayerIds.isNotEmpty ? selectedLayerIds.last : '';
   set selectedLayerId(String id) {
-    _selectedLayerId = id;
-    onSelectedLayerChanged?.call(_selectedLayerId);
+    selectedLayerIds
+      ..clear()
+      ..add(id);
+    onSelectedLayerChanged?.call(selectedLayerId);
+  }
+
+  /// Add a layer to the selection set.
+  void addSelectedLayer(String id) {
+    selectedLayerIds.add(id);
+    debugPrint('[LayerInteractionManager] addSelectedLayer: $id, selectedLayerIds: $selectedLayerIds\n${StackTrace.current}');
+    onSelectedLayerChanged?.call(selectedLayerId);
+  }
+
+  /// Remove a layer from the selection set.
+  void removeSelectedLayer(String id) {
+    selectedLayerIds.remove(id);
+    debugPrint('[LayerInteractionManager] removeSelectedLayer: $id, selectedLayerIds: $selectedLayerIds\n${StackTrace.current}');
+    onSelectedLayerChanged?.call(selectedLayerId);
+  }
+
+  /// Clear all selected layers.
+  void clearSelectedLayers() {
+    selectedLayerIds.clear();
+    debugPrint('[LayerInteractionManager] clearSelectedLayers, selectedLayerIds: $selectedLayerIds\n${StackTrace.current}');
+    onSelectedLayerChanged?.call('');
+  }
+
+  /// Set selected layers to a specific set.
+  void setSelectedLayers(Iterable<String> ids) {
+    selectedLayerIds
+      ..clear()
+      ..addAll(ids);
+    debugPrint('[LayerInteractionManager] setSelectedLayers: $ids, selectedLayerIds: $selectedLayerIds\n${StackTrace.current}');
+    onSelectedLayerChanged?.call(selectedLayerId);
   }
 
   /// Helper variable for scaling during rotation of a layer.
