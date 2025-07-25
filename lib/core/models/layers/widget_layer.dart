@@ -42,6 +42,7 @@ class WidgetLayer extends Layer {
     super.meta,
     super.boxConstraints,
     super.key,
+    super.groupId,
   });
 
   /// Factory constructor for creating a WidgetLayer instance from a
@@ -122,6 +123,7 @@ class WidgetLayer extends Layer {
       scale: layer.scale,
       isDeleted: layer.isDeleted,
       meta: layer.meta,
+      groupId: layer.groupId,
       widget: widget,
       exportConfigs: exportConfigs,
       boxConstraints: layer.boxConstraints,

@@ -46,6 +46,7 @@ class TextLayer extends Layer {
     super.meta,
     super.boxConstraints,
     super.key,
+    super.groupId,
   });
 
   /// Factory constructor for creating a TextLayer instance from a Layer
@@ -126,6 +127,7 @@ class TextLayer extends Layer {
       isDeleted: layer.isDeleted,
       meta: layer.meta,
       boxConstraints: layer.boxConstraints,
+      groupId: layer.groupId,
       text: map[keyConverter('text')] ?? '-',
       fontScale: fontScale,
       maxTextWidth: tryParseDouble(map[keyConverter('maxTextWidth')]),
