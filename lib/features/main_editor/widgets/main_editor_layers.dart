@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
+import '/core/services/keyboard_service.dart';
 import '/core/utils/size_utils.dart';
 import '/features/main_editor/controllers/main_editor_controllers.dart';
 import '/features/main_editor/services/layer_interaction_manager.dart';
@@ -17,8 +18,6 @@ import '../main_editor.dart';
 /// A widget that manages and displays layers in the main editor, handling
 /// interactions, configurations, and callbacks for user actions.
 class MainEditorLayers extends StatefulWidget {
-  /// If true, always allow multi-select (even without CTRL/SHIFT)
-  final bool enableMultiSelectMode;
   /// Creates a `MainEditorLayers` widget with the necessary configurations,
   /// managers, and callbacks.
   ///
@@ -90,6 +89,9 @@ class MainEditorLayers extends StatefulWidget {
   /// Indicates whether a sub-editor is currently open.
   final bool isSubEditorOpen;
 
+  /// If true, always allow multi-select (even without CTRL/SHIFT)
+  final bool enableMultiSelectMode;
+
   /// Callback to check the state of the interactive viewer.
   final Function() checkInteractiveViewer;
 
@@ -113,6 +115,7 @@ class MainEditorLayers extends StatefulWidget {
 }
 
 class _MainEditorLayersState extends State<MainEditorLayers> {
+  final _keyboard = KeyboardService();
   final _deferId = ValueNotifier(generateUniqueId());
 
   /// Represents the dimensions of the body.
@@ -139,12 +142,9 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
     // Only handle selection if selectable
     if (widget.layerInteractionManager.layersAreSelectable(widget.configs) &&
         layer.interaction.enableSelection) {
-      final isCtrlPressed = RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlLeft) ||
-          RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlRight) ||
-          RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.meta);
-      final isShiftPressed = RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
-          RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftRight);
-      final allowMultiSelect = widget.enableMultiSelectMode || isCtrlPressed || isShiftPressed;
+      final allowMultiSelect = widget.enableMultiSelectMode ||
+          _keyboard.isCtrlPressed ||
+          _keyboard.isShiftPressed;
 
       final selectedIds = widget.layerInteractionManager.selectedLayerIds;
       final alreadySelected = selectedIds.contains(layer.id);
@@ -165,7 +165,7 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
       if (groupIds.isNotEmpty) {
         // Toggle group selection
-        if (groupIds.every((id) => selectedIds.contains(id))) {
+        if (groupIds.every(selectedIds.contains)) {
           for (final id in groupIds) {
             widget.layerInteractionManager.removeSelectedLayer(id);
           }
@@ -218,12 +218,8 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   void _handleTapDown(int index, Layer layer) {
     if (_isScaleInteractionActive) return;
     // Only update selectedLayerIndex and tempLayer if not multi-selecting
-    final isCtrlPressed = RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlLeft) ||
-        RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.controlRight) ||
-        RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.meta);
-    final isShiftPressed = RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
-        RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftRight);
-    if (!(isCtrlPressed || isShiftPressed)) {
+
+    if (!(_keyboard.isCtrlPressed || _keyboard.isShiftPressed)) {
       widget.state.selectedLayerIndex = index;
       widget.setTempLayer(layer);
     }
@@ -337,7 +333,8 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
     int index = entry.key;
     Layer layer = entry.value;
-    final selected = widget.layerInteractionManager.selectedLayerIds.contains(layer.id);
+    final selected =
+        widget.layerInteractionManager.selectedLayerIds.contains(layer.id);
     return LayerWidget(
       key: layer.key,
       configs: widget.configs,
