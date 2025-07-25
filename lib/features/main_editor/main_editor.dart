@@ -476,6 +476,13 @@ class ProImageEditorState extends State<ProImageEditor>
   /// Indicates whether video editor is enabled.
   late final bool _isVideoEditor = widget.videoController != null;
 
+  /// Determines whether multi-select mode is always enabled.
+  ///
+  /// If set to `true`, multi-select mode will be active without requiring
+  /// the user to hold down CTRL/ SHIFT keys or long-press. This allows
+  /// for easier selection of multiple items.
+  bool enableMultiSelectMode = true;
+
   /// Get the current background image.
   late EditorImage? editorImage = widget.editorImage;
 
@@ -2528,6 +2535,7 @@ class ProImageEditorState extends State<ProImageEditor>
       onTextLayerTap: _onTextLayerTap,
       onEditPaintLayer: _editPaintLayer,
       state: this,
+      enableMultiSelectMode: enableMultiSelectMode,
       onContextMenuToggled: (isOpen) {
         _isContextMenuOpen = isOpen;
       },

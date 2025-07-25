@@ -82,7 +82,11 @@ class MainEditorLayers extends StatefulWidget {
   /// Indicates whether a sub-editor is currently open.
   final bool isSubEditorOpen;
 
-  /// If true, always allow multi-select (even without CTRL/SHIFT)
+  /// Determines whether multi-select mode is always enabled.
+  ///
+  /// If set to `true`, multi-select mode will be active without requiring
+  /// the user to hold down CTRL/ SHIFT keys or long-press. This allows
+  /// for easier selection of multiple items.
   final bool enableMultiSelectMode;
 
   /// Indicates whether a layer is currently being transformed.
