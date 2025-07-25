@@ -79,7 +79,7 @@ class _LayerGroupingExampleState extends State<LayerGroupingExample>
                 right: 0,
                 child: LayerInteractionButton(
                   rotation: -layer.rotation,
-                  onTap: interactions.edit,
+                  onTap: interactions.remove,
                   buttonRadius: 10,
                   cursor: SystemMouseCursors.click,
                   icon: Icons.clear,
