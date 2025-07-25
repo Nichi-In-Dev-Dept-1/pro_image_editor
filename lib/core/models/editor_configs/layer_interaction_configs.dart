@@ -61,7 +61,16 @@ class LayerInteractionConfigs {
   /// If set to `false`, the selection will be cleared upon interaction.
   final bool keepSelectionOnInteraction;
 
+  /// Enables multi-selection using keyboard modifiers (Ctrl or Shift).
+  ///
+  /// When set to `true`, users can select multiple layers by holding down
+  /// Ctrl or Shift while clicking or tapping.
   final bool enableKeyboardMultiSelection;
+
+  /// Enables multi-selection via long-press gestures.
+  ///
+  /// When set to `true`, users can enter multi-select mode by long-pressing
+  /// on a layer (useful for touch devices).
   final bool enableLongPressMultiSelection;
 
   /// The duration of the switch animation when the video controls show/hide.
