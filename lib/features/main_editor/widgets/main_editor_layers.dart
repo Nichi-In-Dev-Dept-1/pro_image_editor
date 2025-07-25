@@ -145,26 +145,6 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
     }
   }
 
-  // If the layer has a groupId, select all layers with that groupId
-  void _handleGroupSelection(Layer layer) {
-    Set<String> groupIds = {};
-    if (layer.groupId != null) {
-      groupIds = widget.activeLayers
-          .where((l) => l.groupId == layer.groupId)
-          .map((l) => l.id)
-          .toSet();
-    }
-
-    if (groupIds.isNotEmpty) {
-      // Toggle group selection
-      if (groupIds.every(_layerInteraction.selectedLayerIds.contains)) {
-        _layerInteraction.removeMultipleSelectedLayers(groupIds);
-      } else {
-        _layerInteraction.addMultipleSelectedLayers(groupIds);
-      }
-    }
-  }
-
   void _handleLayerTap(Layer layer, {bool enforceMultiSelect = false}) {
     // Only handle selection if selectable
     if (layer.interaction.enableSelection) {
@@ -172,20 +152,42 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
       final isAlreadySelected =
           selectedIds.contains(layer.id) && !_helperIsPointerDownSelected;
 
-      if (!_enableMultiSelect && !enforceMultiSelect) {
-        _layerInteraction.clearSelectedLayers();
-        if (!isAlreadySelected) {
-          _layerInteraction.addSelectedLayer(layer.id);
+      // Check if this layer belongs to a group
+      if (layer.groupId != null) {
+        // If layer is part of a group, handle group selection
+        Set<String> groupIds = widget.activeLayers
+            .where((l) => l.groupId == layer.groupId)
+            .map((l) => l.id)
+            .toSet();
+
+        if (!_enableMultiSelect && !enforceMultiSelect) {
+          // Clear current selection and select the entire group
+          _layerInteraction
+            ..clearSelectedLayers()
+            ..addMultipleSelectedLayers(groupIds);
+        } else {
+          // Multi-select mode: toggle group selection
+          if (groupIds.every(_layerInteraction.selectedLayerIds.contains)) {
+            _layerInteraction.removeMultipleSelectedLayers(groupIds);
+          } else {
+            _layerInteraction.addMultipleSelectedLayers(groupIds);
+          }
         }
       } else {
-        if (isAlreadySelected) {
-          _layerInteraction.removeSelectedLayer(layer.id);
+        // Handle individual layer selection (no group)
+        if (!_enableMultiSelect && !enforceMultiSelect) {
+          _layerInteraction.clearSelectedLayers();
+          if (!isAlreadySelected) {
+            _layerInteraction.addSelectedLayer(layer.id);
+          }
         } else {
-          _layerInteraction.addSelectedLayer(layer.id);
+          if (isAlreadySelected) {
+            _layerInteraction.removeSelectedLayer(layer.id);
+          } else {
+            _layerInteraction.addSelectedLayer(layer.id);
+          }
         }
       }
-
-      _handleGroupSelection(layer);
 
       widget.checkInteractiveViewer();
     } else if (layer.interaction.enableEdit) {
@@ -278,8 +280,41 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   }
 
   void _handleRemoveLayer(Layer layer) {
-    widget.state.setState(() => widget.state.removeLayer(layer));
+    widget.state.removeLayer(layer);
     widget.callbacks.mainEditorCallbacks?.handleUpdateUI();
+  }
+
+  /// Handles grouping of currently selected layers.
+  void _handleGroupLayers() {
+    final groupId = _layerInteraction.groupSelectedLayers(
+      widget.activeLayers,
+      (updatedLayers) {
+        widget.state.addHistory(layers: updatedLayers);
+      },
+    );
+
+    if (groupId != null) {
+      // Trigger UI update
+      widget.callbacks.mainEditorCallbacks?.handleUpdateUI();
+      setState(() {});
+    }
+  }
+
+  /// Handles ungrouping of the specified layer.
+  void _handleUngroupLayers(Layer layer) {
+    final wasUngrouped = _layerInteraction.ungroupLayer(
+      layer,
+      widget.activeLayers,
+      (updatedLayers) {
+        widget.state.addHistory(layers: updatedLayers);
+      },
+    );
+
+    if (wasUngrouped) {
+      // Trigger UI update
+      widget.callbacks.mainEditorCallbacks?.handleUpdateUI();
+      setState(() {});
+    }
   }
 
   /// Handles mouse hover events to change the cursor style
@@ -383,13 +418,14 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
         final newIds = {..._temporarySelectedIds, layer.id};
         if (isSelected) newIds.remove(layer.id);
         _layerInteraction.setSelectedLayers(newIds);
-        _handleGroupSelection(layer);
         setState(() {});
       },
       onDuplicate: () => widget.onDuplicateLayer(layer),
       onContextMenuToggled: widget.onContextMenuToggled,
       onScaleRotateUp: (details) => _handleScaleRotateUp(),
       onRemoveTap: () => _handleRemoveLayer(layer),
+      onGroupLayers: _handleGroupLayers,
+      onUngroupLayers: () => _handleUngroupLayers(layer),
     );
   }
 }

@@ -58,6 +58,8 @@ class LayerInteractionHelperWidget extends StatefulWidget
     this.onDuplicate,
     this.onScaleRotateDown,
     this.onScaleRotateUp,
+    this.onGroupLayers,
+    this.onUngroupLayers,
     this.selected = false,
     this.isInteractive = false,
     this.callbacks = const ProImageEditorCallbacks(),
@@ -113,6 +115,19 @@ class LayerInteractionHelperWidget extends StatefulWidget
   /// This callback is triggered when the user releases the button after scaling
   /// or rotating, finalizing the interaction.
   final Function(PointerUpEvent)? onScaleRotateUp;
+
+  /// Callback for grouping layers.
+  ///
+  /// This callback is triggered when the user wants to group the current
+  /// layer with other selected layers, creating a group that will be
+  /// selected together.
+  final Function()? onGroupLayers;
+
+  /// Callback for ungrouping layers.
+  ///
+  /// This callback is triggered when the user wants to ungroup the current
+  /// layer, removing it from its current group.
+  final Function()? onUngroupLayers;
 
   /// Data representing the layer's configuration and state.
   ///
@@ -200,6 +215,8 @@ class _LayerInteractionHelperWidgetState
       remove: widget.onRemoveLayer ?? () {},
       scaleRotateDown: _handleScaleRotateDown,
       scaleRotateUp: _handleScaleRotateUp,
+      group: widget.onGroupLayers ?? () {},
+      ungroup: widget.onUngroupLayers ?? () {},
     );
   }
 

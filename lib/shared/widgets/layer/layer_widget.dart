@@ -41,6 +41,8 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
     this.onEditTap,
     this.onRemoveTap,
     this.onDuplicate,
+    this.onGroupLayers,
+    this.onUngroupLayers,
     this.highPerformanceMode = false,
     this.enableHitDetection = false,
     this.selected = false,
@@ -94,6 +96,19 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
 
   /// Callback for editing the layer.
   final Function()? onEditTap;
+
+  /// Callback for grouping layers.
+  ///
+  /// This callback is triggered when the user wants to group the current
+  /// layer with other selected layers, creating a group that will be
+  /// selected together.
+  final Function()? onGroupLayers;
+
+  /// Callback for ungrouping layers.
+  ///
+  /// This callback is triggered when the user wants to ungroup the current
+  /// layer, removing it from its current group.
+  final Function()? onUngroupLayers;
 
   /// Callback for handling pointer down events associated with scale and rotate
   /// gestures.
@@ -388,6 +403,8 @@ class _LayerWidgetState extends State<LayerWidget>
       onScaleRotateUp: widget.onScaleRotateUp,
       onRemoveLayer: widget.onRemoveTap,
       onDuplicate: widget.onDuplicate,
+      onGroupLayers: widget.onGroupLayers,
+      onUngroupLayers: widget.onUngroupLayers,
       child: _buildCursor(
         child: ValueListenableBuilder(
             valueListenable: _lastHitState,

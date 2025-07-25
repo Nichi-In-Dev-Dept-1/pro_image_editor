@@ -11,6 +11,8 @@ class LayerItemInteractions {
     required this.duplicated,
     required this.scaleRotateDown,
     required this.scaleRotateUp,
+    required this.group,
+    required this.ungroup,
   });
 
   /// Callback function for editing the layer.
@@ -33,4 +35,17 @@ class LayerItemInteractions {
   /// This function is required to finalize the scaling and rotation
   /// operations on the layer, applying the changes.
   final Function(PointerUpEvent event) scaleRotateUp;
+
+  /// Callback function for grouping layers.
+  ///
+  /// This function groups the currently selected layers together by assigning
+  /// them the same groupId. When any layer in the group is selected, all
+  /// layers in the group will be selected automatically.
+  final Function() group;
+
+  /// Callback function for ungrouping layers.
+  ///
+  /// This function ungroups the layer by removing its groupId, allowing it
+  /// to be selected independently from other layers.
+  final Function() ungroup;
 }

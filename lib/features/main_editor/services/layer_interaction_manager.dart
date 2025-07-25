@@ -11,6 +11,7 @@ import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/history/last_layer_interaction_position.dart';
 import '/core/models/layers/layer.dart';
 import '/shared/utils/debounce.dart';
+import '/shared/utils/unique_id_generator.dart';
 
 /// A helper class responsible for managing layer interactions in the editor.
 ///
@@ -239,6 +240,181 @@ class LayerInteractionManager {
   void _notifySelectionChanged() {
     onSelectedLayerChanged?.call(selectedLayerId);
     onSelectedLayersChanged?.call(selectedLayerIds);
+  }
+
+  /// Groups the currently selected layers by assigning them a common groupId.
+  ///
+  /// This method creates a group from all currently selected layers by giving
+  /// them the same unique groupId. After grouping, whenever any layer in the
+  /// group is selected, all layers in the group will be automatically selected.
+  ///
+  /// [activeLayers] The list of all active layers in the editor.
+  /// [onHistoryChanged] Callback to trigger when the layer history
+  /// needs to be updated.
+  ///
+  /// Returns the groupId that was assigned to the layers, or null
+  /// if no layers were selected.
+  String? groupSelectedLayers(
+    List<Layer> activeLayers,
+    Function(List<Layer> layers) onHistoryChanged,
+  ) {
+    if (selectedLayerIds.isEmpty) return null;
+
+    // Generate a unique group ID
+    final groupId = generateUniqueId();
+
+    // Create a copy of the layers list for history
+    final updatedLayers = <Layer>[];
+    for (final layer in activeLayers) {
+      final layerCopy = _copyLayer(layer);
+      if (selectedLayerIds.contains(layer.id)) {
+        // Assign the new groupId to selected layers
+        layerCopy.groupId = groupId;
+      }
+      updatedLayers.add(layerCopy);
+    }
+
+    // Update history with the modified layers
+    onHistoryChanged(updatedLayers);
+
+    return groupId;
+  }
+
+  /// Ungroups the specified layer by removing its groupId.
+  ///
+  /// This method removes the groupId from the specified layer and all other
+  /// layers that share the same groupId, effectively breaking the group.
+  ///
+  /// [layer] The layer to ungroup.
+  /// [activeLayers] The list of all active layers in the editor.
+  /// [onHistoryChanged] Callback to trigger when the layer history
+  /// needs to be updated.
+  ///
+  /// Returns true if any layers were ungrouped, false otherwise.
+  bool ungroupLayer(
+    Layer layer,
+    List<Layer> activeLayers,
+    Function(List<Layer> layers) onHistoryChanged,
+  ) {
+    if (layer.groupId == null) return false;
+
+    final groupIdToRemove = layer.groupId!;
+
+    // Create a copy of the layers list for history
+    final updatedLayers = <Layer>[];
+    bool hasChanges = false;
+
+    for (final currentLayer in activeLayers) {
+      final layerCopy = _copyLayer(currentLayer);
+      if (currentLayer.groupId == groupIdToRemove) {
+        // Remove the groupId from layers in the group
+        layerCopy.groupId = null;
+        hasChanges = true;
+      }
+      updatedLayers.add(layerCopy);
+    }
+
+    if (hasChanges) {
+      // Update history with the modified layers
+      onHistoryChanged(updatedLayers);
+    }
+
+    return hasChanges;
+  }
+
+  /// Creates a copy of a layer with all its properties.
+  Layer _copyLayer(Layer originalLayer) {
+    // Copy layer-specific properties based on layer type
+    if (originalLayer is TextLayer) {
+      return TextLayer(
+        id: originalLayer.id,
+        text: originalLayer.text,
+        textStyle: originalLayer.textStyle,
+        colorMode: originalLayer.colorMode,
+        color: originalLayer.color,
+        background: originalLayer.background,
+        colorPickerPosition: originalLayer.colorPickerPosition,
+        align: originalLayer.align,
+        fontScale: originalLayer.fontScale,
+        customSecondaryColor: originalLayer.customSecondaryColor,
+        maxTextWidth: originalLayer.maxTextWidth,
+        hit: originalLayer.hit,
+        key: originalLayer.key,
+        interaction: originalLayer.interaction,
+        offset: originalLayer.offset,
+        rotation: originalLayer.rotation,
+        scale: originalLayer.scale,
+        flipX: originalLayer.flipX,
+        flipY: originalLayer.flipY,
+        isDeleted: originalLayer.isDeleted,
+        meta: originalLayer.meta,
+        boxConstraints: originalLayer.boxConstraints,
+      )..groupId = originalLayer.groupId;
+    } else if (originalLayer is EmojiLayer) {
+      return EmojiLayer(
+        id: originalLayer.id,
+        emoji: originalLayer.emoji,
+        key: originalLayer.key,
+        interaction: originalLayer.interaction,
+        offset: originalLayer.offset,
+        rotation: originalLayer.rotation,
+        scale: originalLayer.scale,
+        flipX: originalLayer.flipX,
+        flipY: originalLayer.flipY,
+        isDeleted: originalLayer.isDeleted,
+        meta: originalLayer.meta,
+        boxConstraints: originalLayer.boxConstraints,
+      )..groupId = originalLayer.groupId;
+    } else if (originalLayer is PaintLayer) {
+      return PaintLayer(
+        id: originalLayer.id,
+        item: originalLayer.item,
+        rawSize: originalLayer.rawSize,
+        opacity: originalLayer.opacity,
+        key: originalLayer.key,
+        interaction: originalLayer.interaction,
+        offset: originalLayer.offset,
+        rotation: originalLayer.rotation,
+        scale: originalLayer.scale,
+        flipX: originalLayer.flipX,
+        flipY: originalLayer.flipY,
+        isDeleted: originalLayer.isDeleted,
+        meta: originalLayer.meta,
+        boxConstraints: originalLayer.boxConstraints,
+      )..groupId = originalLayer.groupId;
+    } else if (originalLayer is WidgetLayer) {
+      return WidgetLayer(
+        id: originalLayer.id,
+        widget: originalLayer.widget,
+        exportConfigs: originalLayer.exportConfigs,
+        key: originalLayer.key,
+        interaction: originalLayer.interaction,
+        offset: originalLayer.offset,
+        rotation: originalLayer.rotation,
+        scale: originalLayer.scale,
+        flipX: originalLayer.flipX,
+        flipY: originalLayer.flipY,
+        isDeleted: originalLayer.isDeleted,
+        meta: originalLayer.meta,
+        boxConstraints: originalLayer.boxConstraints,
+      )..groupId = originalLayer.groupId;
+    }
+
+    // Fallback for base Layer type
+    return Layer(
+      id: originalLayer.id,
+      key: originalLayer.key,
+      interaction: originalLayer.interaction,
+      offset: originalLayer.offset,
+      rotation: originalLayer.rotation,
+      scale: originalLayer.scale,
+      flipX: originalLayer.flipX,
+      flipY: originalLayer.flipY,
+      isDeleted: originalLayer.isDeleted,
+      meta: originalLayer.meta,
+      boxConstraints: originalLayer.boxConstraints,
+      groupId: originalLayer.groupId,
+    );
   }
 
   /// Helper variable for scaling during rotation of a layer.
