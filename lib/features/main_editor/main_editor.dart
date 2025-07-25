@@ -2448,14 +2448,20 @@ class ProImageEditorState extends State<ProImageEditor>
                 onPointerUp: onPointerUp,
                 onPointerSignal: isDesktop && hasSelectedLayers
                     ? (event) {
-                        // If we have multi-selection active, don't handle mouse
-                        // scroll for layer scaling - let it go to editor zoom
                         final hasMultiSelection = selectedLayers.length > 1;
 
-                        if (hasMultiSelection && mainEditorConfigs.enableZoom) {
+                        final zoomEnabled = mainEditorConfigs.enableZoom;
+                        final zoomGestureActive = interactiveViewer
+                                .currentState?.isInteractionEnabled ==
+                            true;
+
+                        if ((hasMultiSelection && zoomEnabled) ||
+                            (zoomEnabled && zoomGestureActive)) {
                           return;
                         }
 
+                        /// Otherwise, handle scroll as a layer scaling
+                        /// interaction.
                         _desktopInteractionManager.mouseScroll(
                           event,
                           selectedLayers: selectedLayers,

@@ -126,6 +126,9 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
   late final AnimationController _animationCtrl;
   late bool _enableInteraction;
 
+  /// A getter that indicates whether interaction is enabled for the viewer.
+  bool get isInteractionEnabled => _enableInteraction;
+
   @override
   void initState() {
     super.initState();
