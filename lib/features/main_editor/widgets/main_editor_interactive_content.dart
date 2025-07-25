@@ -39,7 +39,6 @@ class MainEditorInteractiveContent extends StatelessWidget {
   /// - [layerInteractionManager]: Handles interactions with editor layers.
   /// - [rebuildController]: A stream controller for triggering UI rebuilds.
   /// - [interactiveViewerKey]: A key for managing the interactive viewer state.
-  /// - [selectedLayerIndex]: The index of the currently selected layer.
   /// - [processFinalImage]: Indicates whether the final image is being
   ///   processed.
   const MainEditorInteractiveContent({
@@ -54,7 +53,6 @@ class MainEditorInteractiveContent extends StatelessWidget {
     required this.configs,
     required this.layerInteractionManager,
     required this.controllers,
-    required this.selectedLayerIndex,
     required this.processFinalImage,
     required this.rebuildController,
     required this.stateManager,
@@ -106,9 +104,6 @@ class MainEditorInteractiveContent extends StatelessWidget {
   /// A key for managing the interactive viewer state.
   final GlobalKey<ExtendedInteractiveViewerState> interactiveViewerKey;
 
-  /// The index of the currently selected layer.
-  final int selectedLayerIndex;
-
   /// Indicates whether the final image is being processed.
   final bool processFinalImage;
 
@@ -120,14 +115,14 @@ class MainEditorInteractiveContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isLayerSelected = selectedLayerIndex >= 0;
+    bool hasSelectedLayers = layerInteractionManager.hasSelectedLayers;
 
     return Center(
       child: Stack(
         children: [
           MainEditorFontPreloader(emojiEditorConfigs: configs.emojiEditor),
           Padding(
-            padding: isLayerSelected &&
+            padding: hasSelectedLayers &&
                     configs.layerInteraction.hideToolbarOnInteraction
                 ? EdgeInsets.only(
                     top: sizesManager.appBarHeight,
@@ -144,10 +139,10 @@ class MainEditorInteractiveContent extends StatelessWidget {
           /// Build video controls
           if (isVideoEditor)
             AnimatedOpacity(
-              opacity: isLayerSelected ? 0 : 1,
+              opacity: hasSelectedLayers ? 0 : 1,
               duration: configs.layerInteraction.videoControlsSwitchDuration,
               child: IgnorePointer(
-                ignoring: isLayerSelected,
+                ignoring: hasSelectedLayers,
                 child: VideoEditorConfigurable(
                   controller: videoController!,
                   child: const VideoEditorControlsWidget(),
@@ -158,7 +153,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
           /// Build helper content
           if (!processFinalImage) ...[
             buildHelperLines(),
-            if (selectedLayerIndex >= 0) buildRemoveArea(),
+            buildRemoveArea(),
           ],
 
           /// Build custom body items

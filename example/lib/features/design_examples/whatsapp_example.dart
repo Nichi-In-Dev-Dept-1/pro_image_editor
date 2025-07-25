@@ -161,7 +161,7 @@ class _WhatsAppExampleState extends State<WhatsAppExample>
                                   _whatsAppHelper.filterShowHelper * 2),
                           child: content,
                         ),
-                        if (editor.selectedLayerIndex < 0)
+                        if (!editor.isLayerBeingTransformed)
                           ..._buildWhatsAppWidgets(editor),
                       ],
                     );

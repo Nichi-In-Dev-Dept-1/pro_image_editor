@@ -71,7 +71,7 @@ class _ZoomExampleState extends State<ZoomExample>
                   ReactiveWidget(
                     stream: rebuildStream,
                     builder: (_) =>
-                        editor.selectedLayerIndex >= 0 || editor.isSubEditorOpen
+                        editor.isLayerBeingTransformed || editor.isSubEditorOpen
                             ? const SizedBox.shrink()
                             : Positioned(
                                 bottom: 20,

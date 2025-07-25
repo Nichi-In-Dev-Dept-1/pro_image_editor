@@ -222,8 +222,6 @@ class _LayerWidgetState extends State<LayerWidget>
     // Notify optional onTapUp callback
     widget.onTapUp?.call();
 
-    if (widget.selected) return;
-
     /// Important: To avoid gesture conflicts, we need to create our own
     /// onTap event using the Listener widget instead of GestureDetector.
     /// Below is a minimal example of how this can work. If anyone has

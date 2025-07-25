@@ -15,6 +15,7 @@ class VideoEditorRemoveArea extends StatelessWidget {
     required this.removeAreaKey,
     required this.editor,
     required this.rebuildStream,
+    required this.isLayerBeingTransformed,
   });
 
   /// The global key for the remove area container.
@@ -26,6 +27,9 @@ class VideoEditorRemoveArea extends StatelessWidget {
   /// A stream that triggers UI rebuilds.
   final Stream<void> rebuildStream;
 
+  /// Indicates whether a layer is currently being transformed.
+  final bool isLayerBeingTransformed;
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -34,26 +38,33 @@ class VideoEditorRemoveArea extends StatelessWidget {
         child: StreamBuilder(
             stream: rebuildStream,
             builder: (context, snapshot) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Container(
-                  key: removeAreaKey,
-                  height: kToolbarHeight,
-                  width: kToolbarHeight,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF44336).withAlpha(
-                        editor.layerInteractionManager.hoverRemoveBtn
-                            ? 255
-                            : 100),
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      editor.mainEditorConfigs.icons.removeElementZone,
-                      size: 28,
-                    ),
-                  ),
-                ),
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 160),
+                child: isLayerBeingTransformed
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Container(
+                          key: removeAreaKey,
+                          height: kToolbarHeight,
+                          width: kToolbarHeight,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF44336).withAlpha(
+                                editor.layerInteractionManager.hoverRemoveBtn
+                                    ? 255
+                                    : 100),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              editor.mainEditorConfigs.icons.removeElementZone,
+                              size: 28,
+                            ),
+                          ),
+                        ),
+                      )
+                    : SizedBox.shrink(
+                        key: UniqueKey(),
+                      ),
               );
             }),
       ),

@@ -28,14 +28,11 @@ class MainEditorLayers extends StatefulWidget {
   /// - [controllers]: Manages the main editor's controllers.
   /// - [layerInteraction]: Configurations for layer interactions.
   /// - [layerInteractionManager]: Handles interactions with editor layers.
-  /// - [mouseCursorsKey]: Key for managing mouse cursor regions.
   /// - [activeLayers]: List of active layers in the editor.
-  /// - [selectedLayerIndex]: The index of the currently selected layer.
   /// - [isSubEditorOpen]: Indicates whether a sub-editor is currently open.
   /// - [checkInteractiveViewer]: Callback to check the state of the
   ///   interactive viewer.
   /// - [onTextLayerTap]: Callback triggered when a text layer is tapped.
-  /// - [setTempLayer]: Callback to temporarily set a layer for interaction.
   /// - [onContextMenuToggled]: Callback triggered when the context menu is
   ///   toggled.
   const MainEditorLayers({
@@ -46,14 +43,13 @@ class MainEditorLayers extends StatefulWidget {
     required this.configs,
     required this.callbacks,
     required this.sizesManager,
-    required this.selectedLayerIndex,
     required this.activeLayers,
     required this.isSubEditorOpen,
+    required this.isLayerBeingTransformed,
     required this.checkInteractiveViewer,
     required this.onTextLayerTap,
     required this.onEditPaintLayer,
     required this.state,
-    required this.setTempLayer,
     required this.onContextMenuToggled,
     required this.onDuplicateLayer,
     this.enableMultiSelectMode = false,
@@ -83,14 +79,14 @@ class MainEditorLayers extends StatefulWidget {
   /// List of active layers in the editor.
   final List<Layer> activeLayers;
 
-  /// The index of the currently selected layer.
-  final int selectedLayerIndex;
-
   /// Indicates whether a sub-editor is currently open.
   final bool isSubEditorOpen;
 
   /// If true, always allow multi-select (even without CTRL/SHIFT)
   final bool enableMultiSelectMode;
+
+  /// Indicates whether a layer is currently being transformed.
+  final bool isLayerBeingTransformed;
 
   /// Callback to check the state of the interactive viewer.
   final Function() checkInteractiveViewer;
@@ -100,9 +96,6 @@ class MainEditorLayers extends StatefulWidget {
 
   /// A callback function that is triggered when a paint layer is edited.
   final Function(PaintLayer layer) onEditPaintLayer;
-
-  /// Callback to temporarily set a layer for interaction.
-  final Function(Layer layer) setTempLayer;
 
   /// Callback triggered when a layer should be copied.
   final Function(Layer layer) onDuplicateLayer;
@@ -125,33 +118,46 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   final _mouseCursorsKey = GlobalKey<ExtendedRebuildMouseRegionState>();
 
   bool _isScaleInteractionActive = false;
+  bool _helperIsPointerDownSelected = false;
+
+  late final _layerInteraction = widget.layerInteractionManager;
+
+  bool get _enableMultiSelect =>
+      widget.enableMultiSelectMode ||
+      _keyboard.isCtrlPressed ||
+      _keyboard.isShiftPressed;
 
   // Helper methods for handling layer interactions
-  void _handleEditTap(int index, Layer layer) {
+  void _handleEditTap(Layer layer) {
     if (layer.isTextLayer) {
       widget.onTextLayerTap(layer as TextLayer);
     } else if (layer.isPaintLayer) {
       widget.onEditPaintLayer(layer as PaintLayer);
     } else if (layer.isWidgetLayer) {
       widget.callbacks.stickerEditorCallbacks?.onTapEditSticker
-          ?.call(widget.state, layer as WidgetLayer, index);
+          ?.call(widget.state, layer as WidgetLayer);
     }
   }
 
   void _handleLayerTap(Layer layer) {
     // Only handle selection if selectable
-    if (widget.layerInteractionManager.layersAreSelectable(widget.configs) &&
+    if (_layerInteraction.layersAreSelectable(widget.configs) &&
         layer.interaction.enableSelection) {
-      final allowMultiSelect = widget.enableMultiSelectMode ||
-          _keyboard.isCtrlPressed ||
-          _keyboard.isShiftPressed;
+      final selectedIds = _layerInteraction.selectedLayerIds;
+      final isAlreadySelected =
+          selectedIds.contains(layer.id) && !_helperIsPointerDownSelected;
 
-      final selectedIds = widget.layerInteractionManager.selectedLayerIds;
-      final alreadySelected = selectedIds.contains(layer.id);
-
-      // If not multi-selecting, clear selection first
-      if (!allowMultiSelect) {
-        widget.layerInteractionManager.clearSelectedLayers();
+      if (!_enableMultiSelect) {
+        _layerInteraction.clearSelectedLayers();
+        if (!isAlreadySelected) {
+          _layerInteraction.addSelectedLayer(layer.id);
+        }
+      } else {
+        if (isAlreadySelected) {
+          _layerInteraction.removeSelectedLayer(layer.id);
+        } else {
+          _layerInteraction.addSelectedLayer(layer.id);
+        }
       }
 
       // If the layer has a groupId, select all layers with that groupId
@@ -166,28 +172,12 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
       if (groupIds.isNotEmpty) {
         // Toggle group selection
         if (groupIds.every(selectedIds.contains)) {
-          for (final id in groupIds) {
-            widget.layerInteractionManager.removeSelectedLayer(id);
-          }
+          _layerInteraction.removeMultipleSelectedLayers(groupIds);
         } else {
-          for (final id in groupIds) {
-            widget.layerInteractionManager.addSelectedLayer(id);
-          }
-        }
-      } else {
-        // Toggle single layer
-        if (alreadySelected && allowMultiSelect) {
-          widget.layerInteractionManager.removeSelectedLayer(layer.id);
-        } else {
-          widget.layerInteractionManager.addSelectedLayer(layer.id);
+          _layerInteraction.addMultipleSelectedLayers(groupIds);
         }
       }
-      // After selection, update selectedLayerIndex to last selected (if any)
-      if (widget.layerInteractionManager.selectedLayerIds.isNotEmpty) {
-        final lastId = widget.layerInteractionManager.selectedLayerIds.last;
-        final idx = widget.activeLayers.indexWhere((l) => l.id == lastId);
-        if (idx != -1) widget.state.selectedLayerIndex = idx;
-      }
+
       widget.checkInteractiveViewer();
     } else if (layer.interaction.enableEdit) {
       if (layer.isTextLayer && widget.configs.textEditor.enableEdit) {
@@ -199,13 +189,14 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   }
 
   void _handleTapUp(Layer layer) {
-    if (_isScaleInteractionActive) return;
-    if (widget.layerInteractionManager.hoverRemoveBtn) {
+    if (_isScaleInteractionActive || widget.isLayerBeingTransformed) return;
+    if (_layerInteraction.hoverRemoveBtn) {
       widget.state.removeLayer(layer);
     }
     widget.controllers.uiLayerCtrl.add(null);
     widget.callbacks.mainEditorCallbacks?.handleUpdateUI();
-    widget.state.selectedLayerIndex = -1;
+    _validateClearLayer();
+
     widget.checkInteractiveViewer();
     widget.callbacks.mainEditorCallbacks?.onLayerTapUp?.call(layer);
 
@@ -215,22 +206,42 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
     });
   }
 
-  void _handleTapDown(int index, Layer layer) {
-    if (_isScaleInteractionActive) return;
-    // Only update selectedLayerIndex and tempLayer if not multi-selecting
-
-    if (!(_keyboard.isCtrlPressed || _keyboard.isShiftPressed)) {
-      widget.state.selectedLayerIndex = index;
-      widget.setTempLayer(layer);
+  void _validateClearLayer() {
+    if (!widget.configs.layerInteraction.keepSelectionOnInteraction) {
+      _layerInteraction.clearSelectedLayers();
     }
+  }
+
+  void _handleTapDown(Layer layer) {
+    _helperIsPointerDownSelected = false;
+    if (_isScaleInteractionActive || widget.isLayerBeingTransformed) return;
+
+    /// If a user directly drags a layer, we first need to ensure the layer is
+    /// selected when the pointer goes down.
+    if (_layerInteraction.layersAreSelectable(widget.configs) &&
+        layer.interaction.enableSelection) {
+      final selectedIds = _layerInteraction.selectedLayerIds;
+      bool isAlreadySelected = selectedIds.contains(layer.id);
+
+      if (!isAlreadySelected && (selectedIds.isEmpty || _enableMultiSelect)) {
+        _helperIsPointerDownSelected = true;
+        _layerInteraction.addSelectedLayer(layer.id);
+      } else if (!isAlreadySelected && !_enableMultiSelect) {
+        _helperIsPointerDownSelected = true;
+        _layerInteraction
+          ..clearSelectedLayers()
+          ..addSelectedLayer(layer.id);
+      }
+    }
+
     widget.checkInteractiveViewer();
     widget.callbacks.mainEditorCallbacks?.onLayerTapDown?.call(layer);
   }
 
-  void _handleScaleRotateDown(int index, Size layerOriginalSize, Layer layer) {
+  void _handleScaleRotateDown(Size layerOriginalSize, Layer layer) {
     _isScaleInteractionActive = true;
-    widget.state.selectedLayerIndex = index;
-    widget.layerInteractionManager
+
+    _layerInteraction
       ..rotateScaleLayerSizeHelper = layerOriginalSize
       ..rotateScaleLayerScaleHelper = layer.scale;
     widget.checkInteractiveViewer();
@@ -238,10 +249,10 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
   void _handleScaleRotateUp() {
     _isScaleInteractionActive = false;
-    widget.layerInteractionManager
+    _layerInteraction
       ..rotateScaleLayerSizeHelper = null
       ..rotateScaleLayerScaleHelper = null;
-    widget.state.setState(() => widget.state.selectedLayerIndex = -1);
+    _validateClearLayer();
     widget.checkInteractiveViewer();
     widget.callbacks.mainEditorCallbacks?.handleUpdateUI();
   }
@@ -268,21 +279,18 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      ignoring: widget.selectedLayerIndex >= 0,
-      child: StreamBuilder<bool>(
-        stream: widget.controllers.layerHeroResetCtrl.stream,
-        initialData: false,
-        builder: (context, resetLayerSnapshot) {
-          // Render an empty container when resetting layers
-          if (resetLayerSnapshot.data!) return const SizedBox.shrink();
+    return StreamBuilder<bool>(
+      stream: widget.controllers.layerHeroResetCtrl.stream,
+      initialData: false,
+      builder: (context, resetLayerSnapshot) {
+        // Render an empty container when resetting layers
+        if (resetLayerSnapshot.data!) return const SizedBox.shrink();
 
-          return LayoutBuilder(builder: (context, constraints) {
-            editorBodySize = constraints.biggest;
-            return _buildLayerRepaintBoundary();
-          });
-        },
-      ),
+        return LayoutBuilder(builder: (context, constraints) {
+          editorBodySize = constraints.biggest;
+          return _buildLayerRepaintBoundary();
+        });
+      },
     );
   }
 
@@ -297,25 +305,20 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
             builder: (_, deferId, __) {
               return DeferredPointerHandler(
                 id: deferId,
-                selectedLayerId: widget.layerInteractionManager.selectedLayerId,
+                selectedLayerId: _layerInteraction.selectedLayerId,
                 child: StreamBuilder(
                   stream: widget.controllers.uiLayerCtrl.stream,
                   builder: (context, snapshot) {
                     return GestureDetector(
                       behavior: HitTestBehavior.translucent,
                       onTap: () {
-                        setState(() {
-                          widget.layerInteractionManager.clearSelectedLayers();
-                          widget.state.selectedLayerIndex = -1;
-                        });
+                        _layerInteraction.clearSelectedLayers();
                         widget.checkInteractiveViewer();
+                        setState(() {});
                       },
                       child: Stack(
-                        children: widget.activeLayers
-                            .asMap()
-                            .entries
-                            .map(_buildLayerWidget)
-                            .toList(),
+                        children:
+                            widget.activeLayers.map(_buildLayerWidget).toList(),
                       ),
                     );
                   },
@@ -327,14 +330,11 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   }
 
   /// Builds a single layer widget
-  Widget _buildLayerWidget(MapEntry<int, Layer> entry) {
+  Widget _buildLayerWidget(Layer layer) {
     var bodySize =
         getValidSizeOrDefault(widget.sizesManager.bodySize, editorBodySize);
 
-    int index = entry.key;
-    Layer layer = entry.value;
-    final selected =
-        widget.layerInteractionManager.selectedLayerIds.contains(layer.id);
+    final selected = _layerInteraction.selectedLayerIds.contains(layer.id);
     return LayerWidget(
       key: layer.key,
       configs: widget.configs,
@@ -342,17 +342,16 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
       editorCenterX: bodySize.width / 2,
       editorCenterY: bodySize.height / 2,
       layerData: layer,
-      enableHitDetection: widget.layerInteractionManager.enabledHitDetection,
+      enableHitDetection: _layerInteraction.enabledHitDetection,
       selected: selected,
       isInteractive: !widget.isSubEditorOpen,
-      highPerformanceMode:
-          widget.layerInteractionManager.freeStyleHighPerformance,
-      onEditTap: () => _handleEditTap(index, layer),
+      highPerformanceMode: _layerInteraction.freeStyleHighPerformance,
+      onEditTap: () => _handleEditTap(layer),
       onTap: _handleLayerTap,
       onTapUp: () => _handleTapUp(layer),
-      onTapDown: () => _handleTapDown(index, layer),
+      onTapDown: () => _handleTapDown(layer),
       onScaleRotateDown: (details, layerOriginalSize) =>
-          _handleScaleRotateDown(index, layerOriginalSize, layer),
+          _handleScaleRotateDown(layerOriginalSize, layer),
       onDuplicate: () => widget.onDuplicateLayer(layer),
       onContextMenuToggled: widget.onContextMenuToggled,
       onScaleRotateUp: (details) => _handleScaleRotateUp(),
