@@ -188,10 +188,14 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   }
 
   void _handleTapUp(Layer layer) {
+    if (!_layerInteraction.layersAreSelectable(widget.configs)) {
+      _layerInteraction.clearSelectedLayers();
+    }
     if (_isScaleInteractionActive || widget.isLayerBeingTransformed) return;
     if (_layerInteraction.hoverRemoveBtn) {
       widget.state.removeLayer(layer);
     }
+
     widget.controllers.uiLayerCtrl.add(null);
     widget.callbacks.mainEditorCallbacks?.handleUpdateUI();
     _validateClearLayer();
