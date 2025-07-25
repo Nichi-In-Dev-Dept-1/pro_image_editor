@@ -481,7 +481,7 @@ class ProImageEditorState extends State<ProImageEditor>
   /// If set to `true`, multi-select mode will be active without requiring
   /// the user to hold down CTRL/ SHIFT keys or long-press. This allows
   /// for easier selection of multiple items.
-  bool enableMultiSelectMode = true;
+  bool enableMultiSelectMode = false;
 
   /// Get the current background image.
   late EditorImage? editorImage = widget.editorImage;
@@ -1121,17 +1121,16 @@ class ProImageEditorState extends State<ProImageEditor>
           helperLineCtrl: _controllers.helperLineCtrl,
         );
     } else if (details.pointerCount == 2) {
-      // If we have multi-selection active,
-      //treat two-finger gestures as editor zoom
-      // instead of layer scaling
+      /// If multi-selection is active and the editor is zoomable, treat
+      /// two-finger gestures as zooming the editor instead of scaling a layer.
       final hasMultiSelection = selectedLayers.length > 1;
 
-      if (hasMultiSelection) {
+      if (hasMultiSelection && mainEditorConfigs.enableZoom) {
         interactiveViewer.currentState?.onScaleUpdate(details);
         return;
       }
 
-      // Single layer scaling (original logic)
+      // Layer scaling (original logic)
       layerInteractionManager
         ..freeStyleHighPerformanceScaling =
             paintEditorConfigs.enableFreeStyleHighPerformanceScaling ??

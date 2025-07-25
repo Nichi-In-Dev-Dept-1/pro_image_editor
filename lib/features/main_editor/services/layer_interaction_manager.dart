@@ -567,11 +567,13 @@ class LayerInteractionManager {
       if (layer.interaction.enableRotate) {
         layer.rotation = _getLayerBaseAngle(layer.id) + detail.rotation;
 
-        checkRotationLine(
-          layer: layer,
-          editorSize: editorSize,
-          editorScaleFactor: editorScaleFactor,
-        );
+        if (selectedLayers.length <= 1) {
+          checkRotationLine(
+            layer: layer,
+            editorSize: editorSize,
+            editorScaleFactor: editorScaleFactor,
+          );
+        }
       }
     }
 
