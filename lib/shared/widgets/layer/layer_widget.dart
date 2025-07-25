@@ -1,4 +1,5 @@
 // Dart imports:
+import 'dart:async';
 import 'dart:math';
 
 // Flutter imports:
@@ -35,6 +36,7 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
     this.onContextMenuToggled,
     this.onTapDown,
     this.onTapUp,
+    this.onLongPress,
     this.onTap,
     this.onEditTap,
     this.onRemoveTap,
@@ -77,6 +79,9 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
 
   /// Callback when a tap up event occurs.
   final Function()? onTapUp;
+
+  /// Callback when a long press gesture is detected on the layer.
+  final Function()? onLongPress;
 
   /// Callback triggered when a layer should be copied.
   final Function()? onDuplicate;
@@ -158,8 +163,13 @@ class _LayerWidgetState extends State<LayerWidget>
   late final Offset _fractionalOffset;
 
   final double _tapSlop = 18.0;
+
   Offset? _downPosition;
+  Offset? _lastLayerOffset;
+
   DateTime _tapDownTimestamp = DateTime.now();
+  Timer? _longPressTimer;
+  final Duration _longPressThreshold = const Duration(milliseconds: 500);
 
   @override
   void initState() {
@@ -191,6 +201,7 @@ class _LayerWidgetState extends State<LayerWidget>
   void dispose() {
     _lastHitState.dispose();
     _showMoveCursor.dispose();
+    _longPressTimer?.cancel();
     super.dispose();
   }
 
@@ -212,16 +223,30 @@ class _LayerWidgetState extends State<LayerWidget>
     if (GestureManager.instance.isBlocked) return;
 
     _downPosition = event.position;
+    _lastLayerOffset = _layer.offset;
     _tapDownTimestamp = DateTime.now();
 
     if (_isOutsideHitBox()) return;
     if (!isDesktop || event.buttons != kSecondaryMouseButton) {
       widget.onTapDown?.call();
     }
+
+    // Start long press detection
+    _longPressTimer?.cancel();
+    _longPressTimer = Timer(_longPressThreshold, () {
+      if (_downPosition == null || _lastLayerOffset == null) return;
+
+      final offsetDistance = (_layer.offset - _lastLayerOffset!).distance;
+
+      if (offsetDistance <= 0 && _layer.interaction.enableSelection) {
+        widget.onLongPress?.call();
+      }
+    });
   }
 
   /// Handles a pointer up event on the layer.
   void _onPointerUp(PointerUpEvent event) {
+    _longPressTimer?.cancel();
     if (GestureManager.instance.isBlocked) return;
     // Notify optional onTapUp callback
     widget.onTapUp?.call();

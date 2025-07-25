@@ -119,6 +119,8 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
   bool _isScaleInteractionActive = false;
   bool _helperIsPointerDownSelected = false;
+  bool _helperEnforceMultiSelect = false;
+  Set<String> _temporarySelectedIds = {};
 
   late final _layerInteraction = widget.layerInteractionManager;
 
@@ -139,14 +141,34 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
     }
   }
 
-  void _handleLayerTap(Layer layer) {
+  // If the layer has a groupId, select all layers with that groupId
+  void _handleGroupSelection(Layer layer) {
+    Set<String> groupIds = {};
+    if (layer.groupId != null) {
+      groupIds = widget.activeLayers
+          .where((l) => l.groupId == layer.groupId)
+          .map((l) => l.id)
+          .toSet();
+    }
+
+    if (groupIds.isNotEmpty) {
+      // Toggle group selection
+      if (groupIds.every(_layerInteraction.selectedLayerIds.contains)) {
+        _layerInteraction.removeMultipleSelectedLayers(groupIds);
+      } else {
+        _layerInteraction.addMultipleSelectedLayers(groupIds);
+      }
+    }
+  }
+
+  void _handleLayerTap(Layer layer, {bool enforceMultiSelect = false}) {
     // Only handle selection if selectable
     if (layer.interaction.enableSelection) {
       final selectedIds = _layerInteraction.selectedLayerIds;
       final isAlreadySelected =
           selectedIds.contains(layer.id) && !_helperIsPointerDownSelected;
 
-      if (!_enableMultiSelect) {
+      if (!_enableMultiSelect && !enforceMultiSelect) {
         _layerInteraction.clearSelectedLayers();
         if (!isAlreadySelected) {
           _layerInteraction.addSelectedLayer(layer.id);
@@ -159,23 +181,7 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
         }
       }
 
-      // If the layer has a groupId, select all layers with that groupId
-      Set<String> groupIds = {};
-      if (layer.groupId != null) {
-        groupIds = widget.activeLayers
-            .where((l) => l.groupId == layer.groupId)
-            .map((l) => l.id)
-            .toSet();
-      }
-
-      if (groupIds.isNotEmpty) {
-        // Toggle group selection
-        if (groupIds.every(selectedIds.contains)) {
-          _layerInteraction.removeMultipleSelectedLayers(groupIds);
-        } else {
-          _layerInteraction.addMultipleSelectedLayers(groupIds);
-        }
-      }
+      _handleGroupSelection(layer);
 
       widget.checkInteractiveViewer();
     } else if (layer.interaction.enableEdit) {
@@ -188,6 +194,11 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
   }
 
   void _handleTapUp(Layer layer) {
+    if (_helperEnforceMultiSelect) {
+      _helperEnforceMultiSelect = false;
+      return;
+    }
+
     if (!_layerInteraction.layersAreSelectable(widget.configs)) {
       _layerInteraction.clearSelectedLayers();
     }
@@ -209,20 +220,16 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
     });
   }
 
-  void _validateClearLayer() {
-    if (!widget.configs.layerInteraction.keepSelectionOnInteraction) {
-      _layerInteraction.clearSelectedLayers();
-    }
-  }
-
   void _handleTapDown(Layer layer) {
-    _helperIsPointerDownSelected = false;
     if (_isScaleInteractionActive || widget.isLayerBeingTransformed) return;
+
+    final selectedIds = _layerInteraction.selectedLayerIds;
+    _temporarySelectedIds = {...selectedIds};
+    _helperIsPointerDownSelected = false;
 
     /// If a user directly drags a layer, we first need to ensure the layer is
     /// selected when the pointer goes down.
     if (layer.interaction.enableSelection) {
-      final selectedIds = _layerInteraction.selectedLayerIds;
       bool isAlreadySelected = selectedIds.contains(layer.id);
 
       if (!isAlreadySelected && (selectedIds.isEmpty || _enableMultiSelect)) {
@@ -238,6 +245,12 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
     widget.checkInteractiveViewer();
     widget.callbacks.mainEditorCallbacks?.onLayerTapDown?.call(layer);
+  }
+
+  void _validateClearLayer() {
+    if (!widget.configs.layerInteraction.keepSelectionOnInteraction) {
+      _layerInteraction.clearSelectedLayers();
+    }
   }
 
   void _handleScaleRotateDown(Size layerOriginalSize, Layer layer) {
@@ -336,7 +349,10 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
     var bodySize =
         getValidSizeOrDefault(widget.sizesManager.bodySize, editorBodySize);
 
-    final selected = _layerInteraction.selectedLayerIds.contains(layer.id);
+    final isSelected = _layerInteraction.selectedLayerIds.contains(layer.id);
+    final areLayersSelectable =
+        _layerInteraction.layersAreSelectable(widget.configs);
+
     return LayerWidget(
       key: layer.key,
       configs: widget.configs,
@@ -345,17 +361,26 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
       editorCenterY: bodySize.height / 2,
       layerData: layer,
       enableHitDetection: _layerInteraction.enabledHitDetection,
-      selected: selected,
+      selected: isSelected,
       isInteractive: !widget.isSubEditorOpen,
       highPerformanceMode: _layerInteraction.freeStyleHighPerformance,
-      enableVisibleOverlay:
-          _layerInteraction.layersAreSelectable(widget.configs),
+      enableVisibleOverlay: areLayersSelectable,
       onEditTap: () => _handleEditTap(layer),
       onTap: _handleLayerTap,
       onTapUp: () => _handleTapUp(layer),
       onTapDown: () => _handleTapDown(layer),
       onScaleRotateDown: (details, layerOriginalSize) =>
           _handleScaleRotateDown(layerOriginalSize, layer),
+      onLongPress: () {
+        if (!areLayersSelectable) return;
+        _helperEnforceMultiSelect = true;
+
+        final newIds = {..._temporarySelectedIds, layer.id};
+        if (isSelected) newIds.remove(layer.id);
+        _layerInteraction.setSelectedLayers(newIds);
+        _handleGroupSelection(layer);
+        setState(() {});
+      },
       onDuplicate: () => widget.onDuplicateLayer(layer),
       onContextMenuToggled: widget.onContextMenuToggled,
       onScaleRotateUp: (details) => _handleScaleRotateUp(),

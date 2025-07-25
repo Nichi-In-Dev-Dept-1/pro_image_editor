@@ -1118,12 +1118,12 @@ class ProImageEditorState extends State<ProImageEditor>
       //treat two-finger gestures as editor zoom
       // instead of layer scaling
       final hasMultiSelection = selectedLayers.length > 1;
-      
+
       if (hasMultiSelection) {
         interactiveViewer.currentState?.onScaleUpdate(details);
         return;
       }
-      
+
       // Single layer scaling (original logic)
       layerInteractionManager
         ..freeStyleHighPerformanceScaling =
@@ -2426,11 +2426,11 @@ class ProImageEditorState extends State<ProImageEditor>
                         // If we have multi-selection active, don't handle mouse
                         // scroll for layer scaling - let it go to editor zoom
                         final hasMultiSelection = selectedLayers.length > 1;
-                        
+
                         if (hasMultiSelection) {
                           return;
                         }
-                        
+
                         _desktopInteractionManager.mouseScroll(
                           event,
                           selectedLayers: selectedLayers,
