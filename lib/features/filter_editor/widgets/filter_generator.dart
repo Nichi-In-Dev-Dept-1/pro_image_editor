@@ -37,69 +37,81 @@ class ColorFilterGenerator extends StatefulWidget {
 /// It extends the `State` class, which means it holds mutable state for the
 /// `ColorFilterGenerator` widget.
 class ColorFilterGeneratorState extends State<ColorFilterGenerator> {
-  late Widget _filteredWidget;
+  late List<double> _combinedMatrix;
 
-  late FilterMatrix _tempFilters;
-  late List<TuneAdjustmentMatrix> _tempTuneAdjustments;
+  /// Identity color matrix.
+  final _identityMatrix = <double>[
+    // Row R
+    1, 0, 0, 0, 0,
+    // Row G
+    0, 1, 0, 0, 0,
+    // Row B
+    0, 0, 1, 0, 0,
+    // Row A
+    0, 0, 0, 1, 0
+  ];
 
   @override
   void initState() {
     super.initState();
-    _generateFilteredWidget();
+    _recomputeMatrix();
   }
 
-  /// Generates a filtered widget by applying a series of color filters and
-  /// tune adjustments to the child widget.
-  ///
-  /// This method combines the filters and tune adjustments provided in the
-  /// widget's properties and applies them sequentially to the child widget.
-  /// The resulting widget with all the applied filters is stored in the
-  /// `_filteredWidget` variable.
-  ///
-  /// The filters and tune adjustments are expected to be in the form of color
-  /// matrices, which are
-  /// applied using the `ColorFiltered` widget.
-  ///
-  /// The method performs the following steps:
-  /// 1. Initializes the `tree` variable with the child widget.
-  /// 2. Stores the filters and tune adjustments in temporary variables.
-  /// 3. Combines the filters and tune adjustments into a single list of color
-  /// matrices.
-  /// 4. Iterates through the list of color matrices and applies each one to
-  /// the `tree` widget.
-  /// 5. Stores the final filtered widget in the `_filteredWidget` variable.
-  void _generateFilteredWidget() {
-    Widget tree = widget.child;
-    _tempFilters = widget.filters;
-    _tempTuneAdjustments = widget.tuneAdjustments;
-
-    var list = [
-      ...widget.filters,
-      ...widget.tuneAdjustments.map((item) => item.matrix),
-    ];
-
-    for (int i = 0; i < list.length; i++) {
-      tree = ColorFiltered(
-        colorFilter: ColorFilter.matrix(list[i]),
-        child: tree,
-      );
+  @override
+  void didUpdateWidget(covariant ColorFilterGenerator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.filters.hashCode != widget.filters.hashCode ||
+        oldWidget.tuneAdjustments.hashCode != widget.tuneAdjustments.hashCode) {
+      _recomputeMatrix();
     }
-    _filteredWidget = tree;
   }
 
   /// Refreshes the filter editor by generating the filtered widget and
   /// updating the state.
   void refresh() {
-    _generateFilteredWidget();
+    _recomputeMatrix();
     setState(() {});
+  }
+
+  /// Multiplies two 4×5 color‐matrices (each a List of length 20).
+  /// Returns the composed matrix: applying [b] then [a].
+  List<double> _multiplyMatrices(List<double> a, List<double> b) {
+    const int size = 4;
+    List<double> result = List.filled(20, 0.0);
+
+    for (int row = 0; row < size; row++) {
+      for (int col = 0; col < 5; col++) {
+        double sum = (col == 4) ? a[row * 5 + 4] : 0.0;
+        for (int k = 0; k < size; k++) {
+          sum += a[row * 5 + k] * b[k * 5 + col];
+        }
+        result[row * 5 + col] = sum;
+      }
+    }
+
+    return result;
+  }
+
+  void _recomputeMatrix() {
+    List<double> combinedMatrix = List.of(_identityMatrix);
+
+    // Combine filters
+    for (final filterMatrix in widget.filters) {
+      combinedMatrix = _multiplyMatrices(filterMatrix, combinedMatrix);
+    }
+    // Combine tune adjustments
+    for (final tune in widget.tuneAdjustments) {
+      combinedMatrix = _multiplyMatrices(tune.matrix, combinedMatrix);
+    }
+
+    _combinedMatrix = combinedMatrix;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.filters.hashCode != _tempFilters.hashCode ||
-        widget.tuneAdjustments.hashCode != _tempTuneAdjustments.hashCode) {
-      _generateFilteredWidget();
-    }
-    return _filteredWidget;
+    return ColorFiltered(
+      colorFilter: ColorFilter.matrix(_combinedMatrix),
+      child: widget.child,
+    );
   }
 }
