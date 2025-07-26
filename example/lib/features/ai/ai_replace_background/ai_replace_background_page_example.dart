@@ -153,7 +153,7 @@ class _AiReplaceBackgroundExampleState extends State<AiReplaceBackgroundExample>
             builder: (_) {
               return AnimatedSwitcher(
                 duration: const Duration(milliseconds: 220),
-                child: editor.selectedLayerIndex >= 0 || editor.isSubEditorOpen
+                child: editor.isLayerBeingTransformed || editor.isSubEditorOpen
                     ? SizedBox.shrink(key: UniqueKey())
                     : _buildCommandLine(),
               );

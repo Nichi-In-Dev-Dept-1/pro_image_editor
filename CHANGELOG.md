@@ -1,5 +1,19 @@
 # Changelog
 
+## 11.0.0
+- **FEAT**(multi-select): Layers can now be selected simultaneously using Ctrl, Shift, or long-press gestures.
+- **FEAT**(grouping): Layers can be grouped for unified selection and movement.
+- **FEAT**(main-editor): Added `selectAllLayers` and `unselectAllLayers` methods for bulk selection control.
+- **FEAT**(main-editor): Introduced `enableMultiSelectMode` to allow instant multi-selection without modifier keys.
+- **FEAT**(layer-configs): Added `enableKeyboardMultiSelection` and `enableLongPressMultiSelection` to `LayerInteractionConfigs` for dynamically enabling or disabling multi-selection via keyboard or long press.
+- **FEAT**(remove-area): Applied `AnimatedSwitcher` to the remove area for smooth fade-in/out transitions.
+
+<br/>
+
+#### Breaking Changes
+- Removed `layerIndex` from `onTapEditSticker` in `StickerEditorCallbacks`.
+- Removed `selectedLayerIndex` from `MainEditor`.
+
 ## 10.5.4
 - **FEAT**(text-layers): Delete the edited 'TextLayers' if the new text is empty.
 

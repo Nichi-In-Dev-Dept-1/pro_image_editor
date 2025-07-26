@@ -28,6 +28,8 @@ class LayerInteractionConfigs {
     this.hideToolbarOnInteraction = false,
     this.hideVideoControlsOnInteraction = true,
     this.keepSelectionOnInteraction = true,
+    this.enableKeyboardMultiSelection = true,
+    this.enableLongPressMultiSelection = true,
     this.videoControlsSwitchDuration = const Duration(milliseconds: 220),
     this.icons = const LayerInteractionIcons(),
     this.widgets = const LayerInteractionWidgets(),
@@ -59,6 +61,18 @@ class LayerInteractionConfigs {
   /// If set to `false`, the selection will be cleared upon interaction.
   final bool keepSelectionOnInteraction;
 
+  /// Enables multi-selection using keyboard modifiers (Ctrl or Shift).
+  ///
+  /// When set to `true`, users can select multiple layers by holding down
+  /// Ctrl or Shift while clicking or tapping.
+  final bool enableKeyboardMultiSelection;
+
+  /// Enables multi-selection via long-press gestures.
+  ///
+  /// When set to `true`, users can enter multi-select mode by long-pressing
+  /// on a layer (useful for touch devices).
+  final bool enableLongPressMultiSelection;
+
   /// The duration of the switch animation when the video controls show/hide.
   final Duration videoControlsSwitchDuration;
 
@@ -83,6 +97,8 @@ class LayerInteractionConfigs {
     bool? hideToolbarOnInteraction,
     bool? hideVideoControlsOnInteraction,
     bool? keepSelectionOnInteraction,
+    bool? enableKeyboardMultiSelection,
+    bool? enableLongPressMultiSelection,
     Duration? videoControlsSwitchDuration,
     LayerInteractionIcons? icons,
     LayerInteractionWidgets? widgets,
@@ -99,6 +115,10 @@ class LayerInteractionConfigs {
           hideVideoControlsOnInteraction ?? this.hideVideoControlsOnInteraction,
       keepSelectionOnInteraction:
           keepSelectionOnInteraction ?? this.keepSelectionOnInteraction,
+      enableKeyboardMultiSelection:
+          enableKeyboardMultiSelection ?? this.enableKeyboardMultiSelection,
+      enableLongPressMultiSelection:
+          enableLongPressMultiSelection ?? this.enableLongPressMultiSelection,
       videoControlsSwitchDuration:
           videoControlsSwitchDuration ?? this.videoControlsSwitchDuration,
       style: style ?? this.style,

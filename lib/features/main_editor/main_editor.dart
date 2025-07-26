@@ -378,6 +378,7 @@ class ProImageEditorState extends State<ProImageEditor>
   late final LayerInteractionManager layerInteractionManager =
       LayerInteractionManager(
     onSelectedLayerChanged: mainEditorCallbacks?.onSelectedLayerChanged,
+    onSelectedLayersChanged: mainEditorCallbacks?.onSelectedLayersChanged,
     helperLinesCallbacks: mainEditorCallbacks?.helperLines,
     configs: configs,
   );
@@ -402,12 +403,6 @@ class ProImageEditorState extends State<ProImageEditor>
 
   /// The current theme used by the image editor.
   late ThemeData _theme;
-
-  /// Temporary layer used during editing.
-  Layer? _tempLayer;
-
-  /// Index of the selected layer.
-  int selectedLayerIndex = -1;
 
   /// Flag indicating if the editor has been initialized.
   bool _isInitialized = false;
@@ -446,11 +441,25 @@ class ProImageEditorState extends State<ProImageEditor>
 
   bool _isVideoPlayerReady = true;
 
-  /// Getter for the active layer currently being edited.
-  Layer? get _activeLayer =>
-      activeLayers.length > selectedLayerIndex && selectedLayerIndex >= 0
-          ? activeLayers[selectedLayerIndex]
-          : null;
+  /// Whether a layer is currently being transformed
+  /// (e.g., moved, scaled, or rotated).
+  bool isLayerBeingTransformed = false;
+
+  /// Returns `true` if one or more layers are currently selected.
+  bool get hasSelectedLayers => layerInteractionManager.hasSelectedLayers;
+
+  /// Returns the most recently selected layer, or `null` if no layer is
+  /// selected.
+  Layer? get selectedLayer => hasSelectedLayers
+      ? activeLayers.lastWhere((layer) =>
+          layerInteractionManager.selectedLayerIds.contains(layer.id))
+      : null;
+
+  /// Returns a list of all currently selected layers.
+  List<Layer> get selectedLayers => activeLayers
+      .where((layer) =>
+          layerInteractionManager.selectedLayerIds.contains(layer.id))
+      .toList();
 
   /// Get the list of layers from the current image editor changes.
   List<Layer> get activeLayers => stateManager.activeLayers;
@@ -466,6 +475,18 @@ class ProImageEditorState extends State<ProImageEditor>
 
   /// Indicates whether video editor is enabled.
   late final bool _isVideoEditor = widget.videoController != null;
+
+  /// Determines whether multi-select mode is always enabled.
+  ///
+  /// If set to `true`, multi-select mode will be active without requiring
+  /// the user to hold down CTRL/ SHIFT keys or long-press. This allows
+  /// for easier selection of multiple items.
+  bool get enableMultiSelectMode => _enableMultiSelectMode;
+  bool _enableMultiSelectMode = false;
+  set enableMultiSelectMode(bool value) {
+    _enableMultiSelectMode = value;
+    setState(() {});
+  }
 
   /// Get the current background image.
   late EditorImage? editorImage = widget.editorImage;
@@ -553,7 +574,7 @@ class ProImageEditorState extends State<ProImageEditor>
   void _checkInteractiveViewer() {
     if (mainEditorConfigs.canZoomWhenLayerSelected) return;
     interactiveViewer.currentState?.setEnableInteraction(
-      selectedLayerIndex < 0 && layerInteractionManager.selectedLayerId.isEmpty,
+      !hasSelectedLayers,
     );
   }
 
@@ -561,7 +582,7 @@ class ProImageEditorState extends State<ProImageEditor>
   bool _onKeyEvent(KeyEvent event) {
     return _desktopInteractionManager.onKey(
       event,
-      activeLayer: _activeLayer,
+      selectedLayers: selectedLayers,
       onEscape: () {
         if (!_isDialogOpen && !_isContextMenuOpen) {
           if (isSubEditorOpen) {
@@ -685,7 +706,7 @@ class ProImageEditorState extends State<ProImageEditor>
     required int index,
     required Layer layer,
   }) {
-    layerInteractionManager.selectedLayerId = '';
+    layerInteractionManager.clearSelectedLayers();
     addHistory(
       layers: [...activeLayers]
         ..removeAt(index)
@@ -763,24 +784,16 @@ class ProImageEditorState extends State<ProImageEditor>
       }
     }
 
-    layerInteractionManager.selectedLayerId = '';
-
     addHistory(newLayer: layer, blockCaptureScreenshot: blockCaptureScreenshot);
 
     if (removeLayerIndex >= 0) {
       activeLayers.removeAt(removeLayerIndex);
     }
-    if (!blockSelectLayer &&
-        layerInteractionManager.layersAreSelectable(configs) &&
-        layerInteraction.initialSelected) {
-      /// Skip one frame to ensure captured image in separate thread will not
-      /// capture the border.
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        layerInteractionManager.selectedLayerId = layer.id;
-        _controllers.uiLayerCtrl.add(null);
-        _checkInteractiveViewer();
-      });
+    if (!blockSelectLayer) {
+      layerInteractionManager.addSelectedLayer(layer.id);
     }
+    _checkInteractiveViewer();
+
     mainEditorCallbacks?.handleAddLayer(layer);
     setState(() {});
   }
@@ -789,24 +802,22 @@ class ProImageEditorState extends State<ProImageEditor>
   ///
   /// This method removes a layer from the editor and updates the editing state.
   void removeLayer(
-    Layer? layer, {
+    Layer layer, {
     bool blockCaptureScreenshot = false,
   }) {
-    int layerPos = activeLayers
-        .indexWhere((element) => element.id == (layer?.id ?? _tempLayer!.id));
-    if (layerPos >= 0) {
-      stateManager.activeLayers[layerPos] =
-          _layerCopyManager.copyLayer(_tempLayer ?? layer!);
+    int layerPos = activeLayers.indexOf(layer);
+    if (layerPos < 0) return;
 
-      mainEditorCallbacks
-          ?.handleRemoveLayer(stateManager.activeLayers[layerPos]);
+    mainEditorCallbacks?.handleRemoveLayer(layer);
 
-      var layers = _layerCopyManager.copyLayerList(activeLayers)
-        ..removeAt(layerPos);
-      addHistory(
-          layers: layers, blockCaptureScreenshot: blockCaptureScreenshot);
-      setState(() {});
-    }
+    var layers = _layerCopyManager.copyLayerList(activeLayers)
+      ..removeAt(layerPos);
+
+    addHistory(
+      layers: layers,
+      blockCaptureScreenshot: blockCaptureScreenshot,
+    );
+    setState(() {});
   }
 
   /// Remove all layers from the editor.
@@ -816,28 +827,6 @@ class ProImageEditorState extends State<ProImageEditor>
   void removeAllLayers() {
     addHistory(layers: []);
     setState(() {});
-  }
-
-  /// Update the temporary layer in the editor.
-  ///
-  /// This method updates the temporary layer in the editor and updates the
-  /// editing state.
-  void _updateTempLayer() {
-    addHistory();
-    if (!layerInteraction.keepSelectionOnInteraction) {
-      layerInteractionManager.selectedLayerId = '';
-    }
-    _checkInteractiveViewer();
-    _controllers.uiLayerCtrl.add(null);
-
-    List<Layer> oldLayers =
-        stateHistory[stateManager.historyPointer - 1].layers;
-    int oldIndex =
-        oldLayers.indexWhere((element) => element.id == _tempLayer!.id);
-    if (oldIndex >= 0) {
-      oldLayers[oldIndex] = _layerCopyManager.copyLayer(_tempLayer!);
-    }
-    _tempLayer = null;
   }
 
   void _initializeVideoEditor() async {
@@ -972,11 +961,6 @@ class ProImageEditorState extends State<ProImageEditor>
     mainEditorCallbacks?.handleUpdateUI();
   }
 
-  /// Set the temporary layer to a copy of the provided layer.
-  void _setTempLayer(Layer layer) {
-    _tempLayer = _layerCopyManager.copyLayer(layer);
-  }
-
   void _calcAppBarHeight() {
     double? renderedBottomBarHeight =
         _bottomBarKey.currentContext?.size?.height;
@@ -1023,9 +1007,8 @@ class ProImageEditorState extends State<ProImageEditor>
       tuneAdjustments: [...oldHistory.tuneAdjustments],
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _backgroundImageColorFilterKey.currentState?.refresh();
-      }
+      if (!mounted) return;
+      _backgroundImageColorFilterKey.currentState?.refresh();
     });
   }
 
@@ -1044,27 +1027,22 @@ class ProImageEditorState extends State<ProImageEditor>
       _calcAppBarHeight();
     }
 
-    layerInteractionManager
-      ..snapStartPosX = details.focalPoint.dx
-      ..snapStartPosY = details.focalPoint.dy;
-
-    if (selectedLayerIndex < 0) {
+    if (!hasSelectedLayers) {
       interactiveViewer.currentState?.onScaleStart(details);
       return;
     }
 
-    var layer = activeLayers[selectedLayerIndex];
+    /// We add a new history entry that will be updated live during layer
+    /// interaction.
+    /// Important: No screenshot is taken at this point; it will be captured
+    /// after the layer interaction is completed.
+    addHistory(blockCaptureScreenshot: true);
 
-    if (layerInteractionManager.selectedLayerId != layer.id) {
-      layerInteractionManager.selectedLayerId =
-          layerInteractionManager.layersAreSelectable(configs) ? layer.id : '';
-      _checkInteractiveViewer();
-    }
-
-    _setTempLayer(layer);
-
+    _checkInteractiveViewer();
+    isLayerBeingTransformed = hasSelectedLayers;
     layerInteractionManager.onScaleStart(
-      selectedLayer: layer,
+      details: details,
+      selectedLayers: selectedLayers,
     );
 
     setState(() {});
@@ -1078,7 +1056,7 @@ class ProImageEditorState extends State<ProImageEditor>
   void _onScaleUpdate(ScaleUpdateDetails details) {
     mainEditorCallbacks?.handleScaleUpdate(details);
     if (blockOnScaleUpdateFunction) return;
-    if (selectedLayerIndex < 0) {
+    if (!hasSelectedLayers) {
       interactiveViewer.currentState?.onScaleUpdate(details);
       return;
     }
@@ -1101,7 +1079,8 @@ class ProImageEditorState extends State<ProImageEditor>
       }
     }
 
-    if (_activeLayer == null) return;
+    if (!hasSelectedLayers) return;
+
     if (layerInteractionManager.rotateScaleLayerSizeHelper != null) {
       layerInteractionManager
         ..freeStyleHighPerformanceScaling =
@@ -1109,7 +1088,7 @@ class ProImageEditorState extends State<ProImageEditor>
                 !isDesktop
         ..calculateInteractiveButtonScaleRotate(
           configs: configs,
-          activeLayer: _activeLayer!,
+          selectedLayers: selectedLayers,
           details: details,
           editorSize: sizesManager.bodySize,
           layerTheme: layerInteraction.style,
@@ -1117,7 +1096,9 @@ class ProImageEditorState extends State<ProImageEditor>
           editorScaleOffset:
               interactiveViewer.currentState?.offset ?? Offset.zero,
         );
-      _activeLayer!.key.currentState!.setState(() {});
+      for (Layer layer in selectedLayers) {
+        layer.key.currentState!.setState(() {});
+      }
       checkUpdateHelperLineUI();
       return;
     }
@@ -1134,7 +1115,7 @@ class ProImageEditorState extends State<ProImageEditor>
         ..calculateMovement(
           editorScaleFactor: editorScaleFactor,
           removeAreaKey: _removeAreaKey,
-          activeLayer: _activeLayer!,
+          selectedLayers: selectedLayers,
           layerList: activeLayers,
           context: context,
           detail: details,
@@ -1145,21 +1126,33 @@ class ProImageEditorState extends State<ProImageEditor>
           helperLineCtrl: _controllers.helperLineCtrl,
         );
     } else if (details.pointerCount == 2) {
+      /// If multi-selection is active and the editor is zoomable, treat
+      /// two-finger gestures as zooming the editor instead of scaling a layer.
+      final hasMultiSelection = selectedLayers.length > 1;
+
+      if (hasMultiSelection && mainEditorConfigs.enableZoom) {
+        interactiveViewer.currentState?.onScaleUpdate(details);
+        return;
+      }
+
+      // Layer scaling (original logic)
       layerInteractionManager
         ..freeStyleHighPerformanceScaling =
             paintEditorConfigs.enableFreeStyleHighPerformanceScaling ??
                 !isDesktop
         ..calculateScaleRotate(
           configs: configs,
-          activeLayer: _activeLayer!,
+          selectedLayers: selectedLayers,
           detail: details,
           editorSize: sizesManager.bodySize,
           screenPaddingHelper: sizesManager.imageMargin,
           editorScaleFactor: editorScaleFactor,
         );
     }
-    mainEditorCallbacks?.handleUpdateLayer(_activeLayer!);
-    _activeLayer?.key.currentState?.setState(() {});
+    for (Layer layer in selectedLayers) {
+      mainEditorCallbacks?.handleUpdateLayer(layer);
+      layer.key.currentState?.setState(() {});
+    }
     checkUpdateHelperLineUI();
   }
 
@@ -1170,14 +1163,29 @@ class ProImageEditorState extends State<ProImageEditor>
   void _onScaleEnd(ScaleEndDetails details) async {
     mainEditorCallbacks?.handleScaleEnd(details);
 
-    if (selectedLayerIndex < 0) {
+    /// Check if layers should be removed.
+    if (layerInteractionManager.hoverRemoveBtn) {
+      for (Layer layer in selectedLayers) {
+        activeLayers.remove(layer);
+        mainEditorCallbacks?.handleRemoveLayer(layer);
+      }
+      layerInteractionManager.clearSelectedLayers();
+    }
+
+    if (!hasSelectedLayers) {
       interactiveViewer.currentState?.onScaleEnd(details);
+    } else {
+      /// At this point, we only create a screenshot since the new history
+      /// entry was already added in [_onScaleStart].
+      _takeScreenshot(replaceLastScreenshot: true);
+      if (!layerInteraction.keepSelectionOnInteraction) {
+        layerInteractionManager.clearSelectedLayers();
+      }
     }
 
-    if (!layerInteractionManager.hoverRemoveBtn && _tempLayer != null) {
-      _updateTempLayer();
-    }
-
+    isLayerBeingTransformed = false;
+    _checkInteractiveViewer();
+    _controllers.uiLayerCtrl.add(null);
     layerInteractionManager.onScaleEnd();
     setState(() {});
   }
@@ -1190,7 +1198,7 @@ class ProImageEditorState extends State<ProImageEditor>
   ///
   /// [layerData] - The text layer data to be edited.
   void _onTextLayerTap(TextLayer layerData) async {
-    TextLayer? layer = await openPage(
+    TextLayer? updatedLayer = await openPage(
       TextEditor(
         key: textEditor,
         layer: layerData,
@@ -1207,36 +1215,23 @@ class ProImageEditorState extends State<ProImageEditor>
       duration: const Duration(milliseconds: 250),
     );
 
-    if (layer == null || !mounted) return;
+    if (updatedLayer == null || !mounted) return;
 
-    if (layer.text.isEmpty) {
+    updatedLayer
+      ..id = layerData.id
+      ..flipX = layerData.flipX
+      ..flipY = layerData.flipY
+      ..offset = layerData.offset
+      ..scale = layerData.scale
+      ..rotation = layerData.rotation;
+
+    if (updatedLayer.text.isEmpty) {
       removeLayer(layerData);
       return;
     }
 
     int i = activeLayers.indexWhere((element) => element.id == layerData.id);
-    if (i >= 0) {
-      _setTempLayer(layerData);
-      (activeLayers[i] as TextLayer)
-        ..text = layer.text
-        ..background = layer.background
-        ..color = layer.color
-        ..colorMode = layer.colorMode
-        ..colorPickerPosition = layer.colorPickerPosition
-        ..align = layer.align
-        ..fontScale = layer.fontScale
-        ..textStyle = layer.textStyle
-        ..id = layerData.id
-        ..flipX = layerData.flipX
-        ..flipY = layerData.flipY
-        ..offset = layerData.offset
-        ..scale = layerData.scale
-        ..customSecondaryColor = layer.customSecondaryColor
-        ..maxTextWidth = layer.maxTextWidth
-        ..rotation = layerData.rotation;
-
-      _updateTempLayer();
-    }
+    if (i >= 0) activeLayers[i] = updatedLayer;
 
     setState(() {});
     mainEditorCallbacks?.handleUpdateUI();
@@ -1279,19 +1274,13 @@ class ProImageEditorState extends State<ProImageEditor>
     ServicesBinding.instance.keyboard.removeHandler(_onKeyEvent);
   }
 
-  void _selectLayerAfterHeroIsDone(String id) {
+  void _selectLayerAfterHeroIsDone(String id) async {
     if (layerInteractionManager.layersAreSelectable(configs) &&
         layerInteraction.initialSelected) {
-      /// Skip one frame to ensure captured image in separate thread will not
-      /// capture the border.
-      Future.delayed(const Duration(milliseconds: 1), () async {
-        if (isSubEditorOpen) await _pageOpenCompleter.future;
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          layerInteractionManager.selectedLayerId = id;
-          _checkInteractiveViewer();
-          setState(() {});
-        });
-      });
+      if (isSubEditorOpen) await _pageOpenCompleter.future;
+      layerInteractionManager.addSelectedLayer(id);
+      _checkInteractiveViewer();
+      _controllers.uiLayerCtrl.add(null);
     }
   }
 
@@ -1302,7 +1291,7 @@ class ProImageEditorState extends State<ProImageEditor>
     Widget page, {
     Duration duration = const Duration(milliseconds: 300),
   }) {
-    layerInteractionManager.selectedLayerId = '';
+    layerInteractionManager.clearSelectedLayers();
     _checkInteractiveViewer();
     isSubEditorOpen = true;
 
@@ -1474,10 +1463,16 @@ class ProImageEditorState extends State<ProImageEditor>
 
     if (result == null) return;
 
+    String lastLayerId = '';
     for (var i = 0; i < result.layers.length; i++) {
       final layer = result.layers[i];
+      final duplicatedLayer = _layerCopyManager.duplicateLayer(
+        layer,
+        offset: Offset.zero,
+      );
+      lastLayerId = duplicatedLayer.id;
       addLayer(
-        _layerCopyManager.duplicateLayer(layer, offset: Offset.zero),
+        duplicatedLayer,
         blockSelectLayer: true,
         blockCaptureScreenshot: true,
         autoCorrectZoomOffset: false,
@@ -1488,11 +1483,11 @@ class ProImageEditorState extends State<ProImageEditor>
       removeLayer(layer, blockCaptureScreenshot: true);
     }
 
-    if (result.layers.isNotEmpty) {
-      _selectLayerAfterHeroIsDone(result.layers.last.id);
-      _takeScreenshot();
+    if (lastLayerId.isNotEmpty) {
+      _selectLayerAfterHeroIsDone(lastLayerId);
     }
 
+    _takeScreenshot(replaceLastScreenshot: true);
     setState(() {});
     mainEditorCallbacks?.handleUpdateUI();
   }
@@ -1726,7 +1721,7 @@ class ProImageEditorState extends State<ProImageEditor>
   /// active and restored
   /// after its closure.
   void openEmojiEditor() async {
-    setState(() => layerInteractionManager.selectedLayerId = '');
+    setState(() => layerInteractionManager.clearSelectedLayers());
     _checkInteractiveViewer();
     ServicesBinding.instance.keyboard.removeHandler(_onKeyEvent);
     final effectiveBoxConstraints = emojiEditorConfigs
@@ -1895,7 +1890,7 @@ class ProImageEditorState extends State<ProImageEditor>
     GestureManager.instance.stopPropagation();
     if (stateManager.canUndo) {
       setState(() {
-        layerInteractionManager.selectedLayerId = '';
+        layerInteractionManager.clearSelectedLayers();
         _checkInteractiveViewer();
         stateManager.undo();
         decodeImage();
@@ -1914,7 +1909,7 @@ class ProImageEditorState extends State<ProImageEditor>
   void redoAction() {
     if (stateManager.canRedo) {
       setState(() {
-        layerInteractionManager.selectedLayerId = '';
+        layerInteractionManager.clearSelectedLayers();
         _checkInteractiveViewer();
         stateManager.redo();
         decodeImage();
@@ -1932,9 +1927,13 @@ class ProImageEditorState extends State<ProImageEditor>
   ///   loaded.
   /// - The screenshot is taken in a post-frame callback to ensure the UI is
   ///   fully rendered.
-  void _takeScreenshot() async {
+  void _takeScreenshot({bool replaceLastScreenshot = false}) async {
     // Wait for the editor to be fully open, if it is currently opening
     if (isSubEditorOpen) await _pageOpenCompleter.future;
+
+    if (replaceLastScreenshot) {
+      stateManager.screenshots.removeLast();
+    }
 
     // Capture the screenshot in a post-frame callback to ensure the UI is fully
     // rendered
@@ -1973,7 +1972,7 @@ class ProImageEditorState extends State<ProImageEditor>
     /// a correct image.
     setState(() {
       _isProcessingFinalImage = true;
-      layerInteractionManager.selectedLayerId = '';
+      layerInteractionManager.clearSelectedLayers();
       _checkInteractiveViewer();
     });
 
@@ -2266,12 +2265,10 @@ class ProImageEditorState extends State<ProImageEditor>
   }
 
   /// Clears the currently selected layer by:
-  /// - Resetting the selected layer index to -1
   /// - Clearing the selected layer ID in the [layerInteractionManager]
   /// - Notifying listeners via [_controllers.uiLayerCtrl]
   void clearLayerSelection() {
-    selectedLayerIndex = -1;
-    layerInteractionManager.selectedLayerId = '';
+    layerInteractionManager.clearSelectedLayers();
     _controllers.uiLayerCtrl.add(null);
   }
 
@@ -2283,7 +2280,7 @@ class ProImageEditorState extends State<ProImageEditor>
   /// are notified.
   ///
   /// Returns the selected [Layer] or `null` if the index is invalid.
-  Layer? selectLayerByIndex(int index) {
+  Layer? selectLayerByIndex(int index, {bool enableMultiSelect = false}) {
     if (index < 0 || index >= activeLayers.length) {
       clearLayerSelection();
       return null;
@@ -2291,10 +2288,7 @@ class ProImageEditorState extends State<ProImageEditor>
 
     var layer = activeLayers[index];
 
-    layerInteractionManager.selectedLayerId = layer.id;
-    _controllers.uiLayerCtrl.add(null);
-
-    return activeLayers[index];
+    return selectLayerById(layer.id, enableMultiSelect: enableMultiSelect);
   }
 
   /// Selects a layer by its unique [id].
@@ -2303,9 +2297,29 @@ class ProImageEditorState extends State<ProImageEditor>
   ///
   /// Returns the selected [Layer] or `null` if the ID does not match any
   /// active layer.
-  Layer? selectLayerById(String id) {
-    var index = activeLayers.indexWhere((layer) => layer.id == id);
-    return selectLayerByIndex(index);
+  Layer? selectLayerById(String id, {bool enableMultiSelect = false}) {
+    int index = activeLayers.indexWhere((layer) => layer.id == id);
+    Layer? layer = activeLayers[index];
+
+    if (!enableMultiSelect) layerInteractionManager.clearSelectedLayers();
+
+    layerInteractionManager.addSelectedLayer(id);
+    _controllers.uiLayerCtrl.add(null);
+    return layer;
+  }
+
+  /// Selects all available layers.
+  void selectAllLayers() {
+    layerInteractionManager.setSelectedLayers(
+      activeLayers.map((layer) => layer.id),
+    );
+    _controllers.uiLayerCtrl.add(null);
+  }
+
+  /// Deselects all currently selected layers.
+  void unselectAllLayers() {
+    layerInteractionManager.clearSelectedLayers();
+    _controllers.uiLayerCtrl.add(null);
   }
 
   @override
@@ -2396,7 +2410,7 @@ class ProImageEditorState extends State<ProImageEditor>
           .call(this, _rebuildController.stream);
     }
 
-    return selectedLayerIndex >= 0 &&
+    return hasSelectedLayers &&
             configs.layerInteraction.hideToolbarOnInteraction
         ? null
         : MainEditorAppBar(
@@ -2432,24 +2446,35 @@ class ProImageEditorState extends State<ProImageEditor>
                   mainEditorCallbacks?.onDoubleTap?.call();
                 },
                 onPointerUp: onPointerUp,
-                onPointerSignal: isDesktop && _activeLayer != null
+                onPointerSignal: isDesktop && hasSelectedLayers
                     ? (event) {
-                        if (_activeLayer == null) return;
+                        final hasMultiSelection = selectedLayers.length > 1;
+
+                        final zoomEnabled = mainEditorConfigs.enableZoom;
+                        final zoomGestureActive = interactiveViewer
+                                .currentState?.isInteractionEnabled ==
+                            true;
+
+                        if ((hasMultiSelection && zoomEnabled) ||
+                            (zoomEnabled && zoomGestureActive)) {
+                          return;
+                        }
+
+                        /// Otherwise, handle scroll as a layer scaling
+                        /// interaction.
                         _desktopInteractionManager.mouseScroll(
                           event,
-                          activeLayer: _activeLayer!,
-                          selectedLayerIndex: selectedLayerIndex,
+                          selectedLayers: selectedLayers,
                         );
                       }
                     : null,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: () {
-                    if (layerInteractionManager.selectedLayerId.isNotEmpty) {
-                      layerInteractionManager.selectedLayerId = '';
-                      _checkInteractiveViewer();
-                      setState(() {});
-                    }
+                    /// Only clear selection if the tap is not on any layer
+                    /// (e.g., background/canvas tap)
+                    /// This block should be triggered only for true
+                    /// background taps.
                     if (!configs.videoEditor.enablePlayButton) {
                       widget.videoController?.togglePlayState();
                     }
@@ -2483,7 +2508,6 @@ class ProImageEditorState extends State<ProImageEditor>
       configs: configs,
       layerInteractionManager: layerInteractionManager,
       controllers: _controllers,
-      selectedLayerIndex: selectedLayerIndex,
       processFinalImage: _isProcessingFinalImage,
       rebuildController: _rebuildController,
       stateManager: stateManager,
@@ -2500,7 +2524,7 @@ class ProImageEditorState extends State<ProImageEditor>
           .call(this, _rebuildController.stream, _bottomBarKey);
     }
 
-    return selectedLayerIndex >= 0 &&
+    return hasSelectedLayers &&
             configs.layerInteraction.hideToolbarOnInteraction
         ? null
         : MainEditorBottombar(
@@ -2528,14 +2552,14 @@ class ProImageEditorState extends State<ProImageEditor>
       configs: configs,
       callbacks: callbacks,
       sizesManager: sizesManager,
-      selectedLayerIndex: selectedLayerIndex,
       activeLayers: activeLayers,
       isSubEditorOpen: isSubEditorOpen,
+      isLayerBeingTransformed: isLayerBeingTransformed,
       checkInteractiveViewer: _checkInteractiveViewer,
       onTextLayerTap: _onTextLayerTap,
       onEditPaintLayer: _editPaintLayer,
       state: this,
-      setTempLayer: _setTempLayer,
+      enableMultiSelectMode: enableMultiSelectMode,
       onContextMenuToggled: (isOpen) {
         _isContextMenuOpen = isOpen;
       },
@@ -2562,9 +2586,6 @@ class ProImageEditorState extends State<ProImageEditor>
   }
 
   Widget _buildRemoveArea() {
-    if (_activeLayer?.interaction.enableMove == false) {
-      return const SizedBox.shrink();
-    }
     return MainEditorRemoveLayerArea(
       layerInteraction: layerInteraction,
       layerInteractionManager: layerInteractionManager,
@@ -2572,6 +2593,7 @@ class ProImageEditorState extends State<ProImageEditor>
       state: this,
       controllers: _controllers,
       removeAreaKey: _removeAreaKey,
+      isLayerBeingTransformed: isLayerBeingTransformed,
     );
   }
 

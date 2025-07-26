@@ -58,10 +58,13 @@ class LayerInteractionHelperWidget extends StatefulWidget
     this.onDuplicate,
     this.onScaleRotateDown,
     this.onScaleRotateUp,
+    this.onGroupLayers,
+    this.onUngroupLayers,
     this.selected = false,
     this.isInteractive = false,
     this.callbacks = const ProImageEditorCallbacks(),
     this.forceIgnoreGestures = false,
+    this.enableVisibleOverlay = false,
   });
 
   /// The configuration settings for the image editor.
@@ -113,6 +116,19 @@ class LayerInteractionHelperWidget extends StatefulWidget
   /// or rotating, finalizing the interaction.
   final Function(PointerUpEvent)? onScaleRotateUp;
 
+  /// Callback for grouping layers.
+  ///
+  /// This callback is triggered when the user wants to group the current
+  /// layer with other selected layers, creating a group that will be
+  /// selected together.
+  final Function()? onGroupLayers;
+
+  /// Callback for ungrouping layers.
+  ///
+  /// This callback is triggered when the user wants to ungroup the current
+  /// layer, removing it from its current group.
+  final Function()? onUngroupLayers;
+
   /// Data representing the layer's configuration and state.
   ///
   /// This data is used to determine the layer's appearance, behavior, and the
@@ -136,6 +152,9 @@ class LayerInteractionHelperWidget extends StatefulWidget
   ///
   /// If true, the layer is highlighted, and interaction buttons are displayed.
   final bool selected;
+
+  /// A flag to enable or disable the visibility of the overlay.
+  final bool enableVisibleOverlay;
 
   @override
   State<LayerInteractionHelperWidget> createState() =>
@@ -196,6 +215,8 @@ class _LayerInteractionHelperWidgetState
       remove: widget.onRemoveLayer ?? () {},
       scaleRotateDown: _handleScaleRotateDown,
       scaleRotateUp: _handleScaleRotateUp,
+      group: widget.onGroupLayers ?? () {},
+      ungroup: widget.onUngroupLayers ?? () {},
     );
   }
 
@@ -209,10 +230,18 @@ class _LayerInteractionHelperWidgetState
     String layerId = widget.layerData.id;
     var deferManager = DeferManager.maybeOf(context);
 
-    if (!widget.isInteractive ||
-        (!widget.selected && deferManager?.selectedLayerId != '')) {
+    if (!widget.isInteractive) {
       // Return the child widget directly if the layer is not interactive.
       return widget.child;
+    }
+
+    Widget child = DeferPointer(
+      key: ValueKey('Defer-${deferManager?.id ?? ''}-$layerId'),
+      child: widget.child,
+    );
+
+    if (!widget.enableVisibleOverlay) {
+      return child;
     }
 
     return OverlayPortal.overlayChildLayoutBuilder(
@@ -264,7 +293,7 @@ class _LayerInteractionHelperWidgetState
       },
       child: DeferPointer(
         key: ValueKey('Defer-${deferManager?.id ?? ''}-$layerId'),
-        child: widget.child,
+        child: child,
       ),
     );
   }

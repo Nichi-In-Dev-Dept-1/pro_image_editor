@@ -1,4 +1,5 @@
 // Dart imports:
+import 'dart:async';
 import 'dart:math';
 
 // Flutter imports:
@@ -35,14 +36,18 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
     this.onContextMenuToggled,
     this.onTapDown,
     this.onTapUp,
+    this.onLongPress,
     this.onTap,
     this.onEditTap,
     this.onRemoveTap,
     this.onDuplicate,
+    this.onGroupLayers,
+    this.onUngroupLayers,
     this.highPerformanceMode = false,
     this.enableHitDetection = false,
     this.selected = false,
     this.isInteractive = false,
+    this.enableVisibleOverlay = false,
     this.callbacks = const ProImageEditorCallbacks(),
   });
   @override
@@ -77,6 +82,9 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
   /// Callback when a tap up event occurs.
   final Function()? onTapUp;
 
+  /// Callback when a long press gesture is detected on the layer.
+  final Function()? onLongPress;
+
   /// Callback triggered when a layer should be copied.
   final Function()? onDuplicate;
 
@@ -88,6 +96,19 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
 
   /// Callback for editing the layer.
   final Function()? onEditTap;
+
+  /// Callback for grouping layers.
+  ///
+  /// This callback is triggered when the user wants to group the current
+  /// layer with other selected layers, creating a group that will be
+  /// selected together.
+  final Function()? onGroupLayers;
+
+  /// Callback for ungrouping layers.
+  ///
+  /// This callback is triggered when the user wants to ungroup the current
+  /// layer, removing it from its current group.
+  final Function()? onUngroupLayers;
 
   /// Callback for handling pointer down events associated with scale and rotate
   /// gestures.
@@ -131,6 +152,9 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
   /// Indicates whether the layer is interactive.
   final bool isInteractive;
 
+  /// A flag to enable or disable the visibility of the overlay.
+  final bool enableVisibleOverlay;
+
   @override
   createState() => _LayerWidgetState();
 }
@@ -154,8 +178,14 @@ class _LayerWidgetState extends State<LayerWidget>
   late final Offset _fractionalOffset;
 
   final double _tapSlop = 18.0;
+
   Offset? _downPosition;
+  Offset? _lastLayerOffset;
+  int? _temporaryLayerHash;
+
   DateTime _tapDownTimestamp = DateTime.now();
+  Timer? _longPressTimer;
+  final Duration _longPressThreshold = const Duration(milliseconds: 500);
 
   @override
   void initState() {
@@ -187,6 +217,7 @@ class _LayerWidgetState extends State<LayerWidget>
   void dispose() {
     _lastHitState.dispose();
     _showMoveCursor.dispose();
+    _longPressTimer?.cancel();
     super.dispose();
   }
 
@@ -208,21 +239,38 @@ class _LayerWidgetState extends State<LayerWidget>
     if (GestureManager.instance.isBlocked) return;
 
     _downPosition = event.position;
+    _lastLayerOffset = _layer.offset;
+    _temporaryLayerHash = _layer.hashCode;
     _tapDownTimestamp = DateTime.now();
 
     if (_isOutsideHitBox()) return;
     if (!isDesktop || event.buttons != kSecondaryMouseButton) {
       widget.onTapDown?.call();
     }
+
+    // Start long press detection
+    _longPressTimer?.cancel();
+    _longPressTimer = Timer(_longPressThreshold, () {
+      if (_downPosition == null ||
+          _lastLayerOffset == null ||
+          _temporaryLayerHash != _layer.hashCode) {
+        return;
+      }
+
+      final offsetDistance = (_layer.offset - _lastLayerOffset!).distance;
+
+      if (offsetDistance <= 0 && _layer.interaction.enableSelection) {
+        widget.onLongPress?.call();
+      }
+    });
   }
 
   /// Handles a pointer up event on the layer.
   void _onPointerUp(PointerUpEvent event) {
+    _longPressTimer?.cancel();
     if (GestureManager.instance.isBlocked) return;
     // Notify optional onTapUp callback
     widget.onTapUp?.call();
-
-    if (widget.selected) return;
 
     /// Important: To avoid gesture conflicts, we need to create our own
     /// onTap event using the Listener widget instead of GestureDetector.
@@ -348,12 +396,15 @@ class _LayerWidgetState extends State<LayerWidget>
       forceIgnoreGestures:
           !(interaction.enableSelection || interaction.enableEdit),
       isInteractive: widget.isInteractive,
+      enableVisibleOverlay: widget.enableVisibleOverlay,
       onScaleRotateDown: (details) {
         widget.onScaleRotateDown?.call(details, context.size ?? Size.zero);
       },
       onScaleRotateUp: widget.onScaleRotateUp,
       onRemoveLayer: widget.onRemoveTap,
       onDuplicate: widget.onDuplicate,
+      onGroupLayers: widget.onGroupLayers,
+      onUngroupLayers: widget.onUngroupLayers,
       child: _buildCursor(
         child: ValueListenableBuilder(
             valueListenable: _lastHitState,

@@ -28,6 +28,7 @@ class MainEditorRemoveLayerArea extends StatelessWidget {
     required this.state,
     required this.controllers,
     required this.removeAreaKey,
+    required this.isLayerBeingTransformed,
   });
 
   /// Represents the current state of the editor.
@@ -48,12 +49,16 @@ class MainEditorRemoveLayerArea extends StatelessWidget {
   /// Key for identifying and managing the remove area widget.
   final GlobalKey<State<StatefulWidget>> removeAreaKey;
 
+  /// Indicates whether a layer is currently being transformed.
+  final bool isLayerBeingTransformed;
+
   @override
   Widget build(BuildContext context) {
     return mainEditorConfigs.widgets.removeLayerArea?.call(
           removeAreaKey,
           state,
           controllers.removeBtnCtrl.stream,
+          isLayerBeingTransformed,
         ) ??
         Positioned(
           key: removeAreaKey,
@@ -62,28 +67,36 @@ class MainEditorRemoveLayerArea extends StatelessWidget {
           child: SafeArea(
             bottom: false,
             child: StreamBuilder(
-                stream: controllers.removeBtnCtrl.stream,
-                builder: (context, snapshot) {
-                  return Container(
-                    height: kToolbarHeight,
-                    width: kToolbarHeight,
-                    decoration: BoxDecoration(
-                      color: layerInteractionManager.hoverRemoveBtn
-                          ? layerInteraction.style.removeAreaBackgroundActive
-                          : layerInteraction.style.removeAreaBackgroundInactive,
-                      borderRadius: const BorderRadius.only(
-                          bottomRight: Radius.circular(100)),
-                    ),
-                    padding: const EdgeInsets.only(right: 12, bottom: 7),
-                    child: Center(
-                      child: Icon(
-                        mainEditorConfigs.icons.removeElementZone,
-                        size: 28,
-                      ),
-                    ),
-                  );
-                }),
+              stream: controllers.removeBtnCtrl.stream,
+              builder: (_, __) => _buildRemoveWidget(),
+            ),
           ),
         );
+  }
+
+  Widget _buildRemoveWidget() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 160),
+      child: isLayerBeingTransformed
+          ? Container(
+              height: kToolbarHeight,
+              width: kToolbarHeight,
+              decoration: BoxDecoration(
+                color: layerInteractionManager.hoverRemoveBtn
+                    ? layerInteraction.style.removeAreaBackgroundActive
+                    : layerInteraction.style.removeAreaBackgroundInactive,
+                borderRadius:
+                    const BorderRadius.only(bottomRight: Radius.circular(100)),
+              ),
+              padding: const EdgeInsets.only(right: 12, bottom: 7),
+              child: Center(
+                child: Icon(
+                  mainEditorConfigs.icons.removeElementZone,
+                  size: 28,
+                ),
+              ),
+            )
+          : SizedBox.shrink(key: UniqueKey()),
+    );
   }
 }

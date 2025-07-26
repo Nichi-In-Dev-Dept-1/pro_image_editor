@@ -42,6 +42,7 @@ class PaintLayer extends Layer {
     super.meta,
     super.boxConstraints,
     super.key,
+    super.groupId,
   });
 
   /// Factory constructor for creating a PaintLayer instance from a
@@ -65,6 +66,7 @@ class PaintLayer extends Layer {
       scale: layer.scale,
       isDeleted: layer.isDeleted,
       meta: layer.meta,
+      groupId: layer.groupId,
       opacity: safeParseDouble(map[keyConverter('opacity')], fallback: 1.0),
       rawSize: Size(
         safeParseDouble(map[keyConverter('rawSize')]?['w'], fallback: 0),

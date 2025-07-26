@@ -46,6 +46,7 @@ class Layer {
     this.isDeleted = false,
     this.meta,
     this.boxConstraints,
+    this.groupId,
   })  : key = key ??= GlobalKey(),
         keyInternalSize = GlobalKey(),
         id = id ?? generateUniqueId(),
@@ -79,7 +80,6 @@ class Layer {
       );
     }
 
-    /// Creates a base Layer instance with default or map-provided properties.
     Layer layer = Layer(
       id: id,
       flipX: map[keyConverter('flipX')] ?? false,
@@ -94,6 +94,7 @@ class Layer {
       rotation: safeParseDouble(map[keyConverter('rotation')]),
       scale: safeParseDouble(map[keyConverter('scale')], fallback: 1),
       boxConstraints: boxConstraints,
+      groupId: map[keyConverter('groupId')],
     );
 
     /// Determines the layer type from the map and returns the appropriate
@@ -126,6 +127,9 @@ class Layer {
         return layer;
     }
   }
+
+  /// Optional group identifier for grouping layers.
+  String? groupId;
 
   /// Global key associated with the Layer instance, used for accessing the
   /// widget tree.
@@ -205,7 +209,8 @@ class Layer {
       'interaction': interaction.toMap(),
       if (meta != null) 'meta': meta,
       'type': 'default',
-      if (boxConstraints != null) 'boxConstraints': boxConstraints!.toMap()
+      if (boxConstraints != null) 'boxConstraints': boxConstraints!.toMap(),
+      if (groupId != null) 'groupId': groupId,
     };
   }
 
@@ -228,7 +233,8 @@ class Layer {
       if (layer.interaction != interaction)
         'interaction': interaction.toMapFromReference(layer.interaction),
       if (layer.boxConstraints != boxConstraints)
-        'boxConstraints': boxConstraints!.toMap()
+        'boxConstraints': boxConstraints!.toMap(),
+      if (layer.groupId != groupId) 'groupId': groupId,
     };
   }
 
@@ -300,6 +306,7 @@ class Layer {
         other.flipY == flipY &&
         other.interaction == interaction &&
         other.boxConstraints == boxConstraints &&
+        other.groupId == groupId &&
         mapIsEqual(other.meta, meta) &&
         other.isDeleted == isDeleted;
   }
@@ -315,6 +322,7 @@ class Layer {
         interaction.hashCode ^
         boxConstraints.hashCode ^
         meta.hashCode ^
+        groupId.hashCode ^
         isDeleted.hashCode;
   }
 }

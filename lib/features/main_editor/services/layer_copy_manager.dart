@@ -139,7 +139,7 @@ class LayerCopyManager {
       customSecondaryColor: layer.customSecondaryColor,
       interaction: layer.interaction.copyWith(),
       boxConstraints: layer.boxConstraints?.copyWith(),
-    );
+    )..groupId = layer.groupId;
   }
 
   /// Create a copy of an EmojiLayer instance.
@@ -165,7 +165,7 @@ class LayerCopyManager {
       meta: layer.meta,
       interaction: layer.interaction.copyWith(),
       boxConstraints: layer.boxConstraints?.copyWith(),
-    );
+    )..groupId = layer.groupId;
   }
 
   /// Create a copy of an WidgetLayer instance.
@@ -192,7 +192,7 @@ class LayerCopyManager {
       interaction: layer.interaction.copyWith(),
       boxConstraints: layer.boxConstraints?.copyWith(),
       exportConfigs: layer.exportConfigs.copyWith(),
-    );
+    )..groupId = layer.groupId;
   }
 
   /// Create a copy of a PaintLayer instance.
@@ -220,6 +220,6 @@ class LayerCopyManager {
       opacity: layer.opacity,
       interaction: layer.interaction.copyWith(),
       boxConstraints: layer.boxConstraints?.copyWith(),
-    );
+    )..groupId = layer.groupId;
   }
 }

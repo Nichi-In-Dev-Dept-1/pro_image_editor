@@ -154,11 +154,17 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
                 ),
                 mainEditor: MainEditorConfigs(
                   widgets: MainEditorWidgets(
-                    removeLayerArea: (removeAreaKey, editor, rebuildStream) =>
+                    removeLayerArea: (
+                      removeAreaKey,
+                      editor,
+                      rebuildStream,
+                      isLayerBeingTransformed,
+                    ) =>
                         VideoEditorRemoveArea(
                       removeAreaKey: removeAreaKey,
                       editor: editor,
                       rebuildStream: rebuildStream,
+                      isLayerBeingTransformed: isLayerBeingTransformed,
                     ),
                   ),
                 ),
