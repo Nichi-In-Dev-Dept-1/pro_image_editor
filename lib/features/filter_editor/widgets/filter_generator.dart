@@ -2,6 +2,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../tune_editor/models/tune_adjustment_matrix.dart';
+import '../constants/identity_matrix_constant.dart';
 import '../types/filter_matrix.dart';
 
 /// A widget for applying color filters to its child widget.
@@ -38,18 +39,6 @@ class ColorFilterGenerator extends StatefulWidget {
 /// `ColorFilterGenerator` widget.
 class ColorFilterGeneratorState extends State<ColorFilterGenerator> {
   late List<double> _combinedMatrix;
-
-  /// Identity color matrix.
-  final _identityMatrix = <double>[
-    // Row R
-    1, 0, 0, 0, 0,
-    // Row G
-    0, 1, 0, 0, 0,
-    // Row B
-    0, 0, 1, 0, 0,
-    // Row A
-    0, 0, 0, 1, 0
-  ];
 
   @override
   void initState() {
@@ -93,7 +82,7 @@ class ColorFilterGeneratorState extends State<ColorFilterGenerator> {
   }
 
   void _recomputeMatrix() {
-    List<double> combinedMatrix = List.of(_identityMatrix);
+    List<double> combinedMatrix = List.of(identityMatrix);
 
     // Combine filters
     for (final filterMatrix in widget.filters) {

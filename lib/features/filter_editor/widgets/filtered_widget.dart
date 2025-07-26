@@ -66,7 +66,6 @@ class FilteredWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget content = _buildContent();
     return SizedBox(
       width: width,
       height: height,
@@ -75,12 +74,11 @@ class FilteredWidget extends StatelessWidget {
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
-          content,
           ColorFilterGenerator(
             key: filterKey,
             filters: filters,
             tuneAdjustments: tuneAdjustments,
-            child: content,
+            child: _buildContent(),
           ),
           if (blurFactor > 0) _buildBlur(),
         ],

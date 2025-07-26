@@ -234,7 +234,7 @@ class ExportStateHistory {
     history = convertedLayer.history;
 
     return {
-      minifier.convertMainKey('version'): ExportImportVersion.version_6_2_0,
+      minifier.convertMainKey('version'): ExportImportVersion.version_6_3_0,
       if (_configs.enableMinify) minifier.convertMainKey('minify'): true,
       minifier.convertMainKey('position'):
           _configs.historySpan == ExportHistorySpan.current ||
