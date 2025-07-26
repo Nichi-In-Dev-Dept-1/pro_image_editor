@@ -33,8 +33,12 @@ class ExportImportVersion {
   static const version_6_1_0 = '6.1.0';
 
   /// The version string representing version `6.2.0` which is used in the
-  /// editor version >= `10.4.1`.
+  /// editor version >= `10.4.1` && < `11.0.0`.
   static const version_6_2_0 = '6.2.0';
+
+  /// The version string representing version `6.3.0` which is used in the
+  /// editor version >= `11.0.0`.
+  static const version_6_3_0 = '6.3.0';
 }
 
 /// An extension on the `String` class that provides functionality

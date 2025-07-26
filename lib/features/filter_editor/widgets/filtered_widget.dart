@@ -74,39 +74,33 @@ class FilteredWidget extends StatelessWidget {
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
-          _buildContent(),
           ColorFilterGenerator(
             key: filterKey,
             filters: filters,
             tuneAdjustments: tuneAdjustments,
             child: _buildContent(),
           ),
-          ClipRect(
-            clipBehavior: Clip.hardEdge,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: blurFactor, sigmaY: blurFactor),
-              child: Container(
-                width: width,
-                height: height,
-                alignment: Alignment.center,
-                color: Colors.white.withValues(alpha: 0.0),
-              ),
-            ),
-          ),
+          if (blurFactor > 0) _buildBlur(),
         ],
       ),
     );
   }
 
-  Widget _buildContent() {
-    if (videoPlayer == null) {
-      return _buildImage();
-    } else {
-      return _buildVideo();
-    }
+  Widget _buildBlur() {
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blurFactor, sigmaY: blurFactor),
+        child: SizedBox(
+          width: width,
+          height: height,
+        ),
+      ),
+    );
   }
 
-  Widget _buildImage() {
+  Widget _buildContent() {
+    if (videoPlayer != null) return videoPlayer!;
+
     return AutoImage(
       image!,
       fit: fit,
@@ -114,9 +108,5 @@ class FilteredWidget extends StatelessWidget {
       height: height,
       configs: configs,
     );
-  }
-
-  Widget _buildVideo() {
-    return videoPlayer!;
   }
 }

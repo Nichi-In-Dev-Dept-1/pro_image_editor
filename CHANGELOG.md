@@ -10,9 +10,15 @@
 
 <br/>
 
+- **PERF**(GPU): Improved GPU performance by optimizing transformation and color filter matrices, especially beneficial when multiple filters or tune adjustments are applied.
+
+<br/>
+
 #### Breaking Changes
 - Removed `layerIndex` from `onTapEditSticker` in `StickerEditorCallbacks`.
 - Removed `selectedLayerIndex` from `MainEditor`.
+- Remove `ColorFilterAddons.opacity`.
+- The way the editor handles multiple filters and tune adjustments has changed, so combinations might now appear slightly differently.
 
 ## 10.5.4
 - **FEAT**(text-layers): Delete the edited 'TextLayers' if the new text is empty.
