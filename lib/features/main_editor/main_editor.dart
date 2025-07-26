@@ -35,6 +35,7 @@ import 'mixins/main_editor_global_keys.dart';
 import 'providers/image_infos_provider.dart';
 import 'services/desktop_interaction_manager.dart';
 import 'services/layer_copy_manager.dart';
+import 'services/layer_drag_selection_service.dart';
 import 'services/layer_interaction_manager.dart';
 import 'services/main_editor_state_history_service.dart';
 import 'services/sizes_manager.dart';
@@ -400,6 +401,14 @@ class ProImageEditorState extends State<ProImageEditor>
 
   /// Controller instances for managing various aspects of the main editor.
   late final MainEditorControllers _controllers;
+
+  late final _layerDragSelectionService = LayerDragSelectionService(
+    layerInteractionManager: layerInteractionManager,
+    activeLayers: () => activeLayers,
+    bodySize: () => sizesManager.bodySize,
+    configs: configs,
+    onUpdateLayers: () => _controllers.uiLayerCtrl.add(null),
+  );
 
   /// The current theme used by the image editor.
   late ThemeData _theme;
@@ -1028,6 +1037,7 @@ class ProImageEditorState extends State<ProImageEditor>
     }
 
     if (!hasSelectedLayers) {
+      _layerDragSelectionService.startDragging(details.localFocalPoint);
       interactiveViewer.currentState?.onScaleStart(details);
       return;
     }
@@ -1056,8 +1066,14 @@ class ProImageEditorState extends State<ProImageEditor>
   void _onScaleUpdate(ScaleUpdateDetails details) {
     mainEditorCallbacks?.handleScaleUpdate(details);
     if (blockOnScaleUpdateFunction) return;
-    if (!hasSelectedLayers) {
+
+    if (!hasSelectedLayers &&
+        mainEditorConfigs.enableZoom &&
+        !enableMultiSelectMode) {
       interactiveViewer.currentState?.onScaleUpdate(details);
+      return;
+    } else if (_layerDragSelectionService.isActive) {
+      _layerDragSelectionService.updateSize(details.localFocalPoint);
       return;
     }
 
@@ -1162,6 +1178,7 @@ class ProImageEditorState extends State<ProImageEditor>
   /// lines and flags.
   void _onScaleEnd(ScaleEndDetails details) async {
     mainEditorCallbacks?.handleScaleEnd(details);
+    _layerDragSelectionService.endDragging();
 
     /// Check if layers should be removed.
     if (layerInteractionManager.hoverRemoveBtn) {
@@ -2430,67 +2447,64 @@ class ProImageEditorState extends State<ProImageEditor>
       sizesManager.bodySize = constraints.biggest;
       return !_isVideoPlayerReady
           ? _buildSetupSpinner()
-          : AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: Listener(
-                behavior: HitTestBehavior.translucent,
-                onPointerDown: (details) {
-                  if (layerInteractionManager.selectedLayerId.isNotEmpty ||
-                      GestureManager.instance.isBlocked) {
-                    return;
-                  }
-                  bool isDoubleTap = detectDoubleTap(details);
-                  if (!isDoubleTap) return;
+          : Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: (details) {
+                if (layerInteractionManager.selectedLayerId.isNotEmpty ||
+                    GestureManager.instance.isBlocked) {
+                  return;
+                }
+                bool isDoubleTap = detectDoubleTap(details);
+                if (!isDoubleTap) return;
 
-                  handleDoubleTap(context, details, mainEditorConfigs);
-                  mainEditorCallbacks?.onDoubleTap?.call();
-                },
-                onPointerUp: onPointerUp,
-                onPointerSignal: isDesktop && hasSelectedLayers
-                    ? (event) {
-                        final hasMultiSelection = selectedLayers.length > 1;
+                handleDoubleTap(context, details, mainEditorConfigs);
+                mainEditorCallbacks?.onDoubleTap?.call();
+              },
+              onPointerUp: onPointerUp,
+              onPointerSignal: isDesktop && hasSelectedLayers
+                  ? (event) {
+                      final hasMultiSelection = selectedLayers.length > 1;
 
-                        final zoomEnabled = mainEditorConfigs.enableZoom;
-                        final zoomGestureActive = interactiveViewer
-                                .currentState?.isInteractionEnabled ==
-                            true;
+                      final zoomEnabled = mainEditorConfigs.enableZoom;
+                      final zoomGestureActive = interactiveViewer
+                              .currentState?.isInteractionEnabled ==
+                          true;
 
-                        if ((hasMultiSelection && zoomEnabled) ||
-                            (zoomEnabled && zoomGestureActive)) {
-                          return;
-                        }
-
-                        /// Otherwise, handle scroll as a layer scaling
-                        /// interaction.
-                        _desktopInteractionManager.mouseScroll(
-                          event,
-                          selectedLayers: selectedLayers,
-                        );
+                      if ((hasMultiSelection && zoomEnabled) ||
+                          (zoomEnabled && zoomGestureActive)) {
+                        return;
                       }
-                    : null,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    /// Only clear selection if the tap is not on any layer
-                    /// (e.g., background/canvas tap)
-                    /// This block should be triggered only for true
-                    /// background taps.
-                    if (!configs.videoEditor.enablePlayButton) {
-                      widget.videoController?.togglePlayState();
+
+                      /// Otherwise, handle scroll as a layer scaling
+                      /// interaction.
+                      _desktopInteractionManager.mouseScroll(
+                        event,
+                        selectedLayers: selectedLayers,
+                      );
                     }
-                    mainEditorCallbacks?.onTap?.call();
-                  },
-                  onLongPress: mainEditorCallbacks?.onLongPress,
-                  onScaleStart: _onScaleStart,
-                  onScaleUpdate: _onScaleUpdate,
-                  onScaleEnd: _onScaleEnd,
-                  child: mainEditorConfigs.widgets.wrapBody?.call(
-                        this,
-                        _rebuildController.stream,
-                        _buildInteractiveContent(),
-                      ) ??
+                  : null,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  /// Only clear selection if the tap is not on any layer
+                  /// (e.g., background/canvas tap)
+                  /// This block should be triggered only for true
+                  /// background taps.
+                  if (!configs.videoEditor.enablePlayButton) {
+                    widget.videoController?.togglePlayState();
+                  }
+                  mainEditorCallbacks?.onTap?.call();
+                },
+                onLongPress: mainEditorCallbacks?.onLongPress,
+                onScaleStart: _onScaleStart,
+                onScaleUpdate: _onScaleUpdate,
+                onScaleEnd: _onScaleEnd,
+                child: mainEditorConfigs.widgets.wrapBody?.call(
+                      this,
+                      _rebuildController.stream,
                       _buildInteractiveContent(),
-                ),
+                    ) ??
+                    _buildInteractiveContent(),
               ),
             );
     });
@@ -2515,6 +2529,7 @@ class ProImageEditorState extends State<ProImageEditor>
       state: this,
       videoController: widget.videoController,
       isVideoEditor: _isVideoEditor,
+      layerDragSelectionService: _layerDragSelectionService,
     );
   }
 

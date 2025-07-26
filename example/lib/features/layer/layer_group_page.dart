@@ -18,7 +18,7 @@ class _LayerGroupPageState extends State<LayerGroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ai-Integration'),
+        title: const Text('Layers'),
       ),
       body: ListView(
         shrinkWrap: true,

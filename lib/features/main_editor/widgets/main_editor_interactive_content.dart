@@ -10,10 +10,12 @@ import '/features/main_editor/services/layer_interaction_manager.dart';
 import '/shared/controllers/video_controller.dart';
 import '/shared/services/content_recorder/widgets/content_recorder.dart';
 import '/shared/widgets/extended/interactive_viewer/extended_interactive_viewer.dart';
+import '/shared/widgets/layer/layer_drag_selection_area_widget.dart';
 import '/shared/widgets/video/video_editor_configurable.dart';
 import '/shared/widgets/video/video_editor_controls_widget.dart';
 import '../../crop_rotate_editor/enums/crop_mode.enum.dart';
 import '../main_editor.dart';
+import '../services/layer_drag_selection_service.dart';
 import '../services/sizes_manager.dart';
 import '../services/state_manager.dart';
 import 'main_editor_font_preloader.dart';
@@ -60,6 +62,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
     required this.state,
     required this.isVideoEditor,
     required this.videoController,
+    required this.layerDragSelectionService,
   });
 
   /// A builder function to create the image widget.
@@ -113,6 +116,9 @@ class MainEditorInteractiveContent extends StatelessWidget {
   /// Manages video-related functionalities within the main editor.
   final ProVideoController? videoController;
 
+  /// Manages the drag-to-select layer interaction.
+  final LayerDragSelectionService layerDragSelectionService;
+
   @override
   Widget build(BuildContext context) {
     bool hasSelectedLayers = layerInteractionManager.hasSelectedLayers;
@@ -154,6 +160,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
           if (!processFinalImage) ...[
             buildHelperLines(),
             buildRemoveArea(),
+            _buildLayerSelector(),
           ],
 
           /// Build custom body items
@@ -164,6 +171,12 @@ class MainEditorInteractiveContent extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLayerSelector() {
+    return LayerDragSelectionAreaWidget(
+      layerDragSelectionService: layerDragSelectionService,
     );
   }
 

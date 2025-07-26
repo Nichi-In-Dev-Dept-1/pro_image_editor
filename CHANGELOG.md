@@ -5,6 +5,7 @@
 - **FEAT**(grouping): Layers can be grouped for unified selection and movement.
 - **FEAT**(main-editor): Added `selectAllLayers` and `unselectAllLayers` methods for bulk selection control.
 - **FEAT**(main-editor): Introduced `enableMultiSelectMode` to allow instant multi-selection without modifier keys.
+- **FEAT**(drag-selection): Added support for selecting multiple layers by dragging a rectangle around them.
 - **FEAT**(layer-configs): Added `enableKeyboardMultiSelection` and `enableLongPressMultiSelection` to `LayerInteractionConfigs` for dynamically enabling or disabling multi-selection via keyboard or long press.
 - **FEAT**(remove-area): Applied `AnimatedSwitcher` to the remove area for smooth fade-in/out transitions.
 

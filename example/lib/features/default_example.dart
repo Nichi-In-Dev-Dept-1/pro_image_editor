@@ -35,8 +35,10 @@ class DefaultExample extends StatefulWidget {
 class _DefaultExampleState extends State<DefaultExample>
     with ExampleHelperState<DefaultExample> {
   late final _configs = ProImageEditorConfigs(
-    designMode: platformDesignMode,
-  );
+      designMode: platformDesignMode,
+      textEditor: const TextEditorConfigs(
+        layerFractionalOffset: Offset(0, 0),
+      ));
   late final _callbacks = ProImageEditorCallbacks(
     onImageEditingStarted: onImageEditingStarted,
     onImageEditingComplete: onImageEditingComplete,

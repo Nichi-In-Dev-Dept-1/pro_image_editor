@@ -30,6 +30,7 @@ class LayerInteractionConfigs {
     this.keepSelectionOnInteraction = true,
     this.enableKeyboardMultiSelection = true,
     this.enableLongPressMultiSelection = true,
+    this.enableLayerDragSelection = true,
     this.videoControlsSwitchDuration = const Duration(milliseconds: 220),
     this.icons = const LayerInteractionIcons(),
     this.widgets = const LayerInteractionWidgets(),
@@ -73,6 +74,14 @@ class LayerInteractionConfigs {
   /// on a layer (useful for touch devices).
   final bool enableLongPressMultiSelection;
 
+  /// Whether drag-to-select functionality is enabled.
+  ///
+  /// This only takes effect if [selectable] is set to
+  /// [LayerInteractionSelectable.enabled], or when set to
+  /// [LayerInteractionSelectable.auto], it must be running on a desktop
+  /// platform (Windows, macOS, or Linux).
+  final bool enableLayerDragSelection;
+
   /// The duration of the switch animation when the video controls show/hide.
   final Duration videoControlsSwitchDuration;
 
@@ -99,6 +108,7 @@ class LayerInteractionConfigs {
     bool? keepSelectionOnInteraction,
     bool? enableKeyboardMultiSelection,
     bool? enableLongPressMultiSelection,
+    bool? enableLayerDragSelection,
     Duration? videoControlsSwitchDuration,
     LayerInteractionIcons? icons,
     LayerInteractionWidgets? widgets,
@@ -119,6 +129,8 @@ class LayerInteractionConfigs {
           enableKeyboardMultiSelection ?? this.enableKeyboardMultiSelection,
       enableLongPressMultiSelection:
           enableLongPressMultiSelection ?? this.enableLongPressMultiSelection,
+      enableLayerDragSelection:
+          enableLayerDragSelection ?? this.enableLayerDragSelection,
       videoControlsSwitchDuration:
           videoControlsSwitchDuration ?? this.videoControlsSwitchDuration,
       style: style ?? this.style,
