@@ -15,6 +15,7 @@ import '/shared/utils/unique_id_generator.dart';
 import '/shared/widgets/extended/mouse_region/extended_rebuild_mouse_region.dart';
 import '/shared/widgets/layer/layer_widget.dart';
 import '../main_editor.dart';
+import '../services/layer_drag_selection_service.dart';
 
 /// A widget that manages and displays layers in the main editor, handling
 /// interactions, configurations, and callbacks for user actions.
@@ -54,6 +55,7 @@ class MainEditorLayers extends StatefulWidget {
     required this.onContextMenuToggled,
     required this.onDuplicateLayer,
     required this.mouseService,
+    required this.dragSelectionService,
     this.enableMultiSelectMode = false,
   });
 
@@ -77,6 +79,11 @@ class MainEditorLayers extends StatefulWidget {
 
   /// Handles interactions with editor layers.
   final LayerInteractionManager layerInteractionManager;
+
+  /// A service responsible for handling drag and selection operations
+  /// within the editor layers. This service facilitates user interactions
+  /// such as dragging and selecting layers in the main editor.
+  final LayerDragSelectionService dragSelectionService;
 
   /// A service that handles mouse interactions within the editor.
   /// This is used to manage mouse-related events and behaviors.
@@ -432,6 +439,7 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
       isInteractive: !widget.isSubEditorOpen,
       highPerformanceMode: _layerInteraction.freeStyleHighPerformance,
       enableVisibleOverlay: areLayersSelectable,
+      enableMouseCursor: !widget.dragSelectionService.isActive,
       onEditTap: () => _handleEditTap(layer),
       onTap: _handleLayerTap,
       onTapUp: () => _handleTapUp(layer),

@@ -2590,6 +2590,7 @@ class ProImageEditorState extends State<ProImageEditor>
       onEditPaintLayer: _editPaintLayer,
       state: this,
       enableMultiSelectMode: enableMultiSelectMode,
+      dragSelectionService: _layerDragSelectionService,
       mouseService: _mouseService,
       onContextMenuToggled: (isOpen) {
         _isContextMenuOpen = isOpen;

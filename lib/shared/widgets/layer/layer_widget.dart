@@ -48,6 +48,7 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
     this.selected = false,
     this.isInteractive = false,
     this.enableVisibleOverlay = false,
+    this.enableMouseCursor = true,
     this.callbacks = const ProImageEditorCallbacks(),
   });
   @override
@@ -154,6 +155,10 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
 
   /// A flag to enable or disable the visibility of the overlay.
   final bool enableVisibleOverlay;
+
+  /// A flag indicating whether the mouse cursor should be enabled for this
+  /// widget.
+  final bool enableMouseCursor;
 
   @override
   createState() => _LayerWidgetState();
@@ -438,7 +443,9 @@ class _LayerWidgetState extends State<LayerWidget>
         builder: (_, showCursor, __) {
           return MouseRegion(
             hitTestBehavior: HitTestBehavior.translucent,
-            cursor: showCursor && _layer.interaction.enableMove
+            cursor: showCursor &&
+                    _layer.interaction.enableMove &&
+                    widget.enableMouseCursor
                 ? layerInteraction.style.hoverCursor
                 : MouseCursor.defer,
             onEnter: (event) => _onHoverEnter(),
