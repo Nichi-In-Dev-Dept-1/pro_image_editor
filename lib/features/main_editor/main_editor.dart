@@ -2490,15 +2490,12 @@ class ProImageEditorState extends State<ProImageEditor>
                         return;
                       }
 
-                      if (selectedLayers.any((layer) => !layer.interaction.enableScale)) {
-                        return;
-                      }
-
                       /// Otherwise, handle scroll as a layer scaling
                       /// interaction.
                       _desktopInteractionManager.mouseScroll(
                         event,
                         selectedLayers: selectedLayers,
+                        interactiveViewer: interactiveViewer.currentState
                       );
                     }
                   : null,

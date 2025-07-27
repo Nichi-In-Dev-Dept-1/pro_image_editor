@@ -11,6 +11,8 @@ import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
 import '/core/services/keyboard_service.dart';
 
+import '/shared/widgets/extended/interactive_viewer/extended_interactive_viewer.dart';
+
 /// A manager class responsible for handling desktop interactions in the image
 /// editor.
 ///
@@ -176,6 +178,7 @@ class DesktopInteractionManager {
   void mouseScroll(
     PointerSignalEvent event, {
     required List<Layer> selectedLayers,
+    required ExtendedInteractiveViewerState? interactiveViewer,
   }) {
     if (event is! PointerScrollEvent || selectedLayers.isEmpty) return;
 
@@ -192,12 +195,15 @@ class DesktopInteractionManager {
             : layer.isTextLayer
                 ? 0.15
                 : configs.textEditor.initFontSize / 50;
-        if (event.scrollDelta.dy > 0) {
-          layer
-            ..scale -= factor
-            ..scale = max(0.1, layer.scale);
-        } else if (event.scrollDelta.dy < 0) {
-          layer.scale += factor;
+        if (interactiveViewer?.isInteractionEnabled == true) {
+          // only scale if interaction is enabled (that means we might zoom in/out)
+          if (event.scrollDelta.dy > 0) {
+            layer
+              ..scale -= factor
+              ..scale = max(0.1, layer.scale);
+          } else if (event.scrollDelta.dy < 0) {
+            layer.scale += factor;
+          }
         }
       }
     }
