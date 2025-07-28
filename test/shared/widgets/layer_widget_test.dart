@@ -29,13 +29,9 @@ void main() {
           body: Stack(
             children: [
               LayerWidget(
-                editorCenterX: 250,
-                editorCenterY: 250,
-                layerData: layer,
+                editorBodySize: const Size(250, 250),
+                layer: layer,
                 configs: const ProImageEditorConfigs(),
-                onTap: (Layer tapLayer) {
-                  expect(layer, equals(tapLayer));
-                },
               ),
             ],
           ),

@@ -60,6 +60,12 @@ class LayerInteractionManager {
   /// Rotation angle of the rotation helper line.
   double rotationHelperLineDeg = 0;
 
+  /// A list that stores the layers selected at the start of a scaling
+  /// operation.
+  /// This is used to keep track of the initial state of the selected layers
+  /// before any scaling transformations are applied.
+  List<Layer> selectedLayersScaleStart = [];
+
   /// The base scale factor from the layer;
   final Map<String, double> _baseScaleFactor = {};
 
@@ -829,6 +835,7 @@ class LayerInteractionManager {
     required ScaleStartDetails details,
     required List<Layer> selectedLayers,
   }) {
+    selectedLayersScaleStart = selectedLayers;
     snapStartPosX = details.focalPoint.dx;
     snapStartPosY = details.focalPoint.dy;
 
@@ -868,6 +875,7 @@ class LayerInteractionManager {
     _snapStartRotation.clear();
     _snapLastRotation.clear();
 
+    selectedLayersScaleStart.clear();
     enabledHitDetection = true;
     freeStyleHighPerformanceScaling = false;
     freeStyleHighPerformanceMoving = false;

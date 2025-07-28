@@ -31,6 +31,9 @@ class LayerInteractionConfigs {
     this.enableKeyboardMultiSelection = true,
     this.enableLongPressMultiSelection = true,
     this.enableLayerDragSelection = true,
+    this.mouseButtonPrimaryAction = MouseButtonAction.selectOrSpaceMove,
+    this.mouseButtonSecondaryAction = MouseButtonAction.pan,
+    this.mouseButtonMiddleAction = MouseButtonAction.pan,
     this.videoControlsSwitchDuration = const Duration(milliseconds: 220),
     this.icons = const LayerInteractionIcons(),
     this.widgets = const LayerInteractionWidgets(),
@@ -94,6 +97,17 @@ class LayerInteractionConfigs {
   /// Style configuration for layer interactions.
   final LayerInteractionStyle style;
 
+  /// The action assigned to the **primary mouse button** (usually left-click).
+  final MouseButtonAction mouseButtonPrimaryAction;
+
+  /// The action assigned to the **secondary mouse button**
+  /// (usually right-click).
+  final MouseButtonAction mouseButtonSecondaryAction;
+
+  /// The action assigned to the **middle mouse button**
+  /// (usually mouse wheel click).
+  final MouseButtonAction mouseButtonMiddleAction;
+
   /// Creates a copy of this `LayerInteractionConfigs` object with the given
   /// fields replaced with new values.
   ///
@@ -113,10 +127,11 @@ class LayerInteractionConfigs {
     LayerInteractionIcons? icons,
     LayerInteractionWidgets? widgets,
     LayerInteractionStyle? style,
+    MouseButtonAction? mouseButtonPrimaryAction,
+    MouseButtonAction? mouseButtonSecondaryAction,
+    MouseButtonAction? mouseButtonMiddleAction,
   }) {
     return LayerInteractionConfigs(
-      icons: icons ?? this.icons,
-      widgets: widgets ?? this.widgets,
       selectable: selectable ?? this.selectable,
       initialSelected: initialSelected ?? this.initialSelected,
       hideToolbarOnInteraction:
@@ -133,9 +148,39 @@ class LayerInteractionConfigs {
           enableLayerDragSelection ?? this.enableLayerDragSelection,
       videoControlsSwitchDuration:
           videoControlsSwitchDuration ?? this.videoControlsSwitchDuration,
+      icons: icons ?? this.icons,
+      widgets: widgets ?? this.widgets,
       style: style ?? this.style,
+      mouseButtonPrimaryAction:
+          mouseButtonPrimaryAction ?? this.mouseButtonPrimaryAction,
+      mouseButtonSecondaryAction:
+          mouseButtonSecondaryAction ?? this.mouseButtonSecondaryAction,
+      mouseButtonMiddleAction:
+          mouseButtonMiddleAction ?? this.mouseButtonMiddleAction,
     );
   }
+}
+
+/// Represents the possible actions that can be performed with a mouse button
+/// in the context of layer interaction within the editor.
+enum MouseButtonAction {
+  /// Used to pan the editor content when zoom is enabled.
+  /// Falls back to [dragSelect] if zoom is disabled
+  pan,
+
+  /// Used to draw a selection rectangle.
+  dragSelect,
+
+  /// Dynamically decides between [dragSelect] or a temporary [pan] mode when
+  /// the spacebar is held. Useful for keyboard-assisted navigation.
+  selectOrSpaceMove,
+
+  /// Enables direct multi-selection of layers when clicked, without requiring
+  /// keyboard modifiers like Ctrl/Shift or long-press gestures.
+  multiSelect,
+
+  /// No specific action is assigned to the mouse button.
+  none,
 }
 
 /// Enumerates the different selectability states for a layer.

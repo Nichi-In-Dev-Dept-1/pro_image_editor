@@ -203,6 +203,7 @@ class _PaintEditorLayerEditorState extends State<PaintEditorLayerEditor> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Row(
+        spacing: 12,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           TextButton(
