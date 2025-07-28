@@ -113,11 +113,9 @@ class LayerStack extends StatelessWidget {
                 children: layers.map((layerItem) {
                   return LayerWidget(
                     key: enableLayerKey ? layerItem.key : null,
+                    layer: layerItem,
                     configs: configs,
-                    highPerformanceMode: freeStyleHighPerformance,
-                    editorCenterX: transformHelper.editorBodySize.width / 2,
-                    editorCenterY: transformHelper.editorBodySize.height / 2,
-                    layerData: layerItem,
+                    editorBodySize: transformHelper.editorBodySize,
                   );
                 }).toList()),
           ),

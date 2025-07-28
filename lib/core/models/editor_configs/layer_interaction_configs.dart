@@ -31,7 +31,7 @@ class LayerInteractionConfigs {
     this.enableKeyboardMultiSelection = true,
     this.enableLongPressMultiSelection = true,
     this.enableLayerDragSelection = true,
-    this.mouseButtonPrimaryAction = MouseButtonAction.dragSelect,
+    this.mouseButtonPrimaryAction = MouseButtonAction.selectOrSpaceMove,
     this.mouseButtonSecondaryAction = MouseButtonAction.pan,
     this.mouseButtonMiddleAction = MouseButtonAction.pan,
     this.videoControlsSwitchDuration = const Duration(milliseconds: 220),
@@ -173,11 +173,11 @@ enum MouseButtonAction {
 
   /// Dynamically decides between [dragSelect] or a temporary [pan] mode when
   /// the spacebar is held. Useful for keyboard-assisted navigation.
-  selectOrSpaceMove, // TODO
+  selectOrSpaceMove,
 
   /// Enables direct multi-selection of layers when clicked, without requiring
   /// keyboard modifiers like Ctrl/Shift or long-press gestures.
-  multiSelect, // TODO:
+  multiSelect,
 
   /// No specific action is assigned to the mouse button.
   none,
