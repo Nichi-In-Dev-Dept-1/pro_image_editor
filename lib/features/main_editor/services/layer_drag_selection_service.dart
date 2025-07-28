@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
+import '/shared/widgets/extended/interactive_viewer/extended_interactive_viewer.dart';
 import 'layer_interaction_manager.dart';
 
 /// A service that enables drag-to-select functionality for layers on a canvas.
@@ -27,6 +28,7 @@ class LayerDragSelectionService {
     required this.activeLayers,
     required this.bodySize,
     required this.onUpdateLayers,
+    required this.interactiveViewer,
   });
 
   /// Drag selection configuration options.
@@ -43,6 +45,10 @@ class LayerDragSelectionService {
 
   /// Called when the selected layers have changed.
   final Function() onUpdateLayers;
+
+  /// The state for [ExtendedInteractiveViewer], managing the
+  /// interactivity state.
+  final ExtendedInteractiveViewerState? Function() interactiveViewer;
 
   /// Current drag selection rectangle.
   _DragRect _rect = _DragRect.empty();
@@ -68,6 +74,9 @@ class LayerDragSelectionService {
     return layerInteractionConfigs.selectable ==
         LayerInteractionSelectable.enabled;
   }
+
+  Offset get _viewerOffset => interactiveViewer()?.offset ?? Offset.zero;
+  double get _viewerScale => interactiveViewer()?.scaleFactor ?? 1;
 
   /// Starts a drag operation at the given [offset].
   void startDragging(Offset offset) {
@@ -119,11 +128,14 @@ class LayerDragSelectionService {
       bodySize().height / 2,
     );
 
+    final realOffset = (updatedRect.offset - _viewerOffset) / _viewerScale;
+    final realSize = updatedRect.size / _viewerScale;
+
     final selectionRect = Rect.fromLTWH(
-      updatedRect.offset.dx - halfBodyOffset.dx,
-      updatedRect.offset.dy - halfBodyOffset.dy,
-      updatedRect.size.width,
-      updatedRect.size.height,
+      realOffset.dx - halfBodyOffset.dx,
+      realOffset.dy - halfBodyOffset.dy,
+      realSize.width,
+      realSize.height,
     );
 
     final selectionPath = Path()..addRect(selectionRect);
@@ -187,14 +199,20 @@ class LayerDragSelectionService {
   /// Returns the four corners of a rectangle [size] centered at [center],
   /// rotated by [rotation] radians.
   List<Offset> _getRotatedCorners(Offset center, Size size, double rotation) {
+    final overlayPadding = configs.layerInteraction.style.overlayPadding;
     final hw = size.width / 2;
     final hh = size.height / 2;
 
+    final left = -hw - overlayPadding.left;
+    final top = -hh - overlayPadding.top;
+    final right = hw + overlayPadding.right;
+    final bottom = hh + overlayPadding.bottom;
+
     final corners = [
-      Offset(-hw, -hh),
-      Offset(hw, -hh),
-      Offset(hw, hh),
-      Offset(-hw, hh),
+      Offset(left, top),
+      Offset(right, top),
+      Offset(right, bottom),
+      Offset(left, bottom),
     ];
 
     final cosR = cos(rotation);

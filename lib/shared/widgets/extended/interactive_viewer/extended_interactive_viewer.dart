@@ -255,10 +255,9 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
   /// Returns an [Offset] representing the translation values on the x and y
   /// axes.
   Offset get offset {
-    return Offset(
-      _transformCtrl.value.getTranslation().x,
-      _transformCtrl.value.getTranslation().y,
-    );
+    final vector3 = _transformCtrl.value.getTranslation();
+
+    return Offset(vector3.x, vector3.y);
   }
 
   /// Handles the start of a scaling gesture by forwarding the [details]

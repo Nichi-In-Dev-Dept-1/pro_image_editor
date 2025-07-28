@@ -411,6 +411,7 @@ class ProImageEditorState extends State<ProImageEditor>
     bodySize: () => sizesManager.bodySize,
     configs: configs,
     onUpdateLayers: () => _controllers.uiLayerCtrl.add(null),
+    interactiveViewer: () => interactiveViewer.currentState,
   );
 
   /// The current theme used by the image editor.
