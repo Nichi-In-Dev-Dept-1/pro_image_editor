@@ -1052,7 +1052,7 @@ class ProImageEditorState extends State<ProImageEditor>
     /// interaction.
     /// Important: No screenshot is taken at this point; it will be captured
     /// after the layer interaction is completed.
-    addHistory(blockCaptureScreenshot: true);
+    if (hasSelectedLayers) addHistory(blockCaptureScreenshot: true);
     _checkInteractiveViewer();
     isLayerBeingTransformed = hasSelectedLayers;
     layerInteractionManager.onScaleStart(
