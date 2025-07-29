@@ -46,6 +46,8 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
     this.enableMainEditorZoomFactor = false,
     this.enableAutoOverflow = false,
     this.initFontSize = 24.0,
+    this.initialPrimaryColor = const Color(0xFF000000),
+    this.initialSecondaryColor,
     this.initialTextAlign = TextAlign.center,
     this.inputTextFieldAlign = Alignment.center,
     this.initFontScale = 1.0,
@@ -113,6 +115,12 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
   /// The min font font scale for text.
   final double minFontScale;
 
+  /// The initial primary color which is mostly the font color.
+  final Color initialPrimaryColor;
+
+  /// The initial secondary color which is mostly the background color.
+  final Color? initialSecondaryColor;
+
   /// The initial background color mode for the layer.
   final LayerBackgroundMode initialBackgroundColorMode;
 
@@ -178,6 +186,8 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
     bool? showSelectFontStyleBottomBar,
     bool? enableMainEditorZoomFactor,
     bool? enableAutoOverflow,
+    Color? initialPrimaryColor,
+    Color? initialSecondaryColor,
     double? initFontSize,
     TextAlign? initialTextAlign,
     Alignment? inputTextFieldAlign,
@@ -207,6 +217,9 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
       enableMainEditorZoomFactor:
           enableMainEditorZoomFactor ?? this.enableMainEditorZoomFactor,
       enableAutoOverflow: enableAutoOverflow ?? this.enableAutoOverflow,
+      initialPrimaryColor: initialPrimaryColor ?? this.initialPrimaryColor,
+      initialSecondaryColor:
+          initialSecondaryColor ?? this.initialSecondaryColor,
       initFontSize: initFontSize ?? this.initFontSize,
       initialTextAlign: initialTextAlign ?? this.initialTextAlign,
       inputTextFieldAlign: inputTextFieldAlign ?? this.inputTextFieldAlign,
