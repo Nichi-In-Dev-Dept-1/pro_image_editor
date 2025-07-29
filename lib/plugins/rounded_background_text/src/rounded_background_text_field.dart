@@ -27,8 +27,6 @@ class RoundedBackgroundTextField extends StatefulWidget {
     this.keyboardType,
     this.hint,
     this.hintStyle,
-    this.innerRadius = kDefaultInnerRadius,
-    this.outerRadius = kDefaultOuterRadius,
     this.autofocus = false,
     this.focusNode,
     this.keyboardAppearance = Brightness.light,
@@ -156,12 +154,6 @@ class RoundedBackgroundTextField extends StatefulWidget {
 
   /// The text style for [hint]
   final TextStyle? hintStyle;
-
-  /// {@macro rounded_background_text.innerRadius}
-  final double innerRadius;
-
-  /// {@macro rounded_background_text.outerRadius}
-  final double outerRadius;
 
   /// Defines the keyboard focus for this widget.
   final FocusNode? focusNode;
@@ -544,8 +536,6 @@ class _RoundedBackgroundTextFieldState
                   ),
                   textAlign: widget.textAlign,
                   backgroundColor: widget.backgroundColor,
-                  innerRadius: widget.innerRadius,
-                  outerRadius: widget.outerRadius,
                   textDirection: widget.textDirection,
                   textScaler: widget.textScaler ?? TextScaler.noScaling,
                   locale: widget.locale,
@@ -607,7 +597,6 @@ class _RoundedBackgroundTextFieldState
               cursorColor: widget.cursorColor ??
                   selectionTheme.cursorColor ??
                   widget.style?.color ??
-                  foregroundColor(widget.backgroundColor) ??
                   Colors.black,
               cursorWidth: widget.cursorWidth,
               cursorHeight: widget.cursorHeight,

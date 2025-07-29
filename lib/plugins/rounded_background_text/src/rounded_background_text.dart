@@ -4,18 +4,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-const double kDefaultInnerRadius = 8.0;
-const double kDefaultOuterRadius = 10.0;
-
-/// Gets the foreground color based on [backgroundColor]
-Color? foregroundColor(Color? backgroundColor) {
-  return backgroundColor == null || backgroundColor.a == 0
-      ? null
-      : backgroundColor.computeLuminance() >= 0.5
-          ? Colors.black
-          : Colors.white;
-}
-
 /// Creates a paragraph with rounded background.
 ///
 /// See also:
@@ -40,8 +28,6 @@ class RoundedBackgroundText extends StatelessWidget {
     this.textScaler = TextScaler.noScaling,
     this.maxLines,
     this.textHeightBehavior,
-    this.innerRadius = kDefaultInnerRadius,
-    this.outerRadius = kDefaultOuterRadius,
     this.onHitTestResult,
     this.maxTextWidth,
     this.enableHorizontalHitBox = true,
@@ -62,13 +48,10 @@ class RoundedBackgroundText extends StatelessWidget {
     this.textScaler = TextScaler.noScaling,
     this.maxLines,
     this.textHeightBehavior,
-    this.innerRadius = kDefaultInnerRadius,
-    this.outerRadius = kDefaultOuterRadius,
     this.onHitTestResult,
     this.maxTextWidth,
     this.enableHorizontalHitBox = true,
-  })  : assert(innerRadius >= 0.0 && innerRadius <= 20.0),
-        assert(outerRadius >= 0.0 && outerRadius <= 20.0);
+  });
 
   final Function(bool hasHit)? onHitTestResult;
 
@@ -126,26 +109,6 @@ class RoundedBackgroundText extends StatelessWidget {
   /// the specified font size.
   final TextScaler textScaler;
 
-  /// {@template rounded_background_text.innerRadius}
-  /// The radius of the inner corners.
-  ///
-  /// The radius is dynamically calculated based on the line height and the
-  /// provided factor.
-  ///
-  /// Defaults to 8.0
-  /// {@endtemplate}
-  final double innerRadius;
-
-  /// {@template rounded_background_text.outerRadius}
-  /// The radius of the inner corners.
-  ///
-  /// The radius is dynamically calculated based on the line height and the
-  /// provided factor.
-  ///
-  /// Defaults to 10.0
-  /// {@endtemplate}
-  final double outerRadius;
-
   final bool enableHorizontalHitBox;
 
   double getLineHeight(TextStyle style) {
@@ -171,8 +134,7 @@ class RoundedBackgroundText extends StatelessWidget {
     final painter = TextPainter(
       text: TextSpan(
         children: [text],
-        style: TextStyle(
-          color: foregroundColor(backgroundColor),
+        style: const TextStyle(
           leadingDistribution: TextLeadingDistribution.proportional,
         ).merge(style),
       ),
@@ -207,8 +169,6 @@ class RoundedBackgroundText extends StatelessWidget {
         foregroundPainter: RoundedBackgroundTextPainter(
           backgroundColor: backgroundColor ?? Colors.transparent,
           text: painter,
-          innerRadius: innerRadius,
-          outerRadius: outerRadius,
           onHitTestResult: onHitTestResult,
           horizontalPadding: horizontalSpace,
           textAlign: align,
@@ -227,8 +187,8 @@ class RoundedBackgroundTextPainter extends CustomPainter {
   const RoundedBackgroundTextPainter({
     required this.backgroundColor,
     required this.text,
-    required this.innerRadius,
-    required this.outerRadius,
+    this.innerRadius = 8.0,
+    this.outerRadius = 10.0,
     required this.onHitTestResult,
     required this.horizontalPadding,
     required this.textAlign,
@@ -284,7 +244,8 @@ class RoundedBackgroundTextPainter extends CustomPainter {
     final metrics = text.computeLineMetrics();
 
     final painter = Paint()..color = backgroundColor;
-    final cornerPainter = Paint()..color = Colors.white;
+    final cornerPainter = Paint()
+      ..color = const Color.fromARGB(255, 255, 255, 255);
     final path = Path();
     final cornerPath = Path();
     double endY = 0;
@@ -293,6 +254,7 @@ class RoundedBackgroundTextPainter extends CustomPainter {
     EdgeInsets outsidePadding = EdgeInsets.zero;
     bool isLeftAlign = textAlign == TextAlign.left;
     bool isRightAlign = textAlign == TextAlign.right;
+    bool isCenterAlign = textAlign == TextAlign.center;
 
     final helpers = metrics.map((lineMetric) {
       return LineMetricsHelper(lineMetric, metrics.length, textAlign);
@@ -305,14 +267,77 @@ class RoundedBackgroundTextPainter extends CustomPainter {
       final info = helpers[index];
       if (info.isEmpty) continue;
 
-      final paddingHorizontal = info.rawHeight * 0.3;
-      final paddingVertical = info.rawHeight * 0.1;
+      final double paddingHorizontal = info.rawHeight * 0.3;
+      final double paddingVertical = info.rawHeight * 0.1;
+      final double radius = info.innerRadius(innerRadius);
 
       final bool hasNoLineBefore = index == 0 || helpers[index - 1].isEmpty;
       final bool hasNoLineAfter =
           index == helpers.length - 1 || helpers[index + 1].isEmpty;
 
-      final double radius = info.innerRadius(innerRadius);
+      void connectSimilarLineWidth() {
+        final maxLineDifference = radius * (isCenterAlign ? 4 : 2);
+
+        bool shouldConnect(int index) {
+          if (index >= helpers.length - 1) return false;
+
+          final currentLine = helpers[index];
+          final nextLine = helpers[index + 1];
+
+          /// Check first if it's necessary to calculate the minimum width
+          double lineDifference = currentLine.rawWidth - nextLine.rawWidth;
+          bool shouldConnect = lineDifference.abs() < maxLineDifference;
+          return shouldConnect;
+        }
+
+        if (!shouldConnect(index)) return;
+
+        double minimumWidth = info.rawWidth;
+        double minimumX = info.x;
+        int endIndex = index;
+
+        /// Find the minimum required width
+        for (var i = index; i < helpers.length; i++) {
+          final helper = helpers[i];
+          if (helper.rawWidth > minimumWidth) {
+            minimumWidth = helper.rawWidth;
+            minimumX = helper.x;
+          }
+          if (!shouldConnect(i)) {
+            endIndex = i;
+            break;
+          }
+        }
+
+        /// Apply changes
+        for (var i = index; i <= endIndex; i++) {
+          helpers[i]
+            ..overrideX = minimumX
+            ..overrideWidth = minimumWidth;
+
+          if (i == index) {
+            helpers[i]
+              ..roundBottomLeft = false
+              ..roundBottomRight = false;
+          }
+          if (i == endIndex) {
+            helpers[i]
+              ..roundTopLeft = false
+              ..roundTopRight = false;
+          }
+        }
+      }
+
+      if (!hasNoLineAfter && !info.isOverriden) connectSimilarLineWidth();
+
+      bool roundTopRight =
+          (!isRightAlign || hasNoLineBefore) && info.roundTopRight;
+      bool roundTopLeft =
+          (!isLeftAlign || hasNoLineBefore) && info.roundTopLeft;
+      bool roundBottomRight =
+          (!isRightAlign || hasNoLineAfter) && info.roundBottomRight;
+      bool roundBottomLeft =
+          (!isLeftAlign || hasNoLineAfter) && info.roundBottomLeft;
 
       final double startX = info.startX - paddingHorizontal;
       late final double endX;
@@ -325,11 +350,6 @@ class RoundedBackgroundTextPainter extends CustomPainter {
 
       final double startY = info.startY - paddingVertical;
       final double endY = info.endY + paddingVertical;
-
-      bool roundTopRight = !isRightAlign || hasNoLineBefore;
-      bool roundTopLeft = !isLeftAlign || hasNoLineBefore;
-      bool roundBottomRight = !isRightAlign || hasNoLineAfter;
-      bool roundBottomLeft = !isLeftAlign || hasNoLineAfter;
 
       void generateBackgroundRectangle() {
         path
@@ -382,93 +402,101 @@ class RoundedBackgroundTextPainter extends CustomPainter {
         path.close();
       }
 
-      void generateLeftOutlineFills() {
+      double calculateAdaptiveRadius() {
+        final lineBefore = helpers[index - 1];
+
+        double lineDifference = (info.rawWidth - lineBefore.rawWidth).abs();
+
+        if (textAlign == TextAlign.center) {
+          lineDifference /= 4;
+        } else {
+          lineDifference /= 2;
+        }
+
+        return min(radius, lineDifference);
+      }
+
+      void drawInnerRoundingPath({
+        required Offset from,
+        required double lineToX,
+        required Offset arcEnd,
+        required double radius,
+        required bool clockwise,
+      }) {
+        final radiusC = Radius.circular(radius);
+
+        cornerPath
+          ..moveTo(from.dx, from.dy)
+          ..lineTo(lineToX, from.dy)
+          ..arcToPoint(arcEnd, radius: radiusC, clockwise: clockwise)
+          ..moveTo(from.dx, from.dy)
+          ..lineTo(lineToX, from.dy)
+          ..arcToPoint(arcEnd,
+              radius: radiusC, clockwise: clockwise, largeArc: true)
+          ..close();
+      }
+
+      void drawInnerRoundingLeft() {
         final lineBefore = helpers[index - 1];
         if (lineBefore.isEmpty) return;
 
         final beforeStartX = lineBefore.startX - paddingHorizontal;
         final beforeY = lineBefore.endY + paddingVertical;
         final startX = info.startX - paddingHorizontal;
-        final r = min(radius, (info.rawWidth - lineBefore.rawWidth).abs());
+        final r = calculateAdaptiveRadius();
 
         if (info.rawWidth > lineBefore.rawWidth) {
-          final offset = Offset(beforeStartX, startY - r);
-          final lineToX = beforeStartX - r;
-
-          cornerPath
-            ..moveTo(beforeStartX, startY)
-            ..lineTo(lineToX, startY)
-            ..arcToPoint(offset, radius: Radius.circular(r), clockwise: false)
-            ..moveTo(beforeStartX, startY)
-            ..lineTo(lineToX, startY)
-            ..arcToPoint(
-              offset,
-              radius: Radius.circular(r),
-              largeArc: true,
-              clockwise: false,
-            )
-            ..close();
+          drawInnerRoundingPath(
+            from: Offset(beforeStartX, startY),
+            lineToX: beforeStartX - r,
+            arcEnd: Offset(beforeStartX, startY - r),
+            radius: r,
+            clockwise: false,
+          );
         } else {
-          final offset = Offset(startX, beforeY + radius);
-          final lineToX = startX - radius;
-
-          cornerPath
-            ..moveTo(startX, beforeY)
-            ..lineTo(lineToX, beforeY)
-            ..arcToPoint(offset, radius: Radius.circular(r))
-            ..moveTo(startX, beforeY)
-            ..lineTo(lineToX, beforeY)
-            ..arcToPoint(offset, radius: Radius.circular(r), largeArc: true)
-            ..close();
+          drawInnerRoundingPath(
+            from: Offset(startX, beforeY),
+            lineToX: startX - r,
+            arcEnd: Offset(startX, beforeY + r),
+            radius: r,
+            clockwise: true,
+          );
         }
       }
 
-      void generateRightOutlineFills() {
+      void drawInnerRoundingRight() {
         final lineBefore = helpers[index - 1];
         if (lineBefore.isEmpty) return;
 
         final beforeEndX = lineBefore.endX + paddingHorizontal;
         final beforeY = lineBefore.endY + paddingVertical;
         final endX = info.endX + paddingHorizontal;
-        final r = min(radius, (info.rawWidth - lineBefore.rawWidth).abs());
+        final r = calculateAdaptiveRadius();
 
         if (info.rawWidth > lineBefore.rawWidth) {
-          final offset = Offset(beforeEndX, startY - r);
-          final lineToX = beforeEndX + r;
-
-          cornerPath
-            ..moveTo(beforeEndX, startY)
-            ..lineTo(lineToX, startY)
-            ..arcToPoint(offset, radius: Radius.circular(r))
-            ..moveTo(beforeEndX, startY)
-            ..lineTo(lineToX, startY)
-            ..arcToPoint(offset, radius: Radius.circular(r), largeArc: true)
-            ..close();
+          drawInnerRoundingPath(
+            from: Offset(beforeEndX, startY),
+            lineToX: beforeEndX + r,
+            arcEnd: Offset(beforeEndX, startY - r),
+            radius: r,
+            clockwise: true,
+          );
         } else {
-          final offset = Offset(endX, beforeY + radius);
-          final lineToX = endX + radius;
-
-          cornerPath
-            ..moveTo(endX, beforeY)
-            ..lineTo(lineToX, beforeY)
-            ..arcToPoint(offset, radius: Radius.circular(r), clockwise: false)
-            ..moveTo(endX, beforeY)
-            ..lineTo(lineToX, beforeY)
-            ..arcToPoint(
-              offset,
-              radius: Radius.circular(r),
-              clockwise: false,
-              largeArc: true,
-            )
-            ..close();
+          drawInnerRoundingPath(
+            from: Offset(endX, beforeY),
+            lineToX: endX + r,
+            arcEnd: Offset(endX, beforeY + r),
+            radius: r,
+            clockwise: false,
+          );
         }
       }
 
       generateBackgroundRectangle();
 
       if (!hasNoLineBefore) {
-        if (!isLeftAlign) generateLeftOutlineFills();
-        if (!isRightAlign) generateRightOutlineFills();
+        if (!isLeftAlign) drawInnerRoundingLeft();
+        if (!isRightAlign) drawInnerRoundingRight();
       }
     }
 
@@ -549,6 +577,14 @@ class LineMetricsHelper {
   /// Creates a new line metrics helper
   LineMetricsHelper(this.metrics, this.length, this.textAlign);
 
+  bool get isOverriden => overrideWidth != null || overrideX != null;
+  double? overrideWidth;
+  double? overrideX;
+  bool roundTopLeft = true;
+  bool roundBottomLeft = true;
+  bool roundTopRight = true;
+  bool roundBottomRight = true;
+
   final TextAlign textAlign;
 
   /// The original line metrics, which stores the measurements and statistics of
@@ -585,6 +621,7 @@ class LineMetricsHelper {
 
   /// The x position of the line
   double get x {
+    if (overrideX != null) return overrideX!;
     double alignHelper = 0.0;
     if (textAlign == TextAlign.center) {
       alignHelper = 1.5;
@@ -604,7 +641,7 @@ class LineMetricsHelper {
   double get rawHeight => metrics.ascent + metrics.descent;
 
   /// The raw width of the line, without any additional padding
-  double get rawWidth => metrics.width;
+  double get rawWidth => overrideWidth ?? metrics.width;
 
   /// The entire width of the line, including the padding and its [x]
   double get fullWidth => x + rawWidth;
