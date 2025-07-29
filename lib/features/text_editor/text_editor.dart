@@ -90,12 +90,9 @@ class TextEditorState extends State<TextEditor>
   double? get _maxTextWidth =>
       textEditorConfigs.enableAutoOverflow ? editorBodySize.width - 32 : null;
 
-  Color _primaryColor = Colors.black;
-
   /// Gets the primary color.
   Color get primaryColor => _primaryColor;
-
-  /// Sets the primary color.
+  late Color _primaryColor = textEditorConfigs.initialPrimaryColor;
   set primaryColor(Color color) {
     setState(() {
       _primaryColor = color;
@@ -103,12 +100,9 @@ class TextEditorState extends State<TextEditor>
     });
   }
 
-  Color? _secondaryColor;
-
   /// Gets the secondary color.
   Color get secondaryColor => _secondaryColor ?? getContrastColor(primaryColor);
-
-  /// Sets the secondary color.
+  late Color? _secondaryColor = textEditorConfigs.initialSecondaryColor;
   set secondaryColor(Color color) {
     setState(() {
       _secondaryColor = color;
