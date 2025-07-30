@@ -76,21 +76,7 @@ class LineMetricsModel {
   double get endY => y + rawHeight;
 
   /// The x position of the line
-  double get x {
-    if (overrideX != null) return overrideX!;
-    double alignHelper = 0.0;
-    if (cursorWidth != 0) {
-      if (textAlign == TextAlign.center) {
-        alignHelper = cursorWidth / 2 + 0.5;
-      } else if (textAlign == TextAlign.right) {
-        alignHelper = cursorWidth + 1;
-      }
-    }
-
-    double result = metrics.left - alignHelper;
-
-    return result.roundToDouble();
-  }
+  double get x => overrideX ?? metrics.left;
 
   /// The y-position of the line's top edge.
   double get y => metrics.baseline - metrics.ascent;

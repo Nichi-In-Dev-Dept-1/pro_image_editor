@@ -43,6 +43,7 @@ class RoundedBackgroundText extends StatelessWidget {
     this.enableHitBoxCorrection = false,
   });
 
+  /// A flag to enable or disable hitBox correction for the text.
   final bool enableHitBoxCorrection;
 
   /// The text content to be displayed, supporting rich formatting through

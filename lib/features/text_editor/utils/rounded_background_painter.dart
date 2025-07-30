@@ -15,7 +15,7 @@ import '../models/line_metrics_model.dart';
 class RoundedBackgroundTextPainter extends CustomPainter {
   /// Creates a [RoundedBackgroundTextPainter] that paints text with a rounded
   /// background.
-  const RoundedBackgroundTextPainter({
+  RoundedBackgroundTextPainter({
     required this.backgroundColor,
     required this.painter,
     this.innerRadius = 8.0,
@@ -52,6 +52,7 @@ class RoundedBackgroundTextPainter extends CustomPainter {
   /// The radius used for rounding the corners of the outer background shape.
   final double outerRadius;
 
+  /// An offset used to correct the position of the hitbox.
   final Offset hitBoxCorrectionOffset;
 
   Path _buildBackgroundPath() {
@@ -419,16 +420,19 @@ class RoundedBackgroundTextPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final painter = Paint()..color = backgroundColor;
 
+    _cachedPath = _buildBackgroundPath();
     canvas
       ..translate(hitBoxCorrectionOffset.dx, hitBoxCorrectionOffset.dy)
-      ..drawPath(_buildBackgroundPath(), painter);
+      ..drawPath(_cachedPath!, painter);
 
     this.painter.paint(canvas, Offset.zero);
   }
 
+  Path? _cachedPath;
+
   @override
   bool? hitTest(Offset position) {
-    final path = _buildBackgroundPath();
+    final path = _cachedPath ?? _buildBackgroundPath();
 
     bool hasHit = path.contains(position - hitBoxCorrectionOffset);
 
@@ -438,7 +442,7 @@ class RoundedBackgroundTextPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant RoundedBackgroundTextPainter oldDelegate) {
-    bool result = oldDelegate.backgroundColor != backgroundColor ||
+    final changed = oldDelegate.backgroundColor != backgroundColor ||
         oldDelegate.painter.width != painter.width ||
         oldDelegate.painter.height != painter.height ||
         oldDelegate.painter.ellipsis != painter.ellipsis ||
@@ -452,7 +456,9 @@ class RoundedBackgroundTextPainter extends CustomPainter {
         oldDelegate.textDirection != textDirection ||
         oldDelegate.outerRadius != outerRadius;
 
-    return result;
+    if (changed) _cachedPath = null; // invalidate cache
+
+    return changed;
   }
 
   @override
