@@ -20,7 +20,6 @@ class RoundedBackgroundTextPainter extends CustomPainter {
     this.innerRadius = 8.0,
     this.outerRadius = 10.0,
     required this.onHitTestResult,
-    required this.horizontalPadding,
     required this.textAlign,
     required this.textDirection,
     this.cursorWidth = 0.0,
@@ -45,33 +44,24 @@ class RoundedBackgroundTextPainter extends CustomPainter {
   /// The width of the text cursor (if shown).
   final double cursorWidth;
 
-  /// Horizontal padding around the text, inside the background shape.
-  final double horizontalPadding;
-
   /// The radius used for rounding the corners of the inner background shape.
   final double innerRadius;
 
   /// The radius used for rounding the corners of the outer background shape.
   final double outerRadius;
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final metrics = this.painter.computeLineMetrics();
-    if (metrics.isEmpty) return;
+  Path _buildBackgroundPath() {
+    final metrics = painter.computeLineMetrics();
+    if (metrics.isEmpty) return Path();
 
-    final painter = Paint()..color = backgroundColor;
     final path = Path();
     final cornerPath = Path();
-    double endY = 0;
 
-    double maxWidth = 0;
-    EdgeInsets outsidePadding = EdgeInsets.zero;
     final bool isLeftAlign = textAlign == TextAlign.left ||
         (textAlign == TextAlign.start && textDirection == TextDirection.ltr);
     final bool isRightAlign = textAlign == TextAlign.right ||
         (textAlign == TextAlign.end && textDirection == TextDirection.rtl);
-
-    bool isCenterAlign =
+    final bool isCenterAlign =
         textAlign == TextAlign.center || textAlign == TextAlign.justify;
 
     final helpers = metrics.map((lineMetric) {
@@ -173,192 +163,252 @@ class RoundedBackgroundTextPainter extends CustomPainter {
       final double startY = info.startY - paddingVertical;
       final double endY = info.endY + paddingVertical;
 
-      void generateBackgroundRectangle() {
-        path
-          ..moveTo(startX + (roundTopLeft ? radius : 0), startY)
-
-          /// Top-Right edge
-          ..lineTo(endX - radius, startY);
-        if (roundTopRight) {
-          path.arcToPoint(
-            Offset(endX, startY + radius),
-            radius: Radius.circular(radius),
-          );
-        } else {
-          path.lineTo(endX, startY);
-        }
-
-        /// Bottom-Right edge
-        path.lineTo(endX, endY - (roundBottomRight ? radius : 0));
-        if (roundBottomRight) {
-          path.arcToPoint(
-            Offset(endX - radius, endY),
-            radius: Radius.circular(radius),
-          );
-        } else {
-          path.lineTo(endX - radius, endY);
-        }
-
-        /// Bottom edge
-        path.lineTo(startX + (roundBottomLeft ? radius : 0), endY);
-        if (roundBottomLeft) {
-          path.arcToPoint(
-            Offset(startX, endY - radius),
-            radius: Radius.circular(radius),
-          );
-        } else {
-          path.lineTo(startX, endY);
-        }
-
-        /// Left edge
-        path.lineTo(startX, startY + (roundTopLeft ? radius : 0));
-        if (roundTopLeft) {
-          path.arcToPoint(
-            Offset(startX + radius, startY),
-            radius: Radius.circular(radius),
-          );
-        } else {
-          path.lineTo(startX, startY);
-        }
-
-        path.close();
-      }
-
-      double calculateAdaptiveRadius() {
-        final lineBefore = helpers[index - 1];
-
-        double lineDifference = (info.rawWidth - lineBefore.rawWidth).abs();
-
-        if (textAlign == TextAlign.center) {
-          lineDifference /= 4;
-        } else {
-          lineDifference /= 2;
-        }
-
-        return min(radius, lineDifference);
-      }
-
-      void drawInnerRoundingPath({
-        required Offset from,
-        required double lineToX,
-        required Offset arcEnd,
-        required double radius,
-        required bool clockwise,
-      }) {
-        final radiusC = Radius.circular(radius);
-
-        cornerPath
-          ..moveTo(from.dx, from.dy)
-          ..lineTo(lineToX, from.dy)
-          ..arcToPoint(arcEnd, radius: radiusC, clockwise: clockwise)
-          ..moveTo(from.dx, from.dy)
-          ..lineTo(lineToX, from.dy)
-          ..arcToPoint(arcEnd,
-              radius: radiusC, clockwise: clockwise, largeArc: true)
-          ..close();
-      }
-
-      void drawInnerRoundingLeft() {
-        final lineBefore = helpers[index - 1];
-        if (lineBefore.isEmpty) return;
-
-        final beforeStartX = lineBefore.startX - paddingHorizontal;
-        final beforeY = lineBefore.endY + paddingVertical;
-        final startX = info.startX - paddingHorizontal;
-        final r = calculateAdaptiveRadius();
-
-        if (info.rawWidth > lineBefore.rawWidth) {
-          drawInnerRoundingPath(
-            from: Offset(beforeStartX, startY),
-            lineToX: beforeStartX - r,
-            arcEnd: Offset(beforeStartX, startY - r),
-            radius: r,
-            clockwise: false,
-          );
-        } else {
-          drawInnerRoundingPath(
-            from: Offset(startX, beforeY),
-            lineToX: startX - r,
-            arcEnd: Offset(startX, beforeY + r),
-            radius: r,
-            clockwise: true,
-          );
-        }
-      }
-
-      void drawInnerRoundingRight() {
-        final lineBefore = helpers[index - 1];
-        if (lineBefore.isEmpty) return;
-
-        final beforeEndX = lineBefore.endX + paddingHorizontal;
-        final beforeY = lineBefore.endY + paddingVertical;
-        final endX = info.endX + paddingHorizontal;
-        final r = calculateAdaptiveRadius();
-
-        if (info.rawWidth > lineBefore.rawWidth) {
-          drawInnerRoundingPath(
-            from: Offset(beforeEndX, startY),
-            lineToX: beforeEndX + r,
-            arcEnd: Offset(beforeEndX, startY - r),
-            radius: r,
-            clockwise: true,
-          );
-        } else {
-          drawInnerRoundingPath(
-            from: Offset(endX, beforeY),
-            lineToX: endX + r,
-            arcEnd: Offset(endX, beforeY + r),
-            radius: r,
-            clockwise: false,
-          );
-        }
-      }
-
-      generateBackgroundRectangle();
+      _drawBackgroundRectangle(
+        path: path,
+        startX: startX,
+        startY: startY,
+        endX: endX,
+        endY: endY,
+        radius: radius,
+        roundTopRight: roundTopRight,
+        roundTopLeft: roundTopLeft,
+        roundBottomRight: roundBottomRight,
+        roundBottomLeft: roundBottomLeft,
+      );
 
       if (!hasNoLineBefore) {
-        if (!isLeftAlign) drawInnerRoundingLeft();
-        if (!isRightAlign) drawInnerRoundingRight();
+        if (!isLeftAlign) {
+          _createInnerRoundingLeft(
+            path: cornerPath,
+            info: info,
+            paddingHorizontal: paddingHorizontal,
+            paddingVertical: paddingVertical,
+            startY: startY,
+            radius: radius,
+            index: index,
+            helpers: helpers,
+          );
+        }
+        if (!isRightAlign) {
+          _createInnerRoundingRight(
+            path: cornerPath,
+            info: info,
+            paddingHorizontal: paddingHorizontal,
+            paddingVertical: paddingVertical,
+            startY: startY,
+            radius: radius,
+            index: index,
+            helpers: helpers,
+          );
+        }
       }
     }
 
-    /// Close all outside holes where the text align.
-    switch (textAlign) {
-      case TextAlign.right:
-        canvas.drawRect(
-          Rect.fromLTRB(
-            maxWidth - outsidePadding.left,
-            outsidePadding.top,
-            maxWidth,
-            endY - outsidePadding.vertical,
-          ),
-          painter,
-        );
-        break;
-      case TextAlign.left:
-        canvas.drawRect(
-          Rect.fromLTRB(
-            -outsidePadding.left,
-            outsidePadding.top,
-            0,
-            endY - outsidePadding.vertical,
-          ),
-          painter,
-        );
-        break;
-      default:
+    return Path.combine(PathOperation.union, path, cornerPath);
+  }
+
+  double _calculateAdaptiveRadius({
+    required LineMetricsModel info,
+    required int index,
+    required double radius,
+    required List<LineMetricsModel> helpers,
+  }) {
+    final lineBefore = helpers[index - 1];
+
+    double lineDifference = (info.rawWidth - lineBefore.rawWidth).abs();
+
+    if (textAlign == TextAlign.center) {
+      lineDifference /= 4;
+    } else {
+      lineDifference /= 2;
     }
 
-    canvas.drawPath(
-      Path.combine(PathOperation.union, path, cornerPath),
-      painter,
+    return min(radius, lineDifference);
+  }
+
+  void _drawInnerRoundingPath({
+    required Path path,
+    required Offset from,
+    required double lineToX,
+    required Offset arcEnd,
+    required double radius,
+    required bool clockwise,
+  }) {
+    final radiusC = Radius.circular(radius);
+
+    path
+      ..moveTo(from.dx, from.dy)
+      ..lineTo(lineToX, from.dy)
+      ..arcToPoint(arcEnd, radius: radiusC, clockwise: clockwise)
+      ..moveTo(from.dx, from.dy)
+      ..lineTo(lineToX, from.dy)
+      ..arcToPoint(arcEnd,
+          radius: radiusC, clockwise: clockwise, largeArc: true)
+      ..close();
+  }
+
+  void _createInnerRoundingLeft({
+    required Path path,
+    required LineMetricsModel info,
+    required double paddingHorizontal,
+    required double paddingVertical,
+    required double startY,
+    required double radius,
+    required int index,
+    required List<LineMetricsModel> helpers,
+  }) {
+    final lineBefore = helpers[index - 1];
+    if (lineBefore.isEmpty) return;
+
+    final beforeStartX = lineBefore.startX - paddingHorizontal;
+    final beforeY = lineBefore.endY + paddingVertical;
+    final startX = info.startX - paddingHorizontal;
+    final r = _calculateAdaptiveRadius(
+      info: info,
+      index: index,
+      radius: radius,
+      helpers: helpers,
     );
-    this.painter.paint(canvas, Offset(horizontalPadding, 0.0));
+
+    if (info.rawWidth > lineBefore.rawWidth) {
+      _drawInnerRoundingPath(
+        path: path,
+        from: Offset(beforeStartX, startY),
+        lineToX: beforeStartX - r,
+        arcEnd: Offset(beforeStartX, startY - r),
+        radius: r,
+        clockwise: false,
+      );
+    } else {
+      _drawInnerRoundingPath(
+        path: path,
+        from: Offset(startX, beforeY),
+        lineToX: startX - r,
+        arcEnd: Offset(startX, beforeY + r),
+        radius: r,
+        clockwise: true,
+      );
+    }
+  }
+
+  void _createInnerRoundingRight({
+    required Path path,
+    required LineMetricsModel info,
+    required double paddingHorizontal,
+    required double paddingVertical,
+    required double startY,
+    required double radius,
+    required int index,
+    required List<LineMetricsModel> helpers,
+  }) {
+    final lineBefore = helpers[index - 1];
+    if (lineBefore.isEmpty) return;
+
+    final beforeEndX = lineBefore.endX + paddingHorizontal;
+    final beforeY = lineBefore.endY + paddingVertical;
+    final endX = info.endX + paddingHorizontal;
+    final r = _calculateAdaptiveRadius(
+      info: info,
+      index: index,
+      radius: radius,
+      helpers: helpers,
+    );
+
+    if (info.rawWidth > lineBefore.rawWidth) {
+      _drawInnerRoundingPath(
+        path: path,
+        from: Offset(beforeEndX, startY),
+        lineToX: beforeEndX + r,
+        arcEnd: Offset(beforeEndX, startY - r),
+        radius: r,
+        clockwise: true,
+      );
+    } else {
+      _drawInnerRoundingPath(
+        path: path,
+        from: Offset(endX, beforeY),
+        lineToX: endX + r,
+        arcEnd: Offset(endX, beforeY + r),
+        radius: r,
+        clockwise: false,
+      );
+    }
+  }
+
+  void _drawBackgroundRectangle({
+    required Path path,
+    required double startX,
+    required double startY,
+    required double endX,
+    required double endY,
+    required double radius,
+    required bool roundTopRight,
+    required bool roundTopLeft,
+    required bool roundBottomRight,
+    required bool roundBottomLeft,
+  }) {
+    path
+      ..moveTo(startX + (roundTopLeft ? radius : 0), startY)
+
+      /// Top-Right edge
+      ..lineTo(endX - radius, startY);
+    if (roundTopRight) {
+      path.arcToPoint(
+        Offset(endX, startY + radius),
+        radius: Radius.circular(radius),
+      );
+    } else {
+      path.lineTo(endX, startY);
+    }
+
+    /// Bottom-Right edge
+    path.lineTo(endX, endY - (roundBottomRight ? radius : 0));
+    if (roundBottomRight) {
+      path.arcToPoint(
+        Offset(endX - radius, endY),
+        radius: Radius.circular(radius),
+      );
+    } else {
+      path.lineTo(endX - radius, endY);
+    }
+
+    /// Bottom edge
+    path.lineTo(startX + (roundBottomLeft ? radius : 0), endY);
+    if (roundBottomLeft) {
+      path.arcToPoint(
+        Offset(startX, endY - radius),
+        radius: Radius.circular(radius),
+      );
+    } else {
+      path.lineTo(startX, endY);
+    }
+
+    /// Left edge
+    path.lineTo(startX, startY + (roundTopLeft ? radius : 0));
+    if (roundTopLeft) {
+      path.arcToPoint(
+        Offset(startX + radius, startY),
+        radius: Radius.circular(radius),
+      );
+    } else {
+      path.lineTo(startX, startY);
+    }
+
+    path.close();
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final painter = Paint()..color = backgroundColor;
+
+    canvas.drawPath(_buildBackgroundPath(), painter);
+
+    this.painter.paint(canvas, Offset.zero);
   }
 
   @override
   bool shouldRepaint(covariant RoundedBackgroundTextPainter oldDelegate) {
-    return oldDelegate.backgroundColor != backgroundColor ||
+    bool result = oldDelegate.backgroundColor != backgroundColor ||
         oldDelegate.painter.width != painter.width ||
         oldDelegate.painter.height != painter.height ||
         oldDelegate.painter.ellipsis != painter.ellipsis ||
@@ -370,29 +420,44 @@ class RoundedBackgroundTextPainter extends CustomPainter {
         oldDelegate.textAlign != textAlign ||
         oldDelegate.textDirection != textDirection ||
         oldDelegate.outerRadius != outerRadius;
+
+    return result;
   }
 
   @override
   bool? hitTest(Offset position) {
-    // Retrieve the line information
-    /* FIXME: final lineInfos = computeLines(text, textAlign);
+    final path = _buildBackgroundPath();
 
-    // Check each line
-  for (final lineInfo in lineInfos) {
-      for (final info in lineInfo) {
-        // Construct the rounded rectangle for this line
-        final rRect = _getRRect(info);
+    bool hasHit = path.contains(position);
 
-        // Check if the position is within this rectangle
-        if (rRect.contains(position)) {
-          onHitTestResult?.call(true);
-          return true;
-        }
-      }
-    } */
+    onHitTestResult?.call(hasHit);
+    return hasHit;
+  }
 
-    // If the position was not within any line's bounding box
-    onHitTestResult?.call(false);
-    return false;
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is RoundedBackgroundTextPainter &&
+        other.onHitTestResult == onHitTestResult &&
+        other.backgroundColor == backgroundColor &&
+        other.painter == painter &&
+        other.textAlign == textAlign &&
+        other.textDirection == textDirection &&
+        other.cursorWidth == cursorWidth &&
+        other.innerRadius == innerRadius &&
+        other.outerRadius == outerRadius;
+  }
+
+  @override
+  int get hashCode {
+    return onHitTestResult.hashCode ^
+        backgroundColor.hashCode ^
+        painter.hashCode ^
+        textAlign.hashCode ^
+        textDirection.hashCode ^
+        cursorWidth.hashCode ^
+        innerRadius.hashCode ^
+        outerRadius.hashCode;
   }
 }

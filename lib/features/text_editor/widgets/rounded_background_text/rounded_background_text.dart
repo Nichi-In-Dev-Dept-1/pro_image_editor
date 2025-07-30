@@ -92,7 +92,6 @@ class RoundedBackgroundText extends StatelessWidget {
           backgroundColor: backgroundColor ?? Colors.transparent,
           painter: painter,
           onHitTestResult: onHitTestResult,
-          horizontalPadding: 0,
           textAlign: align,
           cursorWidth: cursorWidth,
           textDirection: Directionality.of(context),
