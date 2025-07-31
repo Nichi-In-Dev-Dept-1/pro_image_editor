@@ -2207,7 +2207,11 @@ class ProImageEditorState extends State<ProImageEditor>
   Future<void> importStateHistory(ImportStateHistory import) async {
     mainEditorCallbacks?.onImportHistoryStart?.call(this, import);
 
-    await _stateHistoryService.importStateHistory(import, context);
+    await _stateHistoryService.importStateHistory(
+      import,
+      context,
+      () => setState(() {}),
+    );
     await decodeImage();
 
     mainEditorCallbacks?.onImportHistoryEnd?.call(this, import);
@@ -2631,7 +2635,9 @@ class ProImageEditorState extends State<ProImageEditor>
       heroTag: _isVideoEditor ? 'image-${configs.heroTag}' : configs.heroTag,
       configs: configs,
       editorImage: editorImage!,
-      isInitialized: _isInitialized,
+      isInitialized: _isInitialized ||
+          stateHistoryConfigs.initStateHistory != null ||
+          _stateHistoryService.isImportInProgress,
       sizesManager: sizesManager,
       stateManager: stateManager,
     );
