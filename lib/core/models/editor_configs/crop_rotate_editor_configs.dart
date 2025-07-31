@@ -49,11 +49,13 @@ class CropRotateEditorConfigs {
     this.enableTransformLayers = true,
     this.enableProvideImageInfos = false,
     this.enableDoubleTap = true,
+    this.enableFlipAnimation = true,
     this.showLayers = true,
     this.initAspectRatio,
     this.rotateAnimationCurve = Curves.decelerate,
     this.scaleAnimationCurve = Curves.decelerate,
     this.cropDragAnimationCurve = Curves.decelerate,
+    this.flipAnimationCurve = Curves.decelerate,
     this.fadeInOutsideCropAreaAnimationCurve = Curves.decelerate,
     this.rotateDirection = RotateDirection.left,
     this.opacityOutsideCropAreaDuration = const Duration(milliseconds: 100),
@@ -113,6 +115,8 @@ class CropRotateEditorConfigs {
 
   /// Enables double-tap zoom functionality when set to true.
   final bool enableDoubleTap;
+
+  final bool enableFlipAnimation;
 
   /// Determines if the mouse scroll direction should be inverted.
   final bool invertMouseScroll;
@@ -182,6 +186,9 @@ class CropRotateEditorConfigs {
 
   /// The curve used for the rotation animation.
   final Curve rotateAnimationCurve;
+
+  /// The curve used for the flip animation.
+  final Curve flipAnimationCurve;
 
   /// The curve used for the scale animation, which is triggered when the
   /// image needs to resize due to rotation.
