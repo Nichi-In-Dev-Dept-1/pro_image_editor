@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 
 import 'abstract/censor_area_item.dart';
+import 'constants/censor_backdrop_key.dart';
 
 /// A widget that applies a blur effect to a defined area.
 ///
@@ -35,6 +36,7 @@ class BlurAreaItem extends CensorAreaItem {
         sigmaY: censorConfigs.blurSigmaY,
       ),
       blendMode: censorConfigs.blurBlendMode,
+      backdropGroupKey: kCensorBackdropGroupKey,
       child: child,
     );
   }
