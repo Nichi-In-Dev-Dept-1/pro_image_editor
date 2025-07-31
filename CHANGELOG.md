@@ -14,6 +14,7 @@
 
 - **PERF**(GPU): Improved GPU performance by optimizing transformation and color filter matrices, especially beneficial when multiple filters or tune adjustments are applied.
 - **PERF**(CPU): Replace the `rounded_background_text` package-code with a custom solution that significantly improves the CPU usage required for drawing calculations.
+- **PERF**(RAM): Use cached sizes in the filter editor to display filter previews which reduce RAM usage. 
 
 <br/>
 

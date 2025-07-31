@@ -27,6 +27,7 @@ class FilteredWidget extends StatelessWidget {
     this.fit = BoxFit.contain,
     this.image,
     this.videoPlayer,
+    this.enableCachedSize = false,
   }) : assert(image != null || videoPlayer != null,
             'Image and video player cannot be null');
 
@@ -63,6 +64,10 @@ class FilteredWidget extends StatelessWidget {
 
   /// The blur factor
   final double blurFactor;
+
+  /// Indicate to the engine that the image must be decoded at the specified
+  /// size.
+  final bool enableCachedSize;
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +108,7 @@ class FilteredWidget extends StatelessWidget {
 
     return AutoImage(
       image!,
+      enableCachedSize: enableCachedSize,
       fit: fit,
       width: width,
       height: height,

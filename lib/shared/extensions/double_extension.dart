@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter/widgets.dart';
+
 /// Extension for [double] values that provides safe clamping methods.
 extension DoubleExtension on double {
   /// Clamps the double value between [lowerLimit] and [upperLimit],
@@ -36,5 +38,19 @@ extension DoubleExtension on double {
       lowerLimit,
       max(lowerLimit, upperLimit),
     ).toDouble();
+  }
+
+  /// Converts the current double value to device pixels based on the device's
+  /// pixel ratio.
+  ///
+  /// This method multiplies the current value by the device pixel ratio
+  /// obtained from the [MediaQuery] of the provided [BuildContext], and then
+  /// converts the result to an integer.
+  ///
+  /// - [context]: The [BuildContext] used to retrieve the device's pixel ratio.
+  ///
+  /// Returns an integer representing the value in device pixels.
+  int toDevicePixels(BuildContext context) {
+    return (this * MediaQuery.devicePixelRatioOf(context)).toInt();
   }
 }
