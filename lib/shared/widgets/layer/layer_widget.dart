@@ -302,16 +302,18 @@ class _LayerWidgetState extends State<LayerWidget>
     return Positioned(
       left: adjustedLeft,
       top: adjustedTop,
-      child: FractionalTranslation(
-        translation: _fractionalOffset,
-        child: Hero(
-          // Important that hero is above transform
-          createRectTween: (begin, end) => RectTween(begin: begin, end: end),
-          tag: _layer.id,
-          child: Transform(
-            transform: transformMatrix,
-            alignment: Alignment.center,
-            child: _buildInteractionHandlers(),
+      child: RepaintBoundary(
+        child: FractionalTranslation(
+          translation: _fractionalOffset,
+          child: Hero(
+            // Important that hero is above transform
+            createRectTween: (begin, end) => RectTween(begin: begin, end: end),
+            tag: _layer.id,
+            child: Transform(
+              transform: transformMatrix,
+              alignment: Alignment.center,
+              child: _buildInteractionHandlers(),
+            ),
           ),
         ),
       ),

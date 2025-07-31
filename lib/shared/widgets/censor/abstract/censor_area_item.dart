@@ -33,12 +33,10 @@ abstract class CensorAreaItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: _buildClipper(
-        child: buildBackdropFilter(
-          context: context,
-          child: _buildArea(),
-        ),
+    return _buildClipper(
+      child: buildBackdropFilter(
+        context: context,
+        child: _buildArea(),
       ),
     );
   }

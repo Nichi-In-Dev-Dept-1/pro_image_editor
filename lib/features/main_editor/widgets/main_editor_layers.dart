@@ -136,38 +136,36 @@ class _MainEditorLayersState extends State<MainEditorLayers> {
 
   /// Builds the layer repaint boundary widget
   Widget _buildLayerRepaintBoundary() {
-    return RepaintBoundary(
-      child: ExtendedRebuildMouseRegion(
-        key: _layersService.mouseCursorsKey,
-        onHover: isDesktop ? _layersService.handleMouseHover : null,
-        child: ValueListenableBuilder(
-            valueListenable: _layersService.deferId,
-            builder: (_, deferId, __) {
-              return DeferredPointerHandler(
-                id: deferId,
-                selectedLayerId: _layerInteractionManager.selectedLayerId,
-                child: StreamBuilder(
-                  stream: widget.controllers.uiLayerCtrl.stream,
-                  builder: (context, snapshot) {
-                    return GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () {
-                        _layerInteractionManager.clearSelectedLayers();
-                        widget.onCheckInteractiveViewer();
-                        setState(() {});
-                      },
-                      child: Stack(
-                        children: [
-                          for (Layer layer in widget.activeLayers)
-                            _buildLayerWidget(layer)
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              );
-            }),
-      ),
+    return ExtendedRebuildMouseRegion(
+      key: _layersService.mouseCursorsKey,
+      onHover: isDesktop ? _layersService.handleMouseHover : null,
+      child: ValueListenableBuilder(
+          valueListenable: _layersService.deferId,
+          builder: (_, deferId, __) {
+            return DeferredPointerHandler(
+              id: deferId,
+              selectedLayerId: _layerInteractionManager.selectedLayerId,
+              child: StreamBuilder(
+                stream: widget.controllers.uiLayerCtrl.stream,
+                builder: (context, snapshot) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      _layerInteractionManager.clearSelectedLayers();
+                      widget.onCheckInteractiveViewer();
+                      setState(() {});
+                    },
+                    child: Stack(
+                      children: [
+                        for (Layer layer in widget.activeLayers)
+                          _buildLayerWidget(layer)
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          }),
     );
   }
 
