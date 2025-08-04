@@ -2,6 +2,7 @@ import 'package:example/core/constants/example_constants.dart';
 import 'package:example/features/preview/preview_video.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pro_image_editor/core/platform/io/io_helper.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:pro_video_editor/pro_video_editor.dart';
@@ -45,8 +46,7 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
   /// The video currently loaded in the editor.
   EditorVideo video = EditorVideo.asset(kVideoEditorExampleAssetPath);
 
-  /// The result of the video export process, if completed.
-  Uint8List? exportedVideo;
+  String? _outputPath;
 
   /// The duration it took to generate the exported video.
   Duration videoGenerationTime = Duration.zero;
@@ -141,7 +141,13 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
       outputFormat: outputFormat,
       bitrate: videoMetadata.bitrate,
     );
-    exportedVideo = await ProVideoEditor.instance.renderVideo(exportModel);
+    final directory = await getTemporaryDirectory();
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+    _outputPath = await ProVideoEditor.instance.renderVideoToFile(
+      '${directory.path}/my_video_$now.mp4',
+      exportModel,
+    );
     videoGenerationTime = stopwatch.elapsed;
   }
 
@@ -152,16 +158,17 @@ mixin VideoEditorMixin<T extends StatefulWidget> on State<T> {
   /// Afterwards, it pops the current editor page.
   void onCloseEditor(EditorMode editorMode) async {
     if (editorMode != EditorMode.main) return Navigator.pop(context);
-    if (exportedVideo != null) {
+    if (_outputPath != null) {
       await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => PreviewVideo(
-            bytes: exportedVideo!,
+            filePath: _outputPath!,
             generationTime: videoGenerationTime,
           ),
         ),
       );
+      _outputPath = null;
     }
 
     if (mounted) {

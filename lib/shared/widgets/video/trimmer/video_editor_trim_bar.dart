@@ -35,11 +35,21 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
   int get _videoDuration => _player.controller.videoDuration.inMicroseconds;
   double get _minTrimPercentage =>
       _player.configs.minTrimDuration.inMicroseconds / _videoDuration;
+  double get _maxTrimPercentage =>
+      _player.configs.maxTrimDuration.inMicroseconds / _videoDuration;
 
   bool _isUpdatingTrimBar = false;
 
   final _leftHandlerActiveNotifier = ValueNotifier(false);
   final _rightHandlerActiveNotifier = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _updateTrimStart(0);
+    });
+  }
 
   @override
   void dispose() {
@@ -65,12 +75,13 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
 
   void _updateTrimStart(double value) {
     double minEnd = value + _minTrimPercentage;
+    final maxEnd = value + _maxTrimPercentage;
     _trimStart = value;
-    _trimEnd = max(_trimEnd, minEnd);
+    _trimEnd = _trimEnd.clamp(minEnd, maxEnd);
 
     if (_trimEnd > 1) {
-      _trimStart = 1 - _minTrimPercentage;
       _trimEnd = 1;
+      _trimStart = max(0, 1 - _maxTrimPercentage);
     }
 
     _updateTrimSpan();
@@ -78,12 +89,13 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
 
   void _updateTrimEnd(double value) {
     double minStart = value - _minTrimPercentage;
+    final maxStart = value - _maxTrimPercentage;
     _trimEnd = value;
-    _trimStart = min(_trimStart, minStart);
+    _trimStart = _trimStart.clamp(maxStart, minStart);
 
     if (_trimStart < 0) {
       _trimStart = 0;
-      _trimEnd = _minTrimPercentage;
+      _trimEnd = min(1, _maxTrimPercentage);
     }
 
     _updateTrimSpan();
