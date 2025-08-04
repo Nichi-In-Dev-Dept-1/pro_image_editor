@@ -27,7 +27,7 @@ class VideoEditorConfigs {
     this.enableEstimatedFileSize = false,
     this.controlsPosition = VideoEditorControlPosition.top,
     this.minTrimDuration = const Duration(seconds: 7),
-    this.maxTrimDuration = const Duration(days: 36500),
+    this.maxTrimDuration,
     this.animatedIndicatorDuration = const Duration(milliseconds: 200),
     this.animatedIndicatorSwitchInCurve = Curves.ease,
     this.animatedIndicatorSwitchOutCurve = Curves.ease,
@@ -92,7 +92,7 @@ class VideoEditorConfigs {
   final Duration minTrimDuration;
 
   /// Maximum trim duration allowed.
-  final Duration maxTrimDuration;
+  final Duration? maxTrimDuration;
 
   /// Position of the control bar in the video editor.
   final VideoEditorControlPosition controlsPosition;

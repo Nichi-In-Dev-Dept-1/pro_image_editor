@@ -36,7 +36,8 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
   double get _minTrimPercentage =>
       _player.configs.minTrimDuration.inMicroseconds / _videoDuration;
   double get _maxTrimPercentage =>
-      _player.configs.maxTrimDuration.inMicroseconds / _videoDuration;
+      (_player.configs.maxTrimDuration?.inMicroseconds ?? _videoDuration) /
+      _videoDuration;
 
   bool _isUpdatingTrimBar = false;
 
@@ -81,7 +82,7 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
 
     if (_trimEnd > 1) {
       _trimEnd = 1;
-      _trimStart = max(0, 1 - _maxTrimPercentage);
+      _trimStart = max(0, 1 - _minTrimPercentage);
     }
 
     _updateTrimSpan();
@@ -95,7 +96,7 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
 
     if (_trimStart < 0) {
       _trimStart = 0;
-      _trimEnd = min(1, _maxTrimPercentage);
+      _trimEnd = min(1, _minTrimPercentage);
     }
 
     _updateTrimSpan();

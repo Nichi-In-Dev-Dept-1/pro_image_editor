@@ -84,9 +84,9 @@ class ProVideoController {
   late final trimDurationSpanNotifier = ValueNotifier<TrimDurationSpan>(
     TrimDurationSpan(
       start: Duration.zero,
-      end: videoDuration < configs.maxTrimDuration
+      end: configs.maxTrimDuration == null
           ? videoDuration
-          : configs.maxTrimDuration,
+          : configs.maxTrimDuration!,
     ),
   );
 
