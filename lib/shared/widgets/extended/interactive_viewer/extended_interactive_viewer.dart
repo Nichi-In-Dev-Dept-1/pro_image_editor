@@ -313,6 +313,7 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
       onInteractionUpdate: widget.onInteractionUpdate,
       onInteractionEnd: widget.onInteractionEnd,
       enableExternalGestureDetector: widget.enableExternalGestureDetector,
+      invertTrackpadDirection: widget.zoomConfigs.invertTrackpadDirection,
       child: widget.child,
     );
   }

@@ -52,6 +52,7 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
     super.doubleTapZoomDuration,
     super.doubleTapZoomCurve,
     super.boundaryMargin,
+    super.invertTrackpadDirection,
     this.layerFractionalOffset = const Offset(-0.5, -0.5),
     this.enableEdit = true,
     this.enableModeFreeStyle = true,
@@ -253,6 +254,7 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
     double? polygonConnectionThreshold,
     EdgeInsets? boundaryMargin,
     bool? enableDoubleTapZoom,
+    bool? invertTrackpadDirection,
     double? doubleTapZoomFactor,
     Duration? doubleTapZoomDuration,
     Curve? doubleTapZoomCurve,
@@ -301,6 +303,8 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
       polygonConnectionThreshold:
           polygonConnectionThreshold ?? this.polygonConnectionThreshold,
       enableDoubleTapZoom: enableDoubleTapZoom ?? this.enableDoubleTapZoom,
+      invertTrackpadDirection:
+          invertTrackpadDirection ?? this.invertTrackpadDirection,
       doubleTapZoomFactor: doubleTapZoomFactor ?? this.doubleTapZoomFactor,
       doubleTapZoomDuration:
           doubleTapZoomDuration ?? this.doubleTapZoomDuration,

@@ -24,6 +24,7 @@ class MainEditorConfigs extends ZoomConfigs {
     super.doubleTapZoomDuration,
     super.doubleTapZoomCurve,
     super.boundaryMargin,
+    super.invertTrackpadDirection,
     this.transformSetup,
     this.enableCloseButton = true,
     this.enableEscapeButton = true,
@@ -97,6 +98,7 @@ class MainEditorConfigs extends ZoomConfigs {
     bool? enableDoubleTapZoom,
     bool? canZoomWhenLayerSelected,
     MobilePanInteraction? mobilePanInteraction,
+    bool? invertTrackpadDirection,
     double? doubleTapZoomFactor,
     Duration? doubleTapZoomDuration,
     Curve? doubleTapZoomCurve,
@@ -116,6 +118,8 @@ class MainEditorConfigs extends ZoomConfigs {
       canZoomWhenLayerSelected:
           canZoomWhenLayerSelected ?? this.canZoomWhenLayerSelected,
       mobilePanInteraction: mobilePanInteraction ?? this.mobilePanInteraction,
+      invertTrackpadDirection:
+          invertTrackpadDirection ?? this.invertTrackpadDirection,
       doubleTapZoomFactor: doubleTapZoomFactor ?? this.doubleTapZoomFactor,
       doubleTapZoomDuration:
           doubleTapZoomDuration ?? this.doubleTapZoomDuration,
