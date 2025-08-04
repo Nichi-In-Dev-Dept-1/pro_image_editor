@@ -71,7 +71,7 @@ class _ReorderLayerExampleState extends State<ReorderLayerExample>
                 ReactiveWidget(
                   stream: rebuildStream,
                   builder: (_) =>
-                      editor.selectedLayerIndex >= 0 || editor.isSubEditorOpen
+                      editor.isLayerBeingTransformed || editor.isSubEditorOpen
                           ? const SizedBox.shrink()
                           : Positioned(
                               bottom: 20,
@@ -217,7 +217,6 @@ class _ReorderLayerSheetState extends State<ReorderLayerSheet> {
                                         item: layer.item,
                                         scale: layer.scale,
                                         enabledHitDetection: false,
-                                        freeStyleHighPerformance: false,
                                       ),
                                     ),
                             ),

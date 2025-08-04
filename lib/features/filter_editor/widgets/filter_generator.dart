@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../tune_editor/models/tune_adjustment_matrix.dart';
 import '../types/filter_matrix.dart';
+import '../utils/combine_color_matrix_utils.dart';
 
 /// A widget for applying color filters to its child widget.
 class ColorFilterGenerator extends StatefulWidget {
@@ -37,69 +38,43 @@ class ColorFilterGenerator extends StatefulWidget {
 /// It extends the `State` class, which means it holds mutable state for the
 /// `ColorFilterGenerator` widget.
 class ColorFilterGeneratorState extends State<ColorFilterGenerator> {
-  late Widget _filteredWidget;
-
-  late FilterMatrix _tempFilters;
-  late List<TuneAdjustmentMatrix> _tempTuneAdjustments;
+  late List<double> _combinedMatrix;
 
   @override
   void initState() {
     super.initState();
-    _generateFilteredWidget();
+    _recomputeMatrix();
   }
 
-  /// Generates a filtered widget by applying a series of color filters and
-  /// tune adjustments to the child widget.
-  ///
-  /// This method combines the filters and tune adjustments provided in the
-  /// widget's properties and applies them sequentially to the child widget.
-  /// The resulting widget with all the applied filters is stored in the
-  /// `_filteredWidget` variable.
-  ///
-  /// The filters and tune adjustments are expected to be in the form of color
-  /// matrices, which are
-  /// applied using the `ColorFiltered` widget.
-  ///
-  /// The method performs the following steps:
-  /// 1. Initializes the `tree` variable with the child widget.
-  /// 2. Stores the filters and tune adjustments in temporary variables.
-  /// 3. Combines the filters and tune adjustments into a single list of color
-  /// matrices.
-  /// 4. Iterates through the list of color matrices and applies each one to
-  /// the `tree` widget.
-  /// 5. Stores the final filtered widget in the `_filteredWidget` variable.
-  void _generateFilteredWidget() {
-    Widget tree = widget.child;
-    _tempFilters = widget.filters;
-    _tempTuneAdjustments = widget.tuneAdjustments;
-
-    var list = [
-      ...widget.filters,
-      ...widget.tuneAdjustments.map((item) => item.matrix),
-    ];
-
-    for (int i = 0; i < list.length; i++) {
-      tree = ColorFiltered(
-        colorFilter: ColorFilter.matrix(list[i]),
-        child: tree,
-      );
+  @override
+  void didUpdateWidget(covariant ColorFilterGenerator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.filters.hashCode != widget.filters.hashCode ||
+        oldWidget.tuneAdjustments.hashCode != widget.tuneAdjustments.hashCode) {
+      _recomputeMatrix();
     }
-    _filteredWidget = tree;
   }
 
   /// Refreshes the filter editor by generating the filtered widget and
   /// updating the state.
   void refresh() {
-    _generateFilteredWidget();
+    _recomputeMatrix();
     setState(() {});
+  }
+
+  void _recomputeMatrix() {
+    _combinedMatrix = mergeColorMatrices(
+      filterList: widget.filters,
+      tuneAdjustmentList:
+          widget.tuneAdjustments.map((item) => item.matrix).toList(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.filters.hashCode != _tempFilters.hashCode ||
-        widget.tuneAdjustments.hashCode != _tempTuneAdjustments.hashCode) {
-      _generateFilteredWidget();
-    }
-    return _filteredWidget;
+    return ColorFiltered(
+      colorFilter: ColorFilter.matrix(_combinedMatrix),
+      child: widget.child,
+    );
   }
 }

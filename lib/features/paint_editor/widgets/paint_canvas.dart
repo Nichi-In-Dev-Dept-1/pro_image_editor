@@ -28,7 +28,6 @@ class PaintCanvas extends StatefulWidget {
     this.onCreated,
     this.onRemoveLayer,
     this.onTap,
-    this.freeStyleHighPerformance = false,
     required this.drawAreaSize,
     required this.editorBodySize,
     required this.paintCtrl,
@@ -69,9 +68,6 @@ class PaintCanvas extends StatefulWidget {
   /// The `PaintController` class is responsible for managing and controlling
   /// the paint state.
   final PaintController paintCtrl;
-
-  /// Controls high-performance for free-style drawing.
-  final bool freeStyleHighPerformance;
 
   /// Configuration settings for the paint editor.
   /// This field holds an instance of [PaintEditorConfigs] which contains
@@ -194,6 +190,7 @@ class PaintCanvasState extends State<PaintCanvas> {
       }
     } else if (_paintCtrl.mode == PaintMode.polygon) {
       _checkPolygonIsComplete();
+      return;
     }
     _createPainting(offsets);
   }

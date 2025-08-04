@@ -34,7 +34,7 @@ class WhatsAppHelper {
     /// Blocks further updates if the filter show helper is active.
     editor.blockOnScaleUpdateFunction = filterShowHelper > 0;
 
-    if (editor.selectedLayerIndex < 0) {
+    if (!editor.isLayerBeingTransformed) {
       /// Adjusts filter helper based on vertical focal point changes.
       filterShowHelper -= details.focalPointDelta.dy;
       filterShowHelper = max(0, min(120, filterShowHelper));
@@ -55,7 +55,7 @@ class WhatsAppHelper {
 
   /// Called when a scaling gesture ends, handling swipe and filter animations.
   void onScaleEnd(ScaleEndDetails details, ProImageEditorState editor) {
-    if (editor.selectedLayerIndex < 0) {
+    if (!editor.isLayerBeingTransformed) {
       /// Hides helper lines after scaling ends.
       editor.layerInteractionManager.showHelperLines = false;
 

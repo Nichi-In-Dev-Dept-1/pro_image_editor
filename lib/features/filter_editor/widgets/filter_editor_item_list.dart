@@ -287,6 +287,7 @@ class _FilterEditorItemListState extends State<FilterEditorItemList> {
               child: Transform.translate(
                 offset: offset,
                 child: FilteredWidget(
+                  enableCachedSize: true,
                   image: widget.editorImage,
                   videoPlayer: widget.image,
                   fit: transformConfigs.isNotEmpty

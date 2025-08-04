@@ -27,7 +27,6 @@ class LayerStack extends StatelessWidget {
   ///   configs: myEditorConfigs,
   ///   layers: myLayers,
   ///   cutOutsideImageArea: true,
-  ///   freeStyleHighPerformance: true,
   ///   transformHelper: myTransformHelper,
   /// )
   /// ```
@@ -37,7 +36,6 @@ class LayerStack extends StatelessWidget {
     required this.layers,
     required this.overlayColor,
     this.cutOutsideImageArea,
-    this.freeStyleHighPerformance = false,
     this.enableLayerKey = false,
     this.transformHelper = const TransformHelper(
       editorBodySize: Size.zero,
@@ -81,12 +79,6 @@ class LayerStack extends StatelessWidget {
   /// content that extends beyond the boundaries.
   final bool? cutOutsideImageArea;
 
-  /// Controls high-performance mode for free-style drawing.
-  ///
-  /// Enabling this option may improve performance when drawing free-style
-  /// elements on the canvas, at the potential cost of rendering quality.
-  final bool freeStyleHighPerformance;
-
   /// A flag that determines whether the layer key functionality is enabled.
   /// When set to `true`, the layer key feature is active; otherwise, it is
   /// disabled.
@@ -113,11 +105,9 @@ class LayerStack extends StatelessWidget {
                 children: layers.map((layerItem) {
                   return LayerWidget(
                     key: enableLayerKey ? layerItem.key : null,
+                    layer: layerItem,
                     configs: configs,
-                    highPerformanceMode: freeStyleHighPerformance,
-                    editorCenterX: transformHelper.editorBodySize.width / 2,
-                    editorCenterY: transformHelper.editorBodySize.height / 2,
-                    layerData: layerItem,
+                    editorBodySize: transformHelper.editorBodySize,
                   );
                 }).toList()),
           ),

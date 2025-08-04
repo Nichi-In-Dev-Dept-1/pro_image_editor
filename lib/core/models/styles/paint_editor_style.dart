@@ -10,54 +10,6 @@ import '../../constants/editor_style_constants.dart';
 /// in the image editor.
 /// It includes properties such as colors for the app bar, background, bottom
 /// bar, and more.
-///
-/// Usage:
-///
-/// ```dart
-/// PaintEditorStyle PaintEditorStyle = PaintEditorStyle(
-///   appBarBackgroundColor: Colors.black,
-///   appBarForegroundColor: Colors.white,
-///   background: Colors.grey,
-///   bottomBarColor: Colors.black,
-///   bottomBarActiveItemColor: Colors.blue,
-/// );
-/// ```
-///
-/// Properties:
-///
-/// - `appBarBackgroundColor`: Background color of the app bar in the paint
-///    editor.
-///
-/// - `appBarForegroundColor`: Foreground color (text and icons) of the app bar.
-///
-/// - `background`: Background color of the paint editor.
-///
-/// - `bottomBarColor`: Background color of the bottom navigation bar.
-///
-/// - `bottomBarActiveItemColor`: Color of active items in the bottom
-///   navigation bar.
-///
-/// - `bottomBarInactiveItemColor`: Color of inactive items in the bottom
-///   navigation bar.
-///
-/// - `lineWidthBottomSheetColor`: Color of the bottom sheet used to select
-///   line width.
-///
-/// Example Usage:
-///
-/// ```dart
-/// PaintEditorStyle paintEditorStyle = PaintEditorStyle(
-///   appBarBackgroundColor: Colors.black,
-///   appBarForegroundColor: Colors.white,
-///   background: Colors.grey,
-///   bottomBarColor: Colors.black,
-///   bottomBarActiveItemColor: Colors.blue,
-/// );
-///
-/// Color appBarBackgroundColor = PaintEditorStyle.appBarBackgroundColor;
-/// Color background = PaintEditorStyle.background;
-/// // Access other style properties...
-/// ```
 class PaintEditorStyle {
   /// Creates an instance of the `PaintEditorStyle` class with the specified
   /// style properties.
@@ -78,6 +30,8 @@ class PaintEditorStyle {
     this.initialColor = const Color(0xffff0000),
     this.editSheetShowDragHandle = true,
     this.editSheetBackgroundColor = const Color(0xFF121B22),
+    this.editSheetPreviewAreaColor = const Color(0xFF1E2D3C),
+    this.editSheetPreviewAreaRadius = 7.0,
   })  : assert(initialStrokeWidth > 0, 'initialStrokeWidth must be positive'),
         assert(initialOpacity >= 0 && initialOpacity <= 1,
             'initialOpacity must be between 0 and 1');
@@ -127,6 +81,12 @@ class PaintEditorStyle {
   /// The background color of the edit sheet.
   final Color editSheetBackgroundColor;
 
+  /// The background color of the preview area inside the edit sheet.
+  final Color editSheetPreviewAreaColor;
+
+  /// The border-radius of the preview area inside the edit sheet.
+  final double editSheetPreviewAreaRadius;
+
   /// UI overlay style, defining the appearance of system status bars.
   final SystemUiOverlayStyle uiOverlayStyle;
 
@@ -136,6 +96,7 @@ class PaintEditorStyle {
   /// The [copyWith] method allows you to create a new instance of
   /// [PaintEditorStyle] with some properties updated while keeping the
   /// others unchanged.
+
   PaintEditorStyle copyWith({
     Color? background,
     Color? bottomBarBackground,
@@ -152,6 +113,8 @@ class PaintEditorStyle {
     Color? initialColor,
     bool? editSheetShowDragHandle,
     Color? editSheetBackgroundColor,
+    Color? editSheetPreviewAreaColor,
+    double? editSheetPreviewAreaRadius,
     SystemUiOverlayStyle? uiOverlayStyle,
   }) {
     return PaintEditorStyle(
@@ -178,6 +141,10 @@ class PaintEditorStyle {
           editSheetShowDragHandle ?? this.editSheetShowDragHandle,
       editSheetBackgroundColor:
           editSheetBackgroundColor ?? this.editSheetBackgroundColor,
+      editSheetPreviewAreaColor:
+          editSheetPreviewAreaColor ?? this.editSheetPreviewAreaColor,
+      editSheetPreviewAreaRadius:
+          editSheetPreviewAreaRadius ?? this.editSheetPreviewAreaRadius,
       uiOverlayStyle: uiOverlayStyle ?? this.uiOverlayStyle,
     );
   }

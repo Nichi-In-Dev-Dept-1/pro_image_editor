@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '/core/models/layers/paint_layer.dart';
 import '/features/paint_editor/enums/paint_editor_enum.dart';
 import '/features/paint_editor/widgets/draw_paint_item.dart';
-import '/shared/utils/platform_info.dart';
 
 /// A widget representing a paint layer in the sticker editor.
 class LayerWidgetPaintItem extends StatelessWidget {
@@ -15,7 +14,6 @@ class LayerWidgetPaintItem extends StatelessWidget {
     this.scale = 1.0,
     this.isSelected = false,
     this.enableHitDetection = false,
-    this.isHighPerformanceMode = false,
     this.willChange = false,
     this.onHitChanged,
   });
@@ -37,9 +35,6 @@ class LayerWidgetPaintItem extends StatelessWidget {
   /// Whether hit detection is enabled for this layer.
   final bool enableHitDetection;
 
-  /// Whether high-performance mode is enabled for free-style drawing.
-  final bool isHighPerformanceMode;
-
   /// Callback function that is triggered when a hit status changes.
   ///
   /// The [onHitChanged] function takes a boolean parameter [hasHit] which
@@ -48,25 +43,18 @@ class LayerWidgetPaintItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      // Improves hit detection for mobile devices by adding padding.
-      padding: EdgeInsets.all(isDesktop ? 0 : 15),
-      child: RepaintBoundary(
-        child: Opacity(
-          opacity: layer.opacity,
-          child: CustomPaint(
-            size: layer.size,
-            willChange: willChange,
-            isComplex: layer.item.mode == PaintMode.freeStyle,
-            painter: DrawPaintItem(
-              item: layer.item,
-              scale: scale,
-              selected: isSelected,
-              enabledHitDetection: enableHitDetection,
-              freeStyleHighPerformance: isHighPerformanceMode,
-              onHitChanged: onHitChanged,
-            ),
-          ),
+    return Opacity(
+      opacity: layer.opacity,
+      child: CustomPaint(
+        size: layer.size,
+        willChange: willChange,
+        isComplex: layer.item.mode == PaintMode.freeStyle,
+        painter: DrawPaintItem(
+          item: layer.item,
+          scale: scale,
+          selected: isSelected,
+          enabledHitDetection: enableHitDetection,
+          onHitChanged: onHitChanged,
         ),
       ),
     );

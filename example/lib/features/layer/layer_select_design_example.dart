@@ -41,8 +41,7 @@ class _LayerSelectDesignExampleState extends State<LayerSelectDesignExample>
       widgets: MainEditorWidgets(
         /// Hide the default "remove-Area" cuz the overlay includes a delete
         /// button.
-        removeLayerArea: (removeAreaKey, editor, rebuildStream) =>
-            const SizedBox.shrink(),
+        removeLayerArea: (_, __, ___, ____) => const SizedBox.shrink(),
       ),
     ),
     layerInteraction: LayerInteractionConfigs(

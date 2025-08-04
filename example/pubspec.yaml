@@ -18,23 +18,24 @@ dependencies:
   
   bot_toast: ^4.1.0
   cupertino_icons: ^1.0.8
-  file_picker: ^10.2.0
+  file_picker: ^10.2.1
   gal: ^2.3.2
-  google_fonts: ^6.2.1
-  file_saver: ^0.2.14
-  firebase_core: ^3.14.0
-  firebase_storage: ^12.4.7
+  google_fonts: ^6.3.0
+  file_saver: ^0.3.1
+  firebase_core: ^4.0.0
+  firebase_storage: ^13.0.0
   http: ^1.4.0
   supabase_flutter: ^2.9.1
   image_background_remover: ^1.0.0
   image_picker: ^1.1.2
   mime: ^2.0.0
   url_launcher: ^6.3.2
+  path_provider: ^2.1.5
   flutter_colorpicker: ^1.1.0
   vibration: ^3.1.1
 
   # Video-Editing
-  pro_video_editor: ^0.2.0
+  pro_video_editor: ^0.2.3
   ### Choose one player below
   video_player: ^2.10.0
   chewie: ^1.12.1

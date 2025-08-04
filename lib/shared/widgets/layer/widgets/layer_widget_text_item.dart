@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/text_editor_configs.dart';
 import '/core/models/layers/text_layer.dart';
-import '/plugins/rounded_background_text/src/rounded_background_text.dart';
+import '../../../../features/text_editor/widgets/rounded_background_text/rounded_background_text.dart';
 
 /// A widget representing a text layer in the sticker editor.
 class LayerWidgetTextItem extends StatelessWidget {
@@ -31,6 +31,16 @@ class LayerWidgetTextItem extends StatelessWidget {
   /// indicates whether a hit has occurred (true) or not (false).
   final Function(bool hasHit) onHitChanged;
 
+  void _handleLayerHit(bool hasHit) {
+    // Update hit detection and cursor visibility state.
+    if (layer.hit != hasHit || showMoveCursor.value != hasHit) {
+      layer.hit = hasHit;
+      showMoveCursor.value = hasHit;
+    }
+    layer.hit = hasHit;
+    onHitChanged(hasHit);
+  }
+
   @override
   Widget build(BuildContext context) {
     var fontSize = textEditorConfigs.initFontSize * layer.scale;
@@ -41,20 +51,14 @@ class LayerWidgetTextItem extends StatelessWidget {
     );
 
     final maxTextWidth = layer.maxTextWidth;
+
     return HeroMode(
       enabled: false,
       child: RoundedBackgroundText(
+        enableHitBoxCorrection: true,
         maxTextWidth:
             maxTextWidth == null ? double.infinity : maxTextWidth * layer.scale,
-        onHitTestResult: (hasHit) {
-          // Update hit detection and cursor visibility state.
-          if (layer.hit != hasHit || showMoveCursor.value != hasHit) {
-            layer.hit = hasHit;
-            showMoveCursor.value = hasHit;
-          }
-          layer.hit = hasHit;
-          onHitChanged(hasHit);
-        },
+        onHitTestResult: _handleLayerHit,
         layer.text.toString(),
         backgroundColor: layer.background,
         textAlign: layer.align,

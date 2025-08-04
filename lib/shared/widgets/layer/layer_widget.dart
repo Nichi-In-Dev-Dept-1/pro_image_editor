@@ -1,4 +1,5 @@
 // Dart imports:
+import 'dart:async';
 import 'dart:math';
 
 // Flutter imports:
@@ -11,6 +12,8 @@ import '/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
 import '/core/services/gesture_manager.dart';
+import '/features/main_editor/services/layer_interaction_manager.dart';
+import '/features/main_editor/services/main_editor_layers_service.dart';
 import '/features/paint_editor/enums/paint_editor_enum.dart';
 import '/shared/widgets/layer/enums/layer_widget_type_enum.dart';
 import '/shared/widgets/layer/services/layer_widget_context_menu.dart';
@@ -26,23 +29,15 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
   /// Creates a [LayerWidget] with the specified properties.
   const LayerWidget({
     super.key,
-    this.onScaleRotateDown,
-    this.onScaleRotateUp,
-    required this.editorCenterX,
-    required this.editorCenterY,
+    required this.editorBodySize,
     required this.configs,
-    required this.layerData,
+    required this.layer,
+    this.layersService,
+    this.layerInteractionManager,
     this.onContextMenuToggled,
-    this.onTapDown,
-    this.onTapUp,
-    this.onTap,
-    this.onEditTap,
-    this.onRemoveTap,
     this.onDuplicate,
-    this.highPerformanceMode = false,
-    this.enableHitDetection = false,
-    this.selected = false,
     this.isInteractive = false,
+    this.enableMouseCursor = true,
     this.callbacks = const ProImageEditorCallbacks(),
   });
   @override
@@ -51,85 +46,31 @@ class LayerWidget extends StatefulWidget with SimpleConfigsAccess {
   @override
   final ProImageEditorCallbacks callbacks;
 
-  /// The x-coordinate of the editor's center.
-  ///
-  /// This parameter specifies the horizontal center of the editor's body in
-  /// logical pixels, used to position and transform layers relative to the
-  /// editor's center.
-  final double editorCenterX;
+  /// Service for managing editor layers such as adding, removing, or
+  /// updating them.
+  final MainEditorLayersService? layersService;
 
-  /// The y-coordinate of the editor's center.
-  ///
-  /// This parameter specifies the vertical center of the editor's body in
-  /// logical pixels,  used to position and transform layers relative to the
-  /// editor's center.
-  final double editorCenterY;
+  /// Handles user interactions with layers, like selecting or dragging them.
+  final LayerInteractionManager? layerInteractionManager;
+
+  /// The size of the editor's body area in logical pixels.
+  final Size editorBodySize;
 
   /// Data for the layer.
-  final Layer layerData;
+  final Layer layer;
 
   /// Callback when the context menu open/close
   final Function(bool isOpen)? onContextMenuToggled;
 
-  /// Callback when a tap down event occurs.
-  final Function()? onTapDown;
-
-  /// Callback when a tap up event occurs.
-  final Function()? onTapUp;
-
   /// Callback triggered when a layer should be copied.
   final Function()? onDuplicate;
 
-  /// Callback when a tap event occurs.
-  final Function(Layer)? onTap;
-
-  /// Callback for removing the layer.
-  final Function()? onRemoveTap;
-
-  /// Callback for editing the layer.
-  final Function()? onEditTap;
-
-  /// Callback for handling pointer down events associated with scale and rotate
-  /// gestures.
-  ///
-  /// This callback is triggered when the user presses down on the widget to
-  /// begin a scaling or rotating gesture. It provides both the pointer event
-  /// and the size of the widget being interacted with, allowing for precise
-  /// manipulation.
-  ///
-  /// - Parameters:
-  ///   - event: The [PointerDownEvent] containing details about the pointer
-  ///     interaction, such as position and device type.
-  ///   - size: The [Size] of the widget being manipulated, useful for
-  ///     calculating scaling and rotation transformations relative to the
-  ///     widget's dimensions.
-  final Function(PointerDownEvent, Size)? onScaleRotateDown;
-
-  /// Callback for handling pointer up events associated with scale and rotate
-  /// gestures.
-  ///
-  /// This callback is triggered when the user releases the widget after a
-  /// scaling or rotating gesture. It allows for finalizing the interaction and
-  /// making any necessary updates or state changes based on the completed
-  /// gesture.
-  ///
-  /// - Parameter event: The [PointerUpEvent] containing details about the
-  ///   pointer release, such as position and device type.
-  final Function(PointerUpEvent)? onScaleRotateUp;
-
-  /// Controls high-performance for free-style drawing.
-  final bool highPerformanceMode;
-
-  /// Enables or disables hit detection.
-  /// When set to `true`, it allows detecting user interactions with the
-  /// interface.
-  final bool enableHitDetection;
-
-  /// Indicates whether the layer is selected.
-  final bool selected;
-
   /// Indicates whether the layer is interactive.
   final bool isInteractive;
+
+  /// A flag indicating whether the mouse cursor should be enabled for this
+  /// widget.
+  final bool enableMouseCursor;
 
   @override
   createState() => _LayerWidgetState();
@@ -139,6 +80,13 @@ class _LayerWidgetState extends State<LayerWidget>
     with ImageEditorConvertedConfigs, SimpleConfigsAccessState {
   late LayerWidgetType _layerType;
 
+  late final _layersService = widget.layersService;
+  late final _layerInteractionManager = widget.layerInteractionManager;
+
+  /// Indicates whether the layer is selected.
+  bool get _isSelected =>
+      _layerInteractionManager?.selectedLayerIds.contains(_layer.id) ?? false;
+
   /// Flag to control the display of a move cursor.
   final _showMoveCursor = ValueNotifier(false);
   final _lastHitState = ValueNotifier(false);
@@ -147,15 +95,35 @@ class _LayerWidgetState extends State<LayerWidget>
     i18nLayerInteraction: i18n.layerInteraction,
     layerInteractionIcons: layerInteraction.icons,
     onContextMenuToggled: widget.onContextMenuToggled,
-    onEditTap: widget.onEditTap,
-    onRemoveTap: widget.onRemoveTap,
+    onEditTap: () => _layersService?.handleEditTap(_layer),
+    onRemoveTap: () => _layersService?.handleRemoveLayer(_layer),
   );
 
   late final Offset _fractionalOffset;
 
   final double _tapSlop = 18.0;
-  Offset? _downPosition;
+
+  PointerEvent? _lastDownEvent;
+  Offset? _lastLayerOffset;
+  int? _temporaryLayerHash;
+
   DateTime _tapDownTimestamp = DateTime.now();
+  Timer? _longPressTimer;
+  final Duration _longPressThreshold = const Duration(milliseconds: 500);
+
+  /// Returns the current layer being displayed.
+  Layer get _layer => widget.layer;
+
+  Size get _halfBodySize => widget.editorBodySize / 2;
+
+  /// Calculates the horizontal offset for the layer.
+  double get offsetX => _layer.offset.dx + _halfBodySize.width;
+
+  /// Calculates the vertical offset for the layer.
+  double get offsetY => _layer.offset.dy + _halfBodySize.height;
+
+  bool get _enableVisibleOverlay =>
+      _layerInteractionManager?.layersAreSelectable(widget.configs) ?? false;
 
   @override
   void initState() {
@@ -187,6 +155,7 @@ class _LayerWidgetState extends State<LayerWidget>
   void dispose() {
     _lastHitState.dispose();
     _showMoveCursor.dispose();
+    _longPressTimer?.cancel();
     super.dispose();
   }
 
@@ -206,23 +175,44 @@ class _LayerWidgetState extends State<LayerWidget>
   /// Handles a pointer down event on the layer.
   void _onPointerDown(PointerDownEvent event) {
     if (GestureManager.instance.isBlocked) return;
+    bool isLayerSelected = _isSelected;
 
-    _downPosition = event.position;
+    _lastDownEvent = event;
+    _lastLayerOffset = _layer.offset;
+    _temporaryLayerHash = _layer.hashCode;
     _tapDownTimestamp = DateTime.now();
 
     if (_isOutsideHitBox()) return;
     if (!isDesktop || event.buttons != kSecondaryMouseButton) {
-      widget.onTapDown?.call();
+      _layersService?.handleTapDown(_layer, event);
     }
+    // Start long press detection
+    _longPressTimer?.cancel();
+    _longPressTimer = Timer(_longPressThreshold, () {
+      if (_lastDownEvent == null ||
+          _lastLayerOffset == null ||
+          _temporaryLayerHash != _layer.hashCode) {
+        return;
+      }
+
+      final offsetDistance = (_layer.offset - _lastLayerOffset!).distance;
+
+      if (offsetDistance <= 0 && _layer.interaction.enableSelection) {
+        _layersService?.handleLongPress(
+          _layer,
+          isSelected: isLayerSelected,
+          areLayersSelectable: _enableVisibleOverlay,
+        );
+      }
+    });
   }
 
   /// Handles a pointer up event on the layer.
   void _onPointerUp(PointerUpEvent event) {
+    _longPressTimer?.cancel();
     if (GestureManager.instance.isBlocked) return;
     // Notify optional onTapUp callback
-    widget.onTapUp?.call();
-
-    if (widget.selected) return;
+    _layersService?.handleTapUp(_layer);
 
     /// Important: To avoid gesture conflicts, we need to create our own
     /// onTap event using the Listener widget instead of GestureDetector.
@@ -230,11 +220,12 @@ class _LayerWidgetState extends State<LayerWidget>
     /// issues with this, please open a new issue.
 
     // Cancel if down position is not set
-    if (_downPosition == null) return;
+    if (_lastDownEvent == null) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final interaction = _layer.interaction;
-      final offsetDistance = (event.position - _downPosition!).distance;
+      final offsetDistance =
+          (event.position - _lastDownEvent!.position).distance;
       final timeElapsed =
           DateTime.now().difference(_tapDownTimestamp).inMilliseconds;
 
@@ -247,7 +238,7 @@ class _LayerWidgetState extends State<LayerWidget>
       // Fire onTap only if selection/edit is enabled and pointer is inside hit box
       if ((interaction.enableSelection || interaction.enableEdit) &&
           !_isOutsideHitBox()) {
-        widget.onTap?.call(_layer);
+        _layersService?.handleLayerTap(_layer, _lastDownEvent!);
       }
     });
   }
@@ -255,7 +246,7 @@ class _LayerWidgetState extends State<LayerWidget>
   bool _isOutsideHitBox() {
     return ((_isHitOutsideInCanvas() || _isHitOutsideInText()) &&
             _layerType != LayerWidgetType.censor) &&
-        !widget.selected;
+        !_isSelected;
   }
 
   /// Checks if the hit is outside the canvas for certain types of layers.
@@ -278,19 +269,10 @@ class _LayerWidgetState extends State<LayerWidget>
       ..rotateZ(_layer.rotation);
   }
 
-  /// Returns the current layer being displayed.
-  Layer get _layer => widget.layerData;
-
-  /// Calculates the horizontal offset for the layer.
-  double get offsetX => _layer.offset.dx + widget.editorCenterX;
-
-  /// Calculates the vertical offset for the layer.
-  double get offsetY => _layer.offset.dy + widget.editorCenterY;
-
   void _onHoverEnter() {
     if (((!_layer.isPaintLayer || _layerType == LayerWidgetType.censor) &&
             !_layer.isTextLayer) ||
-        widget.selected) {
+        _isSelected) {
       _showMoveCursor.value = true;
     }
   }
@@ -309,9 +291,8 @@ class _LayerWidgetState extends State<LayerWidget>
   Widget build(BuildContext context) {
     Matrix4 transformMatrix = _calcTransformMatrix();
 
-    final overlayPadding = widget.selected
-        ? layerInteraction.style.overlayPadding
-        : EdgeInsets.zero;
+    final overlayPadding =
+        _isSelected ? layerInteraction.style.overlayPadding : EdgeInsets.zero;
 
     final adjustedLeft =
         offsetX - overlayPadding.horizontal * (_fractionalOffset.dx + 0.5);
@@ -321,16 +302,18 @@ class _LayerWidgetState extends State<LayerWidget>
     return Positioned(
       left: adjustedLeft,
       top: adjustedTop,
-      child: FractionalTranslation(
-        translation: _fractionalOffset,
-        child: Hero(
-          // Important that hero is above transform
-          createRectTween: (begin, end) => RectTween(begin: begin, end: end),
-          tag: _layer.id,
-          child: Transform(
-            transform: transformMatrix,
-            alignment: Alignment.center,
-            child: _buildInteractionHandlers(),
+      child: RepaintBoundary(
+        child: FractionalTranslation(
+          translation: _fractionalOffset,
+          child: Hero(
+            // Important that hero is above transform
+            createRectTween: (begin, end) => RectTween(begin: begin, end: end),
+            tag: _layer.id,
+            child: Transform(
+              transform: transformMatrix,
+              alignment: Alignment.center,
+              child: _buildInteractionHandlers(),
+            ),
           ),
         ),
       ),
@@ -340,20 +323,22 @@ class _LayerWidgetState extends State<LayerWidget>
   Widget _buildInteractionHandlers() {
     var interaction = _layer.interaction;
     return LayerInteractionHelperWidget(
-      layerData: _layer,
+      layer: _layer,
       configs: configs,
       callbacks: callbacks,
-      selected: widget.selected,
-      onEditLayer: widget.onEditTap,
+      selected: _isSelected,
+      onEditLayer: () => _layersService?.handleEditTap(_layer),
       forceIgnoreGestures:
           !(interaction.enableSelection || interaction.enableEdit),
       isInteractive: widget.isInteractive,
-      onScaleRotateDown: (details) {
-        widget.onScaleRotateDown?.call(details, context.size ?? Size.zero);
-      },
-      onScaleRotateUp: widget.onScaleRotateUp,
-      onRemoveLayer: widget.onRemoveTap,
+      enableVisibleOverlay: _enableVisibleOverlay,
+      onScaleRotateDown: (details) => _layersService?.handleScaleRotateDown(
+          context.size ?? Size.zero, _layer),
+      onScaleRotateUp: (_) => _layersService?.handleScaleRotateUp(),
+      onRemoveLayer: () => _layersService?.handleRemoveLayer(_layer),
       onDuplicate: widget.onDuplicate,
+      onGroupLayers: _layersService?.handleGroupLayers,
+      onUngroupLayers: () => _layersService?.handleUngroupLayers(_layer),
       child: _buildCursor(
         child: ValueListenableBuilder(
             valueListenable: _lastHitState,
@@ -366,7 +351,7 @@ class _LayerWidgetState extends State<LayerWidget>
                   onPointerDown: _onPointerDown,
                   onPointerUp: _onPointerUp,
                   child: Padding(
-                    padding: !widget.selected
+                    padding: !_isSelected
                         ? EdgeInsets.zero
                         : layerInteraction.style.overlayPadding,
                     child: FittedBox(
@@ -387,7 +372,9 @@ class _LayerWidgetState extends State<LayerWidget>
         builder: (_, showCursor, __) {
           return MouseRegion(
             hitTestBehavior: HitTestBehavior.translucent,
-            cursor: showCursor && _layer.interaction.enableMove
+            cursor: showCursor &&
+                    _layer.interaction.enableMove &&
+                    widget.enableMouseCursor
                 ? layerInteraction.style.hoverCursor
                 : MouseCursor.defer,
             onEnter: (event) => _onHoverEnter(),
@@ -426,9 +413,9 @@ class _LayerWidgetState extends State<LayerWidget>
         content = LayerWidgetPaintItem(
           layer: _layer as PaintLayer,
           scale: _layer.scale,
-          isSelected: widget.selected,
-          enableHitDetection: widget.enableHitDetection,
-          isHighPerformanceMode: widget.highPerformanceMode,
+          isSelected: _isSelected,
+          enableHitDetection:
+              _layerInteractionManager?.enabledHitDetection ?? false,
           onHitChanged: (state) {
             _lastHitState.value = state;
           },

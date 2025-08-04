@@ -34,6 +34,7 @@ const Map<String, String> kMinifiedLayerKeys = {
   'flipX': 'fx',
   'flipY': 'fy',
   'isDeleted': 'de',
+  'groupId': 'g',
   'type': 't',
   'emoji': 'e',
   'text': 'te',

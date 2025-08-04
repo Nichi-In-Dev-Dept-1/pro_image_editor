@@ -362,18 +362,6 @@ class ColorFilterAddons {
     ];
   }
 
-  /// Generates an opacity adjustment filter matrix.
-  ///
-  /// This method returns a color matrix that adjusts the opacity of an image
-  /// by the specified value.
-  ///
-  /// Parameters:
-  /// - [value]: The opacity factor, where `0` is fully transparent and `1` is
-  ///   fully opaque.
-  static List<double> opacity(double value) {
-    return [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, value, 0];
-  }
-
   /// Generates an exposure adjustment filter matrix.
   ///
   /// This method returns a color matrix that adjusts the exposure of an image

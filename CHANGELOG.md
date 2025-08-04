@@ -1,5 +1,36 @@
 # Changelog
 
+## 11.0.0
+- **FEAT**(multi-select): Layers can now be selected simultaneously using Ctrl, Shift, or long-press gestures.
+- **FEAT**(grouping): Layers can be grouped for unified selection and movement.
+- **FEAT**(main-editor): Added `selectAllLayers` and `unselectAllLayers` methods for bulk selection control.
+- **FEAT**(main-editor): Introduced `enableMultiSelectMode` to allow instant multi-selection without modifier keys.
+- **FEAT**(drag-selection): Added support for selecting multiple layers by dragging a rectangle around them.
+- **FEAT**(mouse-actions): Added support for different mouse button actions such as pan, multi-select, and drag-select.
+- **FEAT**(layer-configs): Added `enableKeyboardMultiSelection` and `enableLongPressMultiSelection` to `LayerInteractionConfigs` for dynamically enabling or disabling multi-selection via keyboard or long press.
+- **FEAT**(remove-area): Applied `AnimatedSwitcher` to the remove area for smooth fade-in/out transitions.
+- **FEAT**(crop-rotate-editor): Add `enableFlipAnimation` to `CropRotateEditorConfigs`, which enables flip animation by default.
+
+<br/>
+
+- **PERF**(GPU): Improved GPU performance by optimizing transformation and color filter matrices, especially beneficial when multiple filters or tune adjustments are applied.
+- **PERF**(CPU): Replace the `rounded_background_text` package-code with a custom solution that significantly improves the CPU usage required for drawing calculations.
+- **PERF**(RAM): Use cached sizes in the filter editor to display filter previews which reduce RAM usage. 
+
+<br/>
+
+- **FIX**(rounded_background_text): Resolved issue where two text lines with nearly identical widths would not render with correct rounding; now ensures both lines are treated as equally long.
+- **FIX**(crop-rotate-editor): Resolve broken undo/redo functionality in the `CropRotateEditor`.
+
+<br/>
+
+#### Breaking Changes
+- Removed `layerIndex` from `onTapEditSticker` in `StickerEditorCallbacks`.
+- Removed `selectedLayerIndex` from `MainEditor`.
+- Remove `ColorFilterAddons.opacity`.
+- The way the editor handles multiple filters and tune adjustments has changed, so combinations might now appear slightly differently.
+- Removed `enableFreeStyleHighPerformanceScaling`, `enableFreeStyleHighPerformanceMoving` and `enableFreeStyleHighPerformanceHero` from `PaintEditorConfigs`.
+
 ## 10.5.4
 - **FEAT**(text-layers): Delete the edited 'TextLayers' if the new text is empty.
 

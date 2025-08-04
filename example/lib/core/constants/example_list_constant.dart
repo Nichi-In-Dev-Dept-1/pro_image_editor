@@ -1,7 +1,7 @@
-import 'package:example/features/ai/ai_group.dart';
-import 'package:example/features/layer_select_design_example.dart';
+import 'package:example/features/layer/layer_group_page.dart';
 import 'package:flutter/material.dart';
 
+import '/features/ai/ai_group_page.dart';
 import '/features/crop_to_main_editor.dart';
 import '/features/custom_widgets_example.dart';
 import '/features/default_example.dart';
@@ -17,7 +17,6 @@ import '/features/movable_background_image.dart';
 import '/features/pick_image_example.dart';
 import '/features/reorder_layer_example.dart';
 import '/features/round_cropper_example.dart';
-import '/features/selectable_layer_example.dart';
 import '/features/signature_drawing_example.dart';
 import '/features/standalone_example.dart';
 import '/features/stickers_example.dart';
@@ -48,7 +47,6 @@ List<Example> kImageEditorExamples = const [
     name: 'AI-Integration',
     icon: Icons.hub_outlined,
     page: AiGroupPage(),
-    disabledMessage: 'That function is not supported on the web.',
   ),
   Example(
     path: '/designs',
@@ -105,16 +103,10 @@ List<Example> kImageEditorExamples = const [
     page: RoundCropperExample(),
   ),
   Example(
-    path: '/selectable-layers',
-    name: 'Selectable-Layers',
-    icon: Icons.select_all_rounded,
-    page: SelectableLayerExample(),
-  ),
-  Example(
-    path: '/layer-selection-design',
-    name: 'Selected Layer Design',
-    icon: Icons.design_services_outlined,
-    page: LayerSelectDesignExample(),
+    path: '/layer',
+    name: 'Layers',
+    icon: Icons.layers_outlined,
+    page: LayerGroupPage(),
   ),
   Example(
     path: '/generation-configs',

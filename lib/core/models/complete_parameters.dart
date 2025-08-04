@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../features/filter_editor/utils/combine_color_matrix_utils.dart';
 import 'layers/layer.dart';
 
 /// A data class that contains all parameters needed for applying visual
@@ -10,7 +11,8 @@ class CompleteParameters {
   /// Creates a [CompleteParameters] instance with all required values.
   CompleteParameters({
     required this.blur,
-    required this.colorFilters,
+    required this.matrixFilterList,
+    required this.matrixTuneAdjustmentsList,
     required this.startTime,
     required this.endTime,
     required this.cropWidth,
@@ -28,8 +30,25 @@ class CompleteParameters {
   /// The blur strength to apply (in logical pixels).
   final double blur;
 
-  /// A 4x5 color matrix used for color adjustments.
-  final List<List<double>> colorFilters;
+  /// List of color filter matrices (e.g. sepia, noir).
+  final List<List<double>> matrixFilterList;
+
+  /// List of color tuning adjustment matrices (e.g. brightness, contrast).
+  final List<List<double>> matrixTuneAdjustmentsList;
+
+  /// All active color filters including both tuning and filter matrices.
+  List<List<double>> get colorFilters => [
+        ...matrixTuneAdjustmentsList,
+        ...matrixFilterList,
+      ];
+
+  /// Combined color filter matrix from all filters and adjustments.
+  List<double> get colorFiltersCombined {
+    return mergeColorMatrices(
+      filterList: matrixFilterList,
+      tuneAdjustmentList: matrixTuneAdjustmentsList,
+    );
+  }
 
   /// The time where processing should start.
   final Duration? startTime;
@@ -74,7 +93,8 @@ class CompleteParameters {
   /// values for specific fields.
   CompleteParameters copyWith({
     double? blur,
-    List<List<double>>? colorFilters,
+    List<List<double>>? matrixFilterList,
+    List<List<double>>? matrixTuneAdjustmentsList,
     Duration? startTime,
     Duration? endTime,
     int? cropWidth,
@@ -90,7 +110,9 @@ class CompleteParameters {
   }) {
     return CompleteParameters(
       blur: blur ?? this.blur,
-      colorFilters: colorFilters ?? this.colorFilters,
+      matrixFilterList: matrixFilterList ?? this.matrixFilterList,
+      matrixTuneAdjustmentsList:
+          matrixTuneAdjustmentsList ?? this.matrixTuneAdjustmentsList,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       cropWidth: cropWidth ?? this.cropWidth,

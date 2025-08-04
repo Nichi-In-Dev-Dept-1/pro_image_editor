@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '/features/main_editor/providers/image_infos_provider.dart';
 import '/shared/services/shader_manager.dart';
 import 'abstract/censor_area_item.dart';
+import 'constants/censor_backdrop_key.dart';
 
 /// A widget that applies a pixelate effect to a defined area.
 ///
@@ -84,6 +85,7 @@ class PixelateAreaItem extends CensorAreaItem {
     return BackdropFilter(
       filter: ImageFilter.shader(shader),
       blendMode: censorConfigs.pixelateBlendMode,
+      backdropGroupKey: kCensorBackdropGroupKey,
       child: child,
     );
   }

@@ -1,60 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
+import '/core/services/mouse_service.dart';
 import '/core/utils/size_utils.dart';
 import '/features/main_editor/controllers/main_editor_controllers.dart';
 import '/features/main_editor/services/layer_interaction_manager.dart';
 import '/features/main_editor/services/sizes_manager.dart';
 import '/plugins/defer_pointer/defer_pointer.dart';
-import '/shared/utils/unique_id_generator.dart';
 import '/shared/widgets/extended/mouse_region/extended_rebuild_mouse_region.dart';
 import '/shared/widgets/layer/layer_widget.dart';
 import '../main_editor.dart';
+import '../services/layer_drag_selection_service.dart';
+import '../services/main_editor_layers_service.dart';
 
 /// A widget that manages and displays layers in the main editor, handling
 /// interactions, configurations, and callbacks for user actions.
 class MainEditorLayers extends StatefulWidget {
   /// Creates a `MainEditorLayers` widget with the necessary configurations,
   /// managers, and callbacks.
-  ///
-  /// - [state]: Represents the current state of the editor.
-  /// - [configs]: Configuration settings for the editor.
-  /// - [callbacks]: Provides callbacks for editor interactions.
-  /// - [sizesManager]: Manages size-related settings and adjustments.
-  /// - [controllers]: Manages the main editor's controllers.
-  /// - [layerInteraction]: Configurations for layer interactions.
-  /// - [layerInteractionManager]: Handles interactions with editor layers.
-  /// - [mouseCursorsKey]: Key for managing mouse cursor regions.
-  /// - [activeLayers]: List of active layers in the editor.
-  /// - [selectedLayerIndex]: The index of the currently selected layer.
-  /// - [isSubEditorOpen]: Indicates whether a sub-editor is currently open.
-  /// - [checkInteractiveViewer]: Callback to check the state of the
-  ///   interactive viewer.
-  /// - [onTextLayerTap]: Callback triggered when a text layer is tapped.
-  /// - [setTempLayer]: Callback to temporarily set a layer for interaction.
-  /// - [onContextMenuToggled]: Callback triggered when the context menu is
-  ///   toggled.
   const MainEditorLayers({
     super.key,
     required this.controllers,
-    required this.layerInteraction,
     required this.layerInteractionManager,
     required this.configs,
     required this.callbacks,
     required this.sizesManager,
-    required this.selectedLayerIndex,
     required this.activeLayers,
     required this.isSubEditorOpen,
-    required this.checkInteractiveViewer,
+    required this.onCheckInteractiveViewer,
     required this.onTextLayerTap,
     required this.onEditPaintLayer,
     required this.state,
-    required this.setTempLayer,
     required this.onContextMenuToggled,
     required this.onDuplicateLayer,
+    required this.mouseService,
+    required this.dragSelectionService,
   });
 
   /// Represents the current state of the editor.
@@ -72,32 +54,32 @@ class MainEditorLayers extends StatefulWidget {
   /// Manages the main editor's controllers.
   final MainEditorControllers controllers;
 
-  /// Configurations for layer interactions.
-  final LayerInteractionConfigs layerInteraction;
-
   /// Handles interactions with editor layers.
   final LayerInteractionManager layerInteractionManager;
 
+  /// A service responsible for handling drag and selection operations
+  /// within the editor layers. This service facilitates user interactions
+  /// such as dragging and selecting layers in the main editor.
+  final LayerDragSelectionService dragSelectionService;
+
+  /// A service that handles mouse interactions within the editor.
+  /// This is used to manage mouse-related events and behaviors.
+  final MouseService mouseService;
+
   /// List of active layers in the editor.
   final List<Layer> activeLayers;
-
-  /// The index of the currently selected layer.
-  final int selectedLayerIndex;
 
   /// Indicates whether a sub-editor is currently open.
   final bool isSubEditorOpen;
 
   /// Callback to check the state of the interactive viewer.
-  final Function() checkInteractiveViewer;
+  final Function() onCheckInteractiveViewer;
 
   /// Callback triggered when a text layer is tapped.
   final Function(TextLayer layer) onTextLayerTap;
 
   /// A callback function that is triggered when a paint layer is edited.
   final Function(PaintLayer layer) onEditPaintLayer;
-
-  /// Callback to temporarily set a layer for interaction.
-  final Function(Layer layer) setTempLayer;
 
   /// Callback triggered when a layer should be copied.
   final Function(Layer layer) onDuplicateLayer;
@@ -110,188 +92,97 @@ class MainEditorLayers extends StatefulWidget {
 }
 
 class _MainEditorLayersState extends State<MainEditorLayers> {
-  final _deferId = ValueNotifier(generateUniqueId());
-
   /// Represents the dimensions of the body.
-  Size editorBodySize = Size.infinite;
+  Size _editorBodySize = Size.infinite;
 
-  /// Key for managing mouse cursor regions.
-  final _mouseCursorsKey = GlobalKey<ExtendedRebuildMouseRegionState>();
-
-  bool _isScaleInteractionActive = false;
-
-  // Helper methods for handling layer interactions
-  void _handleEditTap(int index, Layer layer) {
-    if (layer.isTextLayer) {
-      widget.onTextLayerTap(layer as TextLayer);
-    } else if (layer.isPaintLayer) {
-      widget.onEditPaintLayer(layer as PaintLayer);
-    } else if (layer.isWidgetLayer) {
-      widget.callbacks.stickerEditorCallbacks?.onTapEditSticker
-          ?.call(widget.state, layer as WidgetLayer, index);
-    }
-  }
-
-  void _handleLayerTap(Layer layer) {
-    if (widget.layerInteractionManager.layersAreSelectable(widget.configs) &&
-        layer.interaction.enableSelection) {
-      widget.layerInteractionManager.selectedLayerId =
-          layer.id == widget.layerInteractionManager.selectedLayerId
-              ? ''
-              : layer.id;
-      widget.checkInteractiveViewer();
-    } else if (layer.interaction.enableEdit) {
-      if (layer.isTextLayer && widget.configs.textEditor.enableEdit) {
-        widget.onTextLayerTap(layer as TextLayer);
-      } else if (layer.isPaintLayer && widget.configs.paintEditor.enableEdit) {
-        widget.onEditPaintLayer(layer as PaintLayer);
-      }
-    }
-  }
-
-  void _handleTapUp(Layer layer) {
-    if (_isScaleInteractionActive) return;
-    if (widget.layerInteractionManager.hoverRemoveBtn) {
-      widget.state.removeLayer(layer);
-    }
-    widget.controllers.uiLayerCtrl.add(null);
-    widget.callbacks.mainEditorCallbacks?.handleUpdateUI();
-    widget.state.selectedLayerIndex = -1;
-    widget.checkInteractiveViewer();
-    widget.callbacks.mainEditorCallbacks?.onLayerTapUp?.call(layer);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _deferId.value = generateUniqueId();
-    });
-  }
-
-  void _handleTapDown(int index, Layer layer) {
-    if (_isScaleInteractionActive) return;
-    widget.state.selectedLayerIndex = index;
-    widget.setTempLayer(layer);
-    widget.checkInteractiveViewer();
-    widget.callbacks.mainEditorCallbacks?.onLayerTapDown?.call(layer);
-  }
-
-  void _handleScaleRotateDown(int index, Size layerOriginalSize, Layer layer) {
-    _isScaleInteractionActive = true;
-    widget.state.selectedLayerIndex = index;
-    widget.layerInteractionManager
-      ..rotateScaleLayerSizeHelper = layerOriginalSize
-      ..rotateScaleLayerScaleHelper = layer.scale;
-    widget.checkInteractiveViewer();
-  }
-
-  void _handleScaleRotateUp() {
-    _isScaleInteractionActive = false;
-    widget.layerInteractionManager
-      ..rotateScaleLayerSizeHelper = null
-      ..rotateScaleLayerScaleHelper = null;
-    widget.state.setState(() => widget.state.selectedLayerIndex = -1);
-    widget.checkInteractiveViewer();
-    widget.callbacks.mainEditorCallbacks?.handleUpdateUI();
-  }
-
-  void _handleRemoveLayer(Layer layer) {
-    widget.state.setState(() => widget.state.removeLayer(layer));
-    widget.callbacks.mainEditorCallbacks?.handleUpdateUI();
-  }
-
-  /// Handles mouse hover events to change the cursor style
-  void _handleMouseHover(PointerHoverEvent event) {
-    final bool hasHit = widget.activeLayers
-        .any((element) => element is PaintLayer && element.item.hit);
-
-    final activeCursor = _mouseCursorsKey.currentState!.currentCursor;
-    final moveCursor = widget.layerInteraction.style.hoverCursor;
-
-    if (hasHit && activeCursor != moveCursor) {
-      _mouseCursorsKey.currentState!.setCursor(moveCursor);
-    } else if (!hasHit && activeCursor != SystemMouseCursors.basic) {
-      _mouseCursorsKey.currentState!.setCursor(SystemMouseCursors.basic);
-    }
-  }
+  late final _layerInteractionManager = widget.layerInteractionManager;
+  late final _layersService = MainEditorLayersService(
+    state: widget.state,
+    mouseService: widget.mouseService,
+    layerInteraction: _layerInteractionManager,
+    configs: widget.configs,
+    callbacks: widget.callbacks,
+    dragSelectionService: widget.dragSelectionService,
+    getIsMounted: () => mounted,
+    getActiveLayers: () => widget.activeLayers,
+    onCheckInteractiveViewer: widget.onCheckInteractiveViewer,
+    onUpdateState: () {
+      if (mounted) setState(() {});
+    },
+    controllers: widget.controllers,
+    onTextLayerTap: widget.onTextLayerTap,
+    onEditPaintLayer: widget.onEditPaintLayer,
+  );
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      ignoring: widget.selectedLayerIndex >= 0,
-      child: StreamBuilder<bool>(
-        stream: widget.controllers.layerHeroResetCtrl.stream,
-        initialData: false,
-        builder: (context, resetLayerSnapshot) {
-          // Render an empty container when resetting layers
-          if (resetLayerSnapshot.data!) return const SizedBox.shrink();
+    return StreamBuilder<bool>(
+      stream: widget.controllers.layerHeroResetCtrl.stream,
+      initialData: false,
+      builder: (_, resetLayerSnapshot) {
+        // Render an empty container when resetting layers
+        if (resetLayerSnapshot.data!) return const SizedBox.shrink();
 
-          return LayoutBuilder(builder: (context, constraints) {
-            editorBodySize = constraints.biggest;
-            return _buildLayerRepaintBoundary();
-          });
-        },
-      ),
+        return LayoutBuilder(builder: (context, constraints) {
+          _editorBodySize = getValidSizeOrDefault(
+            widget.sizesManager.bodySize,
+            constraints.biggest,
+          );
+          return _buildLayerRepaintBoundary();
+        });
+      },
     );
   }
 
   /// Builds the layer repaint boundary widget
   Widget _buildLayerRepaintBoundary() {
-    return RepaintBoundary(
-      child: ExtendedRebuildMouseRegion(
-        key: _mouseCursorsKey,
-        onHover: isDesktop ? _handleMouseHover : null,
-        child: ValueListenableBuilder(
-            valueListenable: _deferId,
-            builder: (_, deferId, __) {
-              return DeferredPointerHandler(
-                id: deferId,
-                selectedLayerId: widget.layerInteractionManager.selectedLayerId,
-                child: StreamBuilder(
-                  stream: widget.controllers.uiLayerCtrl.stream,
-                  builder: (context, snapshot) {
-                    return Stack(
-                      children: widget.activeLayers
-                          .asMap()
-                          .entries
-                          .map(_buildLayerWidget)
-                          .toList(),
-                    );
-                  },
-                ),
-              );
-            }),
-      ),
+    return ExtendedRebuildMouseRegion(
+      key: _layersService.mouseCursorsKey,
+      onHover: isDesktop ? _layersService.handleMouseHover : null,
+      child: ValueListenableBuilder(
+          valueListenable: _layersService.deferId,
+          builder: (_, deferId, __) {
+            return DeferredPointerHandler(
+              id: deferId,
+              selectedLayerId: _layerInteractionManager.selectedLayerId,
+              child: StreamBuilder(
+                stream: widget.controllers.uiLayerCtrl.stream,
+                builder: (context, snapshot) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      _layerInteractionManager.clearSelectedLayers();
+                      widget.onCheckInteractiveViewer();
+                      setState(() {});
+                    },
+                    child: Stack(
+                      children: [
+                        for (Layer layer in widget.activeLayers)
+                          _buildLayerWidget(layer)
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          }),
     );
   }
 
   /// Builds a single layer widget
-  Widget _buildLayerWidget(MapEntry<int, Layer> entry) {
-    var bodySize =
-        getValidSizeOrDefault(widget.sizesManager.bodySize, editorBodySize);
-
-    int index = entry.key;
-    Layer layer = entry.value;
+  Widget _buildLayerWidget(Layer layer) {
     return LayerWidget(
       key: layer.key,
+      layer: layer,
       configs: widget.configs,
       callbacks: widget.callbacks,
-      editorCenterX: bodySize.width / 2,
-      editorCenterY: bodySize.height / 2,
-      layerData: layer,
-      enableHitDetection: widget.layerInteractionManager.enabledHitDetection,
-      selected: widget.layerInteractionManager.selectedLayerId == layer.id,
+      layersService: _layersService,
+      layerInteractionManager: _layerInteractionManager,
+      editorBodySize: _editorBodySize,
       isInteractive: !widget.isSubEditorOpen,
-      highPerformanceMode:
-          widget.layerInteractionManager.freeStyleHighPerformance,
-      onEditTap: () => _handleEditTap(index, layer),
-      onTap: _handleLayerTap,
-      onTapUp: () => _handleTapUp(layer),
-      onTapDown: () => _handleTapDown(index, layer),
-      onScaleRotateDown: (details, layerOriginalSize) =>
-          _handleScaleRotateDown(index, layerOriginalSize, layer),
+      enableMouseCursor: !widget.dragSelectionService.isActive,
       onDuplicate: () => widget.onDuplicateLayer(layer),
       onContextMenuToggled: widget.onContextMenuToggled,
-      onScaleRotateUp: (details) => _handleScaleRotateUp(),
-      onRemoveTap: () => _handleRemoveLayer(layer),
     );
   }
 }
