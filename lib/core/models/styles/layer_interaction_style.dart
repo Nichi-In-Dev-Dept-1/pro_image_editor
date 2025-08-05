@@ -41,6 +41,9 @@ class LayerInteractionStyle {
     this.buttonEditTextBackground = Colors.white,
     this.buttonScaleRotateColor = Colors.black,
     this.buttonScaleRotateBackground = Colors.white,
+    this.dragSelectionBackground = const Color(0x2F2195F3),
+    this.dragSelectionBorderColor = const Color(0xFF2196F3),
+    this.dragSelectionBorderWidth = 2,
   });
 
   /// The padding to apply around the overlay of the layer.
@@ -130,6 +133,15 @@ class LayerInteractionStyle {
   /// rotate layers, influencing its visual appearance.
   final Color buttonScaleRotateBackground;
 
+  /// The background color of the drag selection area.
+  final Color dragSelectionBackground;
+
+  /// The border color of the drag selection area.
+  final Color dragSelectionBorderColor;
+
+  /// The border width of the drag selection area.
+  final double dragSelectionBorderWidth;
+
   /// Creates a copy of this `LayerInteractionStyle` object with the given
   /// fields replaced with new values.
   ///
@@ -157,6 +169,9 @@ class LayerInteractionStyle {
     Color? buttonEditTextBackground,
     Color? buttonScaleRotateColor,
     Color? buttonScaleRotateBackground,
+    Color? dragSelectionBackground,
+    Color? dragSelectionBorderColor,
+    double? dragSelectionBorderWidth,
   }) {
     return LayerInteractionStyle(
       overlayPadding: overlayPadding ?? this.overlayPadding,
@@ -185,6 +200,12 @@ class LayerInteractionStyle {
           buttonScaleRotateColor ?? this.buttonScaleRotateColor,
       buttonScaleRotateBackground:
           buttonScaleRotateBackground ?? this.buttonScaleRotateBackground,
+      dragSelectionBackground:
+          dragSelectionBackground ?? this.dragSelectionBackground,
+      dragSelectionBorderColor:
+          dragSelectionBorderColor ?? this.dragSelectionBorderColor,
+      dragSelectionBorderWidth:
+          dragSelectionBorderWidth ?? this.dragSelectionBorderWidth,
     );
   }
 }

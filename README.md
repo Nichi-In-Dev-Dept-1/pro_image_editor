@@ -163,6 +163,7 @@ The ProImageEditor is a Flutter widget designed for image editing within your ap
 - 🖌️ **Hit Detection**: Paint layers support interactive selection.  
 - 🔍 **Zoom Support**: Zoom in/out in both paint and main editor views.  
 - 🖱️ **Enhanced Desktop UX**: Fine-tuned movement and scaling on desktop platforms.  
+- 🧲 **Multiselect Support**: Select multiple elements at once.  
 
 ### 🎨 Themes
 
@@ -332,7 +333,6 @@ A big thanks to the authors of these amazing packages.
   - [emoji_picker_flutter](https://pub.dev/packages/emoji_picker_flutter)
   - [image](https://pub.dev/packages/image)
   - [mime](https://pub.dev/packages/mime)
-  - [rounded_background_text](https://pub.dev/packages/rounded_background_text)
 
 ## Contributors
 <a href="https://github.com/hm21/pro_image_editor/graphs/contributors">

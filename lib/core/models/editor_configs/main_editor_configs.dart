@@ -24,10 +24,12 @@ class MainEditorConfigs extends ZoomConfigs {
     super.doubleTapZoomDuration,
     super.doubleTapZoomCurve,
     super.boundaryMargin,
+    super.invertTrackpadDirection,
     this.transformSetup,
     this.enableCloseButton = true,
     this.enableEscapeButton = true,
     this.canZoomWhenLayerSelected = true,
+    this.mobilePanInteraction = MobilePanInteraction.move,
     this.style = const MainEditorStyle(),
     this.icons = const MainEditorIcons(),
     this.widgets = const MainEditorWidgets(),
@@ -36,6 +38,13 @@ class MainEditorConfigs extends ZoomConfigs {
 
   /// Determines whether the close button is displayed on the widget.
   final bool enableCloseButton;
+
+  /// Defines the configuration for pan interactions on mobile devices.
+  ///
+  /// This property specifies how users can interact with the editor
+  /// using pan gestures on mobile platforms. It allows customization
+  /// of the behavior and sensitivity of panning actions.
+  final MobilePanInteraction mobilePanInteraction;
 
   /// A boolean flag to enable or disable the escape button functionality.
   ///
@@ -88,6 +97,8 @@ class MainEditorConfigs extends ZoomConfigs {
     EdgeInsets? boundaryMargin,
     bool? enableDoubleTapZoom,
     bool? canZoomWhenLayerSelected,
+    MobilePanInteraction? mobilePanInteraction,
+    bool? invertTrackpadDirection,
     double? doubleTapZoomFactor,
     Duration? doubleTapZoomDuration,
     Curve? doubleTapZoomCurve,
@@ -106,6 +117,9 @@ class MainEditorConfigs extends ZoomConfigs {
       enableDoubleTapZoom: enableDoubleTapZoom ?? this.enableDoubleTapZoom,
       canZoomWhenLayerSelected:
           canZoomWhenLayerSelected ?? this.canZoomWhenLayerSelected,
+      mobilePanInteraction: mobilePanInteraction ?? this.mobilePanInteraction,
+      invertTrackpadDirection:
+          invertTrackpadDirection ?? this.invertTrackpadDirection,
       doubleTapZoomFactor: doubleTapZoomFactor ?? this.doubleTapZoomFactor,
       doubleTapZoomDuration:
           doubleTapZoomDuration ?? this.doubleTapZoomDuration,
@@ -146,4 +160,17 @@ class MainEditorTransformSetup {
   ///
   /// Returns a new instance of [MainEditorTransformSetup] with the updated
   /// fields.
+}
+
+/// Enum representing the different types of pan interactions available
+/// in a mobile editor context.
+enum MobilePanInteraction {
+  /// Allows the user to drag and select elements.
+  dragSelect,
+
+  /// Enables moving the canvas.
+  move,
+
+  /// Disables any pan interaction.
+  none,
 }

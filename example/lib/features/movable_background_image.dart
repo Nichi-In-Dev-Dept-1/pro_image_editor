@@ -326,7 +326,7 @@ class _MovableBackgroundImageExampleState
                   return [
                     ReactiveWidget(
                       stream: rebuildStream,
-                      builder: (_) => editor.selectedLayerIndex >= 0 ||
+                      builder: (_) => editor.isLayerBeingTransformed ||
                               editor.isSubEditorOpen
                           ? const SizedBox.shrink()
                           : Positioned(

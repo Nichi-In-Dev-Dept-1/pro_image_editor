@@ -27,6 +27,7 @@ class FilteredWidget extends StatelessWidget {
     this.fit = BoxFit.contain,
     this.image,
     this.videoPlayer,
+    this.enableCachedSize = false,
   }) : assert(image != null || videoPlayer != null,
             'Image and video player cannot be null');
 
@@ -64,6 +65,10 @@ class FilteredWidget extends StatelessWidget {
   /// The blur factor
   final double blurFactor;
 
+  /// Indicate to the engine that the image must be decoded at the specified
+  /// size.
+  final bool enableCachedSize;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -74,49 +79,40 @@ class FilteredWidget extends StatelessWidget {
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
-          _buildContent(),
           ColorFilterGenerator(
             key: filterKey,
             filters: filters,
             tuneAdjustments: tuneAdjustments,
             child: _buildContent(),
           ),
-          ClipRect(
-            clipBehavior: Clip.hardEdge,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: blurFactor, sigmaY: blurFactor),
-              child: Container(
-                width: width,
-                height: height,
-                alignment: Alignment.center,
-                color: Colors.white.withValues(alpha: 0.0),
-              ),
-            ),
-          ),
+          if (blurFactor > 0) _buildBlur(),
         ],
       ),
     );
   }
 
-  Widget _buildContent() {
-    if (videoPlayer == null) {
-      return _buildImage();
-    } else {
-      return _buildVideo();
-    }
+  Widget _buildBlur() {
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blurFactor, sigmaY: blurFactor),
+        child: SizedBox(
+          width: width,
+          height: height,
+        ),
+      ),
+    );
   }
 
-  Widget _buildImage() {
+  Widget _buildContent() {
+    if (videoPlayer != null) return videoPlayer!;
+
     return AutoImage(
       image!,
+      enableCachedSize: enableCachedSize,
       fit: fit,
       width: width,
       height: height,
       configs: configs,
     );
-  }
-
-  Widget _buildVideo() {
-    return videoPlayer!;
   }
 }

@@ -27,13 +27,18 @@ class VideoEditorConfigs {
     this.enableEstimatedFileSize = false,
     this.controlsPosition = VideoEditorControlPosition.top,
     this.minTrimDuration = const Duration(seconds: 7),
+    this.maxTrimDuration,
     this.animatedIndicatorDuration = const Duration(milliseconds: 200),
     this.animatedIndicatorSwitchInCurve = Curves.ease,
     this.animatedIndicatorSwitchOutCurve = Curves.ease,
     this.trimBarMinScale = 1,
     this.trimBarMaxScale = 3,
     this.playTimeSmoothingDuration = Duration.zero,
-  });
+  })  : assert(trimBarMinScale > 0, 'trimBarMinScale must be greater than 0'),
+        assert(
+          trimBarMaxScale > trimBarMinScale,
+          'trimBarMaxScale must be greater than trimBarMinScale',
+        );
 
   /// Configurable icons for the video editor.
   final VideoEditorIcons icons;
@@ -86,6 +91,9 @@ class VideoEditorConfigs {
   /// Minimum trim duration allowed.
   final Duration minTrimDuration;
 
+  /// Maximum trim duration allowed.
+  final Duration? maxTrimDuration;
+
   /// Position of the control bar in the video editor.
   final VideoEditorControlPosition controlsPosition;
 
@@ -113,6 +121,7 @@ class VideoEditorConfigs {
     double? trimBarMaxScale,
     Duration? playTimeSmoothingDuration,
     Duration? minTrimDuration,
+    Duration? maxTrimDuration,
     VideoEditorControlPosition? controlsPosition,
     Duration? animatedIndicatorDuration,
     Curve? animatedIndicatorSwitchInCurve,
@@ -135,6 +144,7 @@ class VideoEditorConfigs {
       playTimeSmoothingDuration:
           playTimeSmoothingDuration ?? this.playTimeSmoothingDuration,
       minTrimDuration: minTrimDuration ?? this.minTrimDuration,
+      maxTrimDuration: maxTrimDuration ?? this.maxTrimDuration,
       controlsPosition: controlsPosition ?? this.controlsPosition,
       animatedIndicatorDuration:
           animatedIndicatorDuration ?? this.animatedIndicatorDuration,
@@ -163,6 +173,7 @@ class VideoEditorConfigs {
         other.trimBarMaxScale == trimBarMaxScale &&
         other.playTimeSmoothingDuration == playTimeSmoothingDuration &&
         other.minTrimDuration == minTrimDuration &&
+        other.maxTrimDuration == maxTrimDuration &&
         other.controlsPosition == controlsPosition &&
         other.animatedIndicatorDuration == animatedIndicatorDuration &&
         other.animatedIndicatorSwitchInCurve ==
@@ -186,6 +197,7 @@ class VideoEditorConfigs {
         trimBarMaxScale.hashCode ^
         playTimeSmoothingDuration.hashCode ^
         minTrimDuration.hashCode ^
+        maxTrimDuration.hashCode ^
         controlsPosition.hashCode ^
         animatedIndicatorDuration.hashCode ^
         animatedIndicatorSwitchInCurve.hashCode ^

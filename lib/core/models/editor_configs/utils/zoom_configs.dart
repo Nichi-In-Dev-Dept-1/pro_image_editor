@@ -15,6 +15,7 @@ abstract class ZoomConfigs {
     this.doubleTapZoomFactor = 2,
     this.doubleTapZoomDuration = const Duration(milliseconds: 180),
     this.doubleTapZoomCurve = Curves.easeInOut,
+    this.invertTrackpadDirection = false,
   });
 
   /// {@template enableZoom}
@@ -90,4 +91,18 @@ abstract class ZoomConfigs {
   /// Defines the easing curve of the zoom animation triggered by
   /// double-tapping.
   final Curve doubleTapZoomCurve;
+
+  /// Determines if the trackpad scroll direction should be inverted for
+  /// panning gestures.
+  ///
+  /// When set to `true`, trackpad panning will use natural scrolling
+  /// (pan left moves content left, pan up moves content up).
+  /// When set to `false`, trackpad panning will use traditional scrolling
+  /// (pan left moves content right, pan up moves content down).
+  ///
+  /// This setting only affects trackpad panning on desktop platforms and
+  /// has no effect on touch gestures, mouse wheel, or other input methods.
+  ///
+  /// Defaults to `false` (traditional scrolling behavior).
+  final bool invertTrackpadDirection;
 }

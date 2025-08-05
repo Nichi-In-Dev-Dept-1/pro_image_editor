@@ -39,7 +39,6 @@ void main() {
                 item: paintedModel,
                 scale: 1.0,
                 enabledHitDetection: true,
-                freeStyleHighPerformance: true,
               ),
             ),
           ),

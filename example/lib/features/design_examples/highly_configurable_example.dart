@@ -213,7 +213,6 @@ class _HighlyConfigurableExampleState extends State<HighlyConfigurableExample>
           showToggleFillButton: true,
           showLineWidthAdjustmentButton: true,
           isInitiallyFilled: true,
-          enableFreeStyleHighPerformanceScaling: true,
           initialPaintMode: PaintMode.freeStyle,
           style: PaintEditorStyle(
             appBarColor: Color(0xFFE1E1E1),

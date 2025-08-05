@@ -9,6 +9,7 @@ import '/core/models/custom_widgets/utils/custom_widgets_typedef.dart';
 import '/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
+import '/features/paint_editor/enums/paint_editor_enum.dart';
 import '/plugins/defer_pointer/defer_pointer.dart';
 import '/shared/widgets/reactive_widgets/reactive_custom_widget.dart';
 import '../models/layer_item_interaction.dart';
@@ -50,7 +51,7 @@ class LayerInteractionHelperWidget extends StatefulWidget
   /// ```
   const LayerInteractionHelperWidget({
     super.key,
-    required this.layerData,
+    required this.layer,
     required this.child,
     required this.configs,
     this.onEditLayer,
@@ -58,10 +59,13 @@ class LayerInteractionHelperWidget extends StatefulWidget
     this.onDuplicate,
     this.onScaleRotateDown,
     this.onScaleRotateUp,
+    this.onGroupLayers,
+    this.onUngroupLayers,
     this.selected = false,
     this.isInteractive = false,
     this.callbacks = const ProImageEditorCallbacks(),
     this.forceIgnoreGestures = false,
+    this.enableVisibleOverlay = false,
   });
 
   /// The configuration settings for the image editor.
@@ -113,11 +117,24 @@ class LayerInteractionHelperWidget extends StatefulWidget
   /// or rotating, finalizing the interaction.
   final Function(PointerUpEvent)? onScaleRotateUp;
 
+  /// Callback for grouping layers.
+  ///
+  /// This callback is triggered when the user wants to group the current
+  /// layer with other selected layers, creating a group that will be
+  /// selected together.
+  final Function()? onGroupLayers;
+
+  /// Callback for ungrouping layers.
+  ///
+  /// This callback is triggered when the user wants to ungroup the current
+  /// layer, removing it from its current group.
+  final Function()? onUngroupLayers;
+
   /// Data representing the layer's configuration and state.
   ///
   /// This data is used to determine the layer's appearance, behavior, and the
   /// interactions available to the user.
-  final Layer layerData;
+  final Layer layer;
 
   /// Indicates whether the layer is interactive.
   ///
@@ -137,6 +154,9 @@ class LayerInteractionHelperWidget extends StatefulWidget
   /// If true, the layer is highlighted, and interaction buttons are displayed.
   final bool selected;
 
+  /// A flag to enable or disable the visibility of the overlay.
+  final bool enableVisibleOverlay;
+
   @override
   State<LayerInteractionHelperWidget> createState() =>
       _LayerInteractionHelperWidgetState();
@@ -153,6 +173,8 @@ class _LayerInteractionHelperWidgetState
   final _rebuildStream = StreamController.broadcast();
   final _overlayCtrl = OverlayPortalController();
   final _isOverlayVisibleNotifier = ValueNotifier(false);
+
+  Layer get _layer => widget.layer;
 
   @override
   void didUpdateWidget(covariant LayerInteractionHelperWidget oldWidget) {
@@ -183,10 +205,10 @@ class _LayerInteractionHelperWidgetState
   }
 
   double get _rotation {
-    if (widget.layerData.flipX) {
-      return widget.layerData.rotation;
+    if (_layer.flipX) {
+      return _layer.rotation;
     }
-    return -widget.layerData.rotation;
+    return -_layer.rotation;
   }
 
   LayerItemInteractions get _layerInteractions {
@@ -196,7 +218,35 @@ class _LayerInteractionHelperWidgetState
       remove: widget.onRemoveLayer ?? () {},
       scaleRotateDown: _handleScaleRotateDown,
       scaleRotateUp: _handleScaleRotateUp,
+      group: widget.onGroupLayers ?? () {},
+      ungroup: widget.onUngroupLayers ?? () {},
     );
+  }
+
+  void _handleScaleRotateDown(PointerDownEvent event) {
+    widget.onScaleRotateDown?.call(event);
+  }
+
+  void _handleScaleRotateUp(PointerUpEvent event) {
+    widget.onScaleRotateUp?.call(event);
+  }
+
+  bool _isLayerEditable() {
+    if (!_layer.interaction.enableEdit) return false;
+
+    if (_layer.isTextLayer) {
+      return textEditorConfigs.enableEdit;
+    } else if (_layer.isPaintLayer) {
+      final paintMode = (_layer as PaintLayer).item.mode;
+
+      return paintEditorConfigs.enableEdit &&
+          paintMode != PaintMode.blur &&
+          paintMode != PaintMode.pixelate;
+    } else if (_layer.isWidgetLayer) {
+      return widget.callbacks.stickerEditorCallbacks?.onTapEditSticker != null;
+    }
+
+    return false;
   }
 
   @override
@@ -206,13 +256,21 @@ class _LayerInteractionHelperWidgetState
           ignoring: widget.forceIgnoreGestures, child: widget.child);
     }
 
-    String layerId = widget.layerData.id;
+    String layerId = _layer.id;
     var deferManager = DeferManager.maybeOf(context);
 
-    if (!widget.isInteractive ||
-        (!widget.selected && deferManager?.selectedLayerId != '')) {
+    if (!widget.isInteractive) {
       // Return the child widget directly if the layer is not interactive.
       return widget.child;
+    }
+
+    Widget child = DeferPointer(
+      key: ValueKey('Defer-${deferManager?.id ?? ''}-$layerId'),
+      child: widget.child,
+    );
+
+    if (!widget.enableVisibleOverlay) {
+      return child;
     }
 
     return OverlayPortal.overlayChildLayoutBuilder(
@@ -226,7 +284,7 @@ class _LayerInteractionHelperWidgetState
                 return layerInteraction.widgets.overlayChildBuilder!(
                   _rebuildStream.stream,
                   info,
-                  widget.layerData,
+                  _layer,
                   _layerInteractions,
                 );
               });
@@ -254,8 +312,8 @@ class _LayerInteractionHelperWidgetState
                   transform: transform,
                   alignment: Alignment.topLeft,
                   child: Transform.flip(
-                    flipX: widget.layerData.flipX,
-                    flipY: widget.layerData.flipY,
+                    flipX: _layer.flipX,
+                    flipY: _layer.flipY,
                     child: _buildSelectionOverlay(),
                   ),
                 );
@@ -264,17 +322,9 @@ class _LayerInteractionHelperWidgetState
       },
       child: DeferPointer(
         key: ValueKey('Defer-${deferManager?.id ?? ''}-$layerId'),
-        child: widget.child,
+        child: child,
       ),
     );
-  }
-
-  void _handleScaleRotateDown(PointerDownEvent event) {
-    widget.onScaleRotateDown?.call(event);
-  }
-
-  void _handleScaleRotateUp(PointerUpEvent event) {
-    widget.onScaleRotateUp?.call(event);
   }
 
   Widget _buildSelectionOverlay() {
@@ -287,8 +337,7 @@ class _LayerInteractionHelperWidgetState
         fit: StackFit.passthrough,
         alignment: Alignment.center,
         children: [
-          layerInteraction.widgets.border
-                  ?.call(widget.child, widget.layerData) ??
+          layerInteraction.widgets.border?.call(widget.child, _layer) ??
               Padding(
                 padding: EdgeInsets.all(
                   layerInteraction.style.buttonRadius +
@@ -303,7 +352,7 @@ class _LayerInteractionHelperWidgetState
           ...children.map(
             (item) => item.call(
               _rebuildStream.stream,
-              widget.layerData,
+              _layer,
               _layerInteractions,
             ),
           ),
@@ -313,17 +362,8 @@ class _LayerInteractionHelperWidgetState
   }
 
   List<LayerInteractionItem> _buildDefaultInteractions() {
-    final layer = widget.layerData;
-
-    bool isLayerEditable = layer.interaction.enableEdit &&
-        ((layer.isTextLayer && textEditorConfigs.enableEdit) ||
-            (layer.isPaintLayer && paintEditorConfigs.enableEdit) ||
-            (layer.isWidgetLayer &&
-                widget.callbacks.stickerEditorCallbacks?.onTapEditSticker !=
-                    null));
-
     return [
-      if (isLayerEditable)
+      if (_isLayerEditable())
         (rebuildStream, layer, interactions) => ReactiveWidget(
               stream: rebuildStream,
               builder: (_) => _buildEditButton(interactions),

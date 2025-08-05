@@ -6,10 +6,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// Project imports:
 import '/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/core/models/layers/layer.dart';
+import '/core/services/keyboard_service.dart';
+
+import '/shared/widgets/extended/interactive_viewer/extended_interactive_viewer.dart';
 
 /// A manager class responsible for handling desktop interactions in the image
 /// editor.
@@ -71,8 +73,7 @@ class DesktopInteractionManager {
   /// A class representing callbacks for the Image Editor.
   final ProImageEditorCallbacks callbacks;
 
-  bool _ctrlDown = false;
-  bool _shiftDown = false;
+  final _keyboard = KeyboardService();
 
   /// Handles keyboard events.
   ///
@@ -82,11 +83,11 @@ class DesktopInteractionManager {
   /// triggers the navigator to pop the current context.
   bool onKey(
     KeyEvent event, {
-    required Layer? activeLayer,
+    required List<Layer> selectedLayers,
     required Function onEscape,
     required Function(bool) onUndoRedo,
   }) {
-    if (!context.mounted) return false;
+    if (!context.mounted || event is! KeyDownEvent) return false;
 
     final key = event.logicalKey.keyLabel;
 
@@ -95,72 +96,53 @@ class DesktopInteractionManager {
 
     if (stopPropagate == true) return true;
 
-    if (event is KeyDownEvent) {
-      switch (key) {
-        case 'Escape':
-          if (callbacks.mainEditorCallbacks?.onEscapeButton != null) {
-            callbacks.mainEditorCallbacks!.onEscapeButton!();
-          } else if (configs.mainEditor.enableEscapeButton) {
-            onEscape();
-          }
-          break;
+    switch (key) {
+      case 'Escape':
+        if (callbacks.mainEditorCallbacks?.onEscapeButton != null) {
+          callbacks.mainEditorCallbacks!.onEscapeButton!();
+        } else if (configs.mainEditor.enableEscapeButton) {
+          onEscape();
+        }
+        break;
 
-        case 'Subtract':
-        case 'Numpad Subtract':
-        case 'Page Down':
-        case 'Arrow Down':
-          _keyboardZoom(zoomIn: true, activeLayer: activeLayer);
-          break;
-        case 'Add':
-        case 'Numpad Add':
-        case 'Page Up':
-        case 'Arrow Up':
-          _keyboardZoom(zoomIn: false, activeLayer: activeLayer);
-          break;
-        case 'Arrow Left':
-          _keyboardRotate(left: true, activeLayer: activeLayer);
-          break;
-        case 'Arrow Right':
-          _keyboardRotate(left: false, activeLayer: activeLayer);
-          break;
-        case 'Control Left':
-        case 'Control Right':
-          _ctrlDown = true;
-          break;
-        case 'Shift Left':
-        case 'Shift Right':
-          _shiftDown = true;
-          break;
-        case 'Z':
-          if (_ctrlDown) onUndoRedo(!_shiftDown);
-          break;
-      }
-    } else if (event is KeyUpEvent) {
-      switch (key) {
-        case 'Control Left':
-        case 'Control Right':
-          _ctrlDown = false;
-          break;
-        case 'Shift Left':
-        case 'Shift Right':
-          _shiftDown = false;
-          break;
-      }
+      case 'Subtract':
+      case 'Numpad Subtract':
+      case 'Page Down':
+      case 'Arrow Down':
+        _keyboardZoom(isZoomIn: true, selectedLayers: selectedLayers);
+        break;
+      case 'Add':
+      case 'Numpad Add':
+      case 'Page Up':
+      case 'Arrow Up':
+        _keyboardZoom(isZoomIn: false, selectedLayers: selectedLayers);
+        break;
+      case 'Arrow Left':
+        _keyboardRotate(isLeftRotation: true, selectedLayers: selectedLayers);
+        break;
+      case 'Arrow Right':
+        _keyboardRotate(isLeftRotation: false, selectedLayers: selectedLayers);
+        break;
+      case 'Z':
+        if (_keyboard.isCtrlPressed) onUndoRedo(!_keyboard.isShiftPressed);
+        break;
     }
 
     return false;
   }
 
-  /// Handles Keyboard zoom event
+  /// Handles Keyboard rotation event
   void _keyboardRotate({
-    required bool left,
-    required Layer? activeLayer,
+    required bool isLeftRotation,
+    required List<Layer> selectedLayers,
   }) {
-    if (activeLayer == null) return;
-    if (left) {
-      activeLayer.rotation -= 0.087266;
-    } else {
-      activeLayer.rotation += 0.087266;
+    if (selectedLayers.isEmpty) return;
+    for (Layer layer in selectedLayers) {
+      if (isLeftRotation) {
+        layer.rotation -= 0.087266;
+      } else {
+        layer.rotation += 0.087266;
+      }
     }
     setState(() {});
     onUpdateUI?.call();
@@ -168,22 +150,26 @@ class DesktopInteractionManager {
 
   /// Handles Keyboard zoom event
   void _keyboardZoom({
-    required bool zoomIn,
-    required Layer? activeLayer,
+    required bool isZoomIn,
+    required List<Layer> selectedLayers,
   }) {
-    if (activeLayer == null) return;
-    double factor = activeLayer is PaintLayer
-        ? 0.1
-        : activeLayer is TextLayer
-            ? 0.15
-            : configs.textEditor.initFontSize / 50;
-    if (zoomIn) {
-      activeLayer
-        ..scale -= factor
-        ..scale = max(0.1, activeLayer.scale);
-    } else {
-      activeLayer.scale += factor;
+    if (selectedLayers.isEmpty) return;
+
+    for (Layer layer in selectedLayers) {
+      double factor = layer is PaintLayer
+          ? 0.1
+          : layer is TextLayer
+              ? 0.15
+              : configs.textEditor.initFontSize / 50;
+      if (isZoomIn) {
+        layer
+          ..scale -= factor
+          ..scale = max(0.1, layer.scale);
+      } else {
+        layer.scale += factor;
+      }
     }
+
     setState(() {});
     onUpdateUI?.call();
   }
@@ -191,37 +177,37 @@ class DesktopInteractionManager {
   /// Handles mouse scroll events.
   void mouseScroll(
     PointerSignalEvent event, {
-    required Layer activeLayer,
-    required int selectedLayerIndex,
+    required List<Layer> selectedLayers,
+    required ExtendedInteractiveViewerState? interactiveViewer,
   }) {
-    bool shiftDown = HardwareKeyboard.instance.logicalKeysPressed
-            .contains(LogicalKeyboardKey.shiftLeft) ||
-        HardwareKeyboard.instance.logicalKeysPressed
-            .contains(LogicalKeyboardKey.shiftRight);
+    if (event is! PointerScrollEvent || selectedLayers.isEmpty) return;
 
-    if (event is PointerScrollEvent && selectedLayerIndex >= 0) {
-      if (shiftDown) {
+    for (Layer layer in selectedLayers) {
+      if (_keyboard.isShiftPressed) {
         if (event.scrollDelta.dy > 0) {
-          activeLayer.rotation -= 0.087266;
+          layer.rotation -= 0.087266;
         } else if (event.scrollDelta.dy < 0) {
-          activeLayer.rotation += 0.087266;
+          layer.rotation += 0.087266;
         }
       } else {
-        double factor = activeLayer is PaintLayer
+        double factor = layer.isPaintLayer
             ? 0.1
-            : activeLayer is TextLayer
+            : layer.isTextLayer
                 ? 0.15
                 : configs.textEditor.initFontSize / 50;
-        if (event.scrollDelta.dy > 0) {
-          activeLayer
-            ..scale -= factor
-            ..scale = max(0.1, activeLayer.scale);
-        } else if (event.scrollDelta.dy < 0) {
-          activeLayer.scale += factor;
+        if (interactiveViewer?.isInteractionEnabled == true) {
+          // only scale if interaction is enabled (that means we might zoom in/out)
+          if (event.scrollDelta.dy > 0) {
+            layer
+              ..scale -= factor
+              ..scale = max(0.1, layer.scale);
+          } else if (event.scrollDelta.dy < 0) {
+            layer.scale += factor;
+          }
         }
       }
-      setState(() {});
-      onUpdateUI?.call();
     }
+    setState(() {});
+    onUpdateUI?.call();
   }
 }

@@ -205,10 +205,9 @@ class BlurEditorState extends State<BlurEditor>
       returnValue: blurFactor,
       editorImage: widget.editorImage,
       blur: blurFactor,
-      colorFilters: [
-        ...appliedFilters,
-        ...appliedTuneAdjustments.map((item) => item.matrix),
-      ],
+      matrixFilterList: appliedFilters,
+      matrixTuneAdjustmentsList:
+          appliedTuneAdjustments.map((item) => item.matrix).toList(),
       transform: initialTransformConfigs,
     );
     blurEditorCallbacks?.handleDone();

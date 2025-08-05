@@ -79,9 +79,15 @@ class _PaintEditorLayerEditorState extends State<PaintEditorLayerEditor> {
 
     return Container(
       clipBehavior: Clip.hardEdge,
-      decoration: const BoxDecoration(),
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      height: 120,
+      decoration: BoxDecoration(
+        color: _configs.paintEditor.style.editSheetPreviewAreaColor,
+        borderRadius: BorderRadius.circular(
+          _configs.paintEditor.style.editSheetPreviewAreaRadius,
+        ),
+      ),
+      padding: const EdgeInsets.all(7),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      height: 140,
       child: FittedBox(
         child: SizedBox.fromSize(
           size: _layer.rawSize,
@@ -203,6 +209,7 @@ class _PaintEditorLayerEditorState extends State<PaintEditorLayerEditor> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Row(
+        spacing: 12,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           TextButton(

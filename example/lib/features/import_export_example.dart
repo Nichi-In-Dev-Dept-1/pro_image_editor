@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 
-import '/core/constants/history_demo/import_history_6_0_0_minified.dart';
+import '/core/constants/history_demo/import_history_6_3_0_minified.dart';
 import '/core/mixin/example_helper.dart';
 
 /// The import export example

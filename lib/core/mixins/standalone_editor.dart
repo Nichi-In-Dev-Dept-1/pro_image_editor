@@ -142,7 +142,8 @@ mixin StandaloneEditorState<T extends StatefulWidget,
     Function? onCloseWithValue,
     Function(Uint8List?)? onSetFakeHero,
     required double blur,
-    required List<List<double>> colorFilters,
+    required List<List<double>> matrixFilterList,
+    required List<List<double>> matrixTuneAdjustmentsList,
     required TransformConfigs? transform,
   }) async {
     if (isGenerationActive) return;
@@ -201,7 +202,8 @@ mixin StandaloneEditorState<T extends StatefulWidget,
         await initConfigs.callbacks.onCompleteWithParameters?.call(
           CompleteParameters(
             blur: blur,
-            colorFilters: colorFilters,
+            matrixFilterList: matrixFilterList,
+            matrixTuneAdjustmentsList: matrixTuneAdjustmentsList,
             cropWidth: isTransformed ? outputSize!.width.round() : null,
             cropHeight: isTransformed ? outputSize!.height.round() : null,
             cropX: isTransformed ? outputOffset!.dx.round() : null,

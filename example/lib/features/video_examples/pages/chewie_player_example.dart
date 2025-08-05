@@ -148,11 +148,17 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
                 ),
                 mainEditor: MainEditorConfigs(
                   widgets: MainEditorWidgets(
-                    removeLayerArea: (removeAreaKey, editor, rebuildStream) =>
+                    removeLayerArea: (
+                      removeAreaKey,
+                      editor,
+                      rebuildStream,
+                      isLayerBeingTransformed,
+                    ) =>
                         VideoEditorRemoveArea(
                       removeAreaKey: removeAreaKey,
                       editor: editor,
                       rebuildStream: rebuildStream,
+                      isLayerBeingTransformed: isLayerBeingTransformed,
                     ),
                   ),
                 ),

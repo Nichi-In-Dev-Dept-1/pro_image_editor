@@ -85,7 +85,7 @@ class OutsideGestureDetector extends StatelessWidget {
     this.behavior,
     this.excludeFromSemantics = false,
     this.dragStartBehavior = DragStartBehavior.start,
-    this.trackpadScrollCausesScale = false,
+    this.trackpadScrollCausesScale = true,
     this.trackpadScrollToScaleFactor = kDefaultTrackpadScrollToScaleFactor,
     this.supportedDevices,
   }) : assert(() {

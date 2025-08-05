@@ -28,10 +28,10 @@ class TextLayer extends Layer {
     this.customSecondaryColor = false,
     this.hit = false,
     this.textStyle,
-    this.colorMode,
+    this.colorMode = LayerBackgroundMode.backgroundAndColor,
     this.colorPickerPosition,
-    this.color = const Color(0xFFFFFFFF),
-    this.background = const Color(0x00000000),
+    this.color = const Color(0xFF000000),
+    this.background = const Color(0xFFFFFFFF),
     this.align = TextAlign.left,
     this.fontScale = 1.0,
     this.maxTextWidth,
@@ -46,6 +46,7 @@ class TextLayer extends Layer {
     super.meta,
     super.boxConstraints,
     super.key,
+    super.groupId,
   });
 
   /// Factory constructor for creating a TextLayer instance from a Layer
@@ -126,6 +127,7 @@ class TextLayer extends Layer {
       isDeleted: layer.isDeleted,
       meta: layer.meta,
       boxConstraints: layer.boxConstraints,
+      groupId: layer.groupId,
       text: map[keyConverter('text')] ?? '-',
       fontScale: fontScale,
       maxTextWidth: tryParseDouble(map[keyConverter('maxTextWidth')]),
@@ -170,7 +172,7 @@ class TextLayer extends Layer {
   String text;
 
   /// The color mode for the text.
-  LayerBackgroundMode? colorMode;
+  LayerBackgroundMode colorMode;
 
   /// The text color.
   Color color;
@@ -208,7 +210,7 @@ class TextLayer extends Layer {
     return {
       ...super.toMap(),
       'text': text,
-      'colorMode': LayerBackgroundMode.values[colorMode?.index ?? 0].name,
+      'colorMode': LayerBackgroundMode.values[colorMode.index].name,
       'color': color.toHex(),
       'background': background.toHex(),
       'colorPickerPosition': colorPickerPosition ?? 0,
@@ -241,8 +243,8 @@ class TextLayer extends Layer {
       if (paintLayer.background != background) 'background': background.toHex(),
       if (paintLayer.colorPickerPosition != colorPickerPosition)
         'colorPickerPosition': colorPickerPosition ?? 0,
-      if (paintLayer.colorMode?.name != colorMode?.name)
-        'colorMode': LayerBackgroundMode.values[colorMode?.index ?? 0].name,
+      if (paintLayer.colorMode.name != colorMode.name)
+        'colorMode': LayerBackgroundMode.values[colorMode.index].name,
       if (paintLayer.customSecondaryColor != customSecondaryColor)
         'customSecondaryColor': customSecondaryColor,
       if (paintLayer.textStyle?.fontFamily != textStyle?.fontFamily)

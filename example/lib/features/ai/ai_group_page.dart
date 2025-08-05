@@ -1,7 +1,7 @@
-import 'package:example/features/ai/ai_replace_background/ai_replace_background_page_example.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'ai_replace_background/ai_replace_background_page_example.dart';
 import 'ai_text_commands/ai_text_commands_page_example.dart';
 import 'background_remover/background_remover_stub_example.dart'
     if (dart.library.io) 'background_remover/background_remover_example.dart';

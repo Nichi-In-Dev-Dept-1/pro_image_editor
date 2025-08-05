@@ -279,10 +279,9 @@ class TuneEditorState extends State<TuneEditor>
       editorImage: editorImage,
       returnValue: tuneAdjustmentMatrix,
       blur: appliedBlurFactor,
-      colorFilters: [
-        ...appliedFilters,
-        ...tuneAdjustmentMatrix.map((item) => item.matrix),
-      ],
+      matrixFilterList: appliedFilters,
+      matrixTuneAdjustmentsList:
+          tuneAdjustmentMatrix.map((item) => item.matrix).toList(),
       transform: initialTransformConfigs,
     );
     tuneEditorCallbacks?.handleDone();

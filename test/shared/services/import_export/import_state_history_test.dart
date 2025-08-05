@@ -61,25 +61,22 @@ void main() {
       final filtersData = [
         {
           'filters': [
-            [1.0, 0.0, 0.0, 0.0, 0.0]
+            ColorFilterAddons.brightness(0.5),
           ],
           'opacity': 0.5
         }
       ];
       final result = ImportStateHistory.parseFilters(filtersData, '1.0.0');
-      expect(result.length, 2);
-      expect(result[0], [1.0, 0.0, 0.0, 0.0, 0.0]);
-      expect(result[1].length, 20); // opacity matrix
+      expect(result.length, 1);
+      expect(result[0].length, 20);
     });
 
     test('parse filters for version 5.0.0', () {
       final filtersData = [
-        [1.0, 0.0, 0.0, 0.0, 0.0]
+        ColorFilterAddons.brightness(0.5),
       ];
       final result = ImportStateHistory.parseFilters(filtersData, '5.0.0');
-      expect(result, [
-        [1.0, 0.0, 0.0, 0.0, 0.0]
-      ]);
+      expect(result, filtersData);
     });
 
     test('parse widget records for version 1.0.0', () {

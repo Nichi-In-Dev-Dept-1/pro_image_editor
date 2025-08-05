@@ -32,6 +32,7 @@ class EmojiLayer extends Layer {
     super.meta,
     super.boxConstraints,
     super.key,
+    super.groupId,
   });
 
   /// Factory constructor for creating an EmojiLayer instance from a Layer
@@ -55,6 +56,7 @@ class EmojiLayer extends Layer {
       scale: layer.scale,
       isDeleted: layer.isDeleted,
       meta: layer.meta,
+      groupId: layer.groupId,
       emoji: map[keyConverter('emoji')],
       boxConstraints: layer.boxConstraints,
     );

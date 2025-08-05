@@ -126,6 +126,9 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
   late final AnimationController _animationCtrl;
   late bool _enableInteraction;
 
+  /// A getter that indicates whether interaction is enabled for the viewer.
+  bool get isInteractionEnabled => _enableInteraction;
+
   @override
   void initState() {
     super.initState();
@@ -252,15 +255,17 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
   /// Returns an [Offset] representing the translation values on the x and y
   /// axes.
   Offset get offset {
-    return Offset(
-      _transformCtrl.value.getTranslation().x,
-      _transformCtrl.value.getTranslation().y,
-    );
+    final vector3 = _transformCtrl.value.getTranslation();
+
+    return Offset(vector3.x, vector3.y);
   }
+
+  bool _helperScaledStarted = false;
 
   /// Handles the start of a scaling gesture by forwarding the [details]
   /// to the underlying raw viewer's `onScaleStart` method.
   void onScaleStart(ScaleStartDetails details) {
+    _helperScaledStarted = true;
     if (!widget.zoomConfigs.enableZoom) return;
     _rawViewerKey.currentState!.onScaleStart(details);
   }
@@ -287,7 +292,8 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
   /// [details] contains information about the velocity and focal point of the
   /// gesture.
   void onScaleEnd(ScaleEndDetails details) {
-    if (!widget.zoomConfigs.enableZoom) return;
+    if (!_helperScaledStarted || !widget.zoomConfigs.enableZoom) return;
+    _helperScaledStarted = false;
     _rawViewerKey.currentState!.onScaleEnd(details);
   }
 
@@ -307,6 +313,7 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
       onInteractionUpdate: widget.onInteractionUpdate,
       onInteractionEnd: widget.onInteractionEnd,
       enableExternalGestureDetector: widget.enableExternalGestureDetector,
+      invertTrackpadDirection: widget.zoomConfigs.invertTrackpadDirection,
       child: widget.child,
     );
   }

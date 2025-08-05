@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -57,69 +56,28 @@ class EmojiCellExtended extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    onPressed() {
-      onEmojiSelected(categoryEmoji?.category, emoji);
-    }
-
-    onLongPressed() {
-      final renderBox = context.findRenderObject() as RenderBox;
-      final emojiBoxPosition = renderBox.localToGlobal(Offset.zero);
-      onSkinToneDialogRequested?.call(
-        emojiBoxPosition,
-        emoji,
-        emojiSize,
-        categoryEmoji,
-      );
-    }
-
-    return SizedBox(
-      width: emojiBoxSize,
-      height: emojiBoxSize,
-      child: _buildButtonWidget(
-        onPressed: onPressed,
-        onLongPressed: onLongPressed,
+    return SizedBox.square(
+      dimension: emojiBoxSize,
+      child: InkWell(
+        onTap: () => onEmojiSelected(categoryEmoji?.category, emoji),
+        onLongPress: () {
+          final renderBox = context.findRenderObject() as RenderBox;
+          final emojiBoxPosition = renderBox.localToGlobal(Offset.zero);
+          onSkinToneDialogRequested?.call(
+            emojiBoxPosition,
+            emoji,
+            emojiSize,
+            categoryEmoji,
+          );
+        },
+        child: Center(
+          child: _buildEmoji(),
+        ),
       ),
     );
   }
 
   /// Build different Button based on ButtonMode
-  Widget _buildButtonWidget({
-    required VoidCallback onPressed,
-    VoidCallback? onLongPressed,
-  }) {
-    Widget child = _buildEmoji();
-
-    switch (buttonMode) {
-      case ButtonMode.MATERIAL:
-        return MaterialButton(
-          onPressed: onPressed,
-          onLongPress: onLongPressed,
-          elevation: 0,
-          highlightElevation: 0,
-          padding: EdgeInsets.zero,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-          ),
-          child: child,
-        );
-      case ButtonMode.CUPERTINO:
-        return GestureDetector(
-          onLongPress: onLongPressed,
-          child: CupertinoButton(
-            onPressed: onPressed,
-            padding: EdgeInsets.zero,
-            alignment: Alignment.center,
-            child: child,
-          ),
-        );
-      default:
-        return GestureDetector(
-          onLongPress: onLongPressed,
-          onTap: onPressed,
-          child: Center(child: child),
-        );
-    }
-  }
 
   /// Build and display Emoji centered of its parent
   Widget _buildEmoji() {
@@ -129,10 +87,12 @@ class EmojiCellExtended extends StatelessWidget {
       style: emojiStyle,
     );
 
-    return emoji.hasSkinTone &&
-            enableSkinTones &&
-            onSkinToneDialogRequested != null
-        ? Container(
+    bool hasMultipleOptions = emoji.hasSkinTone &&
+        enableSkinTones &&
+        onSkinToneDialogRequested != null;
+
+    return hasMultipleOptions
+        ? DecoratedBox(
             decoration: TriangleDecoration(
               color: skinToneIndicatorColor,
               size: 8.0,
