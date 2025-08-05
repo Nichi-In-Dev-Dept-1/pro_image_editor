@@ -2111,44 +2111,37 @@ class CropRotateEditorState extends State<CropRotateEditor>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      key: _editorContentKey,
-      top: cropRotateEditorConfigs.safeArea.top,
-      bottom: cropRotateEditorConfigs.safeArea.bottom,
-      left: cropRotateEditorConfigs.safeArea.left,
-      right: cropRotateEditorConfigs.safeArea.right,
-      child: RecordInvisibleWidget(
-        controller: screenshotCtrl,
-        child: ExtendedPopScope(
-          onPopInvokedWithResult: (didPop, _) {
-            _showFakeHero = true;
-            _updateAllStates();
-          },
-          child: LayoutBuilder(builder: (context, constraints) {
-            return AnnotatedRegion<SystemUiOverlayStyle>(
-              value: cropRotateEditorConfigs.style.uiOverlayStyle,
-              child: Theme(
-                data: theme.copyWith(
-                    tooltipTheme:
-                        theme.tooltipTheme.copyWith(preferBelow: true)),
-                child: Scaffold(
-                  resizeToAvoidBottomInset: false,
-                  backgroundColor: cropRotateEditorConfigs.style.background,
-                  appBar: _buildAppBar(constraints),
-                  body: Center(
-                    child: SizedBox(
-                      width: constraints.maxWidth *
-                          (cropRotateEditorConfigs.maxWidthFactor ??
-                              (!kIsWeb && Platform.isAndroid ? 0.9 : 1)),
-                      child: _buildBody(),
-                    ),
+    return RecordInvisibleWidget(
+      controller: screenshotCtrl,
+      child: ExtendedPopScope(
+        onPopInvokedWithResult: (didPop, _) {
+          _showFakeHero = true;
+          _updateAllStates();
+        },
+        child: LayoutBuilder(builder: (context, constraints) {
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: cropRotateEditorConfigs.style.uiOverlayStyle,
+            child: Theme(
+              data: theme.copyWith(
+                  tooltipTheme:
+                      theme.tooltipTheme.copyWith(preferBelow: true)),
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                backgroundColor: cropRotateEditorConfigs.style.background,
+                appBar: _buildAppBar(constraints),
+                body: Center(
+                  child: SizedBox(
+                    width: constraints.maxWidth *
+                        (cropRotateEditorConfigs.maxWidthFactor ??
+                            (!kIsWeb && Platform.isAndroid ? 0.9 : 1)),
+                    child: _buildBody(),
                   ),
-                  bottomNavigationBar: _buildBottomAppBar(),
                 ),
+                bottomNavigationBar: _buildBottomAppBar(),
               ),
-            );
-          }),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }
