@@ -1961,7 +1961,6 @@ class ProImageEditorState extends State<ProImageEditor>
     }
   }
 
-
   /// Redo the previously undone editing action.
   ///
   /// This function allows the user to redo an editing action that was

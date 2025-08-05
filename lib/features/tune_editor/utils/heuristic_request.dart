@@ -20,15 +20,13 @@ Future<Map<String, double>?> computeHeuristicAdjustmentsIsolate(
   final frame = await codec.getNextFrame();
   final image = frame.image;
 
-  final byteData =
-  await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+  final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
   if (byteData == null) return null;
 
   final pixels = byteData.buffer.asUint8List();
 
   final receivePort = ReceivePort();
-  await Isolate.spawn(_heuristicIsolateEntry,
-  [receivePort.sendPort, pixels]);
+  await Isolate.spawn(_heuristicIsolateEntry, [receivePort.sendPort, pixels]);
   final result = await receivePort.first;
   return result as Map<String, double>;
 }
