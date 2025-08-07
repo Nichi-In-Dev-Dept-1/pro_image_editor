@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '/core/constants/int_constants.dart';
 import '/shared/extensions/num_extension.dart';
 import '/shared/utils/parser/double_parser.dart';
@@ -63,4 +65,17 @@ class TuneAdjustmentMatrix {
       matrix: [...matrix],
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is TuneAdjustmentMatrix &&
+        other.id == id &&
+        other.value == value &&
+        listEquals(other.matrix, matrix);
+  }
+
+  @override
+  int get hashCode => id.hashCode ^ value.hashCode ^ matrix.hashCode;
 }

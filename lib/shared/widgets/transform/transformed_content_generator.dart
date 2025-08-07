@@ -140,8 +140,7 @@ class TransformedContentGenerator extends StatelessWidget {
   Widget _buildCropPainter({required Widget child}) {
     if (kIsWeb && isVideoPlayer) return child;
 
-    CropMode cropMode =
-        _transformConfigs.cropMode ?? configs.cropRotateEditor.initialCropMode;
+    CropMode cropMode = _transformConfigs.cropMode;
 
     final clipper = CutOutsideArea(
       configs: _transformConfigs,

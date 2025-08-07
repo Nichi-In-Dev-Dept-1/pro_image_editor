@@ -254,12 +254,9 @@ class MainEditorInteractiveContent extends StatelessWidget {
   }
 
   CropLayerPainter _buildCropLayerPainter() {
-    final cropConfigs = configs.cropRotateEditor;
     final transformConfigs = stateManager.transformConfigs;
     final hasTransformChanges = transformConfigs.isNotEmpty;
-
-    CropMode cropMode =
-        transformConfigs.cropMode ?? cropConfigs.initialCropMode;
+    final cropMode = transformConfigs.cropMode;
 
     return CropLayerPainter(
       opacity: configs.mainEditor.style.outsideCaptureAreaLayerOpacity,

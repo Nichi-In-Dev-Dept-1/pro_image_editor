@@ -37,11 +37,11 @@ List<double> mergeColorMatrices({
 
   // Combine filters
   for (final filterMatrix in filterList) {
-    combinedMatrix = _multiplyMatrices(filterMatrix, combinedMatrix);
+    combinedMatrix = _multiplyMatrices([...filterMatrix], combinedMatrix);
   }
   // Combine tune adjustments
   for (final tuneMatrix in tuneAdjustmentList) {
-    combinedMatrix = _multiplyMatrices(tuneMatrix, combinedMatrix);
+    combinedMatrix = _multiplyMatrices([...tuneMatrix], combinedMatrix);
   }
 
   return combinedMatrix;

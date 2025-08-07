@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 
+import '../../pro_image_editor.dart';
+
 /// Extension for [double] values that provides safe clamping methods.
 extension DoubleExtension on double {
   /// Clamps the double value between [lowerLimit] and [upperLimit],
@@ -63,8 +65,6 @@ extension DoubleExtension on double {
   double roundToDecimals(int decimals) {
     if (isNaN || isInfinite) return this;
 
-    final num factor = pow(10, decimals);
-
-    return (this * factor).round() / factor;
+    return safeParseDouble(toStringAsFixed(decimals));
   }
 }

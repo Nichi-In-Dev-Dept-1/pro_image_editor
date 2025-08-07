@@ -21,9 +21,9 @@ class ExportEditorConfigs {
     this.enableMinify = true,
     this.maxDecimalPlaces = kMaxSafeDecimalPlaces,
   }) : assert(
-          maxDecimalPlaces <= kMaxSafeDecimalPlaces,
+          maxDecimalPlaces <= kMaxSafeDecimalPlaces + 1,
           'maxDecimalPlaces must be less than or equal to '
-          '$kMaxSafeDecimalPlaces',
+          '${kMaxSafeDecimalPlaces + 1}',
         );
 
   /// The maximum number of decimal places allowed for numerical values.

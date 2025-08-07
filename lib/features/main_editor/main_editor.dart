@@ -552,7 +552,9 @@ class ProImageEditorState extends State<ProImageEditor>
     } else {
       stateManager.addHistory(
         EditorStateHistory(
-          transformConfigs: TransformConfigs.empty(),
+          transformConfigs: TransformConfigs.empty().copyWith(
+            cropMode: cropRotateEditorConfigs.initialCropMode,
+          ),
           blur: 0,
           layers: [],
           filters: [],

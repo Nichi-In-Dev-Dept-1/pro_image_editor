@@ -11,7 +11,7 @@ import '/shared/widgets/extended/extended_custom_paint.dart';
 import '/shared/widgets/extended/extended_transform_scale.dart';
 import '/shared/widgets/extended/extended_transform_translate.dart';
 import '../crop_rotate_editor.dart';
-import '../models/transform_factors.dart';
+import '../models/transform_configs.dart';
 import '../utils/crop_aspect_ratios.dart';
 import '../widgets/crop_corner_painter.dart';
 
@@ -349,10 +349,7 @@ mixin CropAreaHistory
     aspectRatio = activeHistory.aspectRatio < 0
         ? cropRect.size.aspectRatio
         : activeHistory.aspectRatio;
-    setCropMode(
-      activeHistory.cropMode ?? cropRotateEditorConfigs.initialCropMode,
-      updateHistory: false,
-    );
+    setCropMode(activeHistory.cropMode, updateHistory: false);
     rotationCount = (activeHistory.angle * 2 / pi).abs().toInt();
     rotateAnimation =
         Tween<double>(begin: rotateAnimation.value, end: activeHistory.angle)

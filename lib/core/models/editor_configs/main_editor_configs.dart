@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '/features/crop_rotate_editor/models/transform_factors.dart';
+import '/features/crop_rotate_editor/models/transform_configs.dart';
 import '/shared/utils/decode_image.dart';
 import '../custom_widgets/main_editor_widgets.dart';
 import '../icons/main_editor_icons.dart';

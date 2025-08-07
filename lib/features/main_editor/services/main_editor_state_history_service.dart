@@ -158,7 +158,10 @@ class MainEditorStateHistoryService {
     bool enableInitialEmptyState = import.configs.enableInitialEmptyState;
     bool enableEmptyHistory =
         import.stateHistory.isEmpty || enableInitialEmptyState;
+
     stateManager
+      // Important to reset first the historyPointer
+      ..historyPointer = 0
       ..screenshots = []
       ..stateHistory = [
         if (enableEmptyHistory)

@@ -4,7 +4,7 @@ import 'dart:ui';
 
 import '/core/models/layers/layer.dart';
 import '/features/crop_rotate_editor/enums/crop_rotate_angle_side.dart';
-import '/features/crop_rotate_editor/models/transform_factors.dart';
+import '/features/crop_rotate_editor/models/transform_configs.dart';
 import '/features/crop_rotate_editor/utils/rotate_angle.dart';
 import '/features/main_editor/services/layer_copy_manager.dart';
 

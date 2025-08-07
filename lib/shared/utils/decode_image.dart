@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 // Project imports:
-import '/features/crop_rotate_editor/models/transform_factors.dart';
+import '/features/crop_rotate_editor/models/transform_configs.dart';
 
 /// Decode the image being edited.
 Future<ImageInfos> decodeImageInfos({

@@ -9,7 +9,7 @@ import '/core/models/editor_image.dart';
 import '/core/models/history/state_history.dart';
 import '/core/models/layers/layer.dart';
 import '/core/platform/io/io_helper.dart';
-import '/features/crop_rotate_editor/models/transform_factors.dart';
+import '/features/crop_rotate_editor/models/transform_configs.dart';
 import '/features/filter_editor/constants/identity_matrix_constant.dart';
 import '/features/filter_editor/utils/lerp_color_matrix_utils.dart';
 import '/features/tune_editor/models/tune_adjustment_matrix.dart';
@@ -224,8 +224,9 @@ class ImportStateHistory {
       // Apply opacity by blending with identity
       return result;
     } else {
-      return (filtersData as List<List<dynamic>>)
-          .map((el) => List<double>.from(el.map(safeParseDouble)))
+      return (filtersData as List<dynamic>)
+          .map((el) =>
+              List<double>.from((el as List<dynamic>).map(safeParseDouble)))
           .toList();
     }
   }
