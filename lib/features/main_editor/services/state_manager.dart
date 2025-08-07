@@ -102,6 +102,16 @@ class StateManager {
             .blur ??
         0.0;
 
+    _activeAutoTuned = activeHistory
+        .lastWhere((item) => item.isAutoTuned,
+        orElse: EditorStateHistory.new)
+        .isAutoTuned;
+
+    _activeBGRemoved = activeHistory
+        .lastWhere((item) => item.isBGRemoved,
+        orElse: EditorStateHistory.new)
+        .isBGRemoved;
+
     onStateHistoryChange?.call();
   }
 
@@ -140,6 +150,14 @@ class StateManager {
   /// and higher values correspond to increasing blur intensity.
   double _activeBlur = 0.0;
 
+  bool _activeBGRemoved = false;
+  bool get activeBGRemoved => _activeBGRemoved;
+
+  bool _activeAutoTuned = false;
+  bool get activeAutoTuned => _activeAutoTuned;
+
+
+
   /// A getter that returns the current blur value.
   /// This allows you to query the active blur level applied to the image.
   double get activeBlur => _activeBlur;
@@ -170,7 +188,6 @@ class StateManager {
 
   /// Determines whether redo actions can be performed on the current state.
   bool get canRedo => _historyPointer < _stateHistory.length - 1;
-
   /// Clean forward changes in the history.
   ///
   /// This method removes any changes made after the current edit position in
