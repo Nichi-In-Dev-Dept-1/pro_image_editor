@@ -52,24 +52,21 @@ class LayerWidgetTextItem extends StatelessWidget {
 
     final maxTextWidth = layer.maxTextWidth;
 
-    return HeroMode(
-      enabled: false,
-      child: RoundedBackgroundText(
-        enableHitBoxCorrection: true,
-        maxTextWidth:
-            maxTextWidth == null ? double.infinity : maxTextWidth * layer.scale,
-        onHitTestResult: _handleLayerHit,
-        layer.text.toString(),
-        backgroundColor: layer.background,
-        textAlign: layer.align,
-        style: layer.textStyle?.copyWith(
-              fontSize: style.fontSize,
-              fontWeight: style.fontWeight,
-              color: style.color,
-              fontFamily: style.fontFamily,
-            ) ??
-            style,
-      ),
+    return RoundedBackgroundText(
+      enableHitBoxCorrection: true,
+      maxTextWidth:
+          maxTextWidth == null ? double.infinity : maxTextWidth * layer.scale,
+      onHitTestResult: _handleLayerHit,
+      layer.text.toString(),
+      backgroundColor: layer.background,
+      textAlign: layer.align,
+      style: layer.textStyle?.copyWith(
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            color: style.color,
+            fontFamily: style.fontFamily,
+          ) ??
+          style,
     );
   }
 }

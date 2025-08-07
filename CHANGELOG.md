@@ -2,7 +2,9 @@
 
 ## 11.1.2
 - **REFACTOR**(text-layer): Remove `colorPickerPosition` from `TextLayer` and related widgets.
-- **FIX**(import/export): Resolve issue issue of import/export crashing when the minifier is enabled. This resolves issue [#613](https://github.com/hm21/pro_image_editor/issues/613).
+- **FIX**(import/export): Resolve issue of import/export crashing when the minifier is enabled. This resolves issue [#613](https://github.com/hm21/pro_image_editor/issues/613).
+- **FIX**(text-layer): Fixed lag in hero animation.
+- **FIX**(text-layer): Fixed issue where edited text layers didn't update the state history.
 
 ## 11.1.1
 - **FIX**(web-build): Fix web-build failure caused by int64 values. This resolves issue [#612](https://github.com/hm21/pro_image_editor/issues/612).
