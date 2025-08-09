@@ -2554,6 +2554,10 @@ class ProImageEditorState extends State<ProImageEditor>
                   : null,
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  /// That function is required so that multiselect works
+                  /// correctly, even when it’s empty.
+                },
                 onLongPress: mainEditorCallbacks?.onLongPress,
                 onScaleStart: _onScaleStart,
                 onScaleUpdate: _onScaleUpdate,
