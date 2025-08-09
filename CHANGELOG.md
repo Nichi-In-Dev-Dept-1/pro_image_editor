@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.1.3* 
+- **FIX**(text-editor): Fixed an issue where long text didn’t wrap correctly.
+- **FIX**(video-editor): Fixed display issues with the trim bar, especially for maximum and minimum durations.
+
 ## 11.1.2
 - **REFACTOR**(text-layer): Remove `colorPickerPosition` from `TextLayer` and related widgets.
 - **FIX**(import/export): Resolve issue of import/export crashing when the minifier is enabled. This resolves issue [#613](https://github.com/hm21/pro_image_editor/issues/613).

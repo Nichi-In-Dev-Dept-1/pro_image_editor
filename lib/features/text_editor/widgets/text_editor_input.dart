@@ -39,6 +39,7 @@ class TextEditorInput extends StatefulWidget {
     required this.layer,
     required this.textCtrl,
     required this.maxWidth,
+    required this.cursorWidth,
   });
 
   /// Optional callbacks for text editor interactions.
@@ -61,6 +62,10 @@ class TextEditorInput extends StatefulWidget {
 
   /// The font size of the input text.
   final double textFontSize;
+
+  /// The width of the text cursor in the text editor input, measured in
+  /// logical pixels.
+  final double cursorWidth;
 
   /// The maximum width available for the text before the text will overflow.
   final double maxWidth;
@@ -157,6 +162,7 @@ class _TextEditorInputState extends State<TextEditorInput> {
         tag: widget.heroTag ?? 'Text-Image-Editor-Empty-Hero',
         child: RoundedBackgroundTextField(
           key: const ValueKey('rounded-background-text-editor-field'),
+          maxTextWidth: widget.maxWidth,
           controller: widget.textCtrl,
           focusNode: widget.focusNode,
           onChanged: (value) {
@@ -170,6 +176,7 @@ class _TextEditorInputState extends State<TextEditorInput> {
               widget.textCtrl.text.isEmpty ? TextAlign.center : widget.align,
           configs: widget.configs,
           cursorHeight: widget.textFontSize,
+          cursorWidth: widget.cursorWidth,
           hint: widget.i18n.inputHintText,
           hintStyle: widget.selectedTextStyle.copyWith(
             color: widget.configs.style.inputHintColor,

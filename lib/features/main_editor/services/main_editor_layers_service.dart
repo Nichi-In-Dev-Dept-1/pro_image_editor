@@ -116,10 +116,15 @@ class MainEditorLayersService {
 
   /// Handles tap events on a layer to manage selection or editing.
   void handleLayerTap(Layer layer, PointerEvent event) {
-    if (mouseService.validatePanAction(event: event)) return;
+    final bool layersAreSelectable =
+        layerInteraction.layersAreSelectable(configs);
+
+    if (mouseService.validatePanAction(event: event) && layersAreSelectable) {
+      return;
+    }
 
     // Only handle selection if selectable
-    if (layer.interaction.enableSelection) {
+    if (layer.interaction.enableSelection && layersAreSelectable) {
       final selectedIds = layerInteraction.selectedLayerIds;
       final isAlreadySelected =
           selectedIds.contains(layer.id) && !_helperIsPointerDownSelected;

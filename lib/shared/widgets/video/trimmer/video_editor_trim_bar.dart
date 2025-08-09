@@ -48,7 +48,10 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _updateTrimStart(0);
+      if (!mounted) return;
+      _trimEnd = _maxTrimPercentage;
+      _updateTrimSpan();
+      _isUpdatingTrimBar = false;
     });
   }
 
@@ -61,43 +64,37 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
     super.dispose();
   }
 
-  void _updateTrimSpan() {
-    _player.controller.setTrimSpan(
-      TrimDurationSpan(
-        start: Duration(microseconds: (_trimStart * _videoDuration).toInt()),
-        end: Duration(microseconds: (_trimEnd * _videoDuration).toInt()),
-      ),
-    );
-    _player.showTrimTimeSpanNotifier.value = true;
+  void _updateTrimSpan({TrimDurationSpan? timeSpan}) {
+    final startTime =
+        Duration(microseconds: (_trimStart * _videoDuration).round());
+    final endTime = Duration(microseconds: (_trimEnd * _videoDuration).round());
 
+    final span = timeSpan ??
+        TrimDurationSpan(
+          start: Duration(seconds: startTime.inSeconds),
+          end: Duration(seconds: endTime.inSeconds),
+        );
+
+    _player.controller.setTrimSpan(span);
+    _player.showTrimTimeSpanNotifier.value = true;
     _isUpdatingTrimBar = true;
     setState(() {});
   }
 
   void _updateTrimStart(double value) {
-    double minEnd = value + _minTrimPercentage;
-    final maxEnd = value + _maxTrimPercentage;
-    _trimStart = value;
-    _trimEnd = _trimEnd.clamp(minEnd, maxEnd);
-
-    if (_trimEnd > 1) {
-      _trimEnd = 1;
-      _trimStart = max(0, 1 - _minTrimPercentage);
-    }
+    _trimStart = value.clamp(
+      _trimEnd - _maxTrimPercentage,
+      _trimEnd - _minTrimPercentage,
+    );
 
     _updateTrimSpan();
   }
 
   void _updateTrimEnd(double value) {
-    double minStart = value - _minTrimPercentage;
-    final maxStart = value - _maxTrimPercentage;
-    _trimEnd = value;
-    _trimStart = _trimStart.clamp(maxStart, minStart);
-
-    if (_trimStart < 0) {
-      _trimStart = 0;
-      _trimEnd = min(1, _minTrimPercentage);
-    }
+    _trimEnd = value.clamp(
+      _trimStart + _minTrimPercentage,
+      _trimStart + _maxTrimPercentage,
+    );
 
     _updateTrimSpan();
   }
@@ -116,22 +113,28 @@ class _VideoEditorTrimBarState extends State<VideoEditorTrimBar> {
 
   void _updateDragTrimBar(DragUpdateDetails details, double scaledWidth) {
     double factor = details.primaryDelta! / scaledWidth;
+    final controller = _player.controller;
+
     double newValueStart = _trimStart + factor;
     double newValueEnd = _trimEnd + factor;
+    double diff = _trimEnd - _trimStart;
 
-    if (newValueStart >= 0 && newValueEnd <= 1) {
-      _updateTrimStart(newValueStart);
-      _updateTrimEnd(newValueEnd);
-    } else if (newValueEnd > 1 && _trimEnd != 1) {
-      double diff = 1 - _trimEnd;
-      _updateTrimStart(_trimStart + diff);
-      _updateTrimEnd(_trimEnd + diff);
-    } else if (newValueStart < 0 && _trimStart != 0) {
-      _updateTrimStart(0);
-      _updateTrimEnd(_trimEnd - _trimStart);
-    } else {
-      _updateScrollbar(details.delta.dx);
+    if (newValueStart < 0) {
+      newValueStart = 0;
+      newValueEnd = diff;
+    } else if (newValueEnd > 1) {
+      newValueStart = 1 - diff;
+      newValueEnd = 1;
     }
+
+    _trimStart = newValueStart;
+    _trimEnd = newValueEnd;
+    final start = Duration(microseconds: (_trimStart * _videoDuration).round());
+    final end = start + controller.endTime - controller.startTime;
+
+    final timeSpan = TrimDurationSpan(start: start, end: end);
+
+    _updateTrimSpan(timeSpan: timeSpan);
   }
 
   void _triggerTrimSpanEnd() {

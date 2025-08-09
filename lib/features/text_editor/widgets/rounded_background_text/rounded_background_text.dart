@@ -22,7 +22,7 @@ class RoundedBackgroundText extends StatelessWidget {
     this.textAlign,
     this.backgroundColor,
     this.onHitTestResult,
-    this.maxTextWidth,
+    required this.maxTextWidth,
     this.cursorWidth = 0,
     this.enableHitBoxCorrection = false,
   }) : text = TextSpan(text: text, style: style);
@@ -38,7 +38,7 @@ class RoundedBackgroundText extends StatelessWidget {
     this.backgroundColor,
     this.textAlign,
     this.onHitTestResult,
-    this.maxTextWidth,
+    required this.maxTextWidth,
     this.cursorWidth = 0,
     this.enableHitBoxCorrection = false,
   });
@@ -58,7 +58,7 @@ class RoundedBackgroundText extends StatelessWidget {
 
   /// The maximum width the text is allowed to occupy. If null, the text can
   /// expand freely.
-  final double? maxTextWidth;
+  final double maxTextWidth;
 
   /// The width of the text cursor when displayed.
   final double cursorWidth;
@@ -91,7 +91,7 @@ class RoundedBackgroundText extends StatelessWidget {
     double verticalSpace = enableHitBoxCorrection ? height * 0.1 : 0;
 
     return LayoutBuilder(builder: (context, constraints) {
-      painter.layout();
+      painter.layout(maxWidth: maxTextWidth);
 
       return CustomPaint(
         isComplex: true,

@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '/core/constants/editor_various_constants.dart';
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_configs_mixin.dart';
 import '/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
@@ -100,8 +101,6 @@ class _LayerWidgetState extends State<LayerWidget>
   );
 
   late final Offset _fractionalOffset;
-
-  final double _tapSlop = 18.0;
 
   PointerEvent? _lastDownEvent;
   Offset? _lastLayerOffset;
@@ -230,10 +229,10 @@ class _LayerWidgetState extends State<LayerWidget>
           DateTime.now().difference(_tapDownTimestamp).inMilliseconds;
 
       // Ignore if pointer moved too much (exceeds tap slop)
-      if (offsetDistance >= _tapSlop) return;
+      if (offsetDistance >= tapSlop) return;
 
       // Ignore if tap took too long (not a quick tap)
-      if (timeElapsed > 250) return;
+      if (timeElapsed > tapTimeElapsed) return;
 
       // Fire onTap only if selection/edit is enabled and pointer is inside hit box
       if ((interaction.enableSelection || interaction.enableEdit) &&

@@ -83,9 +83,11 @@ class TextEditorState extends State<TextEditor>
   Size editorBodySize = Size.infinite;
 
   late double _fontScale;
+  final double _cursorWidth = 2.0;
 
-  double? get _maxTextWidth =>
-      textEditorConfigs.enableAutoOverflow ? editorBodySize.width - 32 : null;
+  double? get _maxTextWidth => textEditorConfigs.enableAutoOverflow
+      ? editorBodySize.width - 32 - _cursorWidth
+      : null;
 
   /// Gets the primary color.
   Color get primaryColor => _primaryColor;
@@ -450,6 +452,7 @@ class TextEditorState extends State<TextEditor>
       textColor: _textColor,
       textFontSize: _textFontSize,
       maxWidth: _maxTextWidth ?? double.infinity,
+      cursorWidth: _cursorWidth,
     );
   }
 }

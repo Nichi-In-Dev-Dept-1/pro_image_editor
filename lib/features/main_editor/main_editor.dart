@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '/core/constants/editor_various_constants.dart';
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_callbacks_mixin.dart';
 import '/core/mixins/editor_configs_mixin.dart';
@@ -525,6 +526,9 @@ class ProImageEditorState extends State<ProImageEditor>
   /// The completer is initialized and can be used to await the image
   /// decoding operation.
   final Completer<bool> _decodeImageCompleter = Completer();
+
+  PointerEvent? _lastDownEvent;
+  DateTime _tapDownTimestamp = DateTime.now();
 
   @override
   void initState() {
@@ -2491,6 +2495,8 @@ class ProImageEditorState extends State<ProImageEditor>
           : Listener(
               behavior: HitTestBehavior.translucent,
               onPointerDown: (details) {
+                _lastDownEvent = details;
+                _tapDownTimestamp = DateTime.now();
                 _mouseService.onPointerDown(details);
                 if (layerInteractionManager.selectedLayerId.isNotEmpty ||
                     GestureManager.instance.isBlocked) {
@@ -2505,6 +2511,25 @@ class ProImageEditorState extends State<ProImageEditor>
               onPointerUp: (event) {
                 _mouseService.onPointerUp(event);
                 onPointerUp(event);
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  final offsetDistance =
+                      (event.position - _lastDownEvent!.position).distance;
+                  final timeElapsed = DateTime.now()
+                      .difference(_tapDownTimestamp)
+                      .inMilliseconds;
+
+                  // Ignore if pointer moved too much (exceeds tap slop)
+                  if (offsetDistance >= tapSlop) return;
+
+                  // Ignore if tap took too long (not a quick tap)
+                  if (timeElapsed > tapTimeElapsed) return;
+
+                  if (!configs.videoEditor.enablePlayButton) {
+                    widget.videoController?.togglePlayState();
+                  }
+                  mainEditorCallbacks?.onTap?.call();
+                });
               },
               onPointerSignal: isDesktop && hasSelectedLayers
                   ? (event) {
@@ -2530,14 +2555,8 @@ class ProImageEditorState extends State<ProImageEditor>
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () {
-                  /// Only clear selection if the tap is not on any layer
-                  /// (e.g., background/canvas tap)
-                  /// This block should be triggered only for true
-                  /// background taps.
-                  if (!configs.videoEditor.enablePlayButton) {
-                    widget.videoController?.togglePlayState();
-                  }
-                  mainEditorCallbacks?.onTap?.call();
+                  /// That function is required so that multiselect works
+                  /// correctly, even when it’s empty.
                 },
                 onLongPress: mainEditorCallbacks?.onLongPress,
                 onScaleStart: _onScaleStart,
