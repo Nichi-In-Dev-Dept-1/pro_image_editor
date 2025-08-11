@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '/core/constants/editor_various_constants.dart';
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_callbacks_mixin.dart';
 import '/core/mixins/editor_configs_mixin.dart';
@@ -396,6 +397,7 @@ class ProImageEditorState extends State<ProImageEditor>
 
   /// Manager class for managing the state of the editor.
   late final StateManager stateManager = StateManager(
+    activeBackgroundImage: widget.editorImage,
     onStateHistoryChange: () =>
         mainEditorCallbacks?.onStateHistoryChange?.call(stateManager, this),
   );
@@ -512,7 +514,7 @@ class ProImageEditorState extends State<ProImageEditor>
   }
 
   /// Get the current background image.
-  late EditorImage? editorImage = widget.editorImage;
+  EditorImage? get editorImage => stateManager.activeBackgroundImage;
 
   /// A [Completer] used to track the completion of a page open operation.
   ///
@@ -526,7 +528,8 @@ class ProImageEditorState extends State<ProImageEditor>
   /// decoding operation.
   final Completer<bool> _decodeImageCompleter = Completer();
 
-  int? _lastPaintSessionHistoryIndex;
+  PointerEvent? _lastDownEvent;
+  DateTime _tapDownTimestamp = DateTime.now();
 
   @override
   void initState() {
@@ -677,8 +680,6 @@ class ProImageEditorState extends State<ProImageEditor>
     double? blur,
     bool heroScreenshotRequired = false,
     bool blockCaptureScreenshot = false,
-    bool isBGRemoved = false,
-    bool isAutoTuned = false,
   }) {
     List<Layer> activeLayerList = _layerCopyManager.copyLayerList(activeLayers);
 
@@ -692,8 +693,6 @@ class ProImageEditorState extends State<ProImageEditor>
                 : activeLayerList),
         filters: filters ?? [],
         tuneAdjustments: tuneAdjustments ?? [],
-        isBGRemoved: isBGRemoved,
-        isAutoTuned: isAutoTuned,
       ),
       historyLimit: stateHistoryConfigs.stateHistoryLimit,
       enableScreenshotLimit: imageGenerationConfigs.enableBackgroundGeneration,
@@ -880,7 +879,7 @@ class ProImageEditorState extends State<ProImageEditor>
     );
 
     final resolution = widget.videoController!.initialResolution;
-    editorImage = EditorImage(
+    stateManager.activeBackgroundImage = EditorImage(
       byteArray: await createTransparentImage(
         resolution.width,
         resolution.height,
@@ -996,43 +995,42 @@ class ProImageEditorState extends State<ProImageEditor>
     }
   }
 
-  /// Replace the background image with a new image and ensures all relevant
-  /// states are rebuilt to reflect the new background. This includes marking
-  /// all background screenshots as "broken" to trigger re-capture with the
-  /// new image, and rebuilding the current editor state to apply the changes.
+  /// Updates the background image in the editor.
   ///
-  /// The method performs the following steps:
-  /// 1. Updates the editor's background image.
-  /// 2. Decodes the new image to prepare it for rendering.
-  /// 3. Marks all screenshots as "broken" so they are recaptured with the
-  /// updated background.
-  /// 4. Rebuilds the current editor state to ensure the new background is
-  /// applied.
-  Future<void> updateBackgroundImage(EditorImage image) async {
-    editorImage = image;
-    await decodeImage();
-
-    /// Mark all background captured images with the old background image as
-    /// "broken" that the editor capture them with the new image again
-    for (var item in stateManager.screenshots) {
-      item.broken = true;
+  /// If [updateHistory] is `false`, marks all background-captured images that
+  /// use the old-background image as "broken" so they will be recaptured with
+  /// the new image, and set the active background image to [image].
+  ///
+  /// If [updateHistory] is `true`, updates the background images in the
+  /// state manager, replaces the old image with [image], and adds the change
+  /// to the history.
+  ///
+  /// After updating, decodes the new image asynchronously.
+  ///
+  /// [image]: The new background image to set.
+  /// [updateHistory]: Whether to update the history with this change
+  /// (default is `true`).
+  Future<void> updateBackgroundImage(
+    EditorImage image, {
+    bool updateHistory = true,
+  }) async {
+    if (!updateHistory) {
+      /// Mark all background-captured images that use the old background
+      /// image as "broken" so the editor captures them again with the new
+      /// image.
+      for (var item in stateManager.screenshots) {
+        item.broken = true;
+      }
+      stateManager.activeBackgroundImage = image;
+    } else {
+      stateManager.updateBackgroundImages(
+        oldImage: editorImage ?? widget.editorImage!,
+        newImage: image,
+      );
+      addHistory();
     }
 
-    /// Force to rebuild everything
-    int pos = stateManager.historyPointer;
-    EditorStateHistory oldHistory = stateManager.stateHistory[pos];
-
-    stateManager.stateHistory[pos] = EditorStateHistory(
-      layers: oldHistory.layers,
-      transformConfigs: oldHistory.transformConfigs,
-      blur: oldHistory.blur,
-      filters: [...oldHistory.filters],
-      tuneAdjustments: [...oldHistory.tuneAdjustments],
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _backgroundImageColorFilterKey.currentState?.refresh();
-    });
+    await decodeImage();
   }
 
   @override
@@ -1946,22 +1944,6 @@ class ProImageEditorState extends State<ProImageEditor>
   /// the previous state.
   void undoAction() {
     GestureManager.instance.stopPropagation();
-
-    // 🧠 Special case: just finished painting
-    if (_lastPaintSessionHistoryIndex != null &&
-        stateManager.historyPointer == _lastPaintSessionHistoryIndex! + 1) {
-      stateManager.undo(); // undo paint group
-      _lastPaintSessionHistoryIndex = null;
-      setState(() {
-        layerInteractionManager.selectedLayerId = '';
-        _checkInteractiveViewer();
-        decodeImage();
-      });
-      mainEditorCallbacks?.handleUndo();
-      return;
-    }
-
-    // Regular undo
     if (stateManager.canUndo) {
       setState(() {
         layerInteractionManager.clearSelectedLayers();
@@ -2513,6 +2495,8 @@ class ProImageEditorState extends State<ProImageEditor>
           : Listener(
               behavior: HitTestBehavior.translucent,
               onPointerDown: (details) {
+                _lastDownEvent = details;
+                _tapDownTimestamp = DateTime.now();
                 _mouseService.onPointerDown(details);
                 if (layerInteractionManager.selectedLayerId.isNotEmpty ||
                     GestureManager.instance.isBlocked) {
@@ -2527,6 +2511,25 @@ class ProImageEditorState extends State<ProImageEditor>
               onPointerUp: (event) {
                 _mouseService.onPointerUp(event);
                 onPointerUp(event);
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  final offsetDistance =
+                      (event.position - _lastDownEvent!.position).distance;
+                  final timeElapsed = DateTime.now()
+                      .difference(_tapDownTimestamp)
+                      .inMilliseconds;
+
+                  // Ignore if pointer moved too much (exceeds tap slop)
+                  if (offsetDistance >= tapSlop) return;
+
+                  // Ignore if tap took too long (not a quick tap)
+                  if (timeElapsed > tapTimeElapsed) return;
+
+                  if (!configs.videoEditor.enablePlayButton) {
+                    widget.videoController?.togglePlayState();
+                  }
+                  mainEditorCallbacks?.onTap?.call();
+                });
               },
               onPointerSignal: isDesktop && hasSelectedLayers
                   ? (event) {
@@ -2552,14 +2555,8 @@ class ProImageEditorState extends State<ProImageEditor>
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () {
-                  /// Only clear selection if the tap is not on any layer
-                  /// (e.g., background/canvas tap)
-                  /// This block should be triggered only for true
-                  /// background taps.
-                  if (!configs.videoEditor.enablePlayButton) {
-                    widget.videoController?.togglePlayState();
-                  }
-                  mainEditorCallbacks?.onTap?.call();
+                  /// That function is required so that multiselect works
+                  /// correctly, even when it’s empty.
                 },
                 onLongPress: mainEditorCallbacks?.onLongPress,
                 onScaleStart: _onScaleStart,
