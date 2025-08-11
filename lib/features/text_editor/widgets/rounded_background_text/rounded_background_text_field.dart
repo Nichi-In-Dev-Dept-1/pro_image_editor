@@ -20,6 +20,7 @@ class RoundedBackgroundTextField extends StatefulWidget {
     required this.backgroundColor,
     required this.textAlign,
     required this.focusNode,
+    this.maxTextWidth = double.infinity,
     this.cursorWidth = 2.0,
     this.cursorHeight,
     this.cursorRadius,
@@ -69,6 +70,10 @@ class RoundedBackgroundTextField extends StatefulWidget {
 
   /// {@macro flutter.widgets.editableText.cursorHeight}
   final double? cursorHeight;
+
+  /// The maximum width the text is allowed to occupy. If null, the text can
+  /// expand freely.
+  final double maxTextWidth;
 
   /// {@macro flutter.widgets.editableText.cursorRadius}
   final Radius? cursorRadius;
@@ -156,18 +161,16 @@ class _RoundedBackgroundTextFieldState
       left: 0,
       right: 0,
       child: IgnorePointer(
-        child: Padding(
-          padding: _padding,
-          child: RoundedBackgroundText.rich(
-            text: _textController.buildTextSpan(
-              context: context,
-              withComposing: true,
-              style: style,
-            ),
-            cursorWidth: widget.cursorWidth,
-            textAlign: widget.textAlign,
-            backgroundColor: widget.backgroundColor,
+        child: RoundedBackgroundText.rich(
+          text: _textController.buildTextSpan(
+            context: context,
+            withComposing: true,
+            style: style,
           ),
+          maxTextWidth: widget.maxTextWidth - widget.cursorWidth,
+          cursorWidth: widget.cursorWidth,
+          textAlign: widget.textAlign,
+          backgroundColor: widget.backgroundColor,
         ),
       ),
     );
@@ -230,7 +233,7 @@ class _RoundedBackgroundTextFieldState
     }
 
     return Padding(
-      padding: _padding,
+      padding: EdgeInsets.zero,
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: _textController.text.isEmpty

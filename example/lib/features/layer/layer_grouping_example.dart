@@ -35,6 +35,9 @@ class _LayerGroupingExampleState extends State<LayerGroupingExample>
   );
 
   final _layerInteractionConfigs = LayerInteractionConfigs(
+    enableLayerDragSelection: true,
+    enableLongPressMultiSelection: true,
+    selectable: LayerInteractionSelectable.enabled,
     widgets: LayerInteractionWidgets(
       children: [
         (rebuildStream, layer, interactions) => ReactiveWidget(
@@ -145,14 +148,15 @@ class _LayerGroupingExampleState extends State<LayerGroupingExample>
       configs: ProImageEditorConfigs(
         layerInteraction: _layerInteractionConfigs,
         mainEditor: MainEditorConfigs(
+            mobilePanInteraction: MobilePanInteraction.dragSelect,
             widgets: MainEditorWidgets(
-          bodyItems: (editor, rebuildStream) => [
-            ReactiveWidget(
-              builder: (_) => _buildActionButtons(editor),
-              stream: rebuildStream,
-            ),
-          ],
-        )),
+              bodyItems: (editor, rebuildStream) => [
+                ReactiveWidget(
+                  builder: (_) => _buildActionButtons(editor),
+                  stream: rebuildStream,
+                ),
+              ],
+            )),
       ),
     );
   }

@@ -20,8 +20,6 @@ class EditorStateHistory {
     this.filters = const [],
     this.tuneAdjustments = const [],
     this.transformConfigs,
-    this.isBGRemoved = false,
-    this.isAutoTuned = false,
   });
 
   /// The blur factor.
@@ -39,12 +37,6 @@ class EditorStateHistory {
   /// The transformation from the crop/ rotate editor.
   TransformConfigs? transformConfigs;
 
-  /// is bg removed
-  final bool isBGRemoved;
-
-  /// is auto tuned
-  final bool isAutoTuned;
-
   /// Creates a copy of the current `EditorStateHistory` instance with the
   /// option to override some of its properties.
   ///
@@ -58,8 +50,6 @@ class EditorStateHistory {
     FilterMatrix? filters,
     List<TuneAdjustmentMatrix>? tuneAdjustments,
     TransformConfigs? transformConfigs,
-    bool? isBGRemoved,
-    bool? isAutoTuned,
   }) {
     return EditorStateHistory(
       blur: blur ?? this.blur,
@@ -67,8 +57,6 @@ class EditorStateHistory {
       filters: filters ?? this.filters,
       tuneAdjustments: tuneAdjustments ?? this.tuneAdjustments,
       transformConfigs: transformConfigs ?? this.transformConfigs,
-      isBGRemoved: isBGRemoved ?? this.isBGRemoved,
-      isAutoTuned: isAutoTuned ?? this.isAutoTuned,
     );
   }
 

@@ -208,9 +208,11 @@ class _FrameExampleState extends State<FrameExample>
     await _createTransparentBackgroundImage();
 
     /// Set the background bounds
-    editorKey.currentState!.editorImage = EditorImage(
-      byteArray: _transparentBytes,
+    await editorKey.currentState!.updateBackgroundImage(
+      EditorImage(byteArray: _transparentBytes),
+      updateHistory: false,
     );
+
     await editorKey.currentState!.decodeImage();
   }
 
