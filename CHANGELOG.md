@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.2.0
+- **FEAT**(state-history): Added support for undo and redo when the background image is changed in the state history.
+
 ## 11.1.3
 - **FIX**(text-editor): Fixed an issue where long text didn’t wrap correctly.
 - **FIX**(video-editor): Fixed display issues with the trim bar, especially for maximum and minimum durations.

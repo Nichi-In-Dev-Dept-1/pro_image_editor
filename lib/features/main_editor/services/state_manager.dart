@@ -1,3 +1,4 @@
+import '/core/models/editor_image.dart';
 import '/core/models/history/state_history.dart';
 import '/core/models/layers/layer.dart';
 import '/core/models/multi_threading/thread_capture_model.dart';
@@ -10,6 +11,7 @@ class StateManager {
   /// Creates an instance of [StateManager].
   StateManager({
     required this.onStateHistoryChange,
+    required this.activeBackgroundImage,
   });
 
   /// Optional callbacks for additional editor actions.
@@ -46,6 +48,31 @@ class StateManager {
   /// This list provides a record of changes applied to the image, allowing
   /// for undo/redo functionality.
   List<EditorStateHistory> get stateHistory => _stateHistory;
+
+  final Map<int, EditorImage> _backgroundImages = {};
+
+  /// The currently active background image in the editor.
+  EditorImage? activeBackgroundImage;
+
+  /// Updates the background images in the editor's history.
+  ///
+  /// Replaces the background image at the current history pointer with
+  /// [oldImage], and sets the next history entry to [newImage]. Also updates
+  /// the [activeBackgroundImage] to [newImage].
+  ///
+  /// Parameters:
+  /// - [oldImage]: The previous background image to store at the current
+  /// history pointer.
+  /// - [newImage]: The new background image to store at the next history
+  /// pointer.
+  void updateBackgroundImages({
+    required EditorImage oldImage,
+    required EditorImage newImage,
+  }) {
+    _backgroundImages[historyPointer] = oldImage;
+    _backgroundImages[historyPointer + 1] = newImage;
+    activeBackgroundImage = newImage;
+  }
 
   /// A setter for updating the state history list.
   /// When a new list of editor states is assigned, it triggers
@@ -103,6 +130,10 @@ class StateManager {
         0.0;
 
     onStateHistoryChange?.call();
+
+    if (_backgroundImages[historyPointer] != null) {
+      activeBackgroundImage = _backgroundImages[historyPointer];
+    }
   }
 
   /// A list of active filters applied to the image.
@@ -186,6 +217,7 @@ class StateManager {
       while (_historyPointer < screenshots.length) {
         screenshots.removeLast();
       }
+      _backgroundImages.removeWhere((index, _) => index > _historyPointer);
     }
     _historyPointer = _stateHistory.length - 1;
   }
