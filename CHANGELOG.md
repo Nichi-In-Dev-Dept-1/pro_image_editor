@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.2.1
+- **FIX**(state-history): Resolve issue where updating the background-image overwrote previous states.
+
 ## 11.2.0
 - **FEAT**(state-history): Added support for undo and redo when the background image is changed in the state history.
 

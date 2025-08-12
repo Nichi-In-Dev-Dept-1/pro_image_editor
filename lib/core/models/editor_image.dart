@@ -229,6 +229,35 @@ class EditorImage {
     if (list == null) return 0;
     return list.fold(0, (hash, byte) => hash * 31 + byte);
   }
+
+  /// Creates a copy of this [EditorImage] with optional new values for its
+  /// fields.
+  ///
+  /// If a parameter is not provided, the current value from this instance
+  /// is used.
+  /// - [byteArray]: The new image data as a [Uint8List]. If provided, a
+  /// copy is created.
+  /// - [file]: The new image file as a [File]. If provided, a new [File]
+  /// instance is created with the same path.
+  /// - [networkUrl]: The new network URL for the image.
+  /// - [assetPath]: The new asset path for the image.
+  ///
+  /// Returns a new [EditorImage] instance with the updated values.
+  EditorImage copyWith({
+    Uint8List? byteArray,
+    File? file,
+    String? networkUrl,
+    String? assetPath,
+  }) {
+    final bytes = byteArray ?? this.byteArray;
+    final fileHelper = file ?? this.file;
+    return EditorImage(
+      byteArray: bytes != null ? Uint8List.fromList(bytes) : null,
+      file: fileHelper != null ? File(fileHelper.path) : null,
+      networkUrl: networkUrl ?? this.networkUrl,
+      assetPath: assetPath ?? this.assetPath,
+    );
+  }
 }
 
 /// Flutter EditorImageType Enum Documentation

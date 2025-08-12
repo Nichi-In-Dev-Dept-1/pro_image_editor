@@ -69,9 +69,9 @@ class StateManager {
     required EditorImage oldImage,
     required EditorImage newImage,
   }) {
-    _backgroundImages[historyPointer] = oldImage;
-    _backgroundImages[historyPointer + 1] = newImage;
-    activeBackgroundImage = newImage;
+    _backgroundImages[historyPointer - 1] ??= oldImage.copyWith();
+    _backgroundImages[historyPointer] = newImage.copyWith();
+    activeBackgroundImage = newImage.copyWith();
   }
 
   /// A setter for updating the state history list.
@@ -132,7 +132,7 @@ class StateManager {
     onStateHistoryChange?.call();
 
     if (_backgroundImages[historyPointer] != null) {
-      activeBackgroundImage = _backgroundImages[historyPointer];
+      activeBackgroundImage = _backgroundImages[historyPointer]!.copyWith();
     }
   }
 
