@@ -736,8 +736,9 @@ class ProImageEditorState extends State<ProImageEditor>
   /// ```
   void replaceLayer({required int index, required Layer layer}) {
     layerInteractionManager.clearSelectedLayers();
+
     addHistory(
-      layers: [...activeLayers]
+      layers: _layerCopyManager.copyLayerList(activeLayers)
         ..removeAt(index)
         ..insert(index, layer),
     );

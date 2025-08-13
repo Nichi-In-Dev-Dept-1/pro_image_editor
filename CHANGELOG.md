@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.2.2
+- **FIX**(main-editor): Resolved an issue where the `replaceLayer` function broke the logic that ensured layers resized correctly when the screen size changed. This resolves issue [#624](https://github.com/hm21/pro_image_editor/issues/624) and issue [#626](https://github.com/hm21/pro_image_editor/issues/626).
+
 ## 11.2.1
 - **FIX**(state-history): Resolve issue where updating the background-image overwrote previous states.
 
