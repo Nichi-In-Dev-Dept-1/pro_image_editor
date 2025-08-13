@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.3.0
+- **FEAT**(text-editor): Replace `EditableText` with `TextField` to enhance text selection and overall input handling.
+
 ## 11.2.3
 - **FIX**(multiselect): Resolve issue where layers could still be selected even when `enableSelection` for the layer was set to `false`. This resolves issue [#628](https://github.com/hm21/pro_image_editor/issues/628).
 
