@@ -151,6 +151,9 @@ class LayerDragSelectionService {
 
       if (size == null || size.isEmpty) continue;
 
+      // Skip layers that have enableSelection set to false
+      if (!layer.interaction.enableSelection) continue;
+
       Offset fractionalOffset = layer.isTextLayer
           ? textOffset
           : layer.isPaintLayer

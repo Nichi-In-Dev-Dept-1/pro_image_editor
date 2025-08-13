@@ -819,7 +819,7 @@ class ProImageEditorState extends State<ProImageEditor>
     if (removeLayerIndex >= 0) {
       activeLayers.removeAt(removeLayerIndex);
     }
-    if (!blockSelectLayer) {
+    if (!blockSelectLayer && layer.interaction.enableSelection) {
       layerInteractionManager.addSelectedLayer(layer.id);
     }
     _checkInteractiveViewer();
@@ -2359,7 +2359,12 @@ class ProImageEditorState extends State<ProImageEditor>
   /// active layer.
   Layer? selectLayerById(String id, {bool enableMultiSelect = false}) {
     int index = activeLayers.indexWhere((layer) => layer.id == id);
+    if (index == -1) return null;
+
     Layer? layer = activeLayers[index];
+
+    // Check if the layer allows selection
+    if (!layer.interaction.enableSelection) return null;
 
     if (!enableMultiSelect) layerInteractionManager.clearSelectedLayers();
 
@@ -2371,7 +2376,9 @@ class ProImageEditorState extends State<ProImageEditor>
   /// Selects all available layers.
   void selectAllLayers() {
     layerInteractionManager.setSelectedLayers(
-      activeLayers.map((layer) => layer.id),
+      activeLayers
+          .where((layer) => layer.interaction.enableSelection)
+          .map((layer) => layer.id),
     );
     _controllers.uiLayerCtrl.add(null);
   }
