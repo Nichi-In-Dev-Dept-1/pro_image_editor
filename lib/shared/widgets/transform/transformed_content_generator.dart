@@ -120,15 +120,16 @@ class TransformedContentGenerator extends StatelessWidget {
     /// Compose flip, rotate & fitHelper scale into one matrix:
     final Matrix4 outerMatrix = Matrix4.identity()
       // fitHelper
-      ..scale(fitFactor, fitFactor)
+      ..scaleByDouble(fitFactor, fitFactor, fitFactor, 1.0)
       // rotation
       ..rotateZ(_transformConfigs.angle)
-      ..scale(
-        // flip X
-        _transformConfigs.flipX ? -1.0 : 1.0,
-        // flip Y
-        _transformConfigs.flipY ? -1.0 : 1.0,
-      );
+      ..scaleByDouble(
+          // flip X
+          _transformConfigs.flipX ? -1.0 : 1.0,
+          // flip Y
+          _transformConfigs.flipY ? -1.0 : 1.0,
+          1.0,
+          1.0);
 
     return Transform(
       alignment: Alignment.center,
@@ -165,8 +166,8 @@ class TransformedContentGenerator extends StatelessWidget {
 
     // Combine translate + scale into one matrix
     final matrix = Matrix4.identity()
-      ..scale(scale, scale)
-      ..translate(offset.dx, offset.dy);
+      ..scaleByDouble(scale, scale, scale, 1.0)
+      ..translateByDouble(offset.dx, offset.dy, 0.0, 1.0);
 
     return Transform(
       alignment: Alignment.center,
