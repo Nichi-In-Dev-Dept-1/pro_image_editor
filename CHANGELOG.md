@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.4.1
+- **REFACTOR**(flutter): Fix deprecated APIs after upgrading to flutter `3.35.0`.
+
 ## 11.4.0
 - **REFACTOR**(flutter): Adapt the code to make it compatible with Flutter `3.35.0`.
 
