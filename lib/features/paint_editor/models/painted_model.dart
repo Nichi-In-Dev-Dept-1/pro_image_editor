@@ -116,6 +116,16 @@ class PaintedModel {
     }
   }
 
+  /// Returns `true` if the current paint mode represents a censoring area.
+  ///
+  /// This getter checks if the painting mode is either blur or pixelate,
+  /// which are typically used for censoring or obscuring content in images.
+  ///
+  /// Returns:
+  ///   - `true` if mode is [PaintMode.blur] or [PaintMode.pixelate]
+  ///   - `false` for all other paint modes
+  bool get isCensorArea => mode == PaintMode.blur || mode == PaintMode.pixelate;
+
   /// Determines whether the current paint mode supports being filled.
   ///
   /// This getter returns `true` if the [mode] is one of the following:

@@ -1316,6 +1316,8 @@ class ProImageEditorState extends State<ProImageEditor>
   }
 
   void _editPaintLayer(PaintLayer layer) async {
+    if (layer.isPaintLayer && layer.item.isCensorArea) return;
+
     PaintLayer? result = await showModalBottomSheet<PaintLayer>(
       context: context,
       backgroundColor: paintEditorConfigs.style.editSheetBackgroundColor,
