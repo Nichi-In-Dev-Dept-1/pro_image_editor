@@ -408,7 +408,8 @@ class _BarColorPickerState extends State<BarColorPicker>
   /// calculate colors picked from palette and update our states.
   void handleTouch(
       Offset globalPosition, BuildContext context, Gradient gradient) {
-    var box = context.findRenderObject() as RenderBox;
+    var box = context.findRenderObject() as RenderBox?;
+    if (box == null) return;
     var localPosition = box.globalToLocal(globalPosition);
     double percent;
     if (widget.horizontal) {
