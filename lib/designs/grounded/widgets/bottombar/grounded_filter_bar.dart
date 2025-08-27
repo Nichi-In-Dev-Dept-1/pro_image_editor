@@ -5,6 +5,7 @@ import '/core/mixins/editor_configs_mixin.dart';
 import '/core/utils/size_utils.dart';
 import '/designs/grounded/grounded_design.dart';
 import '/pro_image_editor.dart';
+import '/shared/widgets/editor_scrollbar.dart';
 
 /// A widget that represents a filter bar in the image editor.
 ///
@@ -66,10 +67,8 @@ class _GroundedFilterBarState extends State<GroundedFilterBar>
     return GroundedBottomWrapper(
       theme: configs.theme,
       children: (constraints) => [
-        Scrollbar(
+        EditorScrollbar(
           controller: _bottomBarScrollCtrl,
-          scrollbarOrientation: ScrollbarOrientation.top,
-          thickness: isDesktop ? null : 0,
           child: _buildFunctions(constraints),
         ),
         GroundedBottomBar(

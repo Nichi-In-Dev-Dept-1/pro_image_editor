@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
+import '/shared/widgets/editor_scrollbar.dart';
 import '/shared/widgets/flat_icon_text_button.dart';
 import '../controllers/main_editor_controllers.dart';
 import '../services/sizes_manager.dart';
@@ -97,10 +98,8 @@ class MainEditorBottombar extends StatelessWidget {
       child: LayoutBuilder(builder: (context, constraints) {
         return Theme(
           data: theme,
-          child: Scrollbar(
+          child: EditorScrollbar(
             controller: controllers.bottomBarScrollCtrl,
-            scrollbarOrientation: ScrollbarOrientation.top,
-            thickness: isDesktop ? null : 0,
             child: BottomAppBar(
               height: kBottomNavigationBarHeight,
               color: configs.mainEditor.style.bottomBarBackground,

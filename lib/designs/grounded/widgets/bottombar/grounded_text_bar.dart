@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '/core/mixins/converted_configs.dart';
 import '/core/mixins/editor_configs_mixin.dart';
 import '/pro_image_editor.dart';
+import '/shared/widgets/editor_scrollbar.dart';
 import '../../grounded_design.dart';
 
 /// A widget that provides a toolbar for text editing in the ProImageEditor.
@@ -68,10 +69,8 @@ class _GroundedTextBarState extends State<GroundedTextBar>
       child: GroundedBottomWrapper(
         theme: configs.theme,
         children: (constraints) => [
-          Scrollbar(
+          EditorScrollbar(
             controller: _bottomBarScrollCtrl,
-            scrollbarOrientation: ScrollbarOrientation.top,
-            thickness: isDesktop ? null : 0,
             child: _buildFunctions(constraints),
           ),
           GroundedBottomBar(
