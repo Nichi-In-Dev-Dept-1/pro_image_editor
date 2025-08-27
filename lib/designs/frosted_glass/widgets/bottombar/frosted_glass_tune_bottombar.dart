@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '/core/constants/editor_style_constants.dart';
 import '/features/tune_editor/tune_editor.dart';
-// Project imports:
 import '/shared/widgets/editor_scrollbar.dart';
 import '/shared/widgets/flat_icon_text_button.dart';
 import '../frosted_glass_effect.dart';
