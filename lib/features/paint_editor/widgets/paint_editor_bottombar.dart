@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/features/paint_editor/enums/paint_editor_enum.dart';
+import '/shared/widgets/editor_scrollbar.dart';
 import '/shared/widgets/flat_icon_text_button.dart';
 import '../models/paint_bottom_bar_item.dart';
 
@@ -72,10 +73,8 @@ class PaintEditorBottombar extends StatelessWidget {
 
     return Theme(
       data: theme,
-      child: Scrollbar(
+      child: EditorScrollbar(
         controller: bottomBarScrollCtrl,
-        scrollbarOrientation: ScrollbarOrientation.top,
-        thickness: isDesktop ? null : 0,
         child: BottomAppBar(
           height: kToolbarHeight,
           color: configs.style.bottomBarBackground,

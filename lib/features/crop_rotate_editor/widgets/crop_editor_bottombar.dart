@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
+import '/shared/widgets/editor_scrollbar.dart';
 import '/shared/widgets/flat_icon_text_button.dart';
 
 /// A widget representing the bottom bar for the crop editor, providing
@@ -60,10 +61,8 @@ class CropEditorBottombar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Theme(
       data: theme,
-      child: Scrollbar(
+      child: EditorScrollbar(
         controller: bottomBarScrollCtrl,
-        scrollbarOrientation: ScrollbarOrientation.top,
-        thickness: isDesktop ? null : 0,
         child: BottomAppBar(
           height: kToolbarHeight,
           color: configs.style.bottomBarBackground,
