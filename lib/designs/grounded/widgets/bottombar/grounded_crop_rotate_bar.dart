@@ -5,6 +5,7 @@ import '/core/mixins/editor_configs_mixin.dart';
 import '/designs/grounded/grounded_design.dart';
 import '/features/crop_rotate_editor/widgets/crop_aspect_ratio_button.dart';
 import '/pro_image_editor.dart';
+import '/shared/widgets/editor_scrollbar.dart';
 
 /// A widget that provides controls for cropping and rotating an image in the
 /// ProImageEditor.
@@ -71,10 +72,8 @@ class _GroundedCropRotateBarState extends State<GroundedCropRotateBar>
     return GroundedBottomWrapper(
       theme: configs.theme,
       children: (constraints) => [
-        Scrollbar(
+        EditorScrollbar(
           controller: _bottomBarScrollCtrl,
-          scrollbarOrientation: ScrollbarOrientation.top,
-          thickness: isDesktop ? null : 0,
           child: _buildFunctions(constraints),
         ),
         GroundedBottomBar(

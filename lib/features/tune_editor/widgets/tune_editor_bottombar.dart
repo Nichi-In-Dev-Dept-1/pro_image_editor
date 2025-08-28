@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/tune_editor_configs.dart';
-import '/shared/utils/platform_info.dart';
+import '/shared/widgets/editor_scrollbar.dart';
 import '/shared/widgets/flat_icon_text_button.dart';
 import '../models/tune_adjustment_matrix.dart';
 import '../tune_editor.dart';
@@ -160,10 +160,8 @@ class _TuneEditorBottombarState extends State<TuneEditorBottombar> {
   Widget _buildItems() {
     return SizedBox(
       height: kBottomNavigationBarHeight,
-      child: Scrollbar(
+      child: EditorScrollbar(
         controller: widget.bottomBarScrollCtrl,
-        scrollbarOrientation: ScrollbarOrientation.bottom,
-        thickness: isDesktop ? null : 0,
         child: SingleChildScrollView(
           controller: widget.bottomBarScrollCtrl,
           scrollDirection: Axis.horizontal,
