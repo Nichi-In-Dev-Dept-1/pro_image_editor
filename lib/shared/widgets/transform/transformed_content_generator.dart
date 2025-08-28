@@ -120,15 +120,16 @@ class TransformedContentGenerator extends StatelessWidget {
     /// Compose flip, rotate & fitHelper scale into one matrix:
     final Matrix4 outerMatrix = Matrix4.identity()
       // fitHelper
-      ..scale(fitFactor, fitFactor)
+      ..scaleByDouble(fitFactor, fitFactor, fitFactor, 1.0)
       // rotation
       ..rotateZ(_transformConfigs.angle)
-      ..scale(
-        // flip X
-        _transformConfigs.flipX ? -1.0 : 1.0,
-        // flip Y
-        _transformConfigs.flipY ? -1.0 : 1.0,
-      );
+      ..scaleByDouble(
+          // flip X
+          _transformConfigs.flipX ? -1.0 : 1.0,
+          // flip Y
+          _transformConfigs.flipY ? -1.0 : 1.0,
+          1.0,
+          1.0);
 
     return Transform(
       alignment: Alignment.center,
@@ -165,14 +166,36 @@ class TransformedContentGenerator extends StatelessWidget {
 
     // Combine translate + scale into one matrix
     final matrix = Matrix4.identity()
-      ..scale(scale, scale)
-      ..translate(offset.dx, offset.dy);
+      ..scaleByDouble(scale, scale, scale, 1.0)
+      ..translateByDouble(offset.dx, offset.dy, 0.0, 1.0);
 
     return Transform(
       alignment: Alignment.center,
       transform: matrix,
       child: child,
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+
+    properties
+      ..add(DiagnosticsProperty<TransformConfigs>(
+          'transformConfigs', transformConfigs))
+      ..add(FlagProperty('isVideoPlayer',
+          value: isVideoPlayer, ifTrue: 'video player'))
+      ..add(DoubleProperty('angle', transformConfigs.angle))
+      ..add(FlagProperty('flipX',
+          value: transformConfigs.flipX, ifTrue: 'flipped X'))
+      ..add(FlagProperty('flipY',
+          value: transformConfigs.flipY, ifTrue: 'flipped Y'))
+      ..add(DoubleProperty('scaleUser', transformConfigs.scaleUser))
+      ..add(DiagnosticsProperty<Offset>('offset', transformConfigs.offset))
+      ..add(EnumProperty<CropMode>('cropMode', transformConfigs.cropMode))
+      ..add(DiagnosticsProperty<Rect>('cropRect', transformConfigs.cropRect))
+      ..add(DiagnosticsProperty<Size>(
+          'originalSize', transformConfigs.originalSize));
   }
 }
 

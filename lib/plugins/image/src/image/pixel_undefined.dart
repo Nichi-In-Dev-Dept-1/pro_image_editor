@@ -10,7 +10,7 @@ import 'palette.dart';
 import 'pixel.dart';
 
 /// Represents an invalid pixel.
-class PixelUndefined extends Iterable<num> implements Pixel {
+class PixelUndefined extends Pixel {
   static final nullImageData = ImageDataUint8(0, 0, 0);
   @override
   PixelUndefined clone() => PixelUndefined();

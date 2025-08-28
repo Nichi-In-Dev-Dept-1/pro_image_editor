@@ -1,5 +1,29 @@
 # Changelog
 
+## 11.5.1
+- **FIX**(recorder): Fix slow image generation after transforming layers when layer-selection is disabled.
+- **FIX**(emoji-picker): Fix null error in the console from the emoji picker. Resolves issue [#642](https://github.com/hm21/pro_image_editor/issues/642).
+- **FEAT**(debug): Add extensive `debugFillProperties` for better debugging.
+
+
+## 11.5.0
+- **FEAT**(eraser): The eraser in the PaintEditor now removes only partial areas of the painting by default, instead of the entire object. This behavior can be adjusted in the PaintEditorConfigs using `eraserMode` and `eraserSize`.
+
+## 11.4.1
+- **REFACTOR**(flutter): Fix deprecated APIs after upgrading to flutter `3.35.0`.
+
+## 11.4.0
+- **REFACTOR**(flutter): Adapt the code to make it compatible with Flutter `3.35.0`.
+
+## 11.3.0
+- **FEAT**(text-editor): Replace `EditableText` with `TextField` to enhance text selection and overall input handling.
+
+## 11.2.3
+- **FIX**(multiselect): Resolve issue where layers could still be selected even when `enableSelection` for the layer was set to `false`. This resolves issue [#628](https://github.com/hm21/pro_image_editor/issues/628).
+
+## 11.2.2
+- **FIX**(main-editor): Resolve issue where the `replaceLayer` function broke the logic that ensured layers resized correctly when the screen size changed. This resolves issue [#624](https://github.com/hm21/pro_image_editor/issues/624) and issue [#626](https://github.com/hm21/pro_image_editor/issues/626).
+
 ## 11.2.1
 - **FIX**(state-history): Resolve issue where updating the background-image overwrote previous states.
 

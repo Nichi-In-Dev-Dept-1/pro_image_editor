@@ -113,7 +113,7 @@ class _AiSetupWidgetState extends State<AiSetupWidget> {
 
   Widget _buildProviderSelector() {
     return DropdownButtonFormField<AiProvider>(
-      value: _selectedProvider,
+      initialValue: _selectedProvider,
       decoration: const InputDecoration(
         labelText: 'Provider',
         border: OutlineInputBorder(),

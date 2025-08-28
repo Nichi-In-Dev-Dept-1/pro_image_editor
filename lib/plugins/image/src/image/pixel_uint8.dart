@@ -12,7 +12,7 @@ import 'image_data_uint8.dart';
 import 'palette.dart';
 import 'pixel.dart';
 
-class PixelUint8 extends Iterable<num> implements Pixel {
+class PixelUint8 extends Pixel {
   PixelUint8.imageData(this.image)
       : _x = -1,
         _y = 0,

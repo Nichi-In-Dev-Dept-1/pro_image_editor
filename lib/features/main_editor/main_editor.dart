@@ -736,8 +736,9 @@ class ProImageEditorState extends State<ProImageEditor>
   /// ```
   void replaceLayer({required int index, required Layer layer}) {
     layerInteractionManager.clearSelectedLayers();
+
     addHistory(
-      layers: [...activeLayers]
+      layers: _layerCopyManager.copyLayerList(activeLayers)
         ..removeAt(index)
         ..insert(index, layer),
     );
@@ -818,7 +819,7 @@ class ProImageEditorState extends State<ProImageEditor>
     if (removeLayerIndex >= 0) {
       activeLayers.removeAt(removeLayerIndex);
     }
-    if (!blockSelectLayer) {
+    if (!blockSelectLayer && layer.interaction.enableSelection) {
       layerInteractionManager.addSelectedLayer(layer.id);
     }
     _checkInteractiveViewer();
@@ -1247,6 +1248,14 @@ class ProImageEditorState extends State<ProImageEditor>
       if (!_layerDragSelectionService.isActive) {
         interactiveViewer.currentState?.onScaleEnd(details);
       }
+
+      /// On mobile when layers are not selectable we check if a layer was
+      /// transformed.
+      if (!isDesktop &&
+          layerInteractionManager.layerWasTransformed &&
+          layerInteraction.selectable != LayerInteractionSelectable.enabled) {
+        _takeScreenshot(replaceLastScreenshot: true);
+      }
     } else {
       /// At this point, we only create a screenshot since the new history
       /// entry was already added in [_onScaleStart].
@@ -1315,6 +1324,8 @@ class ProImageEditorState extends State<ProImageEditor>
   }
 
   void _editPaintLayer(PaintLayer layer) async {
+    if (layer.isPaintLayer && layer.item.isCensorArea) return;
+
     PaintLayer? result = await showModalBottomSheet<PaintLayer>(
       context: context,
       backgroundColor: paintEditorConfigs.style.editSheetBackgroundColor,
@@ -1534,6 +1545,8 @@ class ProImageEditorState extends State<ProImageEditor>
     String lastLayerId = '';
     for (var i = 0; i < result.layers.length; i++) {
       final layer = result.layers[i];
+      final oldIndex = activeLayers.indexWhere((el) => el.id == layer.id);
+
       final duplicatedLayer = _layerCopyManager.duplicateLayer(
         layer,
         offset: Offset.zero,
@@ -1541,6 +1554,7 @@ class ProImageEditorState extends State<ProImageEditor>
       lastLayerId = duplicatedLayer.id;
       addLayer(
         duplicatedLayer,
+        removeLayerIndex: oldIndex,
         blockSelectLayer: true,
         blockCaptureScreenshot: true,
         autoCorrectZoomOffset: false,
@@ -2358,7 +2372,12 @@ class ProImageEditorState extends State<ProImageEditor>
   /// active layer.
   Layer? selectLayerById(String id, {bool enableMultiSelect = false}) {
     int index = activeLayers.indexWhere((layer) => layer.id == id);
+    if (index == -1) return null;
+
     Layer? layer = activeLayers[index];
+
+    // Check if the layer allows selection
+    if (!layer.interaction.enableSelection) return null;
 
     if (!enableMultiSelect) layerInteractionManager.clearSelectedLayers();
 
@@ -2370,7 +2389,9 @@ class ProImageEditorState extends State<ProImageEditor>
   /// Selects all available layers.
   void selectAllLayers() {
     layerInteractionManager.setSelectedLayers(
-      activeLayers.map((layer) => layer.id),
+      activeLayers
+          .where((layer) => layer.interaction.enableSelection)
+          .map((layer) => layer.id),
     );
     _controllers.uiLayerCtrl.add(null);
   }

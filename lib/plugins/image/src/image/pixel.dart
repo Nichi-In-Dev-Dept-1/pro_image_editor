@@ -4,7 +4,7 @@ import '../color/color.dart';
 import 'image_data.dart';
 import 'pixel_undefined.dart';
 
-abstract class Pixel implements Iterator<Pixel>, Color {
+abstract class Pixel extends Color implements Iterator<Pixel> {
   /// [undefined] is used to represent an invalid pixel.
   static Pixel get undefined => PixelUndefined();
 

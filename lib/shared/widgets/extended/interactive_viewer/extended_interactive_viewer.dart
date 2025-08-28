@@ -180,8 +180,8 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
     final effectiveScale = scale ?? 1.0;
 
     _transformCtrl.value = Matrix4.identity()
-      ..translate(effectiveOffset.dx, effectiveOffset.dy)
-      ..scale(effectiveScale);
+      ..translateByDouble(effectiveOffset.dx, effectiveOffset.dy, 0.0, 1.0)
+      ..scaleByDouble(effectiveScale, effectiveScale, effectiveScale, 1.0);
   }
 
   /// Animates zooming to a specific [offset] and [scale] over [duration].
@@ -199,8 +199,8 @@ class ExtendedInteractiveViewerState extends State<ExtendedInteractiveViewer>
     final effectiveScale = scale ?? 1.0;
 
     final targetMatrix = Matrix4.identity()
-      ..translate(effectiveOffset.dx, effectiveOffset.dy)
-      ..scale(effectiveScale);
+      ..translateByDouble(effectiveOffset.dx, effectiveOffset.dy, 0.0, 1.0)
+      ..scaleByDouble(effectiveScale, effectiveScale, effectiveScale, 1.0);
 
     final tween = Matrix4Tween(
       begin: _transformCtrl.value,

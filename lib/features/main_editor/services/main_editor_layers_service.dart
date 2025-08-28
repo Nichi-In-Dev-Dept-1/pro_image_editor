@@ -230,7 +230,8 @@ class MainEditorLayersService {
     if (layer.groupId == null) return;
     // If layer is part of a group, handle group selection
     Set<String> groupIds = _activeLayers
-        .where((l) => l.groupId == layer.groupId)
+        .where(
+            (l) => l.groupId == layer.groupId && l.interaction.enableSelection)
         .map((l) => l.id)
         .toSet();
 

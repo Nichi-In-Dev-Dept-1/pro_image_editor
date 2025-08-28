@@ -87,6 +87,8 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
     this.initialPaintMode = PaintMode.freeStyle,
     this.isColorPickerHorizontal = false,
     this.colorPickerPadding = EdgeInsets.zero,
+    this.eraserMode = EraserMode.partial,
+    this.eraserSize = 8.0,
     this.censorConfigs = const CensorConfigs(),
     this.safeArea = const EditorSafeArea(),
     this.style = const PaintEditorStyle(),
@@ -172,6 +174,17 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
 
   /// Indicates the initial paint mode.
   final PaintMode initialPaintMode;
+
+  /// Indicates the eraser mode.
+  final EraserMode eraserMode;
+
+  /// The size of the eraser tool in pixels.
+  ///
+  /// This value determines the diameter/width of the eraser when removing
+  /// painted content from the canvas. A larger value creates a bigger eraser
+  /// that removes more content at once, while a smaller value provides more
+  /// precise erasing capabilities.
+  final double eraserSize;
 
   /// Configuration settings for the censor tool in the paint editor.
   ///
@@ -265,6 +278,8 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
     bool? showLayers,
     bool? enableShareZoomMatrix,
     PaintMode? initialPaintMode,
+    EraserMode? eraserMode,
+    double? eraserSize,
     CensorConfigs? censorConfigs,
     double? minScale,
     double? maxScale,
@@ -320,7 +335,8 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
         enableShareZoomMatrix:
             enableShareZoomMatrix ?? this.enableShareZoomMatrix,
         initialPaintMode: initialPaintMode ?? this.initialPaintMode,
-        censorConfigs: censorConfigs ?? this.censorConfigs,
+        eraserMode: eraserMode ?? this.eraserMode,
+      eraserSize: eraserSize ?? this.eraserSize,censorConfigs: censorConfigs ?? this.censorConfigs,
         minScale: minScale ?? this.minScale,
         maxScale: maxScale ?? this.maxScale,
         safeArea: safeArea ?? this.safeArea,

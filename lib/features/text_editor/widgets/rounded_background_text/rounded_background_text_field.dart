@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
@@ -27,8 +27,6 @@ class RoundedBackgroundTextField extends StatefulWidget {
     this.hint,
     this.hintStyle,
     this.autofocus = false,
-    this.showSelectionHandles = false,
-    this.onSelectionChanged,
     this.onChanged,
     this.onEditingComplete,
     this.onSubmitted,
@@ -62,9 +60,6 @@ class RoundedBackgroundTextField extends StatefulWidget {
   /// {@macro flutter.widgets.editableText.autofocus}
   final bool autofocus;
 
-  /// Whether to show selection handles.
-  final bool showSelectionHandles;
-
   /// {@macro flutter.widgets.editableText.cursorWidth}
   final double cursorWidth;
 
@@ -87,9 +82,6 @@ class RoundedBackgroundTextField extends StatefulWidget {
   /// {@macro flutter.widgets.editableText.onSubmitted}
   final ValueChanged<String>? onSubmitted;
 
-  /// {@macro flutter.widgets.editableText.onSelectionChanged}
-  final SelectionChangedCallback? onSelectionChanged;
-
   @override
   State<RoundedBackgroundTextField> createState() =>
       _RoundedBackgroundTextFieldState();
@@ -99,8 +91,6 @@ class _RoundedBackgroundTextFieldState
     extends State<RoundedBackgroundTextField> {
   late final _textController = widget.controller;
   final _scrollCtrl = ScrollController();
-
-  final _padding = const EdgeInsets.all(6.0);
 
   @override
   void initState() {
@@ -141,10 +131,7 @@ class _RoundedBackgroundTextFieldState
         TextAlign.center || _ => Alignment.topCenter,
       },
       children: [
-        if (_textController.text.isNotEmpty)
-          _buildBackgroundText()
-        else if (widget.hint != null)
-          _buildHint(fontSize: fontSize),
+        if (_textController.text.isNotEmpty) _buildBackgroundText(),
         _buildEditableText(fontSize: fontSize),
       ],
     );
@@ -177,132 +164,83 @@ class _RoundedBackgroundTextFieldState
   }
 
   Widget _buildEditableText({required double fontSize}) {
-    final theme = Theme.of(context);
-    final selectionTheme = TextSelectionTheme.of(context);
-    TextSelectionControls? textSelectionControls;
-    final bool paintCursorAboveText;
-    final bool cursorOpacityAnimates;
-    Offset? cursorOffset;
-    final Color selectionColor;
-    Color? autocorrectionTextRectColor;
-    Radius? cursorRadius = widget.cursorRadius;
-
-    switch (theme.platform) {
-      case TargetPlatform.iOS:
-        final cupertinoTheme = CupertinoTheme.of(context);
-        textSelectionControls ??= cupertinoTextSelectionControls;
-        paintCursorAboveText = true;
-        cursorOpacityAnimates = true;
-        selectionColor = selectionTheme.selectionColor ??
-            cupertinoTheme.primaryColor.withValues(alpha: 0.40);
-        cursorRadius ??= const Radius.circular(2.0);
-        cursorOffset = Offset(
-            iOSHorizontalOffset / MediaQuery.devicePixelRatioOf(context), 0);
-        autocorrectionTextRectColor = selectionColor;
-        break;
-
-      case TargetPlatform.macOS:
-        final cupertinoTheme = CupertinoTheme.of(context);
-        textSelectionControls ??= cupertinoDesktopTextSelectionControls;
-        paintCursorAboveText = true;
-        cursorOpacityAnimates = true;
-        selectionColor = selectionTheme.selectionColor ??
-            cupertinoTheme.primaryColor.withValues(alpha: 0.40);
-        cursorRadius ??= const Radius.circular(2.0);
-        cursorOffset = Offset(
-            iOSHorizontalOffset / MediaQuery.devicePixelRatioOf(context), 0);
-        break;
-
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-        textSelectionControls ??= materialTextSelectionControls;
-        paintCursorAboveText = false;
-        cursorOpacityAnimates = false;
-        selectionColor = selectionTheme.selectionColor ??
-            theme.colorScheme.primary.withValues(alpha: 0.40);
-        break;
-
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
-        textSelectionControls ??= desktopTextSelectionControls;
-        paintCursorAboveText = false;
-        cursorOpacityAnimates = false;
-        selectionColor = selectionTheme.selectionColor ??
-            theme.colorScheme.primary.withValues(alpha: 0.40);
-        break;
-    }
-
-    return Padding(
-      padding: EdgeInsets.zero,
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: _textController.text.isEmpty
-            ? (_) {
-                if (View.of(context).viewInsets.bottom <= 0) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  widget.focusNode.requestFocus();
-                }
+    return Material(
+      type: MaterialType.transparency,
+      child: TextField(
+        onTap: _textController.text.isEmpty &&
+                View.of(context).viewInsets.bottom <= 0
+            ? () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                widget.focusNode.requestFocus();
               }
             : null,
-        child: EditableText(
-          autofocus: widget.autofocus,
-          controller: _textController,
-          focusNode: widget.focusNode,
-          scrollPhysics: const NeverScrollableScrollPhysics(),
-          scrollController: _scrollCtrl,
-          scrollPadding: EdgeInsets.zero,
-          style: widget.style.copyWith(
-            fontSize: fontSize,
-            leadingDistribution: TextLeadingDistribution.proportional,
-          ),
-          textAlign: widget.textAlign,
-          maxLines: null,
-          keyboardType: TextInputType.multiline,
-          backgroundCursorColor: CupertinoColors.inactiveGray,
-          cursorColor: widget.configs.style.inputCursorColor,
-          cursorWidth: widget.cursorWidth,
-          cursorHeight: widget.cursorHeight,
-          cursorRadius: widget.cursorRadius,
-          paintCursorAboveText: paintCursorAboveText,
-          cursorOpacityAnimates: cursorOpacityAnimates,
-          cursorOffset: cursorOffset,
-          autocorrectionTextRectColor: autocorrectionTextRectColor,
-          textCapitalization: TextCapitalization.sentences,
-          enableInteractiveSelection: true,
-          selectionColor: selectionColor,
-          selectionControls: textSelectionControls,
-          showSelectionHandles: widget.showSelectionHandles,
-          showCursor: true,
-          autocorrect: widget.configs.enableAutocorrect,
-          smartDashesType: SmartDashesType.enabled,
-          smartQuotesType: SmartQuotesType.enabled,
-          enableSuggestions: widget.configs.enableSuggestions,
-          clipBehavior: Clip.hardEdge,
-          textInputAction: TextInputAction.newline,
-          onSelectionChanged: widget.onSelectionChanged,
-          magnifierConfiguration: const TextMagnifierConfiguration(),
-          onChanged: widget.onChanged,
-          onEditingComplete: widget.onEditingComplete,
-          onSubmitted: widget.onSubmitted,
+        autofocus: widget.autofocus,
+        controller: _textController,
+        focusNode: widget.focusNode,
+        scrollPhysics: const NeverScrollableScrollPhysics(),
+        scrollController: _scrollCtrl,
+        scrollPadding: EdgeInsets.zero,
+        style: widget.style.copyWith(
+          fontSize: fontSize,
+          leadingDistribution: TextLeadingDistribution.proportional,
+          height: 0.0,
         ),
+        decoration: InputDecoration.collapsed(
+          hintText: _textController.text.isEmpty ? widget.hint : '',
+          hintStyle: (widget.hintStyle ??
+                  TextStyle(color: Theme.of(context).hintColor))
+              .copyWith(fontSize: fontSize),
+          maintainHintSize: false,
+        ),
+        textAlign: widget.textAlign,
+        maxLines: null,
+        keyboardType: TextInputType.multiline,
+        textCapitalization: TextCapitalization.sentences,
+        textInputAction: TextInputAction.newline,
+        cursorColor: widget.configs.style.inputCursorColor,
+        cursorWidth: widget.cursorWidth,
+        cursorHeight: widget.cursorHeight,
+        cursorRadius: widget.cursorRadius,
+        enableInteractiveSelection: true,
+        showCursor: true,
+        autocorrect: widget.configs.enableAutocorrect,
+        smartDashesType: SmartDashesType.enabled,
+        smartQuotesType: SmartQuotesType.enabled,
+        enableSuggestions: widget.configs.enableSuggestions,
+        clipBehavior: Clip.hardEdge,
+        onChanged: widget.onChanged,
+        onEditingComplete: widget.onEditingComplete,
+        onSubmitted: widget.onSubmitted,
       ),
     );
   }
 
-  Widget _buildHint({required double fontSize}) {
-    final style =
-        (widget.hintStyle ?? TextStyle(color: Theme.of(context).hintColor))
-            .copyWith(fontSize: fontSize);
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
 
-    return Positioned(
-      child: Padding(
-        padding: _padding,
-        child: Text(
-          widget.hint!,
-          style: style,
-          textAlign: widget.textAlign,
-        ),
-      ),
-    );
+    properties
+      ..add(DiagnosticsProperty<TextEditorConfigs>('configs', widget.configs))
+      ..add(DiagnosticsProperty<TextStyle>('style', widget.style))
+      ..add(EnumProperty<TextAlign>('textAlign', widget.textAlign))
+      ..add(ColorProperty('backgroundColor', widget.backgroundColor))
+      ..add(DoubleProperty('maxTextWidth', widget.maxTextWidth))
+      ..add(DoubleProperty('cursorWidth', widget.cursorWidth))
+      ..add(DoubleProperty('cursorHeight', widget.cursorHeight,
+          defaultValue: null))
+      ..add(DiagnosticsProperty<Radius>('cursorRadius', widget.cursorRadius,
+          defaultValue: null))
+      ..add(StringProperty('hint', widget.hint))
+      ..add(DiagnosticsProperty<TextStyle>('hintStyle', widget.hintStyle,
+          defaultValue: null))
+      ..add(FlagProperty('autofocus',
+          value: widget.autofocus, ifTrue: 'autofocus enabled'))
+      ..add(FlagProperty('hasOnChanged',
+          value: widget.onChanged != null, ifTrue: 'onChanged set'))
+      ..add(FlagProperty('hasOnEditingComplete',
+          value: widget.onEditingComplete != null,
+          ifTrue: 'onEditingComplete set'))
+      ..add(FlagProperty('hasOnSubmitted',
+          value: widget.onSubmitted != null, ifTrue: 'onSubmitted set'));
   }
 }

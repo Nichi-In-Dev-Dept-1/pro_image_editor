@@ -10,7 +10,7 @@ import 'color.dart';
 import 'format.dart';
 
 /// A 32-bit integer color.
-class ColorInt32 extends Iterable<num> implements Color {
+class ColorInt32 extends Color {
   ColorInt32(int numChannels) : data = Int32List(numChannels);
 
   ColorInt32.from(ColorInt32 other) : data = Int32List.fromList(other.data);
