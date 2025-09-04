@@ -1047,16 +1047,24 @@ class ProImageEditorState extends State<ProImageEditor>
         item.broken = true;
       }
       stateManager.activeBackgroundImage = image;
+
+      await decodeImage();
+      _rebuildController.add(null);
     } else {
       addHistory();
-      stateManager.updateBackgroundImages(
-        oldImage: editorImage ?? widget.editorImage!,
-        newImage: image,
-      );
-    }
 
-    await decodeImage();
-    _rebuildController.add(null);
+      /// Ensure the screenshot is already added to the task list.
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          stateManager.updateBackgroundImages(
+            oldImage: editorImage ?? widget.editorImage!,
+            newImage: image,
+          );
+          await decodeImage();
+          _rebuildController.add(null);
+        });
+      });
+    }
   }
 
   @override

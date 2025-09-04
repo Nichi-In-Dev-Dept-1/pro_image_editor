@@ -72,6 +72,9 @@ class StateManager {
     _backgroundImages[historyPointer - 1] ??= oldImage.copyWith();
     _backgroundImages[historyPointer] = newImage.copyWith();
     activeBackgroundImage = newImage.copyWith();
+    for (var item in screenshots) {
+      item.broken = true;
+    }
   }
 
   /// A setter for updating the state history list.
