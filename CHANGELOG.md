@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.5.7
+- **DOCS**(readme): Remove outdated information about HTML renderer support in Flutter.
+
 ## 11.5.6
 - **FIX**(image-generation): Resolve issue where updating the background image could throw an error when exporting the image. Resolves issue [#652](https://github.com/hm21/pro_image_editor/issues/652).
 
