@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.5.8
+- **FIX**(eraser): Resolve the issue of delayed erasing. Resolves issue [#662](https://github.com/hm21/pro_image_editor/issues/662).
+
 ## 11.5.7
 - **DOCS**(readme): Remove outdated information about HTML renderer support in Flutter.
 
