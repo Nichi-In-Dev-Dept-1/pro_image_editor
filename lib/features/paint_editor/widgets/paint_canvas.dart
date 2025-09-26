@@ -11,6 +11,7 @@ import '/shared/widgets/censor/blur_area_item.dart';
 import '/shared/widgets/censor/pixelate_area_item.dart';
 import '../controllers/paint_controller.dart';
 import '../enums/paint_editor_enum.dart';
+import '../models/eraser_model.dart';
 import '../models/painted_model.dart';
 import '../services/paint_item_hit_test_manager.dart';
 import 'draw_paint_item.dart';
@@ -37,6 +38,8 @@ class PaintCanvas extends StatefulWidget {
     required this.paintEditorConfigs,
     required this.layers,
     required this.layerStackScaleFactor,
+    required this.eraserMode,
+    required this.eraserRadius,
   });
 
   /// Callback function when the active paint is done.
@@ -90,6 +93,18 @@ class PaintCanvas extends StatefulWidget {
   /// A list of layers that make up the paint canvas.
   final List<Layer> layers;
 
+  /// The current eraser mode used in the paint canvas.
+  ///
+  /// Determines how the eraser tool behaves when removing paint strokes,
+  /// such as whether it erases pixel by pixel or removes entire stroke paths.
+  final EraserMode eraserMode;
+
+  /// The radius of the eraser tool in logical pixels.
+  ///
+  /// This value determines the size of the eraser when removing painted content
+  /// from the canvas. A larger radius creates a bigger eraser area.
+  final double eraserRadius;
+
   @override
   PaintCanvasState createState() => PaintCanvasState();
 }
@@ -107,8 +122,7 @@ class PaintCanvasState extends State<PaintCanvas> {
 
   bool _hasPartialErasedAreas = false;
 
-  bool get _isPartialEraser =>
-      widget.paintEditorConfigs.eraserMode == EraserMode.partial;
+  bool get _isPartialEraser => widget.eraserMode == EraserMode.partial;
 
   @override
   void initState() {
@@ -264,7 +278,10 @@ class PaintCanvasState extends State<PaintCanvas> {
             _rotatePoint(position, center, -rotation);
 
         layer.item.erasedOffsets
-          ..add(rotatedPosition / layerScale)
+          ..add(ErasedOffset(
+            offset: rotatedPosition / layerScale,
+            radius: widget.eraserRadius,
+          ))
           ..toSet()
           ..toList();
         layer.item = layer.item.copy();

@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-import '../../../../core/models/editor_configs/paint_editor/paint_editor_configs.dart';
 import '../../enums/paint_editor_enum.dart';
 import '../painted_model.dart';
 import 'path_builder_arrow.dart';
@@ -72,18 +71,11 @@ abstract class PathBuilderBase {
   Path build();
 
   /// Draws the built path to the given canvas using the current painter.
-  void draw({
-    required Canvas canvas,
-    required Size size,
-    required PaintEditorConfigs configs,
-  }) {
+  void draw({required Canvas canvas, required Size size}) {
     if (offsets.length <= 1) return;
     build();
 
-    final eraserMode = configs.eraserMode;
-    final eraserSize = configs.eraserSize;
-
-    if (eraserMode == EraserMode.object || item.erasedOffsets.isEmpty) {
+    if (item.erasedOffsets.isEmpty) {
       canvas.drawPath(path, painter);
       return;
     }
@@ -108,12 +100,12 @@ abstract class PathBuilderBase {
       ..isAntiAlias = true;
 
     final erasePath = Path();
-    for (final o in item.erasedOffsets) {
+    for (final item in item.erasedOffsets) {
       erasePath.addOval(
         Rect.fromCircle(
-          center: o * scale,
+          center: item.offset * scale,
           // eraser size
-          radius: eraserSize * scale,
+          radius: item.radius * scale,
         ),
       );
     }

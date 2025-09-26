@@ -47,11 +47,7 @@ class DrawPaintItem extends CustomPainter {
     PathBuilderBase.fromMode(
       item: item,
       scale: scale,
-    ).draw(
-      canvas: canvas,
-      size: size,
-      configs: paintEditorConfigs,
-    );
+    ).draw(canvas: canvas, size: size);
   }
 
   @override

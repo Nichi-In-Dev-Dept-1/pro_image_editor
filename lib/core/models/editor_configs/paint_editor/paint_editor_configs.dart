@@ -172,9 +172,9 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   /// Indicates the eraser mode.
   final EraserMode eraserMode;
 
-  /// The size of the eraser tool in pixels.
+  /// The initial size of the eraser tool in pixels.
   ///
-  /// This value determines the diameter/width of the eraser when removing
+  /// This value determines the radius of the eraser when removing
   /// painted content from the canvas. A larger value creates a bigger eraser
   /// that removes more content at once, while a smaller value provides more
   /// precise erasing capabilities.

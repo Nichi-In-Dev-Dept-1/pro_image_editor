@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.6.0
+- **FEAT**(eraser): Extend the eraser in the paint editor so that its size and mode can be changed dynamically.
+
 ## 11.5.8
 - **FIX**(eraser): Resolve the issue of delayed erasing. Resolves issue [#662](https://github.com/hm21/pro_image_editor/issues/662).
 

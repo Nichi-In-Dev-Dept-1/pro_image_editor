@@ -9,40 +9,10 @@ import '/shared/utils/parser/bool_parser.dart';
 import '/shared/utils/parser/double_parser.dart';
 import '/shared/utils/unique_id_generator.dart';
 import '../enums/paint_editor_enum.dart';
+import 'eraser_model.dart';
 
 /// Represents a unit of shape or drawing information used in paint.
 class PaintedModel {
-  /// Factory constructor for creating a PaintedModel instance from a map.
-  factory PaintedModel.fromMap(
-    Map<String, dynamic> map, {
-    Function(String key)? keyConverter,
-  }) {
-    keyConverter ??= (String key) => key;
-
-    /// List to hold offset points for the paint.
-    final offsets = List.from(map[keyConverter('offsets')] ?? [])
-        .map((el) => Offset(safeParseDouble(el['x']), safeParseDouble(el['y'])))
-        .toList();
-
-    final erasedOffsets = List.from(map[keyConverter('erasedOffsets')] ?? [])
-        .map((el) => Offset(safeParseDouble(el['x']), safeParseDouble(el['y'])))
-        .toList();
-
-    /// Constructs and returns a PaintedModel instance with properties
-    /// derived from the map.
-    return PaintedModel(
-      mode: PaintMode.values
-          .firstWhere((element) => element.name == map[keyConverter!('mode')]),
-      offsets: offsets,
-      erasedOffsets: erasedOffsets,
-      color: Color(map[keyConverter('color')]),
-      strokeWidth:
-          safeParseDouble(map[keyConverter('strokeWidth')], fallback: 1),
-      fill: safeParseBool(map[keyConverter('fill')]),
-      opacity: safeParseDouble(map[keyConverter('opacity')], fallback: 1),
-    );
-  }
-
   /// Creates a new PaintedModel instance.
   ///
   /// - [mode]: The mode indicating the type of shape or drawing.
@@ -65,6 +35,38 @@ class PaintedModel {
     this.hit = false,
   }) : key = key ?? GlobalKey() {
     id = generateUniqueId();
+  }
+
+  /// Factory constructor for creating a PaintedModel instance from a map.
+  factory PaintedModel.fromMap(
+    Map<String, dynamic> map, {
+    Function(String key)? keyConverter,
+  }) {
+    keyConverter ??= (String key) => key;
+
+    /// List to hold offset points for the paint.
+    final offsets = List.from(map[keyConverter('offsets')] ?? [])
+        .map((el) => Offset(safeParseDouble(el['x']), safeParseDouble(el['y'])))
+        .toList();
+
+    final erasedOffsets = List<Map<String, dynamic>>.from(
+            map[keyConverter('erasedOffsets')] ?? [])
+        .map(ErasedOffset.fromMap)
+        .toList();
+
+    /// Constructs and returns a PaintedModel instance with properties
+    /// derived from the map.
+    return PaintedModel(
+      mode: PaintMode.values
+          .firstWhere((element) => element.name == map[keyConverter!('mode')]),
+      offsets: offsets,
+      erasedOffsets: erasedOffsets,
+      color: Color(map[keyConverter('color')]),
+      strokeWidth:
+          safeParseDouble(map[keyConverter('strokeWidth')], fallback: 1),
+      fill: safeParseBool(map[keyConverter('fill')]),
+      opacity: safeParseDouble(map[keyConverter('opacity')], fallback: 1),
+    );
   }
 
   /// A [GlobalKey] used to uniquely identify and access the widget associated
@@ -98,7 +100,7 @@ class PaintedModel {
   /// This list contains the coordinates where eraser tool operations have been
   /// applied, allowing the system to track which areas of the painted content
   /// have been removed.
-  List<Offset> erasedOffsets;
+  List<ErasedOffset> erasedOffsets;
 
   /// A boolean indicating whether the drawn shape should be filled.
   bool fill;
@@ -172,12 +174,7 @@ class PaintedModel {
               'y': o.dy.roundSmart(maxDecimalPlaces),
             })
         .toList();
-    final erasedOffsetsMaps = erasedOffsets
-        .map((o) => {
-              'x': o.dx.roundSmart(maxDecimalPlaces),
-              'y': o.dy.roundSmart(maxDecimalPlaces),
-            })
-        .toList();
+    final erasedOffsetsMaps = erasedOffsets.map((el) => el.toMap()).toList();
 
     /// Returns a map representation of the PaintedModel instance.
     return {
@@ -208,7 +205,7 @@ class PaintedModel {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    bool areOffsetsEqual(List<Offset?> list1, List<Offset?> list2) {
+    bool isListEqual(List<dynamic> list1, List<dynamic> list2) {
       if (list1.length != list2.length) return false;
 
       for (int i = 0; i < list1.length; i++) {
@@ -227,8 +224,8 @@ class PaintedModel {
         other.opacity == opacity &&
         other.fill == fill &&
         other.id == id &&
-        areOffsetsEqual(other.offsets, offsets) &&
-        areOffsetsEqual(other.erasedOffsets, erasedOffsets);
+        isListEqual(other.offsets, offsets) &&
+        isListEqual(other.erasedOffsets, erasedOffsets);
   }
 
   /// Creates a copy of this `PaintedModel` with the given fields replaced by
@@ -240,7 +237,7 @@ class PaintedModel {
     double? strokeWidth,
     double? opacity,
     List<Offset?>? offsets,
-    List<Offset>? erasedOffsets,
+    List<ErasedOffset>? erasedOffsets,
     bool? fill,
     bool? hit,
   }) {

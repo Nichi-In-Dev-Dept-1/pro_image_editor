@@ -244,6 +244,12 @@ class PaintEditorState extends State<PaintEditor>
   /// Get the active selected color.
   Color get activeColor => paintCtrl.color;
 
+  /// Indicates the eraser mode.
+  late EraserMode eraserMode = configs.paintEditor.eraserMode;
+
+  /// The size of the eraser tool in pixels.
+  late double eraserRadius = configs.paintEditor.eraserSize;
+
   /// A list of [PaintModeBottomBarItem] representing the available drawing
   /// modes in the paint editor.
   /// The list is dynamically generated based on the configuration settings in
@@ -1011,6 +1017,8 @@ class PaintEditorState extends State<PaintEditor>
       editorBodySize: editorBodySize,
       layerStackScaleFactor: _layerStackTransformHelper.scale,
       layers: activeHistory.layers,
+      eraserMode: eraserMode,
+      eraserRadius: eraserRadius,
       onTap: (details) =>
           callbacks.paintEditorCallbacks?.onTap?.call(this, details),
       onRemoveLayer: (removeIdList) {
