@@ -5,6 +5,7 @@ import '../../custom_widgets/paint_editor_widgets.dart';
 import '../../icons/paint_editor_icons.dart';
 import '../../styles/paint_editor_style.dart';
 import '../utils/base_editor_layer_configs.dart';
+import '../utils/base_sub_editor_configs.dart';
 import '../utils/editor_safe_area.dart';
 import '../utils/zoom_configs.dart';
 import 'censor_configs.dart';
@@ -37,7 +38,8 @@ export 'censor_configs.dart';
 ///   initialPaintMode: PaintMode.freeStyle,
 /// );
 /// ```
-class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
+class PaintEditorConfigs extends ZoomConfigs
+    implements BaseEditorLayerConfigs, BaseSubEditorConfigs {
   /// Creates an instance of PaintEditorConfigs with optional settings.
   ///
   /// By default, the editor is enabled, and most drawing tools are enabled.
@@ -54,6 +56,7 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
     super.boundaryMargin,
     super.invertTrackpadDirection,
     this.layerFractionalOffset = const Offset(-0.5, -0.5),
+    this.enableGesturePop = true,
     this.enableEdit = true,
     this.enableModeFreeStyle = true,
     this.enableModeArrow = true,
@@ -107,6 +110,10 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   /// {@macro layerFractionalOffset}
   @override
   final Offset layerFractionalOffset;
+
+  /// {@macro enableGesturePop}
+  @override
+  final bool enableGesturePop;
 
   /// Indicates whether the paint editor is enabled.
   final bool enabled;
@@ -235,6 +242,7 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   /// others unchanged.
   PaintEditorConfigs copyWith({
     Offset? layerFractionalOffset,
+    bool? enableGesturePop,
     bool? enabled,
     bool? enableEdit,
     bool? enableModeFreeStyle,
@@ -283,6 +291,7 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
     return PaintEditorConfigs(
       layerFractionalOffset:
           layerFractionalOffset ?? this.layerFractionalOffset,
+      enableGesturePop: enableGesturePop ?? this.enableGesturePop,
       enabled: enabled ?? this.enabled,
       enableEdit: enableEdit ?? this.enableEdit,
       enableModeFreeStyle: enableModeFreeStyle ?? this.enableModeFreeStyle,

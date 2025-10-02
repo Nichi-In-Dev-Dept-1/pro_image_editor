@@ -7,6 +7,7 @@ import '../icons/text_editor_icons.dart';
 import '../layers/enums/layer_background_mode.dart';
 import '../styles/text_editor_style.dart';
 import 'utils/base_editor_layer_configs.dart';
+import 'utils/base_sub_editor_configs.dart';
 import 'utils/editor_safe_area.dart';
 
 export '../custom_widgets/text_editor_widgets.dart';
@@ -28,13 +29,15 @@ export '../styles/text_editor_style.dart';
 ///   initFontSize: 24.0,
 /// );
 /// ```
-class TextEditorConfigs implements BaseEditorLayerConfigs {
+class TextEditorConfigs
+    implements BaseEditorLayerConfigs, BaseSubEditorConfigs {
   /// Creates an instance of TextEditorConfigs with optional settings.
   ///
   /// By default, the text editor is enabled, and most text formatting options
   /// are enabled. The initial font size is set to 24.0.
   const TextEditorConfigs({
     this.layerFractionalOffset = const Offset(-0.5, -0.5),
+    this.enableGesturePop = true,
     this.enableSuggestions = true,
     this.enabled = true,
     this.enableEdit = true,
@@ -69,6 +72,10 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
   /// {@macro layerFractionalOffset}
   @override
   final Offset layerFractionalOffset;
+
+  /// {@macro enableGesturePop}
+  @override
+  final bool enableGesturePop;
 
   /// Indicates whether the text editor is enabled.
   final bool enabled;
@@ -181,6 +188,7 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
   /// others unchanged.
   TextEditorConfigs copyWith({
     Offset? layerFractionalOffset,
+    bool? enableGesturePop,
     bool? enabled,
     bool? enableEdit,
     bool? showSelectFontStyleBottomBar,
@@ -209,6 +217,7 @@ class TextEditorConfigs implements BaseEditorLayerConfigs {
     return TextEditorConfigs(
       layerFractionalOffset:
           layerFractionalOffset ?? this.layerFractionalOffset,
+      enableGesturePop: enableGesturePop ?? this.enableGesturePop,
       safeArea: safeArea ?? this.safeArea,
       enabled: enabled ?? this.enabled,
       enableEdit: enableEdit ?? this.enableEdit,

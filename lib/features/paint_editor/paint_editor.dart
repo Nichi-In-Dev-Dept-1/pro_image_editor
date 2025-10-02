@@ -769,6 +769,7 @@ class PaintEditorState extends State<PaintEditor>
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: paintEditorConfigs.style.uiOverlayStyle,
       child: ExtendedPopScope(
+        canPop: paintEditorConfigs.enableGesturePop,
         child: Theme(
           data: theme.copyWith(
               tooltipTheme: theme.tooltipTheme.copyWith(preferBelow: true)),

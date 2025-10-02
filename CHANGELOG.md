@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.7.0
+- **FEAT**(sub-editors): Add `enableGesturePop` config to all sub-editors to control whether user back navigation (hardware back button, predictive back swipe) is allowed.
+
 ## 11.6.0
 - **FEAT**(eraser): Extend the eraser in the paint editor so that its size and mode can be changed dynamically.
 

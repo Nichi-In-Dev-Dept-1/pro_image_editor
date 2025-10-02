@@ -4,6 +4,7 @@ import '/core/models/layers/layer.dart';
 import '../icons/sticker_editor_icons.dart';
 import '../styles/sticker_editor_style.dart';
 import 'utils/base_editor_layer_configs.dart';
+import 'utils/base_sub_editor_configs.dart';
 export '../icons/sticker_editor_icons.dart';
 export '../styles/sticker_editor_style.dart';
 
@@ -23,13 +24,15 @@ export '../styles/sticker_editor_style.dart';
 ///   },
 /// );
 /// ```
-class StickerEditorConfigs implements BaseEditorLayerConfigs {
+class StickerEditorConfigs
+    implements BaseEditorLayerConfigs, BaseSubEditorConfigs {
   /// Creates an instance of StickerEditorConfigs with optional settings.
   ///
   /// By default, the editor is disabled (if not specified), and other
   /// properties are set to reasonable defaults.
   const StickerEditorConfigs({
     this.layerFractionalOffset = const Offset(-0.5, -0.5),
+    this.enableGesturePop = true,
     this.builder,
     this.initWidth = 100,
     this.minScale = double.negativeInfinity,
@@ -44,6 +47,10 @@ class StickerEditorConfigs implements BaseEditorLayerConfigs {
   /// {@macro layerFractionalOffset}
   @override
   final Offset layerFractionalOffset;
+
+  /// {@macro enableGesturePop}
+  @override
+  final bool enableGesturePop;
 
   /// Indicates whether the sticker editor is enabled.
   ///
@@ -86,6 +93,7 @@ class StickerEditorConfigs implements BaseEditorLayerConfigs {
   /// others unchanged.
   StickerEditorConfigs copyWith({
     Offset? layerFractionalOffset,
+    bool? enableGesturePop,
     bool? enabled,
     double? initWidth,
     StickerBuilder? builder,
@@ -97,6 +105,7 @@ class StickerEditorConfigs implements BaseEditorLayerConfigs {
     return StickerEditorConfigs(
       layerFractionalOffset:
           layerFractionalOffset ?? this.layerFractionalOffset,
+      enableGesturePop: enableGesturePop ?? this.enableGesturePop,
       enabled: enabled ?? this.enabled,
       initWidth: initWidth ?? this.initWidth,
       builder: builder ?? this.builder,

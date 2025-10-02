@@ -6,6 +6,7 @@ import '/features/crop_rotate_editor/models/rotate_direction.dart';
 import '../custom_widgets/crop_rotate_editor_widgets.dart';
 import '../icons/crop_rotate_editor_icons.dart';
 import '../styles/crop_rotate_editor_style.dart';
+import 'utils/base_sub_editor_configs.dart';
 import 'utils/editor_safe_area.dart';
 export '/features/crop_rotate_editor/models/rotate_direction.dart';
 export '/features/crop_rotate_editor/models/transform_configs.dart';
@@ -29,7 +30,7 @@ export '../styles/crop_rotate_editor_style.dart';
 ///   initAspectRatio: CropAspectRatios.custom,
 /// );
 /// ```
-class CropRotateEditorConfigs {
+class CropRotateEditorConfigs implements BaseSubEditorConfigs {
   /// Creates an instance of CropRotateEditorConfigs with optional settings.
   ///
   /// By default, all options are enabled, and the initial aspect ratio is set
@@ -37,6 +38,7 @@ class CropRotateEditorConfigs {
   const CropRotateEditorConfigs({
     this.desktopCornerDragArea = 7,
     this.mobileCornerDragArea = kMinInteractiveDimension,
+    this.enableGesturePop = true,
     this.enabled = true,
     this.showRotateButton = true,
     this.showFlipButton = true,
@@ -90,6 +92,10 @@ class CropRotateEditorConfigs {
             'maxWidthFactor must be greater than 0 and less than 1'),
         assert(doubleTapScaleFactor > 1,
             'doubleTapScaleFactor must be greater than 1');
+
+  /// {@macro enableGesturePop}
+  @override
+  final bool enableGesturePop;
 
   /// Indicates whether the editor is enabled.
   final bool enabled;
@@ -231,6 +237,7 @@ class CropRotateEditorConfigs {
   /// [CropRotateEditorConfigs] with some properties updated while keeping the
   /// others unchanged.
   CropRotateEditorConfigs copyWith({
+    bool? enableGesturePop,
     bool? enabled,
     bool? showRotateButton,
     bool? showFlipButton,
@@ -268,6 +275,7 @@ class CropRotateEditorConfigs {
     CropRotateEditorWidgets? widgets,
   }) {
     return CropRotateEditorConfigs(
+      enableGesturePop: enableGesturePop ?? this.enableGesturePop,
       enabled: enabled ?? this.enabled,
       showRotateButton: showRotateButton ?? this.showRotateButton,
       showFlipButton: showFlipButton ?? this.showFlipButton,

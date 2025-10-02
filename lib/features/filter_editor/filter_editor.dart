@@ -263,6 +263,7 @@ class FilterEditorState extends State<FilterEditor>
       data: theme.copyWith(
           tooltipTheme: theme.tooltipTheme.copyWith(preferBelow: true)),
       child: ExtendedPopScope(
+        canPop: filterEditorConfigs.enableGesturePop,
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: filterEditorConfigs.style.uiOverlayStyle,
           child: SafeArea(

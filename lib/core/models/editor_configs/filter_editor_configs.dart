@@ -4,6 +4,7 @@ import '/features/filter_editor/utils/filter_generator/filter_model.dart';
 import '../custom_widgets/filter_editor_widgets.dart';
 import '../icons/filter_editor_icons.dart';
 import '../styles/filter_editor_style.dart';
+import 'utils/base_sub_editor_configs.dart';
 import 'utils/editor_safe_area.dart';
 
 export '../custom_widgets/filter_editor_widgets.dart';
@@ -25,12 +26,13 @@ export '../styles/filter_editor_style.dart';
 ///   ],
 /// );
 /// ```
-class FilterEditorConfigs {
+class FilterEditorConfigs implements BaseSubEditorConfigs {
   /// Creates an instance of FilterEditorConfigs with optional settings.
   ///
   /// By default, the editor is enabled, and the filter list contains all
   /// filters.
   const FilterEditorConfigs({
+    this.enableGesturePop = true,
     this.enabled = true,
     this.showLayers = true,
     this.filterList,
@@ -41,6 +43,10 @@ class FilterEditorConfigs {
     this.icons = const FilterEditorIcons(),
     this.widgets = const FilterEditorWidgets(),
   });
+
+  /// {@macro enableGesturePop}
+  @override
+  final bool enableGesturePop;
 
   /// Indicates whether the filter editor is enabled.
   final bool enabled;
@@ -84,6 +90,7 @@ class FilterEditorConfigs {
   /// [FilterEditorConfigs] with some properties updated while keeping the
   /// others unchanged.
   FilterEditorConfigs copyWith({
+    bool? enableGesturePop,
     bool? enabled,
     bool? showLayers,
     List<FilterModel>? filterList,
@@ -95,6 +102,7 @@ class FilterEditorConfigs {
     FilterEditorWidgets? widgets,
   }) {
     return FilterEditorConfigs(
+      enableGesturePop: enableGesturePop ?? this.enableGesturePop,
       safeArea: safeArea ?? this.safeArea,
       enabled: enabled ?? this.enabled,
       showLayers: showLayers ?? this.showLayers,

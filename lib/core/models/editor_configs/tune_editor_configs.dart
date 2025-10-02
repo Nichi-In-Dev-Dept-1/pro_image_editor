@@ -2,6 +2,7 @@ import '/features/tune_editor/models/tune_adjustment_item.dart';
 import '../custom_widgets/tune_editor_widgets.dart';
 import '../icons/tune_editor_icons.dart';
 import '../styles/tune_editor_style.dart';
+import 'utils/base_sub_editor_configs.dart';
 import 'utils/editor_safe_area.dart';
 
 export '../custom_widgets/tune_editor_widgets.dart';
@@ -13,7 +14,7 @@ export '../styles/tune_editor_style.dart';
 /// This class defines various configurations such as enabling the editor,
 /// showing layers, providing tune adjustment options, and defining the
 /// editor's safe area.
-class TuneEditorConfigs {
+class TuneEditorConfigs implements BaseSubEditorConfigs {
   /// Creates a [TuneEditorConfigs] instance with the specified parameters.
   ///
   /// - [enabled] determines whether the tune editor is enabled or not.
@@ -22,6 +23,7 @@ class TuneEditorConfigs {
   ///   options that the user can configure.
   /// - [safeArea] defines the safe area configuration for the editor interface.
   const TuneEditorConfigs({
+    this.enableGesturePop = true,
     this.enabled = true,
     this.showLayers = true,
     this.tuneAdjustmentOptions,
@@ -30,6 +32,10 @@ class TuneEditorConfigs {
     this.icons = const TuneEditorIcons(),
     this.widgets = const TuneEditorWidgets(),
   });
+
+  /// {@macro enableGesturePop}
+  @override
+  final bool enableGesturePop;
 
   /// Indicates whether the tune editor is enabled.
   ///
@@ -73,6 +79,7 @@ class TuneEditorConfigs {
   /// - [safeArea] updates the safe area configuration.
   /// - [tuneAdjustmentOptions] updates the available tune adjustment options.
   TuneEditorConfigs copyWith({
+    bool? enableGesturePop,
     bool? enabled,
     bool? showLayers,
     EditorSafeArea? safeArea,
@@ -82,6 +89,7 @@ class TuneEditorConfigs {
     TuneEditorWidgets? widgets,
   }) {
     return TuneEditorConfigs(
+      enableGesturePop: enableGesturePop ?? this.enableGesturePop,
       enabled: enabled ?? this.enabled,
       safeArea: safeArea ?? this.safeArea,
       showLayers: showLayers ?? this.showLayers,

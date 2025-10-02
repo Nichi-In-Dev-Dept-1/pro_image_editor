@@ -380,6 +380,7 @@ class TuneEditorState extends State<TuneEditor>
       data: theme.copyWith(
           tooltipTheme: theme.tooltipTheme.copyWith(preferBelow: true)),
       child: ExtendedPopScope(
+        canPop: tuneEditorConfigs.enableGesturePop,
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: tuneEditorConfigs.style.uiOverlayStyle,
           child: SafeArea(
