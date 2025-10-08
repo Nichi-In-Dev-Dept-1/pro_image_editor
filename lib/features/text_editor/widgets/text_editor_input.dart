@@ -116,6 +116,10 @@ class _TextEditorInputState extends State<TextEditorInput> {
 
       animation.addStatusListener(animationStatusListener);
     }
+
+    final shuttleChild =
+        InheritedTheme.captureAll(fromHeroContext, toHero.child);
+
     return isOpening
         ? SingleChildScrollView(
             clipBehavior: Clip.none,
@@ -123,11 +127,11 @@ class _TextEditorInputState extends State<TextEditorInput> {
             child: IntrinsicWidth(
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: widget.maxWidth),
-                child: toHero.child,
+                child: shuttleChild,
               ),
             ),
           )
-        : toHero.child;
+        : shuttleChild;
   }
 
   @override
