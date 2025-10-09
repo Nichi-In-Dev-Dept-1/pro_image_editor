@@ -27,10 +27,11 @@ class FilteredWidget extends StatelessWidget {
     this.filterKey,
     this.fit = BoxFit.contain,
     this.image,
+    this.blankSize,
     this.videoPlayer,
     this.enableCachedSize = false,
-  }) : assert(image != null || videoPlayer != null,
-            'Image and video player cannot be null');
+  }) : assert(image != null || videoPlayer != null || blankSize != null,
+            'Image or videoPlayer or blankSize cannot be null');
 
   /// A key that uniquely identifies the [ColorFilterGeneratorState] widget and
   /// allows access to its state. This can be used to manipulate the state of
@@ -62,6 +63,9 @@ class FilteredWidget extends StatelessWidget {
 
   /// How the image should be inscribed into the space allocated for it.
   final BoxFit fit;
+
+  /// The size of the blank canvas when no image is present.
+  final Size? blankSize;
 
   /// The blur factor
   final double blurFactor;
@@ -106,15 +110,17 @@ class FilteredWidget extends StatelessWidget {
 
   Widget _buildContent() {
     if (videoPlayer != null) return videoPlayer!;
-
-    return AutoImage(
-      image!,
-      enableCachedSize: enableCachedSize,
-      fit: fit,
-      width: width,
-      height: height,
-      configs: configs,
-    );
+    if (image != null) {
+      return AutoImage(
+        image!,
+        enableCachedSize: enableCachedSize,
+        fit: fit,
+        width: width,
+        height: height,
+        configs: configs,
+      );
+    }
+    return SizedBox.fromSize(size: blankSize);
   }
 
   @override

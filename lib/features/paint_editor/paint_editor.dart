@@ -67,8 +67,7 @@ class PaintEditor extends StatefulWidget
     this.paintOnly = false,
     this.editorImage,
     this.videoController,
-  }) : assert(editorImage != null || videoController != null,
-            'Either editorImage or videoController must be provided.');
+  });
 
   /// Constructs a `PaintEditor` widget with image data loaded from memory.
   factory PaintEditor.memory(
@@ -1027,6 +1026,7 @@ class PaintEditorState extends State<PaintEditor>
         configs: configs,
         image: editorImage,
         videoPlayer: videoController?.videoPlayer,
+        blankSize: initConfigs.mainImageSize,
         filters: appliedFilters,
         tuneAdjustments: appliedTuneAdjustments,
         blurFactor: appliedBlurFactor,

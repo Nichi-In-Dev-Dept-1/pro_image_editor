@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.10.0
+- **FEAT**: Add support for blank editors via `ProImageEditor.blank` constructor, allowing creation of editors without an initial image.
+
 ## 11.9.1
 - **FIX**(text-editor): Resolve the issue of the theme changing during the hero flight. Resolves issue [#677](https://github.com/hm21/pro_image_editor/issues/677).
 

@@ -366,6 +366,7 @@ class FilterEditorState extends State<FilterEditor>
                 configs: configs,
                 image: editorImage,
                 videoPlayer: videoController?.videoPlayer,
+                blankSize: initConfigs.mainImageSize,
                 filters: _getActiveFilters(),
                 tuneAdjustments: appliedTuneAdjustments,
                 blurFactor: appliedBlurFactor,

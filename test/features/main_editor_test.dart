@@ -1,6 +1,3 @@
-// Dart imports:
-import 'dart:typed_data';
-
 // Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -75,6 +72,17 @@ void main() {
       await tester.pumpWidget(MaterialApp(
         home: ProImageEditor.file(
           '',
+          configs: configs,
+          callbacks: callbacks,
+        ),
+      ));
+
+      expect(find.byType(ProImageEditor), findsOneWidget);
+    });
+    testWidgets('creates MainEditor using blank', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: ProImageEditor.blank(
+          const Size(1080, 1920),
           configs: configs,
           callbacks: callbacks,
         ),

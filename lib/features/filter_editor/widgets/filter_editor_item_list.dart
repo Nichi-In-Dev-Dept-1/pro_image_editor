@@ -288,6 +288,7 @@ class _FilterEditorItemListState extends State<FilterEditorItemList> {
                   enableCachedSize: true,
                   image: widget.editorImage,
                   videoPlayer: widget.image,
+                  blankSize: widget.mainImageSize,
                   fit: transformConfigs.isNotEmpty
                       ? BoxFit.contain
                       : BoxFit.cover,

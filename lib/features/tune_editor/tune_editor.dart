@@ -474,6 +474,7 @@ class TuneEditorState extends State<TuneEditor>
                 configs: configs,
                 image: editorImage,
                 videoPlayer: videoController?.videoPlayer,
+                blankSize: initConfigs.mainImageSize,
                 filters: appliedFilters,
                 tuneAdjustments: tuneAdjustmentMatrix,
                 blurFactor: appliedBlurFactor,

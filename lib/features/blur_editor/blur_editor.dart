@@ -345,6 +345,7 @@ class BlurEditorState extends State<BlurEditor>
                 configs: configs,
                 image: editorImage,
                 videoPlayer: videoController?.videoPlayer,
+                blankSize: initConfigs.mainImageSize,
                 filters: appliedFilters,
                 tuneAdjustments: appliedTuneAdjustments,
                 blurFactor: blurFactor,
