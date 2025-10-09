@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.9.1
+- **FIX**(text-editor): Resolve the issue of the theme changing during the hero flight. Resolves issue [#677](https://github.com/hm21/pro_image_editor/issues/677).
+
 ## 11.9.0
 - **FEAT**(main-editor): Introduced `tools` in `MainEditorConfigs` to configure available sub-editors and their order, replacing old `enableModeX` flags with a cleaner list-based API.  
 - **FEAT**(paint-editor): Introduced `tools` in `PaintEditorConfigs` to define available paint modes and their order, deprecating individual `enableModeX` flags.  
