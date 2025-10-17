@@ -2094,6 +2094,7 @@ class ProImageEditorState extends State<ProImageEditor>
   /// Before returning the edited image, a loading dialog is displayed to
   /// indicate that the operation is in progress.
   void doneEditing() async {
+    mainEditorCallbacks?.handleDone();
     if (_isProcessingFinalImage) return;
     if (!stateManager.canUndo && activeLayers.isEmpty) {
       if (!imageGenerationConfigs.allowEmptyEditingCompletion) {
