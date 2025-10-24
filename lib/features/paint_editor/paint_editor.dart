@@ -403,6 +403,12 @@ class PaintEditorState extends State<PaintEditor>
             label: i18n.paintEditor.dashLine,
           );
 
+        case PaintMode.dashDotLine:
+          return PaintModeHelper(
+            icon: paintEditorConfigs.icons.dashDotLine,
+            label: i18n.paintEditor.dashDotLine,
+          );
+
         case PaintMode.polygon:
           if (!paintEditorConfigs.enableModePolygon) return null;
           return PaintModeHelper(
@@ -737,6 +743,7 @@ class PaintEditorState extends State<PaintEditor>
     bool onlyStrokeMode = rawLayer.mode == PaintMode.freeStyle ||
         rawLayer.mode == PaintMode.line ||
         rawLayer.mode == PaintMode.dashLine ||
+        rawLayer.mode == PaintMode.dashDotLine ||
         rawLayer.mode == PaintMode.arrow ||
         ((rawLayer.mode == PaintMode.polygon ||
                 rawLayer.mode == PaintMode.rect ||

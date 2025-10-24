@@ -170,6 +170,7 @@ class _ChewiePlayerExampleState extends State<ChewiePlayerExample>
                     PaintMode.rect,
                     PaintMode.circle,
                     PaintMode.dashLine,
+                    PaintMode.dashDotLine,
                     PaintMode.polygon,
                     // Blur and pixelate are not supported.
                     // PaintMode.pixelate,

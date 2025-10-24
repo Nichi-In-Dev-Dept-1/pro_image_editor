@@ -176,6 +176,7 @@ class _VideoMediaKitExampleState extends State<VideoMediaKitExample>
                     PaintMode.rect,
                     PaintMode.circle,
                     PaintMode.dashLine,
+                    PaintMode.dashDotLine,
                     PaintMode.polygon,
                     // Blur and pixelate are not supported.
                     // PaintMode.pixelate,

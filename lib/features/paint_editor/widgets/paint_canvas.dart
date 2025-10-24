@@ -292,6 +292,7 @@ class PaintCanvasState extends State<PaintCanvas> {
           position: position,
           scaleFactor: stackScale * layerScale,
           isRoundCensorArea: useRoundCensor,
+          paintEditorConfigs: widget.paintEditorConfigs,
         );
         if (hasHit) {
           removeIds.add(layer.id);

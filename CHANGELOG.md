@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.11.0
+- **FEAT**(dashDotLine): Added new paint-mode "dashDotLine".
+
 ## 11.10.1
 - **FIX**(callbacks): Resolve issue where the callback `onDone` in mainEditorCallbacks is not triggered. Resolves issue [#681](https://github.com/hm21/pro_image_editor/issues/681).
 

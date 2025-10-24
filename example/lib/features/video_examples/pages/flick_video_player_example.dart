@@ -173,6 +173,7 @@ class _FlickVideoPlayerExampleState extends State<FlickVideoPlayerExample>
                     PaintMode.rect,
                     PaintMode.circle,
                     PaintMode.dashLine,
+                    PaintMode.dashDotLine,
                     PaintMode.polygon,
                     // Blur and pixelate are not supported.
                     // PaintMode.pixelate,
