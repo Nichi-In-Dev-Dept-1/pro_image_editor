@@ -1,6 +1,6 @@
 # Changelog
 
-## X.X.X
+## 11.12.2
 - **FEAT**(main-editor): Make scaling actions done through desktop interactions (mouse scroll or keyboard) consistent between layer types and proportional to the current size of the layer.
 
 ## 11.12.1
