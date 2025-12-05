@@ -130,9 +130,9 @@ class LayerStack extends StatelessWidget {
   }
 
   CustomPainter _buildCropPainter() {
-    debugPrint(' _transformConfigs.aspectRatio: ${ _transformConfigs?.aspectRatio}');
-    debugPrint(' transformHelper.aspectRatio: ${ transformHelper.mainImageSize.aspectRatio}');
-    debugPrint(' configs.paintEditor.initAspectRatio: ${ configs.paintEditor.initAspectRatio}');
+    debugPrint('transform configs aspectRatio: ${ _transformConfigs?.aspectRatio}');
+    debugPrint('transform helper aspectRatio: ${ transformHelper.mainImageSize.aspectRatio}');
+    debugPrint('image init aspect ratio: ${ configs.paintEditor.initAspectRatio}');
     /// check how to pass
     final imgRatio = configs.paintEditor.initAspectRatio ??
         _transformConfigs?.cropRect.size.aspectRatio ??

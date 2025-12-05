@@ -8,8 +8,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../shared/widgets/extended/extended_custom_paint.dart';
-import '../crop_rotate_editor/widgets/crop_corner_painter.dart';
 import '/core/constants/image_constants.dart';
 import '/core/mixins/converted_callbacks.dart';
 import '/core/mixins/converted_configs.dart';
@@ -336,19 +334,6 @@ class PaintEditorState extends State<PaintEditor>
         ShaderManager.instance.isShaderFilterSupported) {
       ShaderManager.instance.loadShader(ShaderMode.pixelate);
     }
-
-    // calcCropRect(onlyViewRect: initialTransformConfigs?.isEmpty == false);
-    _updateAllStates();
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-      /// Fit to the screen and set duration to zero
-      // double oldScaleAnimationValue = scaleAnimation.value;
-      // scaleCtrl.duration = Duration.zero;
-      // calcFitToScreen();
-      // scaleCtrl.duration = cropRotateEditorConfigs.animationDuration;
-      //
-      // _setCropRectBounding(oldScaleAnimationValue: oldScaleAnimationValue);
-    // });
   }
 
   @override
@@ -362,186 +347,6 @@ class PaintEditorState extends State<PaintEditor>
     ServicesBinding.instance.keyboard.removeHandler(_onKeyEvent);
     super.dispose();
   }
-
-  void _updateAllStates() {
-    // cropPainterKey.currentState?.update(
-    //   foregroundPainter: cropPainter,
-    //   isComplex: true,
-    //   willChange: true,
-    // );
-    // translateKey.currentState?.setOffset(translate);
-
-    // setState(() {});
-  }
-
-  @override
-  // void calcCropRect({bool onlyViewRect = false, double? newRatio}) {
-  //   double imgSizeRatio = _imgHeight / _imgWidth;
-  //
-  //   var imgConstraints = _renderedImgConstraints.biggest.isInfinite
-  //       ? imageInfos?.renderedSize ?? _renderedImgConstraints.biggest
-  //       : _renderedImgConstraints.biggest;
-  //
-  //   double imgW = imgConstraints.width;
-  //   double imgH = imgConstraints.height;
-  //
-  //   double realImgW = imageSticksToScreenWidth ? imgW : imgH / imgSizeRatio;
-  //   double realImgH = imageSticksToScreenWidth ? imgW * imgSizeRatio : imgH;
-  //
-  //   // Rect stick horizontal
-  //   double ratio = newRatio ?? (_ratio > 0 ? _ratio : imgSizeRatio);
-  //   double left = 0;
-  //   double top = 0;
-  //
-  //   if (imgSizeRatio >= ratio) {
-  //     double newH = realImgW * ratio;
-  //     top = (realImgH - newH) / 2;
-  //     realImgH = newH;
-  //   }
-  //   // Rect stick vertical
-  //   else {
-  //     double newW = realImgH / ratio;
-  //     left = (realImgW - newW) / 2;
-  //     realImgW = newW;
-  //   }
-  //
-  //   _cropSpaceVertical = top * 2;
-  //   _cropSpaceHorizontal = left * 2;
-  //
-  //   if (!onlyViewRect) {
-  //     cropRect = Rect.fromLTWH(left, top, realImgW, realImgH);
-  //   }
-  //   _viewRect = Rect.fromLTWH(left, top, realImgW, realImgH);
-  //   cropPainterKey.currentState?.setForegroundPainter(cropPainter);
-  // }
-  //
-  //
-  // @override
-  // calcFitToScreen({
-  //   Curve? curve,
-  //   Size? imageSize,
-  //   bool animated = true,
-  // }) {
-  //   if (!animated) scaleCtrl.duration = Duration.zero;
-  //   Size contentSize = Size(
-  //     editorBodySize.width - _screenPadding * 2,
-  //     editorBodySize.height - _screenPadding * 2,
-  //   );
-  //
-  //   double cropSpaceHorizontal =
-  //   _rotated90deg ? _cropSpaceVertical : _cropSpaceHorizontal;
-  //   double cropSpaceVertical =
-  //   _rotated90deg ? _cropSpaceHorizontal : _cropSpaceVertical;
-  //
-  //   Size renderedSize = imageSize ?? _renderedImgSize;
-  //
-  //   double scaleX =
-  //       contentSize.width / (renderedSize.width - cropSpaceHorizontal);
-  //   double scaleY =
-  //       contentSize.height / (renderedSize.height - cropSpaceVertical);
-  //
-  //   double scale = min(scaleX, scaleY);
-  //
-  //   scaleAnimation = Tween<double>(begin: oldScaleFactor, end: scale).animate(
-  //     CurvedAnimation(
-  //       parent: scaleCtrl,
-  //       curve: curve ?? cropRotateEditorConfigs.rotateAnimationCurve,
-  //     ),
-  //   );
-  //   scaleCtrl
-  //     ..reset()
-  //     ..forward();
-  //
-  //   double startRotateFactor = oldScaleFactor;
-  //   double targetRotateFactor = scale;
-  //
-  //   oldScaleFactor = scale;
-  //
-  //   cropPainterKey.currentState?.setForegroundPainter(cropPainter);
-  //
-  //   if (!startRotateFactor.isInfinite &&
-  //       !startRotateFactor.isNaN &&
-  //       !targetRotateFactor.isInfinite &&
-  //       !targetRotateFactor.isNaN) {
-  //     loopWithTransitionTiming(
-  //           (double curveT) {
-  //         _rotationScaleFactor =
-  //         lerpDouble(startRotateFactor, targetRotateFactor, curveT)!;
-  //         cropPainterKey.currentState?.setForegroundPainter(cropPainter);
-  //       },
-  //       mounted: mounted,
-  //       duration: cropRotateEditorConfigs.animationDuration,
-  //       transitionFunction:
-  //       (curve ?? cropRotateEditorConfigs.rotateAnimationCurve).transform,
-  //     );
-  //   } else {
-  //     _rotationScaleFactor = 1;
-  //   }
-  //
-  //   if (!animated) {
-  //     scaleCtrl.duration = cropRotateEditorConfigs.animationDuration;
-  //   }
-  // }
-  //
-  // void _setCropRectBounding({
-  //   double? oldScaleAnimationValue,
-  // }) {
-  //   if (cropRect.isEmpty) {
-  //     return;
-  //   }
-  //
-  //   if (!_renderedImgSize.isInfinite) {
-  //     bool fitToWidth =
-  //         (cropRect.width + _cropSpaceHorizontal) > _renderedImgSize.width;
-  //     bool fitToHeight =
-  //         (cropRect.height + _cropSpaceVertical) > _renderedImgSize.height;
-  //     double ratio = cropRect.size.aspectRatio;
-  //
-  //     /// If the cropRect is to small or it will fit to both sizes we choose
-  //     /// from the aspect ratio.
-  //     if ((fitToWidth && fitToHeight) ||
-  //         (!fitToHeight &&
-  //             !fitToWidth &&
-  //             cropRect.width < _renderedImgSize.width &&
-  //             cropRect.height < _renderedImgSize.height)) {
-  //       fitToHeight = ratio < editorBodySize.aspectRatio;
-  //       fitToWidth = !fitToHeight;
-  //     }
-  //
-  //     /// return if the cropRect has already the correct size
-  //     if (!fitToWidth && !fitToHeight) return;
-  //
-  //     Size oldSize = cropRect.size;
-  //
-  //     calcCropRect(newRatio: 1 / ratio);
-  //
-  //     /// Fit to the screen and set duration to zero
-  //     calcFitToScreen(animated: false);
-  //
-  //     double scaleFactor = fitToHeight
-  //         ? cropRect.height / oldSize.height
-  //         : cropRect.width / oldSize.width;
-  //
-  //     /// Seems like this calculation is not required but it there is an issue
-  //     /// we should multiply it below with the scaleFactor
-  //     /// double scaleFitFactor = oldScaleAnimationValue == null ||
-  //     /// _renderedImgSize.aspectRatio < ratio ?
-  //     ///     1 :
-  //     ///     scaleAnimation.value / oldScaleAnimationValue;
-  //
-  //     translate = Offset(
-  //       translate.dx * scaleFactor,
-  //       translate.dy * scaleFactor,
-  //     );
-  //
-  //     debugPrint('scale facter: $scaleFactor\ninside _setCropRectBounding border translate : $translate');
-  //
-  //     if (translate.dx.isNaN || translate.dx.isInfinite) {
-  //       throw ArgumentError('Hmmm');
-  //     }
-  //     _setOffsetLimits();
-  //   }
-  // }
 
   @override
   void setState(void Function() fn) {
@@ -1158,57 +963,49 @@ class PaintEditorState extends State<PaintEditor>
               callbacks.paintEditorCallbacks?.onEditorZoomMatrix4Change,
           child: Stack(
             alignment: Alignment.center,
-            fit: StackFit.loose,
+            fit: StackFit.expand,
             children: [
-              _buildCropPainter(
+              if (initConfigs.convertToUint8List && isVideoEditor)
+                _buildBackground(),
+              ContentRecorder(
+                autoDestroyController: false,
+                controller: screenshotCtrl,
                 child: Stack(
                   alignment: Alignment.center,
                   fit: StackFit.expand,
                   children: [
-                    if (initConfigs.convertToUint8List && isVideoEditor)
-                      _buildBackground(),
-                    ContentRecorder(
-                      autoDestroyController: false,
-                      controller: screenshotCtrl,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        fit: StackFit.expand,
-                        children: [
-                          if (!widget.paintOnly)
-                            if (!initConfigs.convertToUint8List || !isVideoEditor)
-                              _buildBackground()
-                            else
-                              SizedBox(
-                                width: configs.imageGeneration.maxOutputSize.width,
-                                height: configs.imageGeneration.maxOutputSize.height,
-                              ),
+                    if (!widget.paintOnly)
+                      if (!initConfigs.convertToUint8List || !isVideoEditor)
+                        _buildBackground()
+                      else
+                        SizedBox(
+                          width: configs.imageGeneration.maxOutputSize.width,
+                          height: configs.imageGeneration.maxOutputSize.height,
+                        ),
 
-                          /// Build layers
-                          StreamBuilder(
-                            stream: _layerStackStream.stream,
-                            builder: (context, asyncSnapshot) {
-                              if (!paintEditorConfigs.showLayers ||
-                                  activeHistory.layers.isEmpty) {
-                                return const SizedBox.shrink();
-                              }
+                    /// Build layers
+                    StreamBuilder(
+                      stream: _layerStackStream.stream,
+                      builder: (context, asyncSnapshot) {
+                        if (!paintEditorConfigs.showLayers ||
+                            activeHistory.layers.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
 
-                              return LayerStack(
-                                configs: configs,
-                                layers: activeHistory.layers,
-                                transformHelper: _layerStackTransformHelper,
-                                overlayColor: paintEditorConfigs.style.background,
-                                clipBehavior: Clip.none,
-                                enableLayerKey: true,
-                              );
-                            },
-                          ),
-                          _buildPainter(),
-                          if (paintEditorConfigs.widgets.bodyItemsRecorded != null)
-                            ...paintEditorConfigs.widgets.bodyItemsRecorded!(
-                                this, rebuildController.stream),
-                        ],
-                      ),
+                        return LayerStack(
+                          configs: configs,
+                          layers: activeHistory.layers,
+                          transformHelper: _layerStackTransformHelper,
+                          overlayColor: paintEditorConfigs.style.background,
+                          clipBehavior: Clip.none,
+                          enableLayerKey: true,
+                        );
+                      },
                     ),
+                    _buildPainter(),
+                    if (paintEditorConfigs.widgets.bodyItemsRecorded != null)
+                      ...paintEditorConfigs.widgets.bodyItemsRecorded!(
+                          this, rebuildController.stream),
                   ],
                 ),
               ),
@@ -1227,38 +1024,6 @@ class PaintEditorState extends State<PaintEditor>
         ...paintEditorConfigs.widgets.bodyItems!(
             this, rebuildController.stream),
     ];
-  }
-
-  ///for making the rect area
-  CropCornerPainter? get cropPainter {
-    debugPrint('offset: ${initialTransformConfigs?.offset}, crop rect: ${initialTransformConfigs?.cropRect}');
-    return CropCornerPainter(
-      offset: initialTransformConfigs?.offset ?? const Offset(0, 0), // translate,
-      cropRect:   const Rect.fromLTRB(0.0,0.0,419.9, 734.8),//initialTransformConfigs!.cropRect, //cropRect,
-      viewRect:   const Rect.fromLTRB(0.0, 0.0,419.9, 734.8) , //initialTransformConfigs!.cropRect, // _viewRect,
-      scaleFactor: 1,  //userScaleFactor,
-      rotationScaleFactor: 1,
-      interactionOpacity: 0,
-      screenSize: Size(
-        editorBodySize.width,
-        editorBodySize.height,
-      ),
-      fadeInOpacity: 50,
-      style: cropRotateEditorConfigs.style,
-      drawCircle: initialTransformConfigs?.cropMode != null ?
-      initialTransformConfigs!.cropMode == CropMode.oval : false,
-    );
-  }
-
-
-  Widget _buildCropPainter({required Widget child}) {
-    return ExtendedCustomPaint(
-      // key: cropPainterAreaKey,
-      initIsComplex: true,
-      initWillChange: true,
-      initForegroundPainter: cropPainter?.copy(),
-      child: child,
-    );
   }
 
   Widget _buildBackground() {

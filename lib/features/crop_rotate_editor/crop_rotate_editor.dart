@@ -501,6 +501,7 @@ class CropRotateEditorState extends State<CropRotateEditor>
 
       /// Skip one frame to ensure the image is correctly transformed
       Size? originalSize = initialTransformConfigs?.originalSize;
+      debugPrint('originalSize $originalSize');
       if (originalSize != null && !originalSize.isInfinite) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           /// Fit to the screen and set duration to zero

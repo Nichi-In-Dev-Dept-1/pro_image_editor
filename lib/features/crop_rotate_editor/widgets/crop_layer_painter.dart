@@ -126,29 +126,105 @@ class CropLayerPainter extends CustomPainter {
       /// Subtract the area of the current rectangle from the path for the
       /// entire canvas
       path = Path.combine(PathOperation.difference, path, rectPath);
-    } else {
-      Path rectPath = Path()
-        ..addRect(
-          Rect.fromCenter(
-            center: center,
-            width: w,
-            height: h,
-          ),
-        );
 
-      /// Subtract the area of the current rectangle from the path for the
-      /// entire canvas
-      path = Path.combine(PathOperation.difference, path, rectPath);
+      /// Draw the darkened area
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = backgroundColor.withValues(alpha: opacity)
+          ..style = PaintingStyle.fill,
+      );
+    } else {
+     Size size = rawSize * interactiveViewerScale;
+      Offset center = Offset(size.width / 2, size.height / 2) + interactiveViewerOffset;
+
+      Path overlay = Path()
+        ..fillType = PathFillType.evenOdd
+        ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
+      double ratio = is90DegRotated ? 1 / imgRatio : imgRatio;
+      double w, h;
+
+      if (size.aspectRatio > ratio) {
+        h = size.height;
+        w = h * ratio;
+      } else {
+        w = size.width;
+        h = w / ratio;
+      }
+
+      Rect cropRect = Rect.fromCenter(center: center, width: w, height: h);
+
+      // subtract crop area
+      overlay = Path.combine(
+        PathOperation.difference,
+        overlay,
+        Path()..addRect(cropRect),
+      );
+
+      // Draw dark outside area
+      canvas.drawPath(
+        overlay,
+        Paint()
+          ..color = backgroundColor.withValues(alpha:opacity)
+          ..style = PaintingStyle.fill,
+      );
+      _drawCornerHandles(canvas, cropRect);
     }
-debugPrint('draw dark area $backgroundColor & opacity $opacity');
-    /// Draw the darkened area
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = backgroundColor.withValues(alpha: opacity)
-        ..style = PaintingStyle.fill,
-    );
+    debugPrint('draw dark area $backgroundColor & opacity $opacity');
   }
+
+  // -------- Corner Lines (Same style as CornerHandlePainter) -------- //
+  void _drawCornerHandles(Canvas canvas, Rect rect) {
+    final paint = Paint()
+      ..color = Colors.blueAccent
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.square;
+
+    double L = 22;
+    double t = 5 / 2; // shift inside boundary
+
+    // Top Left
+    canvas..drawLine(
+        Offset(rect.left + t, rect.top + t),
+        Offset(rect.left + t + L, rect.top + t),
+        paint)
+    ..drawLine(
+        Offset(rect.left + t, rect.top + t),
+        Offset(rect.left + t, rect.top + t + L),
+        paint)
+
+    // Top Right
+    ..drawLine(
+        Offset(rect.right - t, rect.top + t),
+        Offset(rect.right - t - L, rect.top + t),
+        paint)
+    ..drawLine(
+        Offset(rect.right - t, rect.top + t),
+        Offset(rect.right - t, rect.top + t + L),
+        paint)
+
+    // Bottom Left
+    ..drawLine(
+        Offset(rect.left + t, rect.bottom - t),
+        Offset(rect.left + t + L, rect.bottom - t),
+        paint)
+    ..drawLine(
+        Offset(rect.left + t, rect.bottom - t),
+        Offset(rect.left + t, rect.bottom - t - L),
+        paint)
+
+    // Bottom Right
+    ..drawLine(
+        Offset(rect.right - t, rect.bottom - t),
+        Offset(rect.right - t - L, rect.bottom - t),
+        paint)
+    ..drawLine(
+        Offset(rect.right - t, rect.bottom - t),
+        Offset(rect.right - t, rect.bottom - t - L),
+        paint);
+  }
+
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {

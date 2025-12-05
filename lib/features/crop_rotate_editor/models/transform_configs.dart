@@ -350,7 +350,7 @@ class TransformConfigs {
       scaleUser: scaleUser ?? this.scaleUser,
       scaleRotation: scaleRotation ?? this.scaleRotation,
       /// check this also
-      aspectRatio: 0.6 ?? aspectRatio ?? this.aspectRatio,
+      aspectRatio: aspectRatio ?? this.aspectRatio,
       flipX: flipX ?? this.flipX,
       flipY: flipY ?? this.flipY,
       cropRect: cropRect ?? this.cropRect,
