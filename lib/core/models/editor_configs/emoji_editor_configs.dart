@@ -1,9 +1,11 @@
-// Project imports:
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove the deprecated values when releasing version 12.0.0.
 
 import 'dart:ui';
 
 import 'emoji_editor_configs.dart';
 import 'utils/base_editor_layer_configs.dart';
+import 'utils/base_sub_editor_configs.dart';
 
 export '/plugins/emoji_picker_flutter/emoji_picker_flutter.dart'
     show
@@ -38,13 +40,19 @@ export '../styles/emoji_editor_style.dart';
 ///   emojiSet: customEmojiSet,
 /// );
 /// ```
-class EmojiEditorConfigs implements BaseEditorLayerConfigs {
+class EmojiEditorConfigs
+    implements BaseEditorLayerConfigs, BaseSubEditorConfigs {
   /// Creates an instance of EmojiEditorConfigs with optional settings.
   ///
   /// By default, the editor is enabled, and other properties are set to
   /// reasonable defaults.
   const EmojiEditorConfigs({
     this.layerFractionalOffset = const Offset(-0.5, -0.5),
+    this.enableGesturePop = true,
+    @Deprecated(
+      'Use tools inside MainEditorConfigs instead, e.g. tools: '
+      '[SubEditorMode.emoji]',
+    )
     this.enabled = true,
     this.enablePreloadWebFont = true,
     this.initScale = 5.0,
@@ -62,7 +70,15 @@ class EmojiEditorConfigs implements BaseEditorLayerConfigs {
   @override
   final Offset layerFractionalOffset;
 
+  /// {@macro enableGesturePop}
+  @override
+  final bool enableGesturePop;
+
   /// Indicates whether the emoji editor is enabled.
+  @Deprecated(
+    'Use tools inside MainEditorConfigs instead, e.g. tools: '
+    '[SubEditorMode.emoji]',
+  )
   final bool enabled;
 
   /// Indicates whether the web font should be preloaded on web platforms.
@@ -122,6 +138,7 @@ class EmojiEditorConfigs implements BaseEditorLayerConfigs {
   /// others unchanged.
   EmojiEditorConfigs copyWith({
     Offset? layerFractionalOffset,
+    bool? enableGesturePop,
     bool? enabled,
     bool? enablePreloadWebFont,
     double? initScale,
@@ -135,6 +152,7 @@ class EmojiEditorConfigs implements BaseEditorLayerConfigs {
     return EmojiEditorConfigs(
       layerFractionalOffset:
           layerFractionalOffset ?? this.layerFractionalOffset,
+      enableGesturePop: enableGesturePop ?? this.enableGesturePop,
       enabled: enabled ?? this.enabled,
       enablePreloadWebFont: enablePreloadWebFont ?? this.enablePreloadWebFont,
       initScale: initScale ?? this.initScale,

@@ -20,7 +20,7 @@ class PaintEditorBottombar extends StatelessWidget {
   /// - [bottomBarScrollCtrl]: Controls the scroll behavior of the bottom bar.
   /// - [theme]: Theme data for styling the bottom bar.
   /// - [enableZoom]: Whether zoom functionality is enabled.
-  /// - [paintModes]: A list of available paint modes displayed in the bottom
+  /// - [tools]: A list of available paint modes displayed in the bottom
   ///   bar.
   /// - [setMode]: Callback triggered when a new paint mode is selected.
   const PaintEditorBottombar({
@@ -30,7 +30,7 @@ class PaintEditorBottombar extends StatelessWidget {
     required this.i18n,
     required this.theme,
     required this.enableZoom,
-    required this.paintModes,
+    required this.tools,
     required this.setMode,
     required this.bottomBarScrollCtrl,
   });
@@ -54,7 +54,7 @@ class PaintEditorBottombar extends StatelessWidget {
   final bool enableZoom;
 
   /// A list of available paint modes displayed in the bottom bar.
-  final List<PaintModeBottomBarItem> paintModes;
+  final List<PaintModeBottomBarItem> tools;
 
   /// Callback triggered when a new paint mode is selected.
   final Function(PaintMode mode) setMode;
@@ -68,8 +68,7 @@ class PaintEditorBottombar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double minWidth = min(MediaQuery.sizeOf(context).width, 600);
-    double maxWidth =
-        max((paintModes.length + (enableZoom ? 1 : 0)) * 80, minWidth);
+    double maxWidth = max((tools.length + (enableZoom ? 1 : 0)) * 80, minWidth);
 
     return Theme(
       data: theme,
@@ -91,57 +90,23 @@ class PaintEditorBottombar extends StatelessWidget {
                       : double.infinity,
                 ),
                 child: Wrap(
-                  direction: Axis.horizontal,
-                  alignment: WrapAlignment.spaceAround,
-                  runAlignment: WrapAlignment.spaceAround,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: <Widget>[
-                    if (enableZoom) ...[
-                      FlatIconTextButton(
+                    direction: Axis.horizontal,
+                    alignment: WrapAlignment.spaceAround,
+                    runAlignment: WrapAlignment.spaceAround,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: tools.map((item) {
+                      Color color = _getColor(item.mode);
+                      return FlatIconTextButton(
                         label: Text(
-                          i18n.moveAndZoom,
-                          style: TextStyle(
-                            fontSize: 10.0,
-                            color: _getColor(PaintMode.moveAndZoom),
-                          ),
+                          item.label,
+                          style: TextStyle(fontSize: 10.0, color: color),
                         ),
-                        icon: Icon(
-                          configs.icons.moveAndZoom,
-                          color: _getColor(PaintMode.moveAndZoom),
-                        ),
+                        icon: Icon(item.icon, color: color),
                         onPressed: () {
-                          setMode(PaintMode.moveAndZoom);
+                          setMode(item.mode);
                         },
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        height: kBottomNavigationBarHeight - 14,
-                        width: 1,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2),
-                          color: configs.style.bottomBarInactiveItemColor,
-                        ),
-                      )
-                    ],
-                    ...List.generate(
-                      paintModes.length,
-                      (index) {
-                        PaintModeBottomBarItem item = paintModes[index];
-                        Color color = _getColor(item.mode);
-                        return FlatIconTextButton(
-                          label: Text(
-                            item.label,
-                            style: TextStyle(fontSize: 10.0, color: color),
-                          ),
-                          icon: Icon(item.icon, color: color),
-                          onPressed: () {
-                            setMode(item.mode);
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                      );
+                    }).toList()),
               ),
             ),
           ),

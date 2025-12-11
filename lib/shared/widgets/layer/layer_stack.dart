@@ -30,7 +30,7 @@ class LayerStack extends StatelessWidget {
   ///   transformHelper: myTransformHelper,
   /// )
   /// ```
-  const LayerStack({
+  LayerStack({
     super.key,
     required this.configs,
     required this.layers,
@@ -43,6 +43,7 @@ class LayerStack extends StatelessWidget {
       mainImageSize: Size.zero,
     ),
     this.clipBehavior = Clip.hardEdge,
+    this.showCutOff = false,
   });
 
   /// The outside overlay color for layers.
@@ -91,8 +92,13 @@ class LayerStack extends StatelessWidget {
       transformHelper.transformConfigs?.isNotEmpty == true
           ? transformHelper.transformConfigs
           : null;
+  /// check for showing cut out frame
+  bool showCutOff;
   @override
   Widget build(BuildContext context) {
+    debugPrint('show cut out frame value : ${configs.paintEditor.showCutOutFrame}');
+    debugPrint ('configs.imageGeneration.cropToImageBounds: ${configs.imageGeneration.cropToImageBounds}\n'
+        '_cutOutsideImageArea : $_cutOutsideImageArea');
     return IgnorePointer(
       child: Stack(
         children: [
@@ -111,13 +117,12 @@ class LayerStack extends StatelessWidget {
                   );
                 }).toList()),
           ),
-          if (configs.imageGeneration.cropToImageBounds)
-            RepaintBoundary(
+          if(showCutOff)
+          RepaintBoundary(
               child: Hero(
                 tag: 'crop_layer_painter_hero',
                 child: CustomPaint(
-                  foregroundPainter:
-                      _cutOutsideImageArea ? _buildCropPainter() : null,
+                  foregroundPainter: _buildCropPainter(),
                   child: const SizedBox.expand(),
                 ),
               ),
@@ -128,17 +133,22 @@ class LayerStack extends StatelessWidget {
   }
 
   CustomPainter _buildCropPainter() {
-    final imgRatio = _transformConfigs?.cropRect.size.aspectRatio ??
-        transformHelper.mainImageSize.aspectRatio;
+    debugPrint('transform configs aspectRatio: ${ _transformConfigs?.aspectRatio}');
+    debugPrint('transform helper aspectRatio: ${ transformHelper.mainImageSize.aspectRatio}');
+    debugPrint('image init aspect ratio: ${ configs.paintEditor.initAspectRatio}');
+    /// check how to pass
+    final imgRatio = configs.paintEditor.initAspectRatio;
     final isRoundCropper = _transformConfigs?.isOvalCropper ??
         configs.cropRotateEditor.initialCropMode == CropMode.oval;
 
     return CropLayerPainter(
       opacity: configs.mainEditor.style.outsideCaptureAreaLayerOpacity,
       backgroundColor: overlayColor,
+      /// need to change this aspect ratio change the paint visibility
       imgRatio: imgRatio,
       isRoundCropper: isRoundCropper,
       is90DegRotated: _transformConfigs?.is90DegRotated ?? false,
+      showCutOutFrame: showCutOff
     );
   }
 }

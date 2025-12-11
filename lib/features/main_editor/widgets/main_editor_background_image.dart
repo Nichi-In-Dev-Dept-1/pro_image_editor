@@ -33,10 +33,15 @@ class MainEditorBackgroundImage extends StatelessWidget {
     required this.backgroundImageColorFilterKey,
     required this.isInitialized,
     required this.heroTag,
-  });
+    required this.blankSize,
+  }) : assert(editorImage != null || blankSize != null,
+            'Either editorImage or blankSize must be provided');
+
+  /// The size of the blank canvas when no image is present.
+  final Size? blankSize;
 
   /// The main image being edited in the editor.
-  final EditorImage editorImage;
+  final EditorImage? editorImage;
 
   /// Manages the state of the editor.
   final StateManager stateManager;
@@ -62,11 +67,13 @@ class MainEditorBackgroundImage extends StatelessWidget {
       tag: heroTag,
       createRectTween: (begin, end) => RectTween(begin: begin, end: end),
       child: !isInitialized
-          ? AutoImage(
-              editorImage,
-              fit: BoxFit.contain,
-              configs: configs,
-            )
+          ? editorImage != null
+              ? AutoImage(
+                  editorImage!,
+                  fit: BoxFit.contain,
+                  configs: configs,
+                )
+              : SizedBox.fromSize(size: blankSize)
           : TransformedContentGenerator(
               transformConfigs: stateManager.transformConfigs,
               configs: configs,
@@ -76,6 +83,7 @@ class MainEditorBackgroundImage extends StatelessWidget {
                 height: sizesManager.decodedImageSize.height,
                 configs: configs,
                 image: editorImage,
+                blankSize: blankSize,
                 filters: stateManager.activeFilters,
                 tuneAdjustments: stateManager.activeTuneAdjustments,
                 blurFactor: stateManager.activeBlur,

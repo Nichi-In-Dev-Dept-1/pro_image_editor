@@ -1,10 +1,11 @@
 import 'package:flutter/widgets.dart';
 
-import '../../../../core/models/editor_configs/paint_editor/paint_editor_configs.dart';
+import '/core/models/editor_configs/paint_editor/paint_editor_configs.dart';
 import '../../enums/paint_editor_enum.dart';
 import '../painted_model.dart';
 import 'path_builder_arrow.dart';
 import 'path_builder_circle.dart';
+import 'path_builder_dash_dot_line.dart';
 import 'path_builder_dash_line.dart';
 import 'path_builder_freestyle.dart';
 import 'path_builder_line.dart';
@@ -15,6 +16,7 @@ import 'path_builder_rectangular.dart';
 abstract class PathBuilderBase {
   /// Creates a path builder with the given item and scale factor.
   PathBuilderBase({
+    required this.paintEditorConfigs,
     required this.item,
     required this.scale,
   }) : painter = Paint()
@@ -26,22 +28,57 @@ abstract class PathBuilderBase {
   factory PathBuilderBase.fromMode({
     required PaintedModel item,
     required double scale,
+    required PaintEditorConfigs paintEditorConfigs,
   }) {
     switch (item.mode) {
       case PaintMode.line:
-        return PathBuilderLine(item: item, scale: scale);
+        return PathBuilderLine(
+          paintEditorConfigs: paintEditorConfigs,
+          item: item,
+          scale: scale,
+        );
       case PaintMode.arrow:
-        return PathBuilderArrow(item: item, scale: scale);
+        return PathBuilderArrow(
+          paintEditorConfigs: paintEditorConfigs,
+          item: item,
+          scale: scale,
+        );
       case PaintMode.dashLine:
-        return PathBuilderDashLine(item: item, scale: scale);
+        return PathBuilderDashLine(
+          paintEditorConfigs: paintEditorConfigs,
+          item: item,
+          scale: scale,
+        );
+      case PaintMode.dashDotLine:
+        return PathBuilderDashDotLine(
+          paintEditorConfigs: paintEditorConfigs,
+          item: item,
+          scale: scale,
+        );
       case PaintMode.rect:
-        return PathBuilderRectangular(item: item, scale: scale);
+        return PathBuilderRectangular(
+          paintEditorConfigs: paintEditorConfigs,
+          item: item,
+          scale: scale,
+        );
       case PaintMode.circle:
-        return PathBuilderCircle(item: item, scale: scale);
+        return PathBuilderCircle(
+          paintEditorConfigs: paintEditorConfigs,
+          item: item,
+          scale: scale,
+        );
       case PaintMode.polygon:
-        return PathBuilderPolygon(item: item, scale: scale);
+        return PathBuilderPolygon(
+          paintEditorConfigs: paintEditorConfigs,
+          item: item,
+          scale: scale,
+        );
       case PaintMode.freeStyle:
-        return PathBuilderFreestyle(item: item, scale: scale);
+        return PathBuilderFreestyle(
+          paintEditorConfigs: paintEditorConfigs,
+          item: item,
+          scale: scale,
+        );
       default:
         throw ArgumentError('${item.mode} is not a valid PaintMode');
     }
@@ -49,6 +86,9 @@ abstract class PathBuilderBase {
 
   /// The painted item model.
   final PaintedModel item;
+
+  /// Configuration options for a paint editor.
+  final PaintEditorConfigs paintEditorConfigs;
 
   /// The scale factor applied to all positions and stroke width.
   final double scale;
@@ -71,20 +111,27 @@ abstract class PathBuilderBase {
   /// Builds and returns the path.
   Path build();
 
+  /// Builds and returns the path.
+  Path? buildSecond() => null;
+
   /// Draws the built path to the given canvas using the current painter.
-  void draw({
-    required Canvas canvas,
-    required Size size,
-    required PaintEditorConfigs configs,
-  }) {
+  void draw({required Canvas canvas, required Size size}) {
     if (offsets.length <= 1) return;
+    // Build both paths
     build();
+    final Path? secondPath = buildSecond();
 
-    final eraserMode = configs.eraserMode;
-    final eraserSize = configs.eraserSize;
-
-    if (eraserMode == EraserMode.object || item.erasedOffsets.isEmpty) {
+    if (item.erasedOffsets.isEmpty) {
+      // First draw stroke path
       canvas.drawPath(path, painter);
+
+      // Then draw second path (fill) if present
+      if (secondPath != null) {
+        final fillPaint = Paint()
+          ..color = painter.color
+          ..style = PaintingStyle.fill;
+        canvas.drawPath(secondPath, fillPaint);
+      }
       return;
     }
 
@@ -102,18 +149,26 @@ abstract class PathBuilderBase {
       )
       ..drawPath(path, painter);
 
-    // build erase path from offsets
+    // Fill path (second)
+    if (secondPath != null) {
+      final fillPaint = Paint()
+        ..color = painter.color
+        ..style = PaintingStyle.fill;
+      canvas.drawPath(secondPath, fillPaint);
+    }
+
+    // Build erase path
     final erasePaint = Paint()
       ..blendMode = BlendMode.clear
       ..isAntiAlias = true;
 
     final erasePath = Path();
-    for (final o in item.erasedOffsets) {
+    for (final item in item.erasedOffsets) {
       erasePath.addOval(
         Rect.fromCircle(
-          center: o * scale,
+          center: item.offset * scale,
           // eraser size
-          radius: eraserSize * scale,
+          radius: item.radius * scale,
         ),
       );
     }

@@ -137,10 +137,9 @@ class _GroundedPaintBarState extends State<GroundedPaintBar>
                   _buildDivider(),
                 ],
                 ...List.generate(
-                  widget.editor.paintModes.length,
+                  widget.editor.tools.length,
                   (index) {
-                    PaintModeBottomBarItem item =
-                        widget.editor.paintModes[index];
+                    PaintModeBottomBarItem item = widget.editor.tools[index];
                     Color color = getColor(item.mode);
                     return FadeInUp(
                       duration: kGroundedFadeInDuration * 1.5,

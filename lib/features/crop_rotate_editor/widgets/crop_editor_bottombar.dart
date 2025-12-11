@@ -27,6 +27,7 @@ class CropEditorBottombar extends StatelessWidget {
     required this.i18n,
     required this.configs,
     required this.theme,
+    required this.tools,
     required this.onRotate,
     required this.onFlip,
     required this.onOpenAspectRatioOptions,
@@ -45,6 +46,9 @@ class CropEditorBottombar extends StatelessWidget {
   /// Theme data for styling the bottom bar.
   final ThemeData theme;
 
+  /// Defines which paint tools are available in the editor.
+  final List<CropRotateTool> tools;
+
   /// Callback for the rotate option.
   final Function() onRotate;
 
@@ -56,6 +60,39 @@ class CropEditorBottombar extends StatelessWidget {
 
   /// Callback for resetting the editor.
   final Function() onReset;
+
+  _ToolItem _getItem(CropRotateTool tool) {
+    switch (tool) {
+      case CropRotateTool.rotate:
+        return _ToolItem(
+          key: const ValueKey('crop-rotate-editor-rotate-btn'),
+          label: i18n.rotate,
+          icon: configs.icons.rotate,
+          onTap: onRotate,
+        );
+      case CropRotateTool.flip:
+        return _ToolItem(
+          key: const ValueKey('crop-rotate-editor-flip-btn'),
+          label: i18n.flip,
+          icon: configs.icons.flip,
+          onTap: onFlip,
+        );
+      case CropRotateTool.aspectRatio:
+        return _ToolItem(
+          key: const ValueKey('crop-rotate-editor-ratio-btn'),
+          label: i18n.ratio,
+          icon: configs.icons.aspectRatio,
+          onTap: onOpenAspectRatioOptions,
+        );
+      case CropRotateTool.reset:
+        return _ToolItem(
+          key: const ValueKey('crop-rotate-editor-reset-btn'),
+          label: i18n.reset,
+          icon: configs.icons.reset,
+          onTap: onReset,
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,63 +113,12 @@ class CropEditorBottombar extends StatelessWidget {
                   minWidth: min(MediaQuery.sizeOf(context).width, 500),
                   maxWidth: 500,
                 ),
-                child: Builder(builder: (context) {
-                  Color foregroundColor = configs.style.appBarColor;
-                  return Wrap(
+                child: Wrap(
                     direction: Axis.horizontal,
                     alignment: WrapAlignment.spaceAround,
-                    children: <Widget>[
-                      if (configs.showRotateButton)
-                        FlatIconTextButton(
-                          key: const ValueKey('crop-rotate-editor-rotate-btn'),
-                          label: Text(
-                            i18n.rotate,
-                            style: TextStyle(
-                                fontSize: 10.0, color: foregroundColor),
-                          ),
-                          icon: Icon(configs.icons.rotate,
-                              color: foregroundColor),
-                          onPressed: onRotate,
-                        ),
-                      if (configs.showFlipButton)
-                        FlatIconTextButton(
-                          key: const ValueKey('crop-rotate-editor-flip-btn'),
-                          label: Text(
-                            i18n.flip,
-                            style: TextStyle(
-                                fontSize: 10.0, color: foregroundColor),
-                          ),
-                          icon:
-                              Icon(configs.icons.flip, color: foregroundColor),
-                          onPressed: onFlip,
-                        ),
-                      if (configs.showAspectRatioButton)
-                        FlatIconTextButton(
-                          key: const ValueKey('crop-rotate-editor-ratio-btn'),
-                          label: Text(
-                            i18n.ratio,
-                            style: TextStyle(
-                                fontSize: 10.0, color: foregroundColor),
-                          ),
-                          icon: Icon(configs.icons.aspectRatio,
-                              color: foregroundColor),
-                          onPressed: onOpenAspectRatioOptions,
-                        ),
-                      if (configs.showResetButton)
-                        FlatIconTextButton(
-                          key: const ValueKey('crop-rotate-editor-reset-btn'),
-                          label: Text(
-                            i18n.reset,
-                            style: TextStyle(
-                                fontSize: 10.0, color: foregroundColor),
-                          ),
-                          icon:
-                              Icon(configs.icons.reset, color: foregroundColor),
-                          onPressed: onReset,
-                        ),
-                    ],
-                  );
-                }),
+                    children: tools
+                        .map((tool) => _buildTool(_getItem(tool)))
+                        .toList()),
               ),
             ),
           ),
@@ -140,4 +126,31 @@ class CropEditorBottombar extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildTool(_ToolItem item) {
+    Color foregroundColor = configs.style.appBarColor;
+    return FlatIconTextButton(
+      key: item.key,
+      label: Text(
+        item.label,
+        style: TextStyle(fontSize: 10.0, color: foregroundColor),
+      ),
+      icon: Icon(item.icon, color: foregroundColor),
+      onPressed: item.onTap,
+    );
+  }
+}
+
+class _ToolItem {
+  const _ToolItem({
+    required this.key,
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final Key key;
+  final String label;
+  final IconData icon;
+  final Function() onTap;
 }

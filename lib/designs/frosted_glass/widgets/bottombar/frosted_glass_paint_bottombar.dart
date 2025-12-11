@@ -185,8 +185,8 @@ class _FrostedGlassPaintBottomBarState
           alignment: WrapAlignment.start,
           runAlignment: WrapAlignment.center,
           spacing: 10,
-          children: List.generate(widget.paintEditor.paintModes.length, (i) {
-            PaintModeBottomBarItem item = widget.paintEditor.paintModes[i];
+          children: List.generate(widget.paintEditor.tools.length, (i) {
+            PaintModeBottomBarItem item = widget.paintEditor.tools[i];
             bool isSelected = widget.paintEditor.paintMode == item.mode;
             return IconButton(
               onPressed: () {

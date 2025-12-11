@@ -8,6 +8,7 @@ import '/shared/utils/parser/double_parser.dart';
 import '/shared/utils/parser/int_parser.dart';
 import 'enums/layer_background_mode.dart';
 import 'layer.dart';
+import 'layer_interaction.dart';
 
 /// Represents a text layer with customizable properties.
 class TextLayer extends Layer {
@@ -271,6 +272,55 @@ class TextLayer extends Layer {
       if (paintLayer.maxTextWidth != maxTextWidth)
         'maxTextWidth': maxTextWidth?.roundSmart(maxDecimalPlaces),
     };
+  }
+
+  /// Creates a copy of this [TextLayer] with the given fields replaced with
+  /// new values.
+  @override
+  TextLayer copyWith({
+    String? text,
+    Color? color,
+    Color? background,
+    LayerBackgroundMode? colorMode,
+    TextAlign? align,
+    TextStyle? textStyle,
+    double? fontScale,
+    Offset? offset,
+    double? rotation,
+    double? scale,
+    double? maxTextWidth,
+    bool? hit,
+    bool? flipX,
+    bool? flipY,
+    bool? customSecondaryColor,
+    LayerInteraction? interaction,
+    Map<String, dynamic>? meta,
+    BoxConstraints? boxConstraints,
+    String? id,
+    String? groupId,
+  }) {
+    return TextLayer(
+      text: text ?? this.text,
+      customSecondaryColor: customSecondaryColor ?? this.customSecondaryColor,
+      hit: hit ?? this.hit,
+      textStyle: textStyle ?? this.textStyle,
+      colorMode: colorMode ?? this.colorMode,
+      color: color ?? this.color,
+      background: background ?? this.background,
+      align: align ?? this.align,
+      fontScale: fontScale ?? this.fontScale,
+      maxTextWidth: maxTextWidth ?? this.maxTextWidth,
+      offset: offset ?? this.offset,
+      rotation: rotation ?? this.rotation,
+      scale: scale ?? this.scale,
+      id: id ?? this.id,
+      flipX: flipX ?? this.flipX,
+      flipY: flipY ?? this.flipY,
+      interaction: interaction ?? this.interaction,
+      meta: meta ?? this.meta,
+      boxConstraints: boxConstraints ?? this.boxConstraints,
+      groupId: groupId ?? this.groupId,
+    );
   }
 
   @override

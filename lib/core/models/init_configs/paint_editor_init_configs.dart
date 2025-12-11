@@ -28,6 +28,7 @@ class PaintEditorInitConfigs extends EditorInitConfigs {
     this.enableFakeHero = false,
     this.initialZoomMatrix,
     required super.theme,
+    this.showCutOutFrame = false,
   });
 
   /// Determines whether we draw a "fake" hero widget or not.
@@ -35,4 +36,7 @@ class PaintEditorInitConfigs extends EditorInitConfigs {
 
   /// The initial zoom matrix.
   final Matrix4? initialZoomMatrix;
+
+  /// Whether to show the cut-out frame.
+  final bool showCutOutFrame;
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove the deprecated values when releasing version 12.0.0.
 import 'package:flutter/widgets.dart';
 
 import '/features/paint_editor/enums/paint_editor_enum.dart';
@@ -5,6 +7,7 @@ import '../../custom_widgets/paint_editor_widgets.dart';
 import '../../icons/paint_editor_icons.dart';
 import '../../styles/paint_editor_style.dart';
 import '../utils/base_editor_layer_configs.dart';
+import '../utils/base_sub_editor_configs.dart';
 import '../utils/editor_safe_area.dart';
 import '../utils/zoom_configs.dart';
 import 'censor_configs.dart';
@@ -19,30 +22,17 @@ export 'censor_configs.dart';
 /// `PaintEditorConfigs` allows you to define settings for a paint editor,
 /// including whether the editor is enabled, which drawing tools are available,
 /// initial settings for drawing, and more.
-///
-/// Example usage:
-/// ```dart
-/// PaintEditorConfigs(
-///   enabled: true,
-///   enableModeFreeStyle = true,
-///   enableModeArrow = true,
-///   enableModeLine = true,
-///   enableModeRect = true,
-///   enableModeCircle = true,
-///   enableModeDashLine = true,
-///   enableModeBlur = true,
-///   enableModePixelate = true,
-///   enableModeEraser = true,
-///   isInitiallyFilled: false,
-///   initialPaintMode: PaintMode.freeStyle,
-/// );
-/// ```
-class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
+class PaintEditorConfigs extends ZoomConfigs
+    implements BaseEditorLayerConfigs, BaseSubEditorConfigs {
   /// Creates an instance of PaintEditorConfigs with optional settings.
   ///
   /// By default, the editor is enabled, and most drawing tools are enabled.
   /// Other properties are set to reasonable defaults.
   const PaintEditorConfigs({
+    @Deprecated(
+      'Use tools inside MainEditorConfigs instead, e.g. tools: '
+      '[SubEditorMode.paint]',
+    )
     this.enabled = true,
     super.enableZoom,
     super.editorMinScale,
@@ -58,17 +48,42 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
     this.colorPickerLeft,
     this.colorPickerRight,
     this.layerFractionalOffset = const Offset(-0.5, -0.5),
+    this.enableGesturePop = true,
     this.enableEdit = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.freeStyle]')
     this.enableModeFreeStyle = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.arrow]')
     this.enableModeArrow = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.line]')
     this.enableModeLine = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.rect]')
     this.enableModeRect = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.circle]')
     this.enableModeCircle = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.dashLine]')
     this.enableModeDashLine = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.polygon]')
     this.enableModePolygon = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.blur]')
     this.enableModeBlur = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.pixelate]')
     this.enableModePixelate = true,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.eraser]')
     this.enableModeEraser = true,
+    this.tools = const [
+      PaintMode.moveAndZoom,
+      PaintMode.freeStyle,
+      PaintMode.arrow,
+      PaintMode.line,
+      PaintMode.rect,
+      PaintMode.circle,
+      PaintMode.dashLine,
+      PaintMode.dashDotLine,
+      PaintMode.polygon,
+      PaintMode.pixelate,
+      PaintMode.blur,
+      PaintMode.eraser,
+    ],
     this.showToggleFillButton = true,
     this.showLineWidthAdjustmentButton = true,
     this.showOpacityAdjustmentButton = true,
@@ -89,6 +104,12 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
     this.colorPickerPadding = EdgeInsets.zero,
     this.eraserMode = EraserMode.partial,
     this.eraserSize = 8.0,
+    this.dashLineSpacingFactor = 2,
+    this.dashLineWidthFactor = 2.5,
+    this.dashDotLineSpacingFactor = 2,
+    this.dashDotLineWidthFactor = 2.5,
+    this.initAspectRatio = 1.0,
+    this.showCutOutFrame = false,
     this.censorConfigs = const CensorConfigs(),
     this.safeArea = const EditorSafeArea(),
     this.style = const PaintEditorStyle(),
@@ -114,34 +135,50 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   @override
   final Offset layerFractionalOffset;
 
+  /// {@macro enableGesturePop}
+  @override
+  final bool enableGesturePop;
+
   /// Indicates whether the paint editor is enabled.
+  @Deprecated(
+    'Use tools inside MainEditorConfigs instead, e.g. tools: '
+    '[SubEditorMode.paint]',
+  )
   final bool enabled;
 
   /// Indicating whether created layers can be edited.
   final bool enableEdit;
 
   /// Indicating whether the free-style drawing option is enabled.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.freeStyle]')
   final bool enableModeFreeStyle;
 
   /// Indicating whether the arrow drawing option is enabled.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.arrow]')
   final bool enableModeArrow;
 
   /// Indicating whether the line drawing option is enabled.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.line]')
   final bool enableModeLine;
 
   /// Indicating whether the rectangle drawing option is enabled.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.rect]')
   final bool enableModeRect;
 
   /// Indicating whether the circle drawing option is enabled.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.circle]')
   final bool enableModeCircle;
 
   /// Indicating whether the dash line drawing option is enabled.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.dashLine]')
   final bool enableModeDashLine;
 
   /// Indicating whether the polygon drawing option is enabled.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.polygon]')
   final bool enableModePolygon;
 
   /// Indicating whether the blur drawing option is enabled.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.blur]')
   final bool enableModeBlur;
 
   /// Indicating whether the pixelate drawing option is enabled.
@@ -149,10 +186,32 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   /// **IMPORTANT**: This mode is only supported when using the Impeller
   /// rendering engine. On all other platforms, it will automatically be
   /// set to `false`.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.pixelate]')
   final bool enableModePixelate;
 
   /// Indicating whether the eraser option is enabled.
+  @Deprecated('Use tools instead, e.g. tools: [PaintMode.eraser]')
   final bool enableModeEraser;
+
+  /// Defines which paint tools are available in the editor.
+  ///
+  /// The order of the tools in this list determines the order in the UI.
+  /// Simply include the tools you want and leave out the ones you don’t.
+  ///
+  /// Example:
+  /// ```dart
+  /// PaintEditorConfigs(
+  ///   tools: [
+  ///     PaintMode.freeStyle,
+  ///     PaintMode.arrow,
+  ///     PaintMode.line,
+  ///     PaintMode.rect,
+  ///     PaintMode.circle,
+  ///     PaintMode.blur,
+  ///   ],
+  /// )
+  /// ```
+  final List<PaintMode> tools;
 
   /// Whether to show a button for toggle the fill state.
   final bool showToggleFillButton;
@@ -178,9 +237,9 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   /// Indicates the eraser mode.
   final EraserMode eraserMode;
 
-  /// The size of the eraser tool in pixels.
+  /// The initial size of the eraser tool in pixels.
   ///
-  /// This value determines the diameter/width of the eraser when removing
+  /// This value determines the radius of the eraser when removing
   /// painted content from the canvas. A larger value creates a bigger eraser
   /// that removes more content at once, while a smaller value provides more
   /// precise erasing capabilities.
@@ -221,6 +280,42 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   /// connected when drawing polygons.
   final double polygonConnectionThreshold;
 
+  /// The spacing multiplier for dashed lines.
+  ///
+  /// The actual spacing is calculated as:
+  /// `spacing = dashLineSpacingFactor * strokeWidth`
+  ///
+  /// This ensures the visual ratio of the dashed pattern stays consistent
+  /// when the user changes the stroke width.
+  final double dashLineSpacingFactor;
+
+  /// The width multiplier for dashed line segments.
+  ///
+  /// The actual dash width is calculated as:
+  /// `dashWidth = dashLineWidthFactor * strokeWidth`
+  ///
+  /// Keeps the dashed line’s visual proportions stable when stroke width
+  /// changes.
+  final double dashLineWidthFactor;
+
+  /// The spacing multiplier for dash-dot lines.
+  ///
+  /// The actual spacing is calculated as:
+  /// `spacing = dashDotLineSpacingFactor * strokeWidth`
+  ///
+  /// Ensures the dash-dot pattern maintains its aspect ratio when
+  /// the user changes the stroke width.
+  final double dashDotLineSpacingFactor;
+
+  /// The width multiplier for dash-dot line segments.
+  ///
+  /// The actual dash width is calculated as:
+  /// `dashWidth = dashDotLineWidthFactor * strokeWidth`
+  ///
+  /// Keeps the dash-dot line appearance consistent across different stroke
+  /// widths.
+  final double dashDotLineWidthFactor;
+
   /// Defines the safe area configuration for the editor.
   final EditorSafeArea safeArea;
 
@@ -251,6 +346,12 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   /// Padding for the color picker.
   final EdgeInsets? colorPickerPadding;
 
+  /// The initial aspect ratio for cropping paint.
+  final double initAspectRatio;
+
+  /// Whether to show cut out frame
+  final bool showCutOutFrame;
+
   /// Creates a copy of this `PaintEditorConfigs` object with the given fields
   /// replaced with new values.
   ///
@@ -259,17 +360,28 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
   /// others unchanged.
   PaintEditorConfigs copyWith({
     Offset? layerFractionalOffset,
+    bool? enableGesturePop,
     bool? enabled,
     bool? enableEdit,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.freeStyle]')
     bool? enableModeFreeStyle,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.arrow]')
     bool? enableModeArrow,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.line]')
     bool? enableModeLine,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.rect]')
     bool? enableModeRect,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.circle]')
     bool? enableModeCircle,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.dashLine]')
     bool? enableModeDashLine,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.polygon]')
     bool? enableModePolygon,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.blur]')
     bool? enableModeBlur,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.pixelate]')
     bool? enableModePixelate,
+    @Deprecated('Use tools instead, e.g. tools: [PaintMode.eraser]')
     bool? enableModeEraser,
     bool? showToggleFillButton,
     bool? showLineWidthAdjustmentButton,
@@ -309,65 +421,85 @@ class PaintEditorConfigs extends ZoomConfigs implements BaseEditorLayerConfigs {
     double? minOpacity,
     double? maxOpacity,
     int? divisionsOpacity,
+    List<PaintMode>? tools,
+    double? dashLineSpacingFactor,
+    double? dashLineWidthFactor,
+    double? dashDotLineSpacingFactor,
+    double? dashDotLineWidthFactor,
+    double? initAspectRatio,
+    bool? showcutOutFrame,
   }) {
     return PaintEditorConfigs(
-        layerFractionalOffset:
-            layerFractionalOffset ?? this.layerFractionalOffset,
-        enabled: enabled ?? this.enabled,
-        enableEdit: enableEdit ?? this.enableEdit,
-        enableModeFreeStyle: enableModeFreeStyle ?? this.enableModeFreeStyle,
-        enableModeArrow: enableModeArrow ?? this.enableModeArrow,
-        enableModeLine: enableModeLine ?? this.enableModeLine,
-        enableModeRect: enableModeRect ?? this.enableModeRect,
-        enableModeCircle: enableModeCircle ?? this.enableModeCircle,
-        enableModeDashLine: enableModeDashLine ?? this.enableModeDashLine,
-        enableModePolygon: enableModePolygon ?? this.enableModePolygon,
-        enableModeBlur: enableModeBlur ?? this.enableModeBlur,
-        enableModePixelate: enableModePixelate ?? this.enableModePixelate,
-        enableModeEraser: enableModeEraser ?? this.enableModeEraser,
-        showToggleFillButton: showToggleFillButton ?? this.showToggleFillButton,
-        showLineWidthAdjustmentButton:
-            showLineWidthAdjustmentButton ?? this.showLineWidthAdjustmentButton,
-        showOpacityAdjustmentButton:
-            showOpacityAdjustmentButton ?? this.showOpacityAdjustmentButton,
-        isInitiallyFilled: isInitiallyFilled ?? this.isInitiallyFilled,
-        showLayers: showLayers ?? this.showLayers,
-        enableShareZoomMatrix:
-            enableShareZoomMatrix ?? this.enableShareZoomMatrix,
-        initialPaintMode: initialPaintMode ?? this.initialPaintMode,
-        eraserMode: eraserMode ?? this.eraserMode,
-      eraserSize: eraserSize ?? this.eraserSize,censorConfigs: censorConfigs ?? this.censorConfigs,
-        minScale: minScale ?? this.minScale,
-        maxScale: maxScale ?? this.maxScale,
-        safeArea: safeArea ?? this.safeArea,
-        style: style ?? this.style,
-        icons: icons ?? this.icons,
-        widgets: widgets ?? this.widgets,
-        enableZoom: enableZoom ?? this.enableZoom,
-        editorMinScale: editorMinScale ?? this.editorMinScale,
-        editorMaxScale: editorMaxScale ?? this.editorMaxScale,
-        polygonConnectionThreshold:
-            polygonConnectionThreshold ?? this.polygonConnectionThreshold,
-        enableDoubleTapZoom: enableDoubleTapZoom ?? this.enableDoubleTapZoom,
-        invertTrackpadDirection:
-            invertTrackpadDirection ?? this.invertTrackpadDirection,
-        doubleTapZoomFactor: doubleTapZoomFactor ?? this.doubleTapZoomFactor,
-        doubleTapZoomDuration:
-            doubleTapZoomDuration ?? this.doubleTapZoomDuration,
-        doubleTapZoomCurve: doubleTapZoomCurve ?? this.doubleTapZoomCurve,
-        boundaryMargin: boundaryMargin ?? this.boundaryMargin,
-        minStrokeWidth: minStrokeWidth ?? this.minStrokeWidth,
-        maxStrokeWidth: maxStrokeWidth ?? this.maxStrokeWidth,
-        divisionsStrokeWidth: divisionsStrokeWidth ?? this.divisionsStrokeWidth,
-        minOpacity: minOpacity ?? this.minOpacity,
-        maxOpacity: maxOpacity ?? this.maxOpacity,
-        divisionsOpacity: divisionsOpacity ?? this.divisionsOpacity,
+      layerFractionalOffset:
+          layerFractionalOffset ?? this.layerFractionalOffset,
+      enableGesturePop: enableGesturePop ?? this.enableGesturePop,
+      enabled: enabled ?? this.enabled,
+      enableEdit: enableEdit ?? this.enableEdit,
+      enableModeFreeStyle: enableModeFreeStyle ?? this.enableModeFreeStyle,
+      enableModeArrow: enableModeArrow ?? this.enableModeArrow,
+      enableModeLine: enableModeLine ?? this.enableModeLine,
+      enableModeRect: enableModeRect ?? this.enableModeRect,
+      enableModeCircle: enableModeCircle ?? this.enableModeCircle,
+      enableModeDashLine: enableModeDashLine ?? this.enableModeDashLine,
+      enableModePolygon: enableModePolygon ?? this.enableModePolygon,
+      enableModeBlur: enableModeBlur ?? this.enableModeBlur,
+      enableModePixelate: enableModePixelate ?? this.enableModePixelate,
+      enableModeEraser: enableModeEraser ?? this.enableModeEraser,
+      tools: tools ?? this.tools,
+      showToggleFillButton: showToggleFillButton ?? this.showToggleFillButton,
+      showLineWidthAdjustmentButton:
+          showLineWidthAdjustmentButton ?? this.showLineWidthAdjustmentButton,
+      showOpacityAdjustmentButton:
+          showOpacityAdjustmentButton ?? this.showOpacityAdjustmentButton,
+      isInitiallyFilled: isInitiallyFilled ?? this.isInitiallyFilled,
+      showLayers: showLayers ?? this.showLayers,
+      enableShareZoomMatrix:
+          enableShareZoomMatrix ?? this.enableShareZoomMatrix,
+      initialPaintMode: initialPaintMode ?? this.initialPaintMode,
+      eraserMode: eraserMode ?? this.eraserMode,
+      eraserSize: eraserSize ?? this.eraserSize,
+      censorConfigs: censorConfigs ?? this.censorConfigs,
+      minScale: minScale ?? this.minScale,
+      maxScale: maxScale ?? this.maxScale,
+      safeArea: safeArea ?? this.safeArea,
+      style: style ?? this.style,
+      icons: icons ?? this.icons,
+      widgets: widgets ?? this.widgets,
+      enableZoom: enableZoom ?? this.enableZoom,
+      editorMinScale: editorMinScale ?? this.editorMinScale,
+      editorMaxScale: editorMaxScale ?? this.editorMaxScale,
+      polygonConnectionThreshold:
+          polygonConnectionThreshold ?? this.polygonConnectionThreshold,
+      enableDoubleTapZoom: enableDoubleTapZoom ?? this.enableDoubleTapZoom,
+      invertTrackpadDirection:
+          invertTrackpadDirection ?? this.invertTrackpadDirection,
+      doubleTapZoomFactor: doubleTapZoomFactor ?? this.doubleTapZoomFactor,
+      doubleTapZoomDuration:
+          doubleTapZoomDuration ?? this.doubleTapZoomDuration,
+      doubleTapZoomCurve: doubleTapZoomCurve ?? this.doubleTapZoomCurve,
+      boundaryMargin: boundaryMargin ?? this.boundaryMargin,
+      minStrokeWidth: minStrokeWidth ?? this.minStrokeWidth,
+      maxStrokeWidth: maxStrokeWidth ?? this.maxStrokeWidth,
+      divisionsStrokeWidth: divisionsStrokeWidth ?? this.divisionsStrokeWidth,
+      minOpacity: minOpacity ?? this.minOpacity,
+      maxOpacity: maxOpacity ?? this.maxOpacity,
+      divisionsOpacity: divisionsOpacity ?? this.divisionsOpacity,
+      dashLineSpacingFactor:
+      dashLineSpacingFactor ?? this.dashLineSpacingFactor,
+      dashLineWidthFactor: dashLineWidthFactor ?? this.dashLineWidthFactor,
+      dashDotLineSpacingFactor:
+      dashDotLineSpacingFactor ?? this.dashDotLineSpacingFactor,
+      dashDotLineWidthFactor:
+      dashDotLineWidthFactor ?? this.dashDotLineWidthFactor,
         colorPickerBottom: colorPickerBottom ?? this.colorPickerBottom,
         colorPickerTop: colorPickerTop ?? this.colorPickerTop,
         colorPickerLeft: colorPickerLeft ?? this.colorPickerLeft,
         colorPickerRight: colorPickerRight ?? this.colorPickerRight,
         colorPickerPadding: colorPickerPadding ?? this.colorPickerPadding,
         isColorPickerHorizontal:
-            isColorPickerHorizontal ?? this.isColorPickerHorizontal);
+        isColorPickerHorizontal ?? this.isColorPickerHorizontal,
+      initAspectRatio: initAspectRatio ?? this.initAspectRatio,
+      showCutOutFrame: showcutOutFrame ?? showCutOutFrame,
+    );
   }
 }

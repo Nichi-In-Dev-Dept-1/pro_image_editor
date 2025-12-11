@@ -207,31 +207,6 @@ _flutter.loader.load({
 ```
 <br/>
 
-The HTML renderer is not supported in the image editor and has been completely removed in Flutter version >= `3.29.0`. However, if you are using an older Flutter version < `3.29`, please ensure that you enforce the canvas renderer.
-
-To enable the Canvaskit renderer by default, you can do the following in your `flutter_bootstrap.js` file.
-
-```js
-{{flutter_js}}
-{{flutter_build_config}}
-
-_flutter.loader.load({
-    serviceWorkerSettings: {
-        serviceWorkerVersion: {{flutter_service_worker_version}},
-    },
-    onEntrypointLoaded: function (engineInitializer) {
-      engineInitializer.initializeEngine({
-        useColorEmoji: true,
-        renderer: 'canvaskit' // add this parameter
-      }).then(function (appRunner) {
-        appRunner.runApp();
-      });
-    }
-});
-```
-
-<br/>
-
 You can view the full web example [here](https://github.com/hm21/pro_image_editor/tree/stable/example/web).
 
 </details>

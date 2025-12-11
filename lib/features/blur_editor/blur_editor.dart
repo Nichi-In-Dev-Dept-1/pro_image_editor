@@ -17,6 +17,7 @@ import '/features/blur_editor/widgets/blur_editor_bottombar.dart';
 import '/shared/controllers/video_controller.dart';
 import '/shared/services/content_recorder/widgets/content_recorder.dart';
 import '/shared/utils/file_constructor_utils.dart';
+import '/shared/widgets/extended/extended_pop_scope.dart';
 import '/shared/widgets/layer/layer_stack.dart';
 import '/shared/widgets/transform/transformed_content_generator.dart';
 import '../crop_rotate_editor/models/transform_configs.dart';
@@ -239,20 +240,23 @@ class BlurEditorState extends State<BlurEditor>
     return Theme(
       data: theme.copyWith(
           tooltipTheme: theme.tooltipTheme.copyWith(preferBelow: true)),
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: blurEditorConfigs.style.uiOverlayStyle,
-        child: SafeArea(
-          top: blurEditorConfigs.safeArea.top,
-          bottom: blurEditorConfigs.safeArea.bottom,
-          left: blurEditorConfigs.safeArea.left,
-          right: blurEditorConfigs.safeArea.right,
-          child: RecordInvisibleWidget(
-            controller: screenshotCtrl,
-            child: Scaffold(
-              backgroundColor: blurEditorConfigs.style.background,
-              appBar: _buildAppBar(),
-              body: _buildBody(),
-              bottomNavigationBar: _buildBottomNavBar(),
+      child: ExtendedPopScope(
+        canPop: blurEditorConfigs.enableGesturePop,
+        child: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: blurEditorConfigs.style.uiOverlayStyle,
+          child: SafeArea(
+            top: blurEditorConfigs.safeArea.top,
+            bottom: blurEditorConfigs.safeArea.bottom,
+            left: blurEditorConfigs.safeArea.left,
+            right: blurEditorConfigs.safeArea.right,
+            child: RecordInvisibleWidget(
+              controller: screenshotCtrl,
+              child: Scaffold(
+                backgroundColor: blurEditorConfigs.style.background,
+                appBar: _buildAppBar(),
+                body: _buildBody(),
+                bottomNavigationBar: _buildBottomNavBar(),
+              ),
             ),
           ),
         ),
@@ -341,6 +345,7 @@ class BlurEditorState extends State<BlurEditor>
                 configs: configs,
                 image: editorImage,
                 videoPlayer: videoController?.videoPlayer,
+                blankSize: initConfigs.mainImageSize,
                 filters: appliedFilters,
                 tuneAdjustments: appliedTuneAdjustments,
                 blurFactor: blurFactor,

@@ -2,12 +2,14 @@ import 'package:flutter/widgets.dart';
 
 import '/features/crop_rotate_editor/models/transform_configs.dart';
 import '/shared/utils/decode_image.dart';
+import '../../enums/editor_mode.dart';
 import '../custom_widgets/main_editor_widgets.dart';
 import '../icons/main_editor_icons.dart';
 import '../styles/main_editor_style.dart';
 import 'utils/editor_safe_area.dart';
 import 'utils/zoom_configs.dart';
 
+export '../../enums/editor_mode.dart';
 export '../custom_widgets/main_editor_widgets.dart';
 export '../icons/main_editor_icons.dart';
 export '../styles/main_editor_style.dart';
@@ -30,6 +32,16 @@ class MainEditorConfigs extends ZoomConfigs {
     this.enableEscapeButton = true,
     this.canZoomWhenLayerSelected = true,
     this.mobilePanInteraction = MobilePanInteraction.move,
+    this.tools = const [
+      SubEditorMode.paint,
+      SubEditorMode.text,
+      SubEditorMode.cropRotate,
+      SubEditorMode.tune,
+      SubEditorMode.filter,
+      SubEditorMode.blur,
+      SubEditorMode.emoji,
+      // SubEditorMode.sticker,
+    ],
     this.style = const MainEditorStyle(),
     this.icons = const MainEditorIcons(),
     this.widgets = const MainEditorWidgets(),
@@ -78,6 +90,28 @@ class MainEditorConfigs extends ZoomConfigs {
   /// Defines the safe area configuration for the editor.
   final EditorSafeArea safeArea;
 
+  /// Defines which sub-editors are available in the bottom-bar of the editor.
+  ///
+  /// The order of the tools in this list determines the order in the UI.
+  /// Simply include the tools you want and leave out the ones you don’t.
+  ///
+  /// Example:
+  /// ```dart
+  /// PaintEditorConfigs(
+  ///   tools: [
+  ///      SubEditorMode.paint,
+  ///      SubEditorMode.text,
+  ///      SubEditorMode.cropRotate,
+  ///      SubEditorMode.tune,
+  ///      SubEditorMode.filter,
+  ///      SubEditorMode.blur,
+  ///      SubEditorMode.emoji,
+  ///      SubEditorMode.sticker,
+  ///   ],
+  /// )
+  /// ```
+  final List<SubEditorMode> tools;
+
   /// Creates a copy of this `MainEditorConfigs` object with the given fields
   /// replaced with new values.
   ///
@@ -103,6 +137,7 @@ class MainEditorConfigs extends ZoomConfigs {
     Duration? doubleTapZoomDuration,
     Curve? doubleTapZoomCurve,
     EditorSafeArea? safeArea,
+    List<SubEditorMode>? tools,
   }) {
     return MainEditorConfigs(
       enableCloseButton: enableCloseButton ?? this.enableCloseButton,
@@ -126,6 +161,7 @@ class MainEditorConfigs extends ZoomConfigs {
       doubleTapZoomCurve: doubleTapZoomCurve ?? this.doubleTapZoomCurve,
       boundaryMargin: boundaryMargin ?? this.boundaryMargin,
       safeArea: safeArea ?? this.safeArea,
+      tools: tools ?? this.tools,
     );
   }
 }

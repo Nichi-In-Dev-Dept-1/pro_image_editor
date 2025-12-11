@@ -94,6 +94,16 @@ class _WhatsAppExampleState extends State<WhatsAppExample>
 
   late final _mainEditorConfigs = MainEditorConfigs(
     enableZoom: true,
+    tools: [
+      SubEditorMode.paint,
+      SubEditorMode.text,
+      SubEditorMode.cropRotate,
+      SubEditorMode.tune,
+      SubEditorMode.filter,
+      SubEditorMode.blur,
+      SubEditorMode.emoji,
+      SubEditorMode.sticker,
+    ],
     widgets: MainEditorWidgets(
       appBar: (editor, rebuildStream) => null,
       bottomBar: (editor, rebuildStream, key) => null,
@@ -232,7 +242,6 @@ class _WhatsAppExampleState extends State<WhatsAppExample>
     ),
   );
   late final _stickerEditorConfigs = StickerEditorConfigs(
-    enabled: true,
     builder: (setLayer, scrollController) => DemoBuildStickers(
         setLayer: setLayer, scrollController: scrollController),
   );
