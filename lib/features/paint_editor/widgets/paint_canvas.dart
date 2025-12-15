@@ -182,6 +182,14 @@ class PaintCanvasState extends State<PaintCanvas> {
       default:
         final offset = details.localFocalPoint;
         debugPrint('paint offset: $offset');
+
+        if (offset.dx < 0 ||
+            offset.dy < 0 ||
+            offset.dx > widget.drawAreaSize.width ||
+            offset.dy > widget.drawAreaSize.height) {
+          return;
+        }
+
         if (!_paintCtrl.busy) {
           widget.onRefresh();
           _paintCtrl.setInProgress(true);

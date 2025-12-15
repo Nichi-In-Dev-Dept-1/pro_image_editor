@@ -987,8 +987,7 @@ class PaintEditorState extends State<PaintEditor>
                     StreamBuilder(
                       stream: _layerStackStream.stream,
                       builder: (context, asyncSnapshot) {
-                        if (!paintEditorConfigs.showLayers ||
-                            activeHistory.layers.isEmpty) {
+                        if (!paintEditorConfigs.showLayers) {
                           return const SizedBox.shrink();
                         }
 
