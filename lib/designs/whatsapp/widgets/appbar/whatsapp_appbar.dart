@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove the deprecated values when releasing version 12.0.0.
+
 // Flutter imports:
 import 'package:flutter/material.dart';
 
@@ -60,101 +63,130 @@ class _WhatsAppAppBarState extends State<WhatsAppAppBar> {
       left: 10,
       right: 10,
       child: LayoutBuilder(builder: (context, constraints) {
-        double screenW = constraints.maxWidth;
-        final double space = screenW < 300 ? 5 : 10;
-        var gap = SizedBox(width: space);
         return widget.openEditor
             ? const SizedBox.shrink()
             : Row(
-                children: [
-                  GestureInterceptor(
-                    child: IconButton(
-                      tooltip: widget.configs.i18n.cancel,
-                      onPressed: widget.onClose,
-                      icon: Icon(widget.configs.mainEditor.icons.closeEditor),
-                      style: whatsAppButtonStyle,
-                    ),
-                  ),
-                  const Spacer(),
-                  gap,
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 150),
-                    transitionBuilder: (child, animation) => ScaleTransition(
-                      scale: animation,
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
-                    ),
-                    child: widget.canUndo
-                        ? GestureInterceptor(
-                            child: IconButton(
-                              tooltip: widget.configs.i18n.undo,
-                              onPressed: widget.onTapUndo,
-                              icon: Icon(
-                                  widget.configs.mainEditor.icons.undoAction),
-                              style: whatsAppButtonStyle,
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                  ),
-                  if (widget.configs.cropRotateEditor.enabled) ...[
-                    gap,
-                    GestureInterceptor(
-                      child: IconButton(
-                        tooltip: widget.configs.i18n.cropRotateEditor
-                            .bottomNavigationBarText,
-                        onPressed: widget.onTapCropRotateEditor,
-                        icon: Icon(
-                            widget.configs.cropRotateEditor.icons.bottomNavBar),
-                        style: whatsAppButtonStyle,
-                      ),
-                    ),
-                  ],
-                  if (widget.configs.stickerEditor.enabled ||
-                      widget.configs.emojiEditor.enabled) ...[
-                    gap,
-                    GestureInterceptor(
-                      child: IconButton(
-                        key: const ValueKey('whatsapp-open-sticker-editor-btn'),
-                        tooltip: widget
-                            .configs.i18n.stickerEditor.bottomNavigationBarText,
-                        onPressed: widget.onTapStickerEditor,
-                        icon: Icon(
-                            widget.configs.stickerEditor.icons.bottomNavBar),
-                        style: whatsAppButtonStyle,
-                      ),
-                    ),
-                  ],
-                  if (widget.configs.textEditor.enabled) ...[
-                    gap,
-                    GestureInterceptor(
-                      child: IconButton(
-                        tooltip: widget
-                            .configs.i18n.textEditor.bottomNavigationBarText,
-                        onPressed: widget.onTapTextEditor,
-                        icon:
-                            Icon(widget.configs.textEditor.icons.bottomNavBar),
-                        style: whatsAppButtonStyle,
-                      ),
-                    ),
-                  ],
-                  if (widget.configs.paintEditor.enabled) ...[
-                    gap,
-                    GestureInterceptor(
-                      child: IconButton(
-                        tooltip: widget
-                            .configs.i18n.paintEditor.bottomNavigationBarText,
-                        onPressed: widget.onTapPaintEditor,
-                        icon:
-                            Icon(widget.configs.paintEditor.icons.bottomNavBar),
-                        style: whatsAppButtonStyle,
-                      ),
-                    ),
-                  ],
-                ],
+                children: _buildToolList(constraints.maxWidth),
               );
       }),
     );
+  }
+
+  List<Widget> _buildToolList(double screenWidth) {
+    final double space = screenWidth < 300 ? 5 : 10;
+    final gap = SizedBox(width: space);
+
+    final tools = widget.configs.mainEditor.tools;
+
+    final items = <Widget>[
+      // Close button (always visible)
+      GestureInterceptor(
+        child: IconButton(
+          tooltip: widget.configs.i18n.cancel,
+          onPressed: widget.onClose,
+          icon: Icon(widget.configs.mainEditor.icons.closeEditor),
+          style: whatsAppButtonStyle,
+        ),
+      ),
+      const Spacer(),
+      gap,
+
+      // Undo button
+      AnimatedSwitcher(
+        duration: const Duration(milliseconds: 150),
+        transitionBuilder: (child, animation) => ScaleTransition(
+          scale: animation,
+          child: FadeTransition(opacity: animation, child: child),
+        ),
+        child: widget.canUndo
+            ? GestureInterceptor(
+                child: IconButton(
+                  tooltip: widget.configs.i18n.undo,
+                  onPressed: widget.onTapUndo,
+                  icon: Icon(widget.configs.mainEditor.icons.undoAction),
+                  style: whatsAppButtonStyle,
+                ),
+              )
+            : const SizedBox.shrink(),
+      ),
+    ];
+
+    // Dynamic tools
+    for (final tool in tools) {
+      switch (tool) {
+        case SubEditorMode.cropRotate:
+          if (!widget.configs.cropRotateEditor.enabled) continue;
+          items.addAll([
+            gap,
+            GestureInterceptor(
+              child: IconButton(
+                tooltip: widget
+                    .configs.i18n.cropRotateEditor.bottomNavigationBarText,
+                onPressed: widget.onTapCropRotateEditor,
+                icon: Icon(widget.configs.cropRotateEditor.icons.bottomNavBar),
+                style: whatsAppButtonStyle,
+              ),
+            ),
+          ]);
+          break;
+
+        case SubEditorMode.emoji:
+          if (!(widget.configs.stickerEditor.enabled ||
+              widget.configs.emojiEditor.enabled)) {
+            continue;
+          }
+          items.addAll([
+            gap,
+            GestureInterceptor(
+              child: IconButton(
+                key: const ValueKey('whatsapp-open-sticker-editor-btn'),
+                tooltip:
+                    widget.configs.i18n.stickerEditor.bottomNavigationBarText,
+                onPressed: widget.onTapStickerEditor,
+                icon: Icon(widget.configs.stickerEditor.icons.bottomNavBar),
+                style: whatsAppButtonStyle,
+              ),
+            ),
+          ]);
+          break;
+
+        case SubEditorMode.text:
+          if (!widget.configs.textEditor.enabled) continue;
+          items.addAll([
+            gap,
+            GestureInterceptor(
+              child: IconButton(
+                tooltip: widget.configs.i18n.textEditor.bottomNavigationBarText,
+                onPressed: widget.onTapTextEditor,
+                icon: Icon(widget.configs.textEditor.icons.bottomNavBar),
+                style: whatsAppButtonStyle,
+              ),
+            ),
+          ]);
+          break;
+
+        case SubEditorMode.paint:
+          if (!widget.configs.paintEditor.enabled) continue;
+          items.addAll([
+            gap,
+            GestureInterceptor(
+              child: IconButton(
+                tooltip:
+                    widget.configs.i18n.paintEditor.bottomNavigationBarText,
+                onPressed: widget.onTapPaintEditor,
+                icon: Icon(widget.configs.paintEditor.icons.bottomNavBar),
+                style: whatsAppButtonStyle,
+              ),
+            ),
+          ]);
+          break;
+
+        // ignore tools that aren't relevant for this WhatsApp-like toolbar
+        default:
+          continue;
+      }
+    }
+
+    return items;
   }
 }

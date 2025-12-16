@@ -139,7 +139,8 @@ class MainEditorInteractiveContent extends StatelessWidget {
           ),
 
           /// Build crop area overlay
-          if (configs.imageGeneration.cropToImageBounds)
+          /// This is responsible for drawing the darkened area outside the crop bounds
+          // if (configs.imageGeneration.cropToImageBounds)
             _buildCropAreaOverlay(),
 
           /// Build video controls
@@ -243,9 +244,7 @@ class MainEditorInteractiveContent extends StatelessWidget {
         stream: controllers.cropLayerPainterCtrl.stream,
         builder: (context, snapshot) {
           return CustomPaint(
-            foregroundPainter: configs.imageGeneration.cropToImageBounds
-                ? _buildCropLayerPainter()
-                : null,
+            foregroundPainter: _buildCropLayerPainter(),
             child: const SizedBox.expand(),
           );
         },
@@ -255,15 +254,14 @@ class MainEditorInteractiveContent extends StatelessWidget {
 
   CropLayerPainter _buildCropLayerPainter() {
     final transformConfigs = stateManager.transformConfigs;
-    final hasTransformChanges = transformConfigs.isNotEmpty;
     final cropMode = transformConfigs.cropMode;
 
     return CropLayerPainter(
       opacity: configs.mainEditor.style.outsideCaptureAreaLayerOpacity,
       backgroundColor: configs.mainEditor.style.background,
-      imgRatio: hasTransformChanges
-          ? transformConfigs.cropRect.size.aspectRatio
-          : sizesManager.decodedImageSize.aspectRatio,
+      imgRatio: configs.paintEditor.initAspectRatio
+          ?? configs.cropRotateEditor.initAspectRatio
+          ?? transformConfigs.cropRect.size.aspectRatio,
       isRoundCropper: cropMode == CropMode.oval,
       is90DegRotated: transformConfigs.is90DegRotated,
       interactiveViewerScale:

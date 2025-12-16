@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove the deprecated values when releasing version 12.0.0.
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -137,64 +140,84 @@ class MainEditorBottombar extends StatelessWidget {
 
   /// Builds a list of editor action buttons dynamically
   List<Widget> _buildEditorButtons() {
-    return [
-      if (configs.paintEditor.enabled)
-        _buildActionButton(
-          key: const ValueKey('open-paint-editor-btn'),
-          label: configs.i18n.paintEditor.bottomNavigationBarText,
-          icon: configs.paintEditor.icons.bottomNavBar,
-          onPressed: openPaintEditor,
-        ),
-      if (configs.textEditor.enabled)
-        _buildActionButton(
-          key: const ValueKey('open-text-editor-btn'),
-          label: configs.i18n.textEditor.bottomNavigationBarText,
-          icon: configs.textEditor.icons.bottomNavBar,
-          onPressed: openTextEditor,
-        ),
-      if (configs.cropRotateEditor.enabled)
-        _buildActionButton(
-          key: const ValueKey('open-crop-rotate-editor-btn'),
-          label: configs.i18n.cropRotateEditor.bottomNavigationBarText,
-          icon: configs.cropRotateEditor.icons.bottomNavBar,
-          onPressed: openCropRotateEditor,
-        ),
-      if (configs.tuneEditor.enabled)
-        _buildActionButton(
-          key: const ValueKey('open-tune-editor-btn'),
-          label: configs.i18n.tuneEditor.bottomNavigationBarText,
-          icon: configs.tuneEditor.icons.bottomNavBar,
-          onPressed: openTuneEditor,
-        ),
-      if (configs.filterEditor.enabled)
-        _buildActionButton(
-          key: const ValueKey('open-filter-editor-btn'),
-          label: configs.i18n.filterEditor.bottomNavigationBarText,
-          icon: configs.filterEditor.icons.bottomNavBar,
-          onPressed: openFilterEditor,
-        ),
-      if (configs.blurEditor.enabled)
-        _buildActionButton(
-          key: const ValueKey('open-blur-editor-btn'),
-          label: configs.i18n.blurEditor.bottomNavigationBarText,
-          icon: configs.blurEditor.icons.bottomNavBar,
-          onPressed: openBlurEditor,
-        ),
-      if (configs.emojiEditor.enabled)
-        _buildActionButton(
-          key: const ValueKey('open-emoji-editor-btn'),
-          label: configs.i18n.emojiEditor.bottomNavigationBarText,
-          icon: configs.emojiEditor.icons.bottomNavBar,
-          onPressed: openEmojiEditor,
-        ),
-      if (configs.stickerEditor.enabled)
-        _buildActionButton(
-          key: const ValueKey('open-sticker-editor-btn'),
-          label: configs.i18n.stickerEditor.bottomNavigationBarText,
-          icon: configs.stickerEditor.icons.bottomNavBar,
-          onPressed: openStickerEditor,
-        ),
-    ];
+    return configs.mainEditor.tools
+        .map((tool) {
+          switch (tool) {
+            case SubEditorMode.paint:
+              if (!configs.paintEditor.enabled) return null;
+              return _buildActionButton(
+                key: const ValueKey('open-paint-editor-btn'),
+                label: configs.i18n.paintEditor.bottomNavigationBarText,
+                icon: configs.paintEditor.icons.bottomNavBar,
+                onPressed: openPaintEditor,
+              );
+
+            case SubEditorMode.text:
+              if (!configs.textEditor.enabled) return null;
+              return _buildActionButton(
+                key: const ValueKey('open-text-editor-btn'),
+                label: configs.i18n.textEditor.bottomNavigationBarText,
+                icon: configs.textEditor.icons.bottomNavBar,
+                onPressed: openTextEditor,
+              );
+
+            case SubEditorMode.cropRotate:
+              if (!configs.cropRotateEditor.enabled) return null;
+              return _buildActionButton(
+                key: const ValueKey('open-crop-rotate-editor-btn'),
+                label: configs.i18n.cropRotateEditor.bottomNavigationBarText,
+                icon: configs.cropRotateEditor.icons.bottomNavBar,
+                onPressed: openCropRotateEditor,
+              );
+
+            case SubEditorMode.tune:
+              if (!configs.tuneEditor.enabled) return null;
+              return _buildActionButton(
+                key: const ValueKey('open-tune-editor-btn'),
+                label: configs.i18n.tuneEditor.bottomNavigationBarText,
+                icon: configs.tuneEditor.icons.bottomNavBar,
+                onPressed: openTuneEditor,
+              );
+
+            case SubEditorMode.filter:
+              if (!configs.filterEditor.enabled) return null;
+              return _buildActionButton(
+                key: const ValueKey('open-filter-editor-btn'),
+                label: configs.i18n.filterEditor.bottomNavigationBarText,
+                icon: configs.filterEditor.icons.bottomNavBar,
+                onPressed: openFilterEditor,
+              );
+
+            case SubEditorMode.blur:
+              if (!configs.blurEditor.enabled) return null;
+              return _buildActionButton(
+                key: const ValueKey('open-blur-editor-btn'),
+                label: configs.i18n.blurEditor.bottomNavigationBarText,
+                icon: configs.blurEditor.icons.bottomNavBar,
+                onPressed: openBlurEditor,
+              );
+
+            case SubEditorMode.emoji:
+              if (!configs.emojiEditor.enabled) return null;
+              return _buildActionButton(
+                key: const ValueKey('open-emoji-editor-btn'),
+                label: configs.i18n.emojiEditor.bottomNavigationBarText,
+                icon: configs.emojiEditor.icons.bottomNavBar,
+                onPressed: openEmojiEditor,
+              );
+
+            case SubEditorMode.sticker:
+              if (!configs.stickerEditor.enabled) return null;
+              return _buildActionButton(
+                key: const ValueKey('open-sticker-editor-btn'),
+                label: configs.i18n.stickerEditor.bottomNavigationBarText,
+                icon: configs.stickerEditor.icons.bottomNavBar,
+                onPressed: openStickerEditor,
+              );
+          }
+        })
+        .whereType<Widget>()
+        .toList();
   }
 
   /// Helper to build a single action button

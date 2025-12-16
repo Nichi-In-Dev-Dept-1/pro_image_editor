@@ -1,8 +1,8 @@
 // Flutter imports:
 import 'package:flutter/widgets.dart';
 
-// Project imports:
 import '/features/paint_editor/paint_editor.dart';
+import '../layers/paint_layer.dart';
 import 'standalone_editor_callbacks.dart';
 
 /// A class representing callbacks for the paint editor.
@@ -20,6 +20,7 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
     this.onEditorZoomMatrix4Change,
     this.onOpacityChange,
     this.onDoubleTap,
+    this.onEditLayer,
     this.onTap,
     super.onInit,
     super.onAfterViewInit,
@@ -59,6 +60,87 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
   /// A callback function that is triggered when the user `doubleTap`
   /// on the body.
   final Function()? onDoubleTap;
+
+  /// Callback function invoked when a paint layer is being edited.
+  ///
+  /// This function is called when the user attempts to edit an existing paint
+  /// layer in the paint editor. It receives the current [PaintLayer] that is
+  /// being edited and should return a [Future] that completes with the
+  /// modified [PaintLayer], or `null` if the edit operation was
+  /// cancelled or failed.
+  ///
+  /// Parameters:
+  /// - [layer]: The paint layer that is being edited
+  ///
+  /// Returns:
+  /// A [Future] that resolves to the updated [PaintLayer] if the edit was
+  /// successful, or `null` if the edit was cancelled or unsuccessful.
+  ///
+  /// **Example:**
+  /// ```dart
+  ///  callbacks: ProImageEditorCallbacks(
+  ///  paintEditorCallbacks: PaintEditorCallbacks(
+  ///    onEditLayer: (layer) async {
+  ///      return await Navigator.push<PaintLayer>(
+  ///        context,
+  ///        MaterialPageRoute(
+  ///          builder: (context) {
+  ///            return Scaffold(
+  ///              appBar: AppBar(title: const Text('Layer-Editor')),
+  ///              body: ListView(
+  ///                children: [
+  ///                  Container(
+  ///                    clipBehavior: Clip.hardEdge,
+  ///                    decoration: BoxDecoration(
+  ///                      color: Colors.black,
+  ///                      borderRadius: BorderRadius.circular(10),
+  ///                    ),
+  ///                    padding: const EdgeInsets.all(7),
+  ///                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+  ///                    height: 140,
+  ///                    child: FittedBox(
+  ///                      child: SizedBox.fromSize(
+  ///                        size: layer.rawSize,
+  ///                        child: LayerWidgetPaintItem(
+  ///                          willChange: true,
+  ///                          layer: layer,
+  ///                          paintEditorConfigs: const PaintEditorConfigs(),
+  ///                        ),
+  ///                      ),
+  ///                    ),
+  ///                  ),
+  ///                  FilledButton(
+  ///                    onPressed: () {
+  ///                      Color randomColor() {
+  ///                        final Random random = Random();
+  ///                        return Color.fromARGB(
+  ///                          255,
+  ///                          random.nextInt(256),
+  ///                          random.nextInt(256),
+  ///                          random.nextInt(256),
+  ///                        );
+  ///                      }
+  ///
+  ///                      Navigator.pop(
+  ///                        context,
+  ///                        layer.copyWith(
+  ///                          item: layer.item.copyWith(color: randomColor()),
+  ///                        ),
+  ///                      );
+  ///                    },
+  ///                    child: const Text('Toggle Color'),
+  ///                  ),
+  ///                ],
+  ///              ),
+  ///            );
+  ///          },
+  ///        ),
+  ///      );
+  ///    },
+  ///  ),
+  ///),
+  /// ```
+  final Future<PaintLayer?> Function(PaintLayer layer)? onEditLayer;
 
   /// Callback function that is triggered when a tap down event occurs on the
   /// canvas.
@@ -212,6 +294,7 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
     Function()? onRedo,
     Function()? onUndo,
     Function()? onCloseEditor,
+    Future<PaintLayer?> Function(PaintLayer layer)? onEditLayer,
   }) {
     return PaintEditorCallbacks(
       onLineWidthChanged: onLineWidthChanged ?? this.onLineWidthChanged,
@@ -236,6 +319,7 @@ class PaintEditorCallbacks extends StandaloneEditorCallbacks {
       onRedo: onRedo ?? this.onRedo,
       onUndo: onUndo ?? this.onUndo,
       onCloseEditor: onCloseEditor ?? this.onCloseEditor,
+      onEditLayer: onEditLayer ?? this.onEditLayer,
     );
   }
 }

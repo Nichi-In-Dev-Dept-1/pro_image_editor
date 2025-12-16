@@ -47,11 +47,8 @@ class DrawPaintItem extends CustomPainter {
     PathBuilderBase.fromMode(
       item: item,
       scale: scale,
-    ).draw(
-      canvas: canvas,
-      size: size,
-      configs: paintEditorConfigs,
-    );
+      paintEditorConfigs: paintEditorConfigs,
+    ).draw(canvas: canvas, size: size);
   }
 
   @override
@@ -67,6 +64,7 @@ class DrawPaintItem extends CustomPainter {
       enabledHitDetection: enabledHitDetection,
       isSelected: selected,
       scaleFactor: scale,
+      paintEditorConfigs: paintEditorConfigs,
     );
     onHitChanged?.call(hasHit);
     return hasHit;

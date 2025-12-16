@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
+import 'package:pro_image_editor/shared/utils/transparent_image_generator_utils.dart';
 
 import '/core/mixin/example_helper.dart';
 import '/shared/widgets/material_icon_button.dart';
@@ -217,38 +217,19 @@ class _FrameExampleState extends State<FrameExample>
   }
 
   Future<void> _createTransparentBackgroundImage() async {
-    Size frameSize = await _frameSize;
-    double width = frameSize.width;
-    double height = frameSize.height;
+    var frameBytes = await _frameImage.safeByteArray(context);
 
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(
-        recorder, Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()));
-    final paint = Paint()..color = Colors.transparent;
-    canvas.drawRect(
-        Rect.fromLTWH(0.0, 0.0, width.toDouble(), height.toDouble()), paint);
+    var decodedImage = await decodeImageFromList(frameBytes);
 
-    final picture = recorder.endRecording();
-    final img = await picture.toImage(width.toInt(), height.toInt());
-    final pngBytes = await img.toByteData(format: ui.ImageByteFormat.png);
-
-    final bytes = pngBytes!.buffer.asUint8List();
+    final bytes = await createTransparentImage(Size(
+      decodedImage.width.toDouble(),
+      decodedImage.height.toDouble(),
+    ));
     // ignore: use_build_context_synchronously
     await precacheImage(MemoryImage(bytes), context);
 
     _transparentBytes = bytes;
     if (mounted) setState(() {});
-  }
-
-  Future<Size> get _frameSize async {
-    var bytes = await _frameImage.safeByteArray(context);
-
-    var decodedImage = await decodeImageFromList(bytes);
-
-    return Size(
-      decodedImage.width.toDouble(),
-      decodedImage.height.toDouble(),
-    );
   }
 
   EditorImage get _frameImage => EditorImage(
@@ -306,6 +287,17 @@ class _FrameExampleState extends State<FrameExample>
             selectable: LayerInteractionSelectable.disabled,
           ),
           mainEditor: MainEditorConfigs(
+            /// Crop-Rotate, Filter, Tune and Blur editors are not supported
+            tools: [
+              SubEditorMode.paint,
+              SubEditorMode.text,
+              // SubEditorMode.cropRotate,
+              // SubEditorMode.tune,
+              // SubEditorMode.filter,
+              // SubEditorMode.blur,
+              SubEditorMode.emoji,
+              // SubEditorMode.sticker,
+            ],
             enableCloseButton: !isDesktopMode(context),
             widgets: MainEditorWidgets(
               bodyItemsRecorded: (editor, rebuildStream) => [
@@ -338,46 +330,36 @@ class _FrameExampleState extends State<FrameExample>
                   SystemUiOverlayStyle(statusBarColor: Colors.black),
             ),
           ),
-
-          /// Crop-Rotate, Filter, Tune and Blur editors are not supported
           cropRotateEditor: const CropRotateEditorConfigs(
-            enabled: false,
 
-            /// widgets: CropRotateEditorWidgets(
-            ///   bodyItems: (editor, rebuildStream) => [
-            ///     _buildFrame(editor.editorBodySize, rebuildStream),
-            ///   ],
-            /// ),
-          ),
+              /// widgets: CropRotateEditorWidgets(
+              ///   bodyItems: (editor, rebuildStream) => [
+              ///     _buildFrame(editor.editorBodySize, rebuildStream),
+              ///   ],
+              /// ),
+              ),
           filterEditor: const FilterEditorConfigs(
-            enabled: false,
-
-            /// widgets: FilterEditorWidgets(
-            ///   bodyItemsRecorded: (editor, rebuildStream) => [
-            ///     _buildFrame(editor.editorBodySize, rebuildStream),
-            ///   ],
-            /// ),
-          ),
+              // widgets: FilterEditorWidgets(
+              //   bodyItemsRecorded: (editor, rebuildStream) => [
+              //     _buildFrame(editor.editorBodySize, rebuildStream),
+              //   ],
+              // ),
+              ),
           blurEditor: const BlurEditorConfigs(
-            enabled: false,
-
-            /// widgets: BlurEditorWidgets(
-            ///   bodyItemsRecorded: (editor, rebuildStream) => [
-            ///     _buildFrame(editor.editorBodySize, rebuildStream),
-            ///   ],
-            /// ),
-          ),
+              // widgets: BlurEditorWidgets(
+              //   bodyItemsRecorded: (editor, rebuildStream) => [
+              //     _buildFrame(editor.editorBodySize, rebuildStream),
+              //   ],
+              // ),
+              ),
           tuneEditor: const TuneEditorConfigs(
-            enabled: false,
-
-            /// widgets: TuneEditorWidgets(
-            ///   bodyItemsRecorded: (editor, rebuildStream) => [
-            ///     _buildFrame(editor.editorBodySize, rebuildStream),
-            ///   ],
-            /// ),
-          ),
+              // widgets: TuneEditorWidgets(
+              //   bodyItemsRecorded: (editor, rebuildStream) => [
+              //     _buildFrame(editor.editorBodySize, rebuildStream),
+              //   ],
+              // ),
+              ),
           stickerEditor: StickerEditorConfigs(
-            enabled: false,
             initWidth: _layerInitWidth / _initScale,
             builder: (setLayer, scrollController) {
               // Optionally your code to pick layers

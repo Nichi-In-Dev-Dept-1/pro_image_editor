@@ -263,6 +263,7 @@ class FilterEditorState extends State<FilterEditor>
       data: theme.copyWith(
           tooltipTheme: theme.tooltipTheme.copyWith(preferBelow: true)),
       child: ExtendedPopScope(
+        canPop: filterEditorConfigs.enableGesturePop,
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: filterEditorConfigs.style.uiOverlayStyle,
           child: SafeArea(
@@ -365,6 +366,7 @@ class FilterEditorState extends State<FilterEditor>
                 configs: configs,
                 image: editorImage,
                 videoPlayer: videoController?.videoPlayer,
+                blankSize: initConfigs.mainImageSize,
                 filters: _getActiveFilters(),
                 tuneAdjustments: appliedTuneAdjustments,
                 blurFactor: appliedBlurFactor,

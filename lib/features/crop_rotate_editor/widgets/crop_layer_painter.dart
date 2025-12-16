@@ -31,6 +31,7 @@ class CropLayerPainter extends CustomPainter {
     required this.opacity,
     this.interactiveViewerScale = 1,
     this.interactiveViewerOffset = Offset.zero,
+    this.showCutOutFrame = false,
   });
 
   /// The aspect ratio of the image.
@@ -70,9 +71,12 @@ class CropLayerPainter extends CustomPainter {
   /// initial position.
   final Offset interactiveViewerOffset;
 
+  /// Whether to show cut out frame
+  final bool showCutOutFrame;
+
   @override
   void paint(Canvas canvas, Size size) {
-    if (opacity == 0 || imgRatio <= 0) return;
+    // if (opacity == 0 || imgRatio <= 0) return;
     _drawDarkenOutside(canvas: canvas, rawSize: size);
   }
 
@@ -80,6 +84,7 @@ class CropLayerPainter extends CustomPainter {
     required Canvas canvas,
     required Size rawSize,
   }) {
+    debugPrint('interactiveViewerOffset: $interactiveViewerOffset}');
     Size size = rawSize * interactiveViewerScale;
     var center = Offset(
           size.width / 2,
@@ -87,6 +92,7 @@ class CropLayerPainter extends CustomPainter {
         ) +
         interactiveViewerOffset;
 
+    debugPrint('center: $center');
     Path path = Path()
       // FillType "evenOdd" is important for the canvas web renderer
       ..fillType = PathFillType.evenOdd
@@ -124,32 +130,119 @@ class CropLayerPainter extends CustomPainter {
       /// Subtract the area of the current rectangle from the path for the
       /// entire canvas
       path = Path.combine(PathOperation.difference, path, rectPath);
+
+      /// Draw the darkened area
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = backgroundColor.withValues(alpha: opacity)
+          ..style = PaintingStyle.fill,
+      );
     } else {
-      Path rectPath = Path()
-        ..addRect(
-          Rect.fromCenter(
-            center: center,
-            width: w,
-            height: h,
-          ),
-        );
+     Size size = rawSize * interactiveViewerScale;
+      Offset center = Offset(size.width / 2, size.height / 2) + interactiveViewerOffset;
 
-      /// Subtract the area of the current rectangle from the path for the
-      /// entire canvas
-      path = Path.combine(PathOperation.difference, path, rectPath);
+      Path overlay = Path()
+        ..fillType = PathFillType.evenOdd
+        ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
+      double ratio = is90DegRotated ? 1 / imgRatio : imgRatio;
+      double w, h;
+
+      if (size.aspectRatio > ratio) {
+        h = size.height;
+        w = h * ratio;
+      } else {
+        w = size.width;
+        h = w / ratio;
+      }
+
+      Rect cropRect = Rect.fromCenter(center: center, width: w, height: h);
+
+      // subtract crop area
+      overlay = Path.combine(
+        PathOperation.difference,
+        overlay,
+        Path()..addRect(cropRect),
+      );
+
+      // Draw dark outside area
+      canvas.drawPath(
+        overlay,
+        Paint()
+          ..color = backgroundColor.withValues(alpha:opacity)
+          ..style = PaintingStyle.fill,
+      );
+      debugPrint('show cut off frame : $showCutOutFrame');
+      if(showCutOutFrame)
+      _drawCornerHandles(canvas, cropRect);
     }
-
-    /// Draw the darkened area
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = backgroundColor.withValues(alpha: opacity)
-        ..style = PaintingStyle.fill,
-    );
+    debugPrint('draw dark area $backgroundColor & opacity $opacity');
   }
+
+  /// Draw corner handles for the crop rectangle.
+  void _drawCornerHandles(Canvas canvas, Rect rect) {
+    final paint = Paint()
+      ..color = Colors.blueAccent
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.square;
+
+    double L = 22;
+    double t = 2.5;
+
+    // Top Left
+    canvas..drawLine(
+        Offset(rect.left + t, rect.top + t),
+        Offset(rect.left + t + L, rect.top + t),
+        paint)
+    ..drawLine(
+        Offset(rect.left + t, rect.top + t),
+        Offset(rect.left + t, rect.top + t + L),
+        paint)
+
+    // Top Right
+    ..drawLine(
+        Offset(rect.right - t, rect.top + t),
+        Offset(rect.right - t - L, rect.top + t),
+        paint)
+    ..drawLine(
+        Offset(rect.right - t, rect.top + t),
+        Offset(rect.right - t, rect.top + t + L),
+        paint)
+
+    // Bottom Left
+    ..drawLine(
+        Offset(rect.left + t, rect.bottom - t),
+        Offset(rect.left + t + L, rect.bottom - t),
+        paint)
+    ..drawLine(
+        Offset(rect.left + t, rect.bottom - t),
+        Offset(rect.left + t, rect.bottom - t - L),
+        paint)
+
+    // Bottom Right
+    ..drawLine(
+        Offset(rect.right - t, rect.bottom - t),
+        Offset(rect.right - t - L, rect.bottom - t),
+        paint)
+    ..drawLine(
+        Offset(rect.right - t, rect.bottom - t),
+        Offset(rect.right - t, rect.bottom - t - L),
+        paint);
+  }
+
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    debugPrint('inside should repaint: \noldDelegate & CropLayer changed ${ oldDelegate is! CropLayerPainter ||
+        oldDelegate.imgRatio != imgRatio ||
+        oldDelegate.is90DegRotated != is90DegRotated ||
+        oldDelegate.backgroundColor != backgroundColor ||
+        oldDelegate.opacity != opacity ||
+        oldDelegate.interactiveViewerScale != interactiveViewerScale ||
+        oldDelegate.interactiveViewerOffset != interactiveViewerOffset ||
+        oldDelegate.is90DegRotated != is90DegRotated} '
+        '\nimgRatio: $imgRatio is90DegRotated: $is90DegRotated & backgroundColor: $backgroundColor & opacity: $opacity');
     return oldDelegate is! CropLayerPainter ||
         oldDelegate.imgRatio != imgRatio ||
         oldDelegate.is90DegRotated != is90DegRotated ||

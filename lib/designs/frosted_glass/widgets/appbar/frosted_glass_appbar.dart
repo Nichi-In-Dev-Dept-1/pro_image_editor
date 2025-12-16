@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove the deprecated values when releasing version 12.0.0.
+
 // Flutter imports:
 import 'package:flutter/material.dart';
 
@@ -151,96 +154,100 @@ class _FrostedGlassActionBarState extends State<FrostedGlassActionBar> {
                       spacing: 12,
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (widget.editor.configs.paintEditor.enabled)
-                          IconButton(
-                            tooltip: widget.editor.configs.i18n.paintEditor
-                                .bottomNavigationBarText,
-                            onPressed: widget.editor.openPaintEditor,
-                            icon: Icon(widget
-                                .editor.paintEditorConfigs.icons.bottomNavBar),
-                          ),
-                        if (widget.editor.configs.textEditor.enabled)
-                          IconButton(
-                            tooltip: widget.editor.configs.i18n.textEditor
-                                .bottomNavigationBarText,
-                            onPressed: () => widget.editor.openTextEditor(
-                              duration: const Duration(milliseconds: 150),
-                            ),
-                            icon: Icon(widget
-                                .editor.textEditorConfigs.icons.bottomNavBar),
-                          ),
-                        if (widget.editor.configs.cropRotateEditor.enabled)
-                          IconButton(
-                            tooltip: widget.editor.configs.i18n.cropRotateEditor
-                                .bottomNavigationBarText,
-                            onPressed: widget.editor.openCropRotateEditor,
-                            icon: Icon(widget.editor.cropRotateEditorConfigs
-                                .icons.bottomNavBar),
-                          ),
-                        if (widget.editor.configs.tuneEditor.enabled)
-                          IconButton(
-                            tooltip: widget.editor.configs.i18n.tuneEditor
-                                .bottomNavigationBarText,
-                            onPressed: () =>
-                                widget.editor.openTuneEditor(enableHero: false),
-                            icon: Icon(widget
-                                .editor.tuneEditorConfigs.icons.bottomNavBar),
-                          ),
-                        if (widget.editor.configs.filterEditor.enabled)
-                          IconButton(
-                            tooltip: widget.editor.configs.i18n.filterEditor
-                                .bottomNavigationBarText,
-                            onPressed: widget.editor.openFilterEditor,
-                            icon: Icon(widget
-                                .editor.filterEditorConfigs.icons.bottomNavBar),
-                          ),
-                        if (widget.editor.configs.blurEditor.enabled)
-                          IconButton(
-                            tooltip: widget.editor.configs.i18n.blurEditor
-                                .bottomNavigationBarText,
-                            onPressed: widget.editor.openBlurEditor,
-                            icon: Icon(widget
-                                .editor.blurEditorConfigs.icons.bottomNavBar),
-                          ),
-                        if (widget.editor.configs.stickerEditor.enabled ||
-                            widget.editor.configs.emojiEditor.enabled)
-                          IconButton(
-                            key: const ValueKey(
-                                'whatsapp-open-sticker-editor-btn'),
-                            tooltip: widget.editor.configs.i18n.stickerEditor
-                                .bottomNavigationBarText,
-                            onPressed: widget.openStickerEditor,
-                            icon: Icon(widget.editor.stickerEditorConfigs.icons
-                                .bottomNavBar),
-                          ),
-                      ],
+                      children: _buildItemList(),
                     ),
                   ),
                 ),
               ),
             )
-          /*  AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 150),
-                  transitionBuilder: (child, animation) => ScaleTransition(
-                    scale: animation,
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    ),
-                  ),
-                  child: widget.editor.canUndo
-                      ?IconButton(
-                          tooltip: widget.editor.configs.i18n.undo,
-                          onPressed: widget.editor.undoAction,
-                          icon: Icon(widget.editor.configs.icons.undoAction),
-                         
-                        )
-                      : const SizedBox.shrink(),
-                ),
-             */
         ],
       ),
     );
+  }
+
+  List<Widget> _buildItemList() {
+    final tools = widget.editor.configs.mainEditor.tools;
+
+    return tools
+        .map((tool) {
+          switch (tool) {
+            case SubEditorMode.paint:
+              if (!widget.editor.configs.paintEditor.enabled) return null;
+              return IconButton(
+                tooltip: widget
+                    .editor.configs.i18n.paintEditor.bottomNavigationBarText,
+                onPressed: widget.editor.openPaintEditor,
+                icon: Icon(widget.editor.paintEditorConfigs.icons.bottomNavBar),
+              );
+
+            case SubEditorMode.text:
+              if (!widget.editor.configs.textEditor.enabled) return null;
+              return IconButton(
+                tooltip: widget
+                    .editor.configs.i18n.textEditor.bottomNavigationBarText,
+                onPressed: () => widget.editor.openTextEditor(
+                  duration: const Duration(milliseconds: 150),
+                ),
+                icon: Icon(widget.editor.textEditorConfigs.icons.bottomNavBar),
+              );
+
+            case SubEditorMode.cropRotate:
+              if (!widget.editor.configs.cropRotateEditor.enabled) return null;
+              return IconButton(
+                tooltip: widget.editor.configs.i18n.cropRotateEditor
+                    .bottomNavigationBarText,
+                onPressed: widget.editor.openCropRotateEditor,
+                icon: Icon(
+                    widget.editor.cropRotateEditorConfigs.icons.bottomNavBar),
+              );
+
+            case SubEditorMode.tune:
+              if (!widget.editor.configs.tuneEditor.enabled) return null;
+              return IconButton(
+                tooltip: widget
+                    .editor.configs.i18n.tuneEditor.bottomNavigationBarText,
+                onPressed: () =>
+                    widget.editor.openTuneEditor(enableHero: false),
+                icon: Icon(widget.editor.tuneEditorConfigs.icons.bottomNavBar),
+              );
+
+            case SubEditorMode.filter:
+              if (!widget.editor.configs.filterEditor.enabled) return null;
+              return IconButton(
+                tooltip: widget
+                    .editor.configs.i18n.filterEditor.bottomNavigationBarText,
+                onPressed: widget.editor.openFilterEditor,
+                icon:
+                    Icon(widget.editor.filterEditorConfigs.icons.bottomNavBar),
+              );
+
+            case SubEditorMode.blur:
+              if (!widget.editor.configs.blurEditor.enabled) return null;
+              return IconButton(
+                tooltip: widget
+                    .editor.configs.i18n.blurEditor.bottomNavigationBarText,
+                onPressed: widget.editor.openBlurEditor,
+                icon: Icon(widget.editor.blurEditorConfigs.icons.bottomNavBar),
+              );
+
+            case SubEditorMode.emoji:
+              if (!(widget.editor.configs.stickerEditor.enabled ||
+                  widget.editor.configs.emojiEditor.enabled)) {
+                return null;
+              }
+              return IconButton(
+                key: const ValueKey('whatsapp-open-sticker-editor-btn'),
+                tooltip: widget
+                    .editor.configs.i18n.stickerEditor.bottomNavigationBarText,
+                onPressed: widget.openStickerEditor,
+                icon:
+                    Icon(widget.editor.stickerEditorConfigs.icons.bottomNavBar),
+              );
+            case SubEditorMode.sticker:
+              return null;
+          }
+        })
+        .whereType<Widget>()
+        .toList();
   }
 }

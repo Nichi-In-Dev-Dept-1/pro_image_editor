@@ -7,6 +7,7 @@ import '/shared/extensions/num_extension.dart';
 import '/shared/services/import_export/utils/key_minifier.dart';
 import '/shared/utils/parser/double_parser.dart';
 import 'layer.dart';
+import 'layer_interaction.dart';
 
 /// A class representing a layer with custom paint content.
 ///
@@ -144,6 +145,41 @@ class PaintLayer extends Layer {
         },
       if (paintLayer.opacity != opacity) 'opacity': opacity,
     };
+  }
+
+  /// Creates a copy of this [PaintLayer] with the given fields replaced with
+  /// new values.
+  @override
+  PaintLayer copyWith({
+    PaintedModel? item,
+    Size? rawSize,
+    double? opacity,
+    Offset? offset,
+    double? rotation,
+    double? scale,
+    bool? flipX,
+    bool? flipY,
+    LayerInteraction? interaction,
+    Map<String, dynamic>? meta,
+    BoxConstraints? boxConstraints,
+    String? id,
+    String? groupId,
+  }) {
+    return PaintLayer(
+      item: item ?? this.item,
+      rawSize: rawSize ?? this.rawSize,
+      opacity: opacity ?? this.opacity,
+      offset: offset ?? this.offset,
+      rotation: rotation ?? this.rotation,
+      scale: scale ?? this.scale,
+      id: id ?? this.id,
+      flipX: flipX ?? this.flipX,
+      flipY: flipY ?? this.flipY,
+      interaction: interaction ?? this.interaction,
+      meta: meta ?? this.meta,
+      boxConstraints: boxConstraints ?? this.boxConstraints,
+      groupId: groupId ?? this.groupId,
+    );
   }
 
   @override

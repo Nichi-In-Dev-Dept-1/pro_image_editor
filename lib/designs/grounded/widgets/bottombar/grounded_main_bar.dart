@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+// TODO: Remove the deprecated values when releasing version 12.0.0.
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -174,114 +177,151 @@ class GroundedMainBarState extends State<GroundedMainBar>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        if (paintEditorConfigs.enabled)
-                          FlatIconTextButton(
-                            spacing: 7,
-                            label: Text(
-                                i18n.paintEditor.bottomNavigationBarText,
-                                style: _bottomTextStyle),
-                            icon: Icon(
-                              paintEditorConfigs.icons.bottomNavBar,
-                              size: _bottomIconSize,
-                              color: _foreGroundColor,
-                            ),
-                            onPressed: widget.editor.openPaintEditor,
-                          ),
-                        if (textEditorConfigs.enabled)
-                          FlatIconTextButton(
-                            spacing: 7,
-                            label: Text(i18n.textEditor.bottomNavigationBarText,
-                                style: _bottomTextStyle),
-                            icon: Icon(
-                              textEditorConfigs.icons.bottomNavBar,
-                              size: _bottomIconSize,
-                              color: _foreGroundColor,
-                            ),
-                            onPressed: widget.editor.openTextEditor,
-                          ),
-                        if (cropRotateEditorConfigs.enabled)
-                          FlatIconTextButton(
-                            spacing: 7,
-                            label: Text(
-                                i18n.cropRotateEditor.bottomNavigationBarText,
-                                style: _bottomTextStyle),
-                            icon: Icon(
-                              cropRotateEditorConfigs.icons.bottomNavBar,
-                              size: _bottomIconSize,
-                              color: _foreGroundColor,
-                            ),
-                            onPressed: widget.editor.openCropRotateEditor,
-                          ),
-                        if (tuneEditorConfigs.enabled)
-                          FlatIconTextButton(
-                            spacing: 7,
-                            label: Text(i18n.tuneEditor.bottomNavigationBarText,
-                                style: _bottomTextStyle),
-                            icon: Icon(
-                              tuneEditorConfigs.icons.bottomNavBar,
-                              size: _bottomIconSize,
-                              color: _foreGroundColor,
-                            ),
-                            onPressed: widget.editor.openTuneEditor,
-                          ),
-                        if (filterEditorConfigs.enabled)
-                          FlatIconTextButton(
-                            spacing: 7,
-                            label: Text(
-                                i18n.filterEditor.bottomNavigationBarText,
-                                style: _bottomTextStyle),
-                            icon: Icon(
-                              filterEditorConfigs.icons.bottomNavBar,
-                              size: _bottomIconSize,
-                              color: _foreGroundColor,
-                            ),
-                            onPressed: widget.editor.openFilterEditor,
-                          ),
-                        if (blurEditorConfigs.enabled)
-                          FlatIconTextButton(
-                            spacing: 7,
-                            label: Text(i18n.blurEditor.bottomNavigationBarText,
-                                style: _bottomTextStyle),
-                            icon: Icon(
-                              blurEditorConfigs.icons.bottomNavBar,
-                              size: _bottomIconSize,
-                              color: _foreGroundColor,
-                            ),
-                            onPressed: widget.editor.openBlurEditor,
-                          ),
-                        if (emojiEditorConfigs.enabled)
-                          FlatIconTextButton(
-                            spacing: 7,
-                            label: Text(
-                                i18n.emojiEditor.bottomNavigationBarText,
-                                style: _bottomTextStyle),
-                            icon: Icon(
-                              emojiEditorConfigs.icons.bottomNavBar,
-                              size: _bottomIconSize,
-                              color: _foreGroundColor,
-                            ),
-                            onPressed: _openEmojiEditor,
-                          ),
-                        if (stickerEditorConfigs.enabled)
-                          FlatIconTextButton(
-                            spacing: 7,
-                            label: Text(
-                                i18n.stickerEditor.bottomNavigationBarText,
-                                style: _bottomTextStyle),
-                            icon: Icon(
-                              stickerEditorConfigs.icons.bottomNavBar,
-                              size: _bottomIconSize,
-                              color: _foreGroundColor,
-                            ),
-                            onPressed: _openStickerEditor,
-                          ),
-                      ],
+                      children: _buildToolList(),
                     ),
                   ),
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildToolList() {
+    final tools = widget.editor.configs.mainEditor.tools;
+
+    return tools
+        .map((tool) {
+          switch (tool) {
+            case SubEditorMode.paint:
+              if (!paintEditorConfigs.enabled) return null;
+              return FlatIconTextButton(
+                spacing: 7,
+                label: Text(
+                  i18n.paintEditor.bottomNavigationBarText,
+                  style: _bottomTextStyle,
+                ),
+                icon: Icon(
+                  paintEditorConfigs.icons.bottomNavBar,
+                  size: _bottomIconSize,
+                  color: _foreGroundColor,
+                ),
+                onPressed: widget.editor.openPaintEditor,
+              );
+
+            case SubEditorMode.text:
+              if (!textEditorConfigs.enabled) return null;
+              return FlatIconTextButton(
+                spacing: 7,
+                label: Text(
+                  i18n.textEditor.bottomNavigationBarText,
+                  style: _bottomTextStyle,
+                ),
+                icon: Icon(
+                  textEditorConfigs.icons.bottomNavBar,
+                  size: _bottomIconSize,
+                  color: _foreGroundColor,
+                ),
+                onPressed: widget.editor.openTextEditor,
+              );
+
+            case SubEditorMode.cropRotate:
+              if (!cropRotateEditorConfigs.enabled) return null;
+              return FlatIconTextButton(
+                spacing: 7,
+                label: Text(
+                  i18n.cropRotateEditor.bottomNavigationBarText,
+                  style: _bottomTextStyle,
+                ),
+                icon: Icon(
+                  cropRotateEditorConfigs.icons.bottomNavBar,
+                  size: _bottomIconSize,
+                  color: _foreGroundColor,
+                ),
+                onPressed: widget.editor.openCropRotateEditor,
+              );
+
+            case SubEditorMode.tune:
+              if (!tuneEditorConfigs.enabled) return null;
+              return FlatIconTextButton(
+                spacing: 7,
+                label: Text(
+                  i18n.tuneEditor.bottomNavigationBarText,
+                  style: _bottomTextStyle,
+                ),
+                icon: Icon(
+                  tuneEditorConfigs.icons.bottomNavBar,
+                  size: _bottomIconSize,
+                  color: _foreGroundColor,
+                ),
+                onPressed: widget.editor.openTuneEditor,
+              );
+
+            case SubEditorMode.filter:
+              if (!filterEditorConfigs.enabled) return null;
+              return FlatIconTextButton(
+                spacing: 7,
+                label: Text(
+                  i18n.filterEditor.bottomNavigationBarText,
+                  style: _bottomTextStyle,
+                ),
+                icon: Icon(
+                  filterEditorConfigs.icons.bottomNavBar,
+                  size: _bottomIconSize,
+                  color: _foreGroundColor,
+                ),
+                onPressed: widget.editor.openFilterEditor,
+              );
+
+            case SubEditorMode.blur:
+              if (!blurEditorConfigs.enabled) return null;
+              return FlatIconTextButton(
+                spacing: 7,
+                label: Text(
+                  i18n.blurEditor.bottomNavigationBarText,
+                  style: _bottomTextStyle,
+                ),
+                icon: Icon(
+                  blurEditorConfigs.icons.bottomNavBar,
+                  size: _bottomIconSize,
+                  color: _foreGroundColor,
+                ),
+                onPressed: widget.editor.openBlurEditor,
+              );
+
+            case SubEditorMode.emoji:
+              if (!emojiEditorConfigs.enabled) return null;
+              return FlatIconTextButton(
+                spacing: 7,
+                label: Text(
+                  i18n.emojiEditor.bottomNavigationBarText,
+                  style: _bottomTextStyle,
+                ),
+                icon: Icon(
+                  emojiEditorConfigs.icons.bottomNavBar,
+                  size: _bottomIconSize,
+                  color: _foreGroundColor,
+                ),
+                onPressed: _openEmojiEditor,
+              );
+
+            case SubEditorMode.sticker:
+              if (!stickerEditorConfigs.enabled) return null;
+              return FlatIconTextButton(
+                spacing: 7,
+                label: Text(
+                  i18n.stickerEditor.bottomNavigationBarText,
+                  style: _bottomTextStyle,
+                ),
+                icon: Icon(
+                  stickerEditorConfigs.icons.bottomNavBar,
+                  size: _bottomIconSize,
+                  color: _foreGroundColor,
+                ),
+                onPressed: _openStickerEditor,
+              );
+          }
+        })
+        .whereType<Widget>()
+        .toList();
   }
 }
