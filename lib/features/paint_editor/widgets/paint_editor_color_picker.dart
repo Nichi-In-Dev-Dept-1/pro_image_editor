@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '/core/models/editor_configs/pro_image_editor_configs.dart';
 import '/shared/widgets/color_picker/bar_color_picker.dart';
+import '../enums/paint_editor_enum.dart';
 import '../paint_editor.dart';
 
 /// A widget for selecting colors in the paint editor, allowing users to
@@ -37,6 +38,39 @@ class PaintEditorColorPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (state.paintMode == PaintMode.eraser) {
+      return Positioned(
+        top: 10,
+        right: 0,
+        child: SizedBox(
+          height: min(
+            350,
+            MediaQuery.sizeOf(context).height -
+                MediaQuery.viewInsetsOf(context).bottom -
+                kToolbarHeight -
+                kBottomNavigationBarHeight -
+                MediaQuery.paddingOf(context).top -
+                30,
+          ),
+          width: 52,
+          child: RotatedBox(
+            quarterTurns: 3,
+            child: Slider(
+              min: state.paintEditorConfigs.minStrokeWidth,
+              max: state.paintEditorConfigs.maxStrokeWidth,
+              divisions: state.paintEditorConfigs.divisionsStrokeWidth,
+              value: state.eraserRadius.clamp(
+                state.paintEditorConfigs.minStrokeWidth,
+                state.paintEditorConfigs.maxStrokeWidth,
+              ),
+              label: state.eraserRadius.round().toString(),
+              onChanged: state.setStrokeWidth,
+            ),
+          ),
+        ),
+      );
+    }
+
     if (configs.paintEditor.widgets.colorPicker != null) {
       return configs.paintEditor.widgets.colorPicker!.call(
             state,

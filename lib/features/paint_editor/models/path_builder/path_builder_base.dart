@@ -8,6 +8,7 @@ import 'path_builder_circle.dart';
 import 'path_builder_dash_dot_line.dart';
 import 'path_builder_dash_line.dart';
 import 'path_builder_freestyle.dart';
+import 'path_builder_hexagon.dart';
 import 'path_builder_line.dart';
 import 'path_builder_polygon.dart';
 import 'path_builder_rectangular.dart';
@@ -19,16 +20,19 @@ abstract class PathBuilderBase {
     required this.paintEditorConfigs,
     required this.item,
     required this.scale,
+    this.blendMode,
   }) : painter = Paint()
           ..color = item.paint.color
           ..style = item.paint.style
-          ..strokeWidth = item.paint.strokeWidth * scale;
+          ..strokeWidth = item.paint.strokeWidth * scale
+         ..blendMode = blendMode ?? BlendMode.srcOver;
 
   /// Factory that returns the appropriate PathBuilder for a given PaintMode
   factory PathBuilderBase.fromMode({
     required PaintedModel item,
     required double scale,
     required PaintEditorConfigs paintEditorConfigs,
+    BlendMode? blendMode,
   }) {
     switch (item.mode) {
       case PaintMode.line:
@@ -36,48 +40,56 @@ abstract class PathBuilderBase {
           paintEditorConfigs: paintEditorConfigs,
           item: item,
           scale: scale,
+          blendMode: blendMode,
         );
       case PaintMode.arrow:
         return PathBuilderArrow(
           paintEditorConfigs: paintEditorConfigs,
           item: item,
           scale: scale,
+          blendMode: blendMode,
         );
       case PaintMode.dashLine:
         return PathBuilderDashLine(
           paintEditorConfigs: paintEditorConfigs,
           item: item,
           scale: scale,
+          blendMode: blendMode,
         );
       case PaintMode.dashDotLine:
         return PathBuilderDashDotLine(
           paintEditorConfigs: paintEditorConfigs,
           item: item,
           scale: scale,
+          blendMode: blendMode,
         );
       case PaintMode.rect:
         return PathBuilderRectangular(
           paintEditorConfigs: paintEditorConfigs,
           item: item,
           scale: scale,
+          blendMode: blendMode,
         );
       case PaintMode.circle:
         return PathBuilderCircle(
           paintEditorConfigs: paintEditorConfigs,
           item: item,
           scale: scale,
+          blendMode: blendMode,
         );
       case PaintMode.polygon:
         return PathBuilderPolygon(
           paintEditorConfigs: paintEditorConfigs,
           item: item,
           scale: scale,
+          blendMode: blendMode,
         );
       case PaintMode.freeStyle:
         return PathBuilderFreestyle(
           paintEditorConfigs: paintEditorConfigs,
           item: item,
           scale: scale,
+          blendMode: blendMode,
         );
       default:
         throw ArgumentError('${item.mode} is not a valid PaintMode');
@@ -92,6 +104,9 @@ abstract class PathBuilderBase {
 
   /// The scale factor applied to all positions and stroke width.
   final double scale;
+
+  /// Optional blend mode used while painting.
+  final BlendMode? blendMode;
 
   /// The painter used to draw the path.
   final Paint painter;

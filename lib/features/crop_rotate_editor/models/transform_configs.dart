@@ -57,7 +57,11 @@ class TransformConfigs {
   /// `TransformConfigs`, and each key should map to the appropriate value.
   factory TransformConfigs.fromMap(Map<String, dynamic> map) {
     final cropMode =
-        map['cropMode'] == 'oval' ? CropMode.oval : CropMode.rectangular;
+        switch (map['cropMode']) {
+      'oval' => CropMode.oval,
+      'mask' => CropMode.mask,
+      _ => CropMode.rectangular,
+    };
 
     return TransformConfigs(
       angle: safeParseDouble(map['angle']),
@@ -124,6 +128,9 @@ class TransformConfigs {
   /// This getter checks whether the [cropMode] is equal to [CropMode.oval],
   /// indicating that the cropper is in oval mode.
   bool get isOvalCropper => cropMode == CropMode.oval;
+
+  /// Returns `true` if the current crop mode is set to mask cropping.
+  bool get isMaskCropper => cropMode == CropMode.mask;
 
   /// The offset used for transformations.
   ///

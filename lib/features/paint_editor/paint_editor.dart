@@ -35,6 +35,7 @@ import 'models/paint_editor_response_model.dart';
 import 'models/paint_mode_helper_model.dart';
 import 'services/paint_desktop_interaction_manager.dart';
 import 'widgets/paint_canvas.dart';
+import 'widgets/paint_editor_image_eraser_overlay.dart';
 
 export 'enums/paint_editor_enum.dart';
 export 'models/paint_bottom_bar_item.dart';
@@ -268,6 +269,48 @@ class PaintEditorState extends State<PaintEditor>
   /// Indicates whether the editor supports zoom functionality.
   bool get _enableZoom => paintEditorConfigs.enableZoom;
 
+  bool get _isImageEraserMode =>
+      !paintEditorConfigs.showLayers &&
+      paintEditorConfigs.tools.length == 1 &&
+      paintEditorConfigs.tools.first == PaintMode.eraser &&
+      paintEditorConfigs.initialPaintMode == PaintMode.eraser;
+
+  List<PaintLayer> get _imageEraserLayers => activeHistory.layers
+      .whereType<PaintLayer>()
+      .where((layer) => layer.meta?['eraseImage'] == true)
+      .toList();
+
+  PaintedModel? get _activeImageEraserItem {
+    if (!_isImageEraserMode || !paintCtrl.busy || paintCtrl.offsets.length < 2) {
+      return null;
+    }
+
+    return PaintedModel(
+      mode: PaintMode.freeStyle,
+      offsets: [...paintCtrl.offsets],
+      erasedOffsets: [],
+      color: Colors.transparent,
+      strokeWidth: eraserRadius,
+      fill: false,
+      opacity: 1,
+    );
+  }
+
+  Widget _buildBackgroundWithImageEraser() {
+    final background = _buildBackground();
+
+    if (!_isImageEraserMode) return background;
+
+    return PaintEditorImageEraserOverlay(
+      layers: _imageEraserLayers,
+      activeItem: _activeImageEraserItem,
+      editorBodySize: editorBodySize,
+      layerStackScaleFactor: _layerStackTransformHelper.scale,
+      paintEditorConfigs: paintEditorConfigs,
+      child: background,
+    );
+  }
+
   /// A pointer to track the current position in the history stack.
   /// This is used to manage undo and redo operations in the paint editor.
   int historyPointer = 0;
@@ -312,6 +355,12 @@ class PaintEditorState extends State<PaintEditor>
     );
 
     _isFillMode = paintEditorConfigs.isInitiallyFilled;
+    if (paintEditorConfigs.initialPaintMode == PaintMode.eraser) {
+      paintCtrl
+        ..setStrokeWidth(eraserRadius)
+        ..setColor(Colors.transparent)
+        ..setOpacity(1);
+    }
 
     initStreamControllers();
     setTools(paintEditorConfigs.tools);
@@ -447,6 +496,7 @@ class PaintEditorState extends State<PaintEditor>
             icon: paintEditorConfigs.icons.moveAndZoom,
             label: i18n.paintEditor.moveAndZoom,
           );
+
       }
     }
 
@@ -497,7 +547,9 @@ class PaintEditorState extends State<PaintEditor>
       context: context,
       backgroundColor: paintEditorConfigs.style.lineWidthBottomSheetBackground,
       builder: (BuildContext context) => SliderBottomSheet<PaintEditorState>(
-        title: i18n.paintEditor.lineWidth,
+        title: paintMode == PaintMode.eraser
+            ? '${i18n.paintEditor.eraser} ${i18n.paintEditor.lineWidth}'
+            : i18n.paintEditor.lineWidth,
         headerTextStyle: paintEditorConfigs.style.lineWidthBottomSheetTitle,
         max: configs.paintEditor.maxStrokeWidth,
         min: configs.paintEditor.minStrokeWidth,
@@ -505,7 +557,7 @@ class PaintEditorState extends State<PaintEditor>
         closeButton: paintEditorConfigs.widgets.lineWidthCloseButton,
         customSlider: paintEditorConfigs.widgets.sliderLineWidth,
         state: this,
-        value: paintCtrl.strokeWidth,
+        value: paintMode == PaintMode.eraser ? eraserRadius : paintCtrl.strokeWidth,
         designMode: designMode,
         theme: theme,
         rebuildController: rebuildController,
@@ -578,6 +630,12 @@ class PaintEditorState extends State<PaintEditor>
   /// Set the PaintMode for the current state and trigger an update if provided.
   void setMode(PaintMode mode) {
     paintCtrl.setMode(mode);
+    if (mode == PaintMode.eraser) {
+      paintCtrl
+        ..setStrokeWidth(eraserRadius)
+        ..setColor(Colors.transparent)
+        ..setOpacity(1);
+    }
     paintEditorCallbacks?.handlePaintModeChanged(mode);
     rebuildController.add(null);
     interactiveViewer.currentState?.setEnableInteraction(
@@ -682,6 +740,7 @@ class PaintEditorState extends State<PaintEditor>
     );
     historyPointer++;
     _layerStackStream.add(null);
+    setState(() {});
   }
 
   TransformHelper get _layerStackTransformHelper {
@@ -789,11 +848,16 @@ class PaintEditorState extends State<PaintEditor>
       opacity: layer.opacity,
       offset: finalOffset * mainEditorSizeFactor,
       scale: mainEditorSizeFactor,
+      meta: _isImageEraserMode ? {'eraseImage': true} : null,
     );
   }
 
   /// Set the stroke width.
   void setStrokeWidth(double value) {
+    if (paintMode == PaintMode.eraser) {
+      eraserRadius = value;
+      paintCtrl.setColor(Colors.transparent);
+    }
     paintCtrl.setStrokeWidth(value);
     rebuildController.add(null);
     callbacks.paintEditorCallbacks?.handleLineWidthChanged(value);
@@ -815,6 +879,12 @@ class PaintEditorState extends State<PaintEditor>
   /// - Parameters:
   ///   - color: The new color to be set.
   void setColor(Color color) {
+    if (paintMode == PaintMode.eraser) {
+      paintCtrl.setColor(Colors.transparent);
+      uiPickerStream.add(null);
+      setState(() {});
+      return;
+    }
     paintCtrl.setColor(color);
     uiPickerStream.add(null);
     paintEditorCallbacks?.handleColorChanged();
@@ -976,7 +1046,12 @@ class PaintEditorState extends State<PaintEditor>
                   children: [
                     if (!widget.paintOnly)
                       if (!initConfigs.convertToUint8List || !isVideoEditor)
-                        _buildBackground()
+                        StreamBuilder(
+                          stream: rebuildController.stream,
+                          builder: (context, snapshot) {
+                            return _buildBackgroundWithImageEraser();
+                          },
+                        )
                       else
                         SizedBox(
                           width: configs.imageGeneration.maxOutputSize.width,
@@ -1009,6 +1084,18 @@ class PaintEditorState extends State<PaintEditor>
                   ],
                 ),
               ),
+              if (_isImageEraserMode &&
+                  (widget.initConfigs.layers?.isNotEmpty ?? false))
+                IgnorePointer(
+                  child: LayerStack(
+                    configs: configs,
+                    layers: widget.initConfigs.layers!,
+                    transformHelper: _layerStackTransformHelper,
+                    overlayColor: paintEditorConfigs.style.background,
+                    clipBehavior: Clip.none,
+                    enableLayerKey: true,
+                  ),
+                ),
             ],
           ),
         ),
@@ -1080,6 +1167,7 @@ class PaintEditorState extends State<PaintEditor>
       layers: activeHistory.layers,
       eraserMode: eraserMode,
       eraserRadius: eraserRadius,
+      eraseImageMode: _isImageEraserMode,
       onTap: (details) =>
           callbacks.paintEditorCallbacks?.onTap?.call(this, details),
       onRemoveLayer: (removeIdList) {
