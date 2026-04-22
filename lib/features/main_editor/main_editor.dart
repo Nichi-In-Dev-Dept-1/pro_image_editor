@@ -1678,6 +1678,9 @@ class ProImageEditorState extends State<ProImageEditor>
               eraserSize: 30,
               showToggleFillButton: false,
               showOpacityAdjustmentButton: false,
+              style: paintEditorConfigs.style.copyWith(
+                background: Colors.white,
+              ),
             ),
           ),
           callbacks: overriddenCallbacks,

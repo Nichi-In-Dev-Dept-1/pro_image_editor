@@ -137,7 +137,7 @@ class PaintCanvasState extends State<PaintCanvas> {
     offsets: [..._paintCtrl.offsets],
     erasedOffsets: [],
     mode: _isImageEraserMode ? PaintMode.freeStyle : _paintCtrl.mode,
-    color: _isImageEraserMode ? Colors.transparent : _paintCtrl.color,
+    color: _isImageEraserMode ? Colors.white : _paintCtrl.color,
     strokeWidth: _isImageEraserMode
         ? widget.eraserRadius
         : _paintCtrl.scaledStrokeWidth,
@@ -408,7 +408,7 @@ class PaintCanvasState extends State<PaintCanvas> {
         offsets: offsets,
         erasedOffsets: [],
         mode: _isImageEraserMode ? PaintMode.freeStyle : _paintCtrl.mode,
-        color: _isImageEraserMode ? Colors.transparent : _paintCtrl.color,
+        color: _isImageEraserMode ? Colors.white : _paintCtrl.color,
         strokeWidth: _isImageEraserMode
             ? widget.eraserRadius
             : _paintCtrl.scaledStrokeWidth,
@@ -488,9 +488,6 @@ class PaintCanvasState extends State<PaintCanvas> {
                         painter: DrawPaintItem(
                           item: _activePaintedModel,
                           paintEditorConfigs: widget.paintEditorConfigs,
-                            blendMode: _isImageEraserMode
-                                ? BlendMode.clear
-                                : null,
                         ),
                       ),
                     )

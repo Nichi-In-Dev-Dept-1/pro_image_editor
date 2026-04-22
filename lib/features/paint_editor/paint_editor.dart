@@ -289,14 +289,17 @@ class PaintEditorState extends State<PaintEditor>
       mode: PaintMode.freeStyle,
       offsets: [...paintCtrl.offsets],
       erasedOffsets: [],
-      color: Colors.transparent,
+      color: Colors.white,
       strokeWidth: eraserRadius,
       fill: false,
       opacity: 1,
     );
   }
 
-  Widget _buildBackgroundWithImageEraser() {
+  Widget _buildBackgroundWithImageEraser({
+    bool useClearBlend = false,
+    PaintedModel? activeItem,
+  }) {
     final background = _buildBackground();
 
     if (!_isImageEraserMode) return background;
@@ -307,6 +310,7 @@ class PaintEditorState extends State<PaintEditor>
       editorBodySize: editorBodySize,
       layerStackScaleFactor: _layerStackTransformHelper.scale,
       paintEditorConfigs: paintEditorConfigs,
+      useClearBlend: useClearBlend,
       child: background,
     );
   }
@@ -358,7 +362,7 @@ class PaintEditorState extends State<PaintEditor>
     if (paintEditorConfigs.initialPaintMode == PaintMode.eraser) {
       paintCtrl
         ..setStrokeWidth(eraserRadius)
-        ..setColor(Colors.transparent)
+        ..setColor(Colors.white)
         ..setOpacity(1);
     }
 
@@ -633,7 +637,7 @@ class PaintEditorState extends State<PaintEditor>
     if (mode == PaintMode.eraser) {
       paintCtrl
         ..setStrokeWidth(eraserRadius)
-        ..setColor(Colors.transparent)
+        ..setColor(Colors.white)
         ..setOpacity(1);
     }
     paintEditorCallbacks?.handlePaintModeChanged(mode);
@@ -856,7 +860,7 @@ class PaintEditorState extends State<PaintEditor>
   void setStrokeWidth(double value) {
     if (paintMode == PaintMode.eraser) {
       eraserRadius = value;
-      paintCtrl.setColor(Colors.transparent);
+      paintCtrl.setColor(Colors.white);
     }
     paintCtrl.setStrokeWidth(value);
     rebuildController.add(null);
@@ -880,7 +884,7 @@ class PaintEditorState extends State<PaintEditor>
   ///   - color: The new color to be set.
   void setColor(Color color) {
     if (paintMode == PaintMode.eraser) {
-      paintCtrl.setColor(Colors.transparent);
+      paintCtrl.setColor(Colors.white);
       uiPickerStream.add(null);
       setState(() {});
       return;

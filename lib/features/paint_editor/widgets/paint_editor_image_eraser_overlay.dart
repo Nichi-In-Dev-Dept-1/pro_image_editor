@@ -16,6 +16,7 @@ class PaintEditorImageEraserOverlay extends StatelessWidget {
     required this.editorBodySize,
     required this.layerStackScaleFactor,
     required this.paintEditorConfigs,
+    this.useClearBlend = false,
   });
 
   final Widget child;
@@ -24,6 +25,7 @@ class PaintEditorImageEraserOverlay extends StatelessWidget {
   final Size editorBodySize;
   final double layerStackScaleFactor;
   final PaintEditorConfigs paintEditorConfigs;
+  final bool useClearBlend;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class PaintEditorImageEraserOverlay extends StatelessWidget {
                       editorBodySize: editorBodySize,
                       layerStackScaleFactor: layerStackScaleFactor,
                       paintEditorConfigs: paintEditorConfigs,
+                      useClearBlend: useClearBlend,
                     ))
             : _PaintEditorImageEraserPainter(
                 layers: layers,
@@ -45,6 +48,7 @@ class PaintEditorImageEraserOverlay extends StatelessWidget {
                 editorBodySize: editorBodySize,
                 layerStackScaleFactor: layerStackScaleFactor,
                 paintEditorConfigs: paintEditorConfigs,
+                useClearBlend: useClearBlend,
               ),
         child: child,
       ),
@@ -59,6 +63,7 @@ class _PaintEditorImageEraserPainter extends CustomPainter {
     required this.editorBodySize,
     required this.layerStackScaleFactor,
     required this.paintEditorConfigs,
+    required this.useClearBlend,
   });
 
   final List<PaintLayer> layers;
@@ -66,6 +71,7 @@ class _PaintEditorImageEraserPainter extends CustomPainter {
   final Size editorBodySize;
   final double layerStackScaleFactor;
   final PaintEditorConfigs paintEditorConfigs;
+  final bool useClearBlend;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -91,7 +97,7 @@ class _PaintEditorImageEraserPainter extends CustomPainter {
         item: layer.item,
         scale: layer.scale * layerStackScaleFactor,
         paintEditorConfigs: paintEditorConfigs,
-        blendMode: BlendMode.clear,
+        blendMode: useClearBlend ? BlendMode.clear : null,
       ).paint(canvas, layerSize);
 
       canvas.restore();
@@ -102,7 +108,7 @@ class _PaintEditorImageEraserPainter extends CustomPainter {
         item: activeItem!,
         scale: 1,
         paintEditorConfigs: paintEditorConfigs,
-        blendMode: BlendMode.clear,
+        blendMode: useClearBlend ? BlendMode.clear : null,
       ).paint(canvas, size);
     }
   }
@@ -113,6 +119,7 @@ class _PaintEditorImageEraserPainter extends CustomPainter {
         oldDelegate.activeItem != activeItem ||
         oldDelegate.editorBodySize != editorBodySize ||
         oldDelegate.layerStackScaleFactor != layerStackScaleFactor ||
+        oldDelegate.useClearBlend != useClearBlend ||
         oldDelegate.paintEditorConfigs != paintEditorConfigs;
   }
 }
