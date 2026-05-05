@@ -26,6 +26,7 @@ class _MaskImageCropperState extends State<MaskImageCropper> {
   ImageStream? _imageStream;
   ImageStreamListener? _listener;
   ui.Image? _maskUiImage;
+  int _imageResolverId = 0;
 
   @override
   void initState() {
@@ -37,8 +38,6 @@ class _MaskImageCropperState extends State<MaskImageCropper> {
   void didUpdateWidget(covariant MaskImageCropper oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.maskImage != widget.maskImage) {
-      _removeImageListener();
-      _maskUiImage = null;
       _resolveMaskImage();
     }
   }
@@ -46,23 +45,39 @@ class _MaskImageCropperState extends State<MaskImageCropper> {
   @override
   void dispose() {
     _removeImageListener();
+    _disposeMaskImage();
     super.dispose();
   }
 
   void _resolveMaskImage() {
+    _removeImageListener();
+    _disposeMaskImage();
+    final resolverId = ++_imageResolverId;
     final stream = widget.maskImage.resolve(
       createLocalImageConfiguration(context),
     );
 
     _listener = ImageStreamListener((ImageInfo imageInfo, bool _) {
-      if (!mounted) return;
-      setState(() => _maskUiImage = imageInfo.image);
+      if (!mounted || resolverId != _imageResolverId) return;
+      setState(() {
+        _disposeMaskImage();
+        _maskUiImage = imageInfo.image;
+      });
+    }, onError: (Object error, StackTrace? stackTrace) {
+      if (!mounted || resolverId != _imageResolverId) return;
+      setState(_disposeMaskImage);
     });
 
     _imageStream = stream..addListener(_listener!);
   }
 
+  void _disposeMaskImage() {
+    _maskUiImage?.dispose();
+    _maskUiImage = null;
+  }
+
   void _removeImageListener() {
+    _imageResolverId++;
     final listener = _listener;
     final imageStream = _imageStream;
     if (listener != null && imageStream != null) {

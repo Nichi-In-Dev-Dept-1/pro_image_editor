@@ -1636,12 +1636,25 @@ class ProImageEditorState extends State<ProImageEditor>
     mainEditorCallbacks?.handleUpdateUI();
   }
 
-  /// Opens the eraser editor and applies the result directly to the image.
+  /// Opens a paint editor configured for erasing parts of the image.
+  ///
+  /// The current editor state is flattened, edited with only the eraser tool
+  /// enabled, and then applied back to the main image when the user completes
+  /// the flow. Cancelling the eraser editor leaves the original image unchanged.
   void openEraserEditor() async {
     if (!mounted) return;
 
-    final flattenedImageBytes = await captureEditorImage();
-    if (!mounted) return;
+    Uint8List flattenedImageBytes;
+    try {
+      flattenedImageBytes = await captureEditorImage();
+      if (!mounted) return;
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to open eraser editor: $e')),
+      );
+      return;
+    }
 
     Uint8List? erasedImageBytes;
 
@@ -1662,42 +1675,50 @@ class ProImageEditorState extends State<ProImageEditor>
       paintEditorCallbacks: overriddenPaintCallbacks,
     );
 
-    await openPage<void>(
-      PaintEditor.memory(
-        flattenedImageBytes,
-        key: paintEditor,
-        initConfigs: PaintEditorInitConfigs(
-          configs: configs.copyWith(
-            paintEditor: paintEditorConfigs.copyWith(
-              tools: const [PaintMode.eraser],
-              initialPaintMode: PaintMode.eraser,
-              showLayers: false,
-              minStrokeWidth: 10,
-              maxStrokeWidth: 100,
-              divisionsStrokeWidth: 90,
-              eraserSize: 30,
-              showToggleFillButton: false,
-              showOpacityAdjustmentButton: false,
-              style: paintEditorConfigs.style.copyWith(
-                background: Colors.white,
+    try {
+      await openPage<void>(
+        PaintEditor.memory(
+          flattenedImageBytes,
+          key: paintEditor,
+          initConfigs: PaintEditorInitConfigs(
+            configs: configs.copyWith(
+              paintEditor: paintEditorConfigs.copyWith(
+                tools: const [PaintMode.eraser],
+                initialPaintMode: PaintMode.eraser,
+                showLayers: false,
+                minStrokeWidth: 10,
+                maxStrokeWidth: 100,
+                divisionsStrokeWidth: 90,
+                eraserSize: 30,
+                showToggleFillButton: false,
+                showOpacityAdjustmentButton: false,
+                style: paintEditorConfigs.style.copyWith(
+                  background: Colors.white,
+                ),
               ),
             ),
+            callbacks: overriddenCallbacks,
+            convertToUint8List: true,
+            layers: const [],
+            theme: _theme,
+            mainImageSize: widget.blankSize ?? sizesManager.decodedImageSize,
+            mainBodySize: sizesManager.bodySize,
+            transformConfigs: TransformConfigs.empty(),
+            appliedBlurFactor: 0,
+            appliedFilters: const [],
+            appliedTuneAdjustments: const [],
+            initialZoomMatrix: interactiveViewer.currentState?.transformMatrix4,
           ),
-          callbacks: overriddenCallbacks,
-          convertToUint8List: true,
-          layers: const [],
-          theme: _theme,
-          mainImageSize: widget.blankSize ?? sizesManager.decodedImageSize,
-          mainBodySize: sizesManager.bodySize,
-          transformConfigs: TransformConfigs.empty(),
-          appliedBlurFactor: 0,
-          appliedFilters: const [],
-          appliedTuneAdjustments: const [],
-          initialZoomMatrix: interactiveViewer.currentState?.transformMatrix4,
         ),
-      ),
-      duration: const Duration(milliseconds: 150),
-    );
+        duration: const Duration(milliseconds: 150),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to open eraser editor: $e')),
+      );
+      return;
+    }
 
     if (erasedImageBytes == null || !mounted) return;
 

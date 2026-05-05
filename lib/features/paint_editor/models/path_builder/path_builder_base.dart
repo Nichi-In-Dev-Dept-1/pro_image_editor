@@ -8,7 +8,6 @@ import 'path_builder_circle.dart';
 import 'path_builder_dash_dot_line.dart';
 import 'path_builder_dash_line.dart';
 import 'path_builder_freestyle.dart';
-import 'path_builder_hexagon.dart';
 import 'path_builder_line.dart';
 import 'path_builder_polygon.dart';
 import 'path_builder_rectangular.dart';
@@ -25,7 +24,7 @@ abstract class PathBuilderBase {
           ..color = item.paint.color
           ..style = item.paint.style
           ..strokeWidth = item.paint.strokeWidth * scale
-         ..blendMode = blendMode ?? BlendMode.srcOver;
+          ..blendMode = blendMode ?? BlendMode.srcOver;
 
   /// Factory that returns the appropriate PathBuilder for a given PaintMode
   factory PathBuilderBase.fromMode({
@@ -106,6 +105,9 @@ abstract class PathBuilderBase {
   final double scale;
 
   /// Optional blend mode used while painting.
+  ///
+  /// Defaults to [BlendMode.srcOver] for normal drawing. Use
+  /// [BlendMode.clear] when painting should erase existing pixels.
   final BlendMode? blendMode;
 
   /// The painter used to draw the path.

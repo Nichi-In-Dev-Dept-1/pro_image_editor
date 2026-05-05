@@ -8,6 +8,9 @@ import '/shared/widgets/color_picker/bar_color_picker.dart';
 import '../enums/paint_editor_enum.dart';
 import '../paint_editor.dart';
 
+const double _maxColorControlHeight = 350.0;
+const double _colorControlVerticalPadding = 30.0;
+
 /// A widget for selecting colors in the paint editor, allowing users to
 /// customize their brush or fill colors.
 class PaintEditorColorPicker extends StatelessWidget {
@@ -44,13 +47,13 @@ class PaintEditorColorPicker extends StatelessWidget {
         right: 0,
         child: SizedBox(
           height: min(
-            350,
+            _maxColorControlHeight,
             MediaQuery.sizeOf(context).height -
                 MediaQuery.viewInsetsOf(context).bottom -
                 kToolbarHeight -
                 kBottomNavigationBarHeight -
                 MediaQuery.paddingOf(context).top -
-                30,
+                _colorControlVerticalPadding,
           ),
           width: 52,
           child: RotatedBox(
@@ -93,13 +96,13 @@ class PaintEditorColorPicker extends StatelessWidget {
             return BarColorPicker(
               configs: configs,
               length: min(
-                350,
+                _maxColorControlHeight,
                 MediaQuery.sizeOf(context).height -
                     MediaQuery.viewInsetsOf(context).bottom -
                     kToolbarHeight -
                     kBottomNavigationBarHeight -
                     MediaQuery.paddingOf(context).top -
-                    30,
+                    _colorControlVerticalPadding,
               ),
               horizontal: configs.paintEditor.isColorPickerHorizontal ?? true,
               thumbColor: Colors.white,

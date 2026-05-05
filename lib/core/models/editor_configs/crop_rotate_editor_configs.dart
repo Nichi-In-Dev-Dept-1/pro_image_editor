@@ -111,6 +111,9 @@ class CropRotateEditorConfigs implements BaseSubEditorConfigs {
             maxWidthFactor == null ||
                 (maxWidthFactor > 0 && maxWidthFactor <= 1),
             'maxWidthFactor must be greater than 0 and less than 1'),
+        assert(
+            initialCropMode != CropMode.mask || maskImage != null,
+            'maskImage must be provided when initialCropMode is CropMode.mask'),
         assert(doubleTapScaleFactor > 1,
             'doubleTapScaleFactor must be greater than 1');
 

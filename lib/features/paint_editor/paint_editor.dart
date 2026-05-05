@@ -1050,11 +1050,13 @@ class PaintEditorState extends State<PaintEditor>
                   children: [
                     if (!widget.paintOnly)
                       if (!initConfigs.convertToUint8List || !isVideoEditor)
-                        StreamBuilder(
-                          stream: rebuildController.stream,
-                          builder: (context, snapshot) {
-                            return _buildBackgroundWithImageEraser();
-                          },
+                        RepaintBoundary(
+                          child: StreamBuilder(
+                            stream: rebuildController.stream,
+                            builder: (context, snapshot) {
+                              return _buildBackgroundWithImageEraser();
+                            },
+                          ),
                         )
                       else
                         SizedBox(
