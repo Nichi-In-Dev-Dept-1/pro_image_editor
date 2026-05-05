@@ -30,6 +30,7 @@ class MainEditorConfigs extends ZoomConfigs {
     this.transformSetup,
     this.enableCloseButton = true,
     this.enableEscapeButton = true,
+    this.enableSubEditorPage = false,
     this.canZoomWhenLayerSelected = true,
     this.mobilePanInteraction = MobilePanInteraction.move,
     this.tools = const [
@@ -66,6 +67,13 @@ class MainEditorConfigs extends ZoomConfigs {
   ///
   /// This flag has no effect when the `onEscapeButton` callback is set.
   final bool enableEscapeButton;
+
+  /// Determines whether sub-editors should be opened on a dedicated nested
+  /// navigator page flow.
+  ///
+  /// The default is `false` so sub-editors continue using the existing route
+  /// behavior unless this mode is explicitly enabled.
+  final bool enableSubEditorPage;
 
   /// Determines whether zooming is allowed when a layer is selected in the
   /// editor.
@@ -121,6 +129,7 @@ class MainEditorConfigs extends ZoomConfigs {
   MainEditorConfigs copyWith({
     bool? enableCloseButton,
     bool? enableEscapeButton,
+    bool? enableSubEditorPage,
     MainEditorTransformSetup? transformSetup,
     MainEditorStyle? style,
     MainEditorIcons? icons,
@@ -142,6 +151,7 @@ class MainEditorConfigs extends ZoomConfigs {
     return MainEditorConfigs(
       enableCloseButton: enableCloseButton ?? this.enableCloseButton,
       enableEscapeButton: enableEscapeButton ?? this.enableEscapeButton,
+      enableSubEditorPage: enableSubEditorPage ?? this.enableSubEditorPage,
       transformSetup: transformSetup ?? this.transformSetup,
       style: style ?? this.style,
       icons: icons ?? this.icons,

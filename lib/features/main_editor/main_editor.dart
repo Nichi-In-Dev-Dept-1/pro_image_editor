@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
@@ -1635,6 +1636,114 @@ class ProImageEditorState extends State<ProImageEditor>
     mainEditorCallbacks?.handleUpdateUI();
   }
 
+  /// Opens a paint editor configured for erasing parts of the image.
+  ///
+  /// The current editor state is flattened, edited with only the eraser tool
+  /// enabled, and then applied back to the main image when the user completes
+  /// the flow. Cancelling the eraser editor leaves the original image unchanged.
+  void openEraserEditor() async {
+    if (!mounted) return;
+
+    Uint8List flattenedImageBytes;
+    try {
+      flattenedImageBytes = await captureEditorImage();
+      if (!mounted) return;
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to open eraser editor: $e')),
+      );
+      return;
+    }
+
+    Uint8List? erasedImageBytes;
+
+    final originalPaintCallbacks = callbacks.paintEditorCallbacks;
+    final overriddenPaintCallbacks =
+        (originalPaintCallbacks ?? const PaintEditorCallbacks()).copyWith();
+    final overriddenCallbacks = callbacks.copyWith(
+      onImageEditingComplete: (bytes) async {
+        erasedImageBytes = bytes;
+      },
+      onCloseEditor: (mode) {
+        if (mainEditorConfigs.enableSubEditorPage) {
+          navigatorKey.currentState?.pop();
+        } else if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        }
+      },
+      paintEditorCallbacks: overriddenPaintCallbacks,
+    );
+
+    try {
+      await openPage<void>(
+        PaintEditor.memory(
+          flattenedImageBytes,
+          key: paintEditor,
+          initConfigs: PaintEditorInitConfigs(
+            configs: configs.copyWith(
+              paintEditor: paintEditorConfigs.copyWith(
+                tools: const [PaintMode.eraser],
+                initialPaintMode: PaintMode.eraser,
+                showLayers: false,
+                minStrokeWidth: 10,
+                maxStrokeWidth: 100,
+                divisionsStrokeWidth: 90,
+                eraserSize: 30,
+                showToggleFillButton: false,
+                showOpacityAdjustmentButton: false,
+                style: paintEditorConfigs.style.copyWith(
+                  background: Colors.white,
+                ),
+              ),
+            ),
+            callbacks: overriddenCallbacks,
+            convertToUint8List: true,
+            layers: const [],
+            theme: _theme,
+            mainImageSize: widget.blankSize ?? sizesManager.decodedImageSize,
+            mainBodySize: sizesManager.bodySize,
+            transformConfigs: TransformConfigs.empty(),
+            appliedBlurFactor: 0,
+            appliedFilters: const [],
+            appliedTuneAdjustments: const [],
+            initialZoomMatrix: interactiveViewer.currentState?.transformMatrix4,
+          ),
+        ),
+        duration: const Duration(milliseconds: 150),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to open eraser editor: $e')),
+      );
+      return;
+    }
+
+    if (erasedImageBytes == null || !mounted) return;
+
+    final previousImage = editorImage ?? widget.editorImage!;
+    final nextImage = EditorImage(byteArray: erasedImageBytes!);
+
+    addHistory(
+      layers: [],
+      filters: const [],
+      tuneAdjustments: const [],
+      blur: 0,
+      transformConfigs: TransformConfigs.empty(),
+      blockCaptureScreenshot: true,
+    );
+    stateManager.updateBackgroundImages(
+      oldImage: previousImage,
+      newImage: nextImage,
+    );
+    await decodeImage();
+    _rebuildController.add(null);
+    _takeScreenshot(replaceLastScreenshot: true);
+    setState(() {});
+    mainEditorCallbacks?.handleUpdateUI();
+  }
+
   /// Opens the text editor.
   ///
   /// This method opens the text editor, allowing the user to add or edit text
@@ -2722,6 +2831,7 @@ class ProImageEditorState extends State<ProImageEditor>
             openFilterEditor: openFilterEditor,
             openBlurEditor: openBlurEditor,
             openEmojiEditor: openEmojiEditor,
+            openEraserEditor: openEraserEditor,
             openStickerEditor: openStickerEditor,
           );
   }

@@ -12,6 +12,9 @@ import '/features/tune_editor/tune_editor.dart';
 
 /// Mixin which contains all global keys for the main-editor
 mixin MainEditorGlobalKeys {
+  /// A GlobalKey for a nested navigator that can host sub-editor pages.
+  final navigatorKey = GlobalKey<NavigatorState>();
+
   /// A GlobalKey for the Paint Editor, used to access and control the state
   /// of the paint editor.
   final paintEditor = GlobalKey<PaintEditorState>();

@@ -52,6 +52,27 @@ void main() {
       expect(config.isRectangularCropper, false);
     });
 
+    test('fromMap supports mask crop mode', () {
+      final config = TransformConfigs.fromMap({
+        'angle': 0,
+        'cropRect': {'left': 0, 'top': 0, 'right': 20, 'bottom': 20},
+        'originalSize': {'width': 20, 'height': 20},
+        'cropEditorScreenRatio': 1,
+        'scaleUser': 1,
+        'scaleRotation': 1,
+        'aspectRatio': 1,
+        'flipX': false,
+        'flipY': false,
+        'cropMode': 'mask',
+        'offset': {'dx': 0, 'dy': 0},
+      });
+
+      expect(config.cropMode, CropMode.mask);
+      expect(config.isMaskCropper, isTrue);
+      expect(config.isRectangularCropper, isFalse);
+      expect(config.isOvalCropper, isFalse);
+    });
+
     test('toMap returns correct map', () {
       final config = TransformConfigs(
         angle: 0.5,

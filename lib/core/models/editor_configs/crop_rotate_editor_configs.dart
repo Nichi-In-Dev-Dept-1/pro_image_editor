@@ -67,7 +67,8 @@ class CropRotateEditorConfigs implements BaseSubEditorConfigs {
     this.invertMouseScroll = false,
     this.invertDragDirection = false,
     this.initialCropMode = CropMode.rectangular,
-    this.enableTransformLayers = true,
+    this.maskImage,
+    this.exportMaskImage = true,
     this.enableProvideImageInfos = false,
     this.enableDoubleTap = true,
     this.enableFlipAnimation = true,
@@ -100,7 +101,7 @@ class CropRotateEditorConfigs implements BaseSubEditorConfigs {
     this.style = const CropRotateEditorStyle(),
     this.icons = const CropRotateEditorIcons(),
     this.widgets = const CropRotateEditorWidgets(),
-    this.maxWidthFactor,
+    this.maxWidthFactor,  this.enableTransformLayers = true,
   })  : assert(maxScale >= 1, 'maxScale must be greater than or equal to 1'),
         assert(desktopCornerDragArea > 0,
             'desktopCornerDragArea must be positive'),
@@ -110,6 +111,9 @@ class CropRotateEditorConfigs implements BaseSubEditorConfigs {
             maxWidthFactor == null ||
                 (maxWidthFactor > 0 && maxWidthFactor <= 1),
             'maxWidthFactor must be greater than 0 and less than 1'),
+        assert(
+            initialCropMode != CropMode.mask || maskImage != null,
+            'maskImage must be provided when initialCropMode is CropMode.mask'),
         assert(doubleTapScaleFactor > 1,
             'doubleTapScaleFactor must be greater than 1');
 
@@ -163,6 +167,20 @@ class CropRotateEditorConfigs implements BaseSubEditorConfigs {
   /// This determines the default cropping behavior or aspect ratio that will be
   /// presented to the user before any manual adjustments are made.
   final CropMode initialCropMode;
+
+  /// Optional image used when [initialCropMode] or the active crop mode is set
+  /// to [CropMode.mask].
+  ///
+  /// The mask image alpha defines the exported crop shape within the selected
+  /// crop rectangle.
+  final ImageProvider? maskImage;
+
+  /// Controls whether the configured [maskImage] is applied to the exported
+  /// result when the crop mode is [CropMode.mask].
+  ///
+  /// When `false`, the editor still uses the mask crop mode behavior, but the
+  /// exported image falls back to a standard rectangular crop.
+  final bool exportMaskImage;
 
   /// Defines which crop-rotate tools are available in the editor.
   ///
@@ -301,6 +319,8 @@ class CropRotateEditorConfigs implements BaseSubEditorConfigs {
     bool? invertMouseScroll,
     bool? invertDragDirection,
     CropMode? initialCropMode,
+    ImageProvider? maskImage,
+    bool? exportMaskImage,
     bool? enableProvideImageInfos,
     double? initAspectRatio,
     double? maxScale,
@@ -342,6 +362,8 @@ class CropRotateEditorConfigs implements BaseSubEditorConfigs {
       invertMouseScroll: invertMouseScroll ?? this.invertMouseScroll,
       invertDragDirection: invertDragDirection ?? this.invertDragDirection,
       initialCropMode: initialCropMode ?? this.initialCropMode,
+      maskImage: maskImage ?? this.maskImage,
+      exportMaskImage: exportMaskImage ?? this.exportMaskImage,
       enableProvideImageInfos:
           enableProvideImageInfos ?? this.enableProvideImageInfos,
       initAspectRatio: initAspectRatio ?? this.initAspectRatio,

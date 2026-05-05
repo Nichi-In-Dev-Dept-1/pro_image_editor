@@ -16,6 +16,7 @@ class DrawPaintItem extends CustomPainter {
     this.onHitChanged,
     this.scale = 1,
     this.enabledHitDetection = false,
+    this.blendMode,
   });
 
   /// The model containing information about the painting.
@@ -23,6 +24,9 @@ class DrawPaintItem extends CustomPainter {
 
   /// The scaling factor applied to the canvas.
   final double scale;
+
+  /// Optional blend mode used while drawing the item.
+  final BlendMode? blendMode;
 
   /// The current erasing behavior applied by the tool.
   final PaintEditorConfigs paintEditorConfigs;
@@ -48,6 +52,7 @@ class DrawPaintItem extends CustomPainter {
       item: item,
       scale: scale,
       paintEditorConfigs: paintEditorConfigs,
+      blendMode: blendMode,
     ).draw(canvas: canvas, size: size);
   }
 
